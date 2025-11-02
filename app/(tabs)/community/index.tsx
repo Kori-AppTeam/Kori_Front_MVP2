@@ -295,7 +295,6 @@ const handleWritePress = async () => {
     try {
         const response = await api.get(`/api/v1/member/is-completed`);
         const isProfileCompleted = response.data?.profileCompleted;
-          console.log('[handleWritePress] API response received:', response.data);
         if (isProfileCompleted === false) { 
             Alert.alert(
                 'Profile Setup Required', 

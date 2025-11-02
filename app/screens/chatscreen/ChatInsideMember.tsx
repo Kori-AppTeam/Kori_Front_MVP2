@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components/native';
-import ProfileModal from '@/components/ProfileModal';
-import {
-  SafeAreaView,
-  StatusBar,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  Image,
-  Alert,
-} from 'react-native';
-import Feather from '@expo/vector-icons/Feather';
-import { useRouter } from 'expo-router';
-import MembersBox from '@/components/MembersBox';
-import { useLocalSearchParams } from 'expo-router';
-import { FlatList } from 'react-native';
 import api from '@/api/axiosInstance';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Toast from 'react-native-toast-message';
+import MembersBox from '@/components/MembersBox';
+import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StatusBar,
+  TouchableOpacity
+} from 'react-native';
+import Toast from 'react-native-toast-message';
+import styled from 'styled-components/native';
 
 type ChatMembers = {
   userId: number;
@@ -280,7 +277,6 @@ const ChatInsideMember = () => {
                 onPressMore={() => {
                   setSelectedMember(item.firstName);
                   setModalVisible(true);
-                  handlePressProfile(item.userId);
                   setReportId(item.userId.toString());
                 }}
               />
