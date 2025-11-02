@@ -1,6 +1,8 @@
-import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
+import api from '@/api/axiosInstance';
+import Feather from '@expo/vector-icons/Feather';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView } from 'react-native';
@@ -37,14 +39,23 @@ const LinkedSpaceDetail = () => {
       router.push({
         pathname: '/(tabs)/chat/ChattingRoomScreen',
         params: {
-          roomId: roomId, // props에서 바로 가져옴
-          roomName: roomDetail?.roomName, // props에서 바로 가져옴
+          roomId: roomId,
+          roomName: roomDetail?.roomName,
         },
       });
     } catch (error: any) {
+      if (error.response?.status === 428) {
+        Toast.show({
+          type: 'error',
+          text1: '"You need to complete your profile to join the chat.',
+        });
+        router.push('/(tabs)/mypage/edit');
+        return;
+      }
+
+      // 기존 에러 처리
       if (error.response) {
         const message = error.response.data?.message;
-
         if (message === '이미 현재의 그룹채팅방에 참여하고 있습니다.') {
           Toast.show({
             type: 'error',

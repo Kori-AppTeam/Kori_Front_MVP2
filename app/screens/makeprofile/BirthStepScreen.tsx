@@ -60,6 +60,7 @@ export default function BirthdaySelectionScreen() {
   };
 
   const handleSkip = () => {
+    updateProfile('birthday', '');
     router.push('./PurposeStepScreen');
   };
 

@@ -1,6 +1,7 @@
-import { useProfile } from '@/app/contexts/ProfileContext';
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
+import { useProfile } from '@/app/contexts/ProfileContext';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, SafeAreaView, StatusBar } from 'react-native';
@@ -57,6 +58,7 @@ export default function TagStepScreen() {
   };
 
   const handleSkip = () => {
+    updateProfile('hobby', []);
     router.push('./AddPhotoStepScreen');
   };
 

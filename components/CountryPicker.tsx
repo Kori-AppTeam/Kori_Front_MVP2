@@ -1,12 +1,14 @@
-import cancelIconImg from '@/assets/images/cancel.png';
-import searchIconImg from '@/assets/images/search.png';
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
-import { COUNTRIES } from '@/src/utils/countries';
+import cancelIconImg from '@/assets/images/cancel.png';
+import searchIconImg from '@/assets/images/search.png';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Modal, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
+import { COUNTRIES } from '@/src/utils/countries';
 
+const INPUT_BORDER = '#FFFFFF';
+const ERROR_COLOR = '#FF6B6B';
 type Props = {
   visible: boolean;
   value?: string;
@@ -169,7 +171,7 @@ const CancelIcon = styled.Image`
   tint-color: #949899;
 `;
 
-export const CountryDropdownButton = styled.TouchableOpacity<{ selected?: boolean }>`
+export const CountryDropdownButton = styled.TouchableOpacity<{ selected?: boolean; error?: boolean }>`
   width: 100%;
   height: 50px;
   border-radius: 8px;
@@ -179,7 +181,7 @@ export const CountryDropdownButton = styled.TouchableOpacity<{ selected?: boolea
   justify-content: space-between;
   padding: 0 16px;
   border-width: 1px;
-  border-color: #949899;
+  border-color: ${({ error }) => (error ? ERROR_COLOR : INPUT_BORDER)};
 `;
 
 export const CountryDropdownText = styled.Text<{ selected?: boolean }>`

@@ -9,7 +9,8 @@ import { FlatList, Modal, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 export const MAX_LANGUAGES = 5;
-
+const INPUT_BORDER = '#FFFFFF';
+const ERROR_COLOR = '#FF6B6B';
 type Props = {
   visible: boolean;
   value: string[];
@@ -204,7 +205,7 @@ const SearchIcon = styled.Image`
   tint-color: #949899;
 `;
 
-export const LanguageDropdownButton = styled.TouchableOpacity<{ selected?: boolean }>`
+export const LanguageDropdownButton = styled.TouchableOpacity<{ selected?: boolean; error?: boolean }>`
   width: 100%;
   height: 50px;
   border-radius: 8px;
@@ -214,9 +215,8 @@ export const LanguageDropdownButton = styled.TouchableOpacity<{ selected?: boole
   justify-content: space-between;
   padding: 0 16px;
   border-width: 1px;
-  border-color: #949899;
+  border-color: ${({ error }: { error?: boolean }) => (error ? ERROR_COLOR : INPUT_BORDER)};
 `;
-
 export const LanguageDropdownText = styled.Text<{ selected?: boolean }>`
   color: ${({ selected }) => (selected ? '#EDEDED' : '#949899')};
   font-size: 15px;

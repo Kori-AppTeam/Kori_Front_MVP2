@@ -4,16 +4,19 @@ import MembersBox from '@/components/MembersBox';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
 import { theme } from '@/src/styles/theme';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
   StatusBar,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
@@ -276,7 +279,6 @@ const ChatInsideMember = () => {
                 onPressMore={() => {
                   setSelectedMember(item.firstName);
                   setModalVisible(true);
-                  handlePressProfile(item.userId);
                   setReportId(item.userId.toString());
                 }}
               />

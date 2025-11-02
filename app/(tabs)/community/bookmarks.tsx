@@ -6,7 +6,7 @@ import { theme } from '@/src/styles/theme';
 import { keyToUrl } from '@/utils/image';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, ListRenderItem, TouchableOpacity, View, type FlatListProps } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, ListRenderItem, TouchableOpacity, View, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
 
 const AV = require('@/assets/images/character1.png');
@@ -108,7 +108,29 @@ export default function BookmarksScreen() {
         setHasNext(Boolean(data?.data?.hasNext));
         setCursor(data?.data?.nextCursor ?? undefined);
       } catch (e) {
-        console.error('[bookmarks:list] error', e);
+      const status = e.response?.status;
+        
+        if (status === 428) {
+          Alert.alert(
+            'Profile Setup Required', 
+            'You need to complete your profile setup to view bookmarks.', 
+            [
+              {
+                text: 'Go to Setup',
+                onPress: () => router.push('/(tabs)/mypage/edit' as any),
+              },
+              { text: 'Cancel', style: 'cancel' },
+            ]
+          );
+  
+          setLoading(false); 
+          setRefreshing(false); 
+          loadingRef.current = false;
+          return;
+        }
+
+        console.error('[bookmarks:list] error', e); // 428이 아닌 다른 에러만 콘솔에  
+        
       } finally {
         loadingRef.current = false;
         setLoading(false);
