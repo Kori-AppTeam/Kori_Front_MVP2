@@ -1,3 +1,4 @@
+import DetailHeader from '@/components/common/DetailHeader';
 import Icon from '@/components/common/Icon';
 import { Config } from '@/src/lib/config';
 import { theme } from '@/src/styles/theme';
@@ -57,16 +58,8 @@ const GeneralLoginScreen = () => {
 
   return (
     <SafeArea>
-      <StatusBar barStyle="light-content" />
+      <DetailHeader title={'Continue with email'} />
       <Container>
-        <HeaderContainer>
-          <HeaderBox>
-            <TouchableOpacity onPress={() => router.back()}>
-              <Icon type="search" size={24} color={theme.colors.primary.white} />
-            </TouchableOpacity>
-            <HeaderTitleText>Continue with email</HeaderTitleText>
-          </HeaderBox>
-        </HeaderContainer>
         <GeneralLoginContainer>
           <TitleContainer>
             <TitleText>Email</TitleText>
