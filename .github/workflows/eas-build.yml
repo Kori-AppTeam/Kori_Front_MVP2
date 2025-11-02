@@ -1,3 +1,5 @@
+name: EAS Build (PR Label)
+
 on:
   pull_request:
     types: [labeled]

@@ -1,3 +1,5 @@
+name: EAS Update (Main Push)
+
 on:
   push:
     branches:
