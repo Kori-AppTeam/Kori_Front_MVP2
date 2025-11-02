@@ -112,7 +112,6 @@ export default function WriteScreen() {
       return;
     }
 
-    // 앨범 열기
     const res = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
@@ -124,7 +123,6 @@ export default function WriteScreen() {
     }
   }
 
-  // 2) 기존 pickImage 대체
   const pickImage = async () => {
     setPickerOpen(false);
     await confirmPurposeAndPick(setImages);
@@ -247,9 +245,9 @@ export default function WriteScreen() {
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView style={{ flex: 1 }} scrollEnabled={false} onTouchStart={() => Keyboard.dismiss()}>
           <View style={{ flex: 1 }}>
-            <CatRow onPress={() => !isEdit && setCatOpen(true)} disabled={isEdit}>
+            <CatRow onPress={() => !isEdit && setCatOpen(true)} disabled={isEdit} pointerEvents="box-only">
               <CatLabel>Category</CatLabel>
               <CatChip style={isEdit ? { opacity: 0.5 } : undefined}>
                 <CatText>{category}</CatText>
@@ -259,9 +257,9 @@ export default function WriteScreen() {
               </CatChip>
             </CatRow>
 
-            <Divider />
+            <Divider pointerEvents="none" />
 
-            <BodyWrap>
+            <BodyWrap pointerEvents="box-none">
               <Input
                 ref={inputRef}
                 value={body}
@@ -275,7 +273,7 @@ export default function WriteScreen() {
             </BodyWrap>
 
             {images.length > 0 && (
-              <PreviewWrap>
+              <PreviewWrap pointerEvents="box-none">
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {images.map((uri) => (
                     <Thumb key={uri}>
@@ -289,14 +287,14 @@ export default function WriteScreen() {
               </PreviewWrap>
             )}
 
-            <BottomBar>
-              <BarLeft>
+            <BottomBar pointerEvents="box-none">
+              <BarLeft pointerEvents="box-only">
                 <BarIcon onPress={() => setPickerOpen(true)}>
                   <Icon type="photo" size={20} color={theme.colors.gray.lightGray_1} />
                 </BarIcon>
               </BarLeft>
 
-              <BarRight>
+              <BarRight pointerEvents="box-only">
                 <Anon
                   $active={anonymous}
                   $disabled={!canToggleAnon}
@@ -334,7 +332,7 @@ export default function WriteScreen() {
               </BarRight>
             </BottomBar>
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
       </KeyboardAvoidingView>
 
       <Modal visible={pickerOpen} transparent animationType="fade" onRequestClose={() => setPickerOpen(false)}>

@@ -13,7 +13,6 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, ListRenderItem, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 
 const isMeaningfulName = (v?: any) => {
   const s = String(v ?? '').trim();
@@ -167,7 +166,6 @@ export default function CommunityScreen() {
   const [writeLoading, setWriteLoading] = useState(false);
   const sortServer = sort === 'new' ? 'LATEST' : 'POPULAR';
   const boardId = Number(CATEGORY_TO_BOARD_ID[cat]);
-  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const likeMutation = useToggleLike();
 
@@ -264,19 +262,23 @@ export default function CommunityScreen() {
       const status = e.response?.status;
 
       if (status === 428) {
+        // 롤백 (좋아요 상태 원상복구)
         setLiked(postId, prevLiked);
         setLikeCount(postId, prevCount);
         setItems((prev) =>
           prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)),
         );
-        setProfileModalVisible(true);
+
+        // 사용자에게 알림 띄우기
+        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to like posts.', [
+          {
+            text: 'Go to Setup',
+            onPress: () => router.push('/(tabs)/mypage/edit' as any),
+          },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
         return;
       }
-
-      setLiked(postId, prevLiked);
-      setLikeCount(postId, prevCount);
-      setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
-      console.error('[like:list] error', e);
       setLiked(postId, prevLiked);
       setLikeCount(postId, prevCount);
       setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
@@ -406,7 +408,6 @@ export default function CommunityScreen() {
       />
 
       <WriteFab onPress={handleWritePress} />
-      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
