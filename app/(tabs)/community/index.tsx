@@ -13,7 +13,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, ListRenderItem, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
-
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 const isMeaningfulName = (v?: any) => {
   const s = String(v ?? '').trim();
   if (!s) return false;
@@ -158,6 +158,7 @@ export default function CommunityScreen() {
   const [cat, setCat] = useState<Category>('All');
   const [sort, setSort] = useState<'new' | 'hot'>('new');
   const [checkingProfile, setCheckingProfile] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [items, setItems] = useState<PostEx[]>([]);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasNext, setHasNext] = useState(true);
@@ -268,17 +269,13 @@ export default function CommunityScreen() {
         setItems((prev) =>
           prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)),
         );
-
-        // 사용자에게 알림 띄우기
-        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to like posts.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => router.push('/(tabs)/mypage/edit' as any),
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
+      setLiked(postId, prevLiked);
+      setLikeCount(postId, prevCount);
+      setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
+      console.error('[like:list] error', e);
       setLiked(postId, prevLiked);
       setLikeCount(postId, prevCount);
       setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
@@ -408,6 +405,7 @@ export default function CommunityScreen() {
       />
 
       <WriteFab onPress={handleWritePress} />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }

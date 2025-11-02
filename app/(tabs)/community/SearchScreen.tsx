@@ -14,10 +14,11 @@ import { usePostUI } from '@/src/store/usePostUI';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert, // [추가]
+  Alert,
   FlatList,
   ListRenderItem,
   TextInput as RNTextInput,
@@ -157,6 +158,7 @@ export default function CommunityScreen() {
   const [checkingProfile, setCheckingProfile] = useState(false);
   const [imagesById, setImagesById] = useState<Record<number, string[]>>({});
   const fetchedRef = useRef<Set<number>>(new Set());
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const sortParam = sort === 'new' ? 'LATEST' : 'POPULAR';
   const boardId = CATEGORY_TO_BOARD_ID[cat];
@@ -422,10 +424,7 @@ export default function CommunityScreen() {
       // 3. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to like posts.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
       console.error('[like:list] error', e);
@@ -462,11 +461,7 @@ export default function CommunityScreen() {
       // 4. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to bookmark posts.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
-        // 428 에러 시에도 finally는 실행되어야 하므로 return 없음
+        setProfileModalVisible(true);
       } else {
         console.error('[bookmark:list] error', e);
       }
@@ -584,6 +579,7 @@ export default function CommunityScreen() {
 
       <WriteFab onPress={handleWritePress} disabled={checkingProfile} />
       {/* [수정] checking -> checkingProfile */}
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
