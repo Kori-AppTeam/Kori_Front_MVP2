@@ -1,6 +1,6 @@
 import api from '@/api/axiosInstance';
-import Feather from '@expo/vector-icons/Feather';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView } from 'react-native';
@@ -82,7 +82,7 @@ const LinkedSpaceDetail = () => {
         <BackgroundContainer>
           <Background source={require('@/assets/images/background1.png')} resizeMode="cover">
             <BackButton onPress={() => router.back()}>
-              <Feather name="arrow-left" size={27} color="#CCCFD0" />
+              <Icon type="previous" size={27} color={theme.colors.gray.lightGray_1} />
             </BackButton>
             <ProfileBox>
               <ProfileImage
@@ -121,7 +121,7 @@ const LinkedSpaceDetail = () => {
             </HostContainer>
             <MembersContainer>
               <InMemberContainer>
-                <MaterialIcons name="person-outline" size={15} color="#949899" />
+                <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
                 <InMemberText>{roomDetail?.participantCount} members in</InMemberText>
                 <Divider />
               </InMemberContainer>

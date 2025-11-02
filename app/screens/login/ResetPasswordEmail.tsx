@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components/native';
-import { StatusBar, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
-import { useRouter } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import axios from 'axios';
+import Icon from '@/components/common/Icon';
 import { Config } from '@/src/lib/config';
+import { theme } from '@/src/styles/theme';
 import Entypo from '@expo/vector-icons/Entypo';
+import axios from 'axios';
+import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import React, { useEffect, useState } from 'react';
+import { KeyboardAvoidingView, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
 
 enum isKoriEmail {
   Init = 'Init',
@@ -97,7 +96,7 @@ const CreateAccountScreen = () => {
         <HeaderContainer>
           <HeaderBox>
             <TouchableOpacity onPress={() => router.back()}>
-              <Feather name="arrow-left" size={23} color="#CCCFD0" />
+              <Icon type="previous" size={24} color={theme.colors.primary.white} />
             </TouchableOpacity>
             <HeaderTitleText>Reset Password</HeaderTitleText>
           </HeaderBox>
@@ -123,7 +122,7 @@ const CreateAccountScreen = () => {
                   />
                   <CloseErrorBox>
                     {!EmailChecks.isEmail && !EmailChecks.isnull && (
-                      <Ionicons name="close-sharp" size={27} color="#FF4F4F" />
+                      <Icon type="close" size={24} color={theme.colors.secondary.red} />
                     )}
                   </CloseErrorBox>
                 </EmailContainer>
@@ -141,21 +140,21 @@ const CreateAccountScreen = () => {
               <ErrorBox>
                 {!EmailChecks.isEmail && !EmailChecks.isnull && (
                   <>
-                    <Ionicons name="information-circle-outline" size={18} color="#FF4F4F" />
+                    <Icon type="info" size={16} color={theme.colors.secondary.red} />
                     <ErrorText>Not the correct email format.</ErrorText>
                   </>
                 )}
 
                 {EmailChecks.isEmail && isExistEmail === isKoriEmail.NotExist && (
                   <>
-                    <Ionicons name="information-circle-outline" size={18} color="#FF4F4F" />
+                    <Icon type="info" size={16} color={theme.colors.secondary.red} />
                     <ErrorText>This is not a registered account</ErrorText>
                   </>
                 )}
                 {EmailChecks.isEmail && isExistEmail === isKoriEmail.Exist && (
                   <>
                     <NotErrorBox>
-                      <AntDesign name="check" size={18} color="#02F59B" />
+                      <Icon type="check" size={24} color="#02F59B" />
                       <NotErrorText>Email verification code sent</NotErrorText>
                     </NotErrorBox>
                   </>
@@ -194,7 +193,7 @@ const CreateAccountScreen = () => {
               {isCorrect === isCorrectCode.Fail && (
                 <>
                   <ErrorBox>
-                    <Ionicons name="information-circle-outline" size={18} color="#FF4F4F" />
+                    <Icon type="info" size={16} color={theme.colors.secondary.red} />
                     <ErrorText>Fail Code Verification</ErrorText>
                   </ErrorBox>
                 </>
@@ -202,7 +201,7 @@ const CreateAccountScreen = () => {
               {isCorrect === isCorrectCode.Success && (
                 <>
                   <NotErrorBox>
-                    <AntDesign name="check" size={18} color="#02F59B" />
+                    <Icon type="check" size={24} color={theme.colors.primary.mint} />
                     <NotErrorText>Authentication successful</NotErrorText>
                   </NotErrorBox>
                 </>

@@ -1,11 +1,10 @@
 import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
 import RawProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { theme } from '@/src/styles/theme';
 import { formatDate, formatTime } from '@/src/utils/dateUtils';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { Client } from '@stomp/stompjs';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -572,10 +571,10 @@ const ChattingRoomScreen = () => {
           {searchBox ? (
             <>
               <TouchableOpacity onPress={closeSearchBox}>
-                <Feather name="arrow-left" size={27} color="#CCCFD0" />
+                <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
               </TouchableOpacity>
               <SearchContainer>
-                <Feather name="search" size={23} color="#CCCFD0" style={{ marginLeft: 8 }} />
+                <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
                 <SearchInputText
                   value={searchText}
                   onChangeText={setSearchText}
@@ -589,7 +588,7 @@ const ChattingRoomScreen = () => {
                       (setSearchText(''), setIsSearching(false));
                     }}
                   >
-                    <AntDesign name="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
+                    <Icon type="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
                   </TouchableOpacity>
                 )}
               </SearchContainer>
@@ -598,7 +597,7 @@ const ChattingRoomScreen = () => {
             <>
               <Left>
                 <TouchableOpacity onPress={goBack}>
-                  <Feather name="arrow-left" size={27} color="#CCCFD0" />
+                  <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
               </Left>
               <Center>
@@ -606,10 +605,10 @@ const ChattingRoomScreen = () => {
               </Center>
               <Right>
                 <TouchableOpacity onPress={showSearchBox}>
-                  <Feather name="search" size={23} color="#CCCFD0" />
+                  <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onhandleNext}>
-                  <SimpleLineIcons name="menu" size={23} color="#CCCFD0" style={{ marginLeft: 20 }} />
+                  <Icon type="hamburger" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
               </Right>
             </>
