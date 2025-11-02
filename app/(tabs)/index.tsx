@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
-
 import FriendCard from '@/components/FriendCard';
 import useCancelFollowRequest from '@/hooks/mutations/useCancelFollowRequest';
 import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
@@ -12,6 +11,7 @@ import useMyProfile from '@/hooks/queries/useMyProfile';
 import useRecommendedFriends from '@/hooks/queries/useRecommendedFriends';
 import { Text } from '@react-navigation/elements';
 import { router } from 'expo-router';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 
 const toBirthNumber = (v: unknown): number | undefined => {
   if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
@@ -26,6 +26,8 @@ export default function HomeScreen() {
   const { data: me } = useMyProfile();
   const { mutateAsync: createRoom, isPending: creatingRoom } = useCreateOneToOneRoom();
 
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
+
   const [requested, setRequested] = useState<Set<number>>(new Set());
   const [inFlight, setInFlight] = useState<Set<number>>(new Set());
 
@@ -37,7 +39,7 @@ export default function HomeScreen() {
       return n;
     });
 
-  const { data: accepted } = useAcceptedFollowing(); // [{ id: number, ... }]
+  const { data: accepted } = useAcceptedFollowing();
   const followingSet = useMemo(
     () => new Set((accepted ?? []).map((u) => Number((u as any)?.id ?? (u as any)?.userId)).filter(Number.isFinite)),
     [accepted],
@@ -146,7 +148,6 @@ export default function HomeScreen() {
                   imageKey={(item as any).imageKey}
                   defaultExpanded={false}
                   mode={isSent ? 'sent' : 'friend'}
-                  // --- 👇 [수정] onFollow ---
                   onFollow={async () => {
                     const id = uid;
                     if ((myId && id === myId) || inFlight.has(id)) return;
@@ -164,13 +165,7 @@ export default function HomeScreen() {
 
                       if (status === 428) {
                         unmarkRequested(id);
-                        Alert.alert('Profile Setup Required', 'Please complete your profile before following.', [
-                          {
-                            text: 'Go to Setup',
-                            onPress: () => router.push('/(tabs)/mypage/edit' as any)
-                          },
-                          { text: 'Cancel', style: 'cancel' },
-                        ]);
+                        setProfileModalVisible(true);
                         return;
                       }
 
@@ -180,22 +175,19 @@ export default function HomeScreen() {
                     }
                   }}
                   onCancel={async () => {
-                    // (id) 파라미터 제거
-                    const id = uid; // uid를 직접 사용
+                    const id = uid;
                     if ((myId && id === myId) || inFlight.has(id)) return;
                     const wasSent = requested.has(id);
-                    if (wasSent) unmarkRequested(id); // 낙관적 제거
+                    if (wasSent) unmarkRequested(id);
 
                     try {
                       lock(id);
                       await cancelReqMutation.mutateAsync(id);
-                      // 다른 화면(보낸목록 등)과 동기화
                       DeviceEventEmitter.emit('FOLLOW_REQUEST_CANCELLED', { userId: id });
                     } catch (e: any) {
                       if (e?.response?.status !== 404) {
                         Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to cancel request.');
                       }
-                      // 롤백
                       if (wasSent) markRequested(id);
                     } finally {
                       unlock(id);
@@ -212,17 +204,7 @@ export default function HomeScreen() {
                       const status = err.response?.status;
 
                       if (status === 428) {
-                        Alert.alert(
-                          'Profile Setup Required',
-                          'Please complete your profile setup before starting a chat.',
-                          [
-                            {
-                              text: 'Go to Setup',
-                              onPress: () =>router.push('/(tabs)/mypage/edit' as any)
-                            },
-                            { text: 'Cancel', style: 'cancel' },
-                          ],
-                        );
+                        setProfileModalVisible(true);
                         return;
                       }
 
@@ -242,11 +224,12 @@ export default function HomeScreen() {
           }
         />
       )}
+
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
 
-/* styles */
 const Safe = styled.SafeAreaView`
   flex: 1;
   background-color: #1d1e1f;

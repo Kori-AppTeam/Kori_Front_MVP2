@@ -17,7 +17,7 @@ import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert, // [추가]
+  Alert,
   FlatList,
   ListRenderItem,
   TextInput as RNTextInput,
@@ -25,6 +25,7 @@ import {
   type FlatListProps,
 } from 'react-native';
 import styled from 'styled-components/native';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 
 // ... (ICON, AV, MAX_IMAGES, 타입 정의, 헬퍼 함수들은 변경 없음) ...
 const ICON = require('@/assets/images/IsolationMode.png');
@@ -148,7 +149,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
 export default function CommunityScreen() {
   const [cat, setCat] = useState<Category>('All');
   const [sort, setSort] = useState<SortKey>('new');
-
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [items, setItems] = useState<PostEx[]>([]);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasNext, setHasNext] = useState(true);
@@ -422,10 +423,7 @@ export default function CommunityScreen() {
       // 3. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to like posts.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
       console.error('[like:list] error', e);
@@ -462,11 +460,8 @@ export default function CommunityScreen() {
       // 4. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to bookmark posts.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
-        // 428 에러 시에도 finally는 실행되어야 하므로 return 없음
+        setProfileModalVisible(true);
+        return;
       } else {
         console.error('[bookmark:list] error', e);
       }
@@ -584,6 +579,7 @@ export default function CommunityScreen() {
 
       <WriteFab onPress={handleWritePress} disabled={checkingProfile} />
       {/* [수정] checking -> checkingProfile */}
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }

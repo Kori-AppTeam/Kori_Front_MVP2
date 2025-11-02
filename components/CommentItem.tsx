@@ -1,6 +1,5 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import ProfileImage from '@/components/common/ProfileImage';
 import { theme } from '@/src/styles/theme';
 import { formatShortDate } from '@/src/utils/dateUtils';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -10,6 +9,7 @@ import React, { useMemo, useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import { Alert } from 'react-native';
 import styled from 'styled-components/native';
+import ProfileSetupModal from './common/ProfileSetupModal';
 import ProfileModal from './ProfileModal';
 
 const DEFAULT_AV = require('@/assets/images/character1.png');
@@ -109,6 +109,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const handlePressProfile = async () => {
     if (anon || !userId) {
@@ -168,16 +169,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
       const status = err.response?.status;
 
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup before starting a chat.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit' as any);
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
@@ -211,18 +203,8 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
       console.error('[Follow] Failed to send follow request:', err);
       const status = err.response?.status;
 
-      // 428 에러 처리
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile before following.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit' as any);
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
@@ -305,6 +287,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
         isLoadingChat={isChatLoading}
         isLoadingFollow={isFollowLoading}
       />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Wrap>
   );
 }

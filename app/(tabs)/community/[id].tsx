@@ -3,7 +3,6 @@ import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
-import ProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import SortTabs, { SortKey } from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
@@ -21,6 +20,7 @@ import { keysToUrls, keyToUrl } from '@/utils/image';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import styled from 'styled-components/native';
 
 import { theme } from '@/src/styles/theme';
@@ -101,6 +101,7 @@ export default function PostDetailScreen() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
   const { id, focusCommentId, intent, commentId } = useLocalSearchParams<{
     id: string;
     focusCommentId?: string;
@@ -326,13 +327,7 @@ export default function PostDetailScreen() {
       const status = (error as any).response?.status;
 
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to view post details.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => router.push('/(tabs)/mypage/edit' as any),
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
     }
@@ -758,16 +753,7 @@ export default function PostDetailScreen() {
       const status = err.response?.status;
 
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup before starting a chat.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit');
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
@@ -812,16 +798,7 @@ export default function PostDetailScreen() {
 
       const status = err.response?.status;
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile before following.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit' as any);
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
@@ -1287,6 +1264,7 @@ export default function PostDetailScreen() {
         isLoadingFollow={isFollowLoading}
         isLoadingChat={isChatLoading}
       />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
