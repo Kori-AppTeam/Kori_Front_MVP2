@@ -2,6 +2,9 @@ import api from '@/api/axiosInstance';
 import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
+import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
+import ProfileModal from '@/components/ProfileModal';
 import SortTabs, { SortKey } from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
 import { useLikeComment } from '@/hooks/mutations/useLikeComment';
@@ -11,31 +14,28 @@ import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
 import { usePostDetail } from '@/hooks/queries/usePostDetail';
 import { usePostUI } from '@/src/store/usePostUI';
+import { formatCreatedYMD } from '@/src/utils/dateUtils';
+import { loadAspectRatios } from '@/src/utils/image';
 import { LOCAL_ALLOW_ANON, resolvePostCategory } from '@/utils/category';
 import { keysToUrls, keyToUrl } from '@/utils/image';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
 import styled from 'styled-components/native';
-import ProfileModal from '@/components/ProfileModal';
-import { loadAspectRatios } from '@/src/utils/image';
-import { formatCreatedYMD } from '@/src/utils/dateUtils';
+
+import { theme } from '@/src/styles/theme';
 import {
   Alert,
   Animated,
   Dimensions,
   Easing,
   FlatList,
-  Image as RNImage,
   Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
+  Image as RNImage,
   TextInput as RNTextInput,
   TextInputProps,
   View,
@@ -99,6 +99,8 @@ export default function PostDetailScreen() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
   const { id, focusCommentId, intent, commentId } = useLocalSearchParams<{
     id: string;
     focusCommentId?: string;
@@ -121,15 +123,13 @@ export default function PostDetailScreen() {
 
   const postBookmarked = bmMap[postId] ?? false;
 
-  const { data, isLoading, isError } = usePostDetail(Number.isFinite(postId) ? postId : undefined);
+  const { data, isLoading, isError, error } = usePostDetail(Number.isFinite(postId) ? postId : undefined);
 
   const fetchUserProfile = async (userId: number) => {
     try {
       console.log('[Profile] fetching user:', userId);
       setIsLoadingProfile(true);
       const res = await api.get(`/api/v1/member/${userId}/info`);
-      console.log('[Profile] raw response:', res); // <-- 전체 응답 찍기
-      console.log('[Profile] res.data:', res.data); // <-- 이 라인 중요
       // 안전하게 실제 user 객체를 꺼내서 저장
       const userObj = (res.data && (res.data.data ?? res.data)) || res;
       console.log('[Profile] resolved userObj:', userObj);
@@ -322,6 +322,23 @@ export default function PostDetailScreen() {
   }, [postId, post, hydrateLikeFromServer]);
 
   useEffect(() => {
+    if (isError && error) {
+      const status = (error as any).response?.status;
+
+      if (status === 428) {
+        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to view post details.', [
+          {
+            text: 'Go to Setup',
+            onPress: () => router.push('/(tabs)/mypage/edit' as any),
+          },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
+        return;
+      }
+    }
+  }, [isError, error]);
+
+  useEffect(() => {
     if (openedOnceRef.current) return;
     if (intent !== 'edit' || !focusCommentId) return;
     if (!Array.isArray(commentList) || commentList.length === 0) return;
@@ -344,7 +361,7 @@ export default function PostDetailScreen() {
       <Safe>
         <Header>
           <Back onPress={() => router.back()}>
-            <AntDesign name="left" size={20} color="#fff" />
+            <Icon type="previous" size={20} color={theme.colors.primary.white} />
           </Back>
           <HeaderTitle>Post</HeaderTitle>
           <RightPlaceholder />
@@ -360,7 +377,7 @@ export default function PostDetailScreen() {
       <Safe>
         <Header>
           <Back onPress={() => router.back()}>
-            <AntDesign name="left" size={20} color="#fff" />
+            <Icon type="previous" size={20} color={theme.colors.primary.white} />
           </Back>
           <HeaderTitle>Post</HeaderTitle>
           <RightPlaceholder />
@@ -699,6 +716,190 @@ export default function PostDetailScreen() {
       },
     ]);
   };
+  const handleStartChat = async () => {
+    if (isChatLoading || !selectedUser) {
+      console.log('Chat creation in progress or no user selected.');
+      return;
+    }
+
+    const otherUserId = (selectedUser as any)?.id ?? (selectedUser as any)?.userId;
+
+    if (!otherUserId) {
+      Alert.alert('Error', 'Could not find user ID to start chat.');
+      return;
+    }
+
+    console.log(`[Chat] Attempting to create room with user: ${otherUserId}`);
+    setIsChatLoading(true);
+
+    try {
+      const response = await api.post('/api/v1/chat/rooms/oneTone', {
+        otherUserId: Number(otherUserId),
+      });
+
+      console.log('[Chat] API Response Data:', JSON.stringify(response.data, null, 2));
+      const newRoom = response.data.data;
+      const roomId = newRoom?.id;
+
+      if (!roomId) {
+        throw new Error('Chat room ID not found in API response.');
+      }
+
+      console.log(`[Chat] Successfully created room. ID: ${roomId}`);
+
+      setIsProfileVisible(false);
+
+      router.push({
+        pathname: '/chat/ChattingRoomScreen',
+        params: { roomId: roomId },
+      });
+    } catch (err: any) {
+      console.error('[Chat] Failed to create chat room:', err);
+      const status = err.response?.status;
+
+      if (status === 428) {
+        Alert.alert('Profile Setup Required', 'Please complete your profile setup before starting a chat.', [
+          {
+            text: 'Go to Setup',
+            onPress: () => {
+              setIsProfileVisible(false);
+              router.push('/(tabs)/mypage/edit');
+            },
+          },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
+        return;
+      }
+
+      const msg =
+        status === 400 ? 'Invalid request.' : status === 401 ? 'Please log in to chat.' : 'Failed to start chat.';
+      Alert.alert('Chat Error', msg);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  const handleFollow = async () => {
+    if (isFollowLoading || !selectedUser) return;
+
+    const targetUserId = (selectedUser as any)?.userId;
+    const currentStatus = (selectedUser as any)?.followStatus;
+
+    if (!targetUserId) {
+      Alert.alert('Error', 'Could not find user ID.');
+      return;
+    }
+
+    if (currentStatus !== 'NOT_FOLLOWING') {
+      console.log(`[Follow] Action ignored. Current status: ${currentStatus}`);
+      return;
+    }
+
+    console.log(`[Follow] Attempting to follow user: ${targetUserId}`);
+    setIsFollowLoading(true);
+
+    try {
+      await api.post(`/api/v1/home/follow/${targetUserId}`);
+
+      setSelectedUser((prevUser) => ({
+        ...(prevUser as any),
+        followStatus: 'PENDING',
+      }));
+
+      Alert.alert('Follow', 'Follow request sent!');
+    } catch (err: any) {
+      console.error('[Follow] Failed to send follow request:', err);
+
+      const status = err.response?.status;
+      if (status === 428) {
+        Alert.alert('Profile Setup Required', 'Please complete your profile before following.', [
+          {
+            text: 'Go to Setup',
+            onPress: () => {
+              setIsProfileVisible(false);
+              router.push('/(tabs)/mypage/edit' as any);
+            },
+          },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
+        return;
+      }
+
+      // 기존 에러 처리
+      const errorData = err.response?.data;
+      const errorCode = errorData?.code;
+
+      let msg = 'Failed to send follow request.';
+      if (errorCode === 'PROFILE_SET_NOT_COMPLETED') {
+        msg = 'You must complete your own profile before you can follow others.';
+      } else if (errorCode === 'FOLLOW_ALREADY_EXISTS') {
+        msg = 'You have already sent a request or are already following this user.';
+        setSelectedUser((prevUser) => ({
+          ...(prevUser as any),
+          followStatus: 'PENDING',
+        }));
+      } else if (errorCode === 'CANNOT_FOLLOW_YOURSELF') {
+        msg = 'You cannot follow yourself.';
+      }
+
+      Alert.alert('Follow Error', msg);
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
+  const handleUnfollow = async () => {
+    // 로딩 중이거나, 유저 정보가 없으면 중단
+    if (isFollowLoading || !selectedUser) return;
+
+    // selectedUser에서 ID와 현재 팔로우 상태를 가져옵니다.
+    const targetUserId = (selectedUser as any)?.userId;
+    const currentStatus = (selectedUser as any)?.followStatus;
+
+    // "ACCEPTED" (친구) 상태가 아니면 함수를 실행하지 않습니다.
+    if (currentStatus !== 'ACCEPTED') {
+      console.log(`[Unfollow] Action ignored. Current status: ${currentStatus}`);
+      Alert.alert('Unfollow', 'You can only unfollow users you are already friends with.');
+      return;
+    }
+
+    console.log(`[Unfollow] Attempting to unfollow user: ${targetUserId}`);
+    setIsFollowLoading(true);
+
+    try {
+      // 1. API 호출: DELETE /api/v1/users/follow/accepted/{friendId}
+      await api.delete(`/api/v1/users/follow/accepted/${targetUserId}`);
+
+      // 2. API 성공 시, 로컬 state를 "NOT_FOLLOWING"으로 즉시 변경
+      setSelectedUser((prevUser) => ({
+        ...(prevUser as any),
+        followStatus: 'NOT_FOLLOWING',
+      }));
+
+      Alert.alert('Unfollow', 'You have successfully unfollowed this user.');
+    } catch (err: any) {
+      // 3. 에러 처리
+      console.error('[Unfollow] Failed to unfollow:', err);
+      const status = err.response?.status;
+      let msg = 'Failed to unfollow user.';
+
+      if (status === 404) {
+        msg = 'User not found or you are not following them.';
+        // 404 에러 시 로컬 state를 강제로 'NOT_FOLLOWING'으로 동기화
+        setSelectedUser((prevUser) => ({
+          ...(prevUser as any),
+          followStatus: 'NOT_FOLLOWING',
+        }));
+      } else if (status === 401) {
+        msg = 'Please log in again.';
+      }
+
+      Alert.alert('Unfollow Error', msg);
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
+
+  const likeIconType = likedByMe ? 'thumbsUpSelected' : 'thumbsUpNonSelected';
 
   const reportTitle =
     reportTarget === 'user'
@@ -711,7 +912,7 @@ export default function PostDetailScreen() {
     <Safe>
       <Header>
         <Back onPress={() => router.back()}>
-          <AntDesign name="left" size={20} color="#fff" />
+          <Icon type="previous" size={20} color={theme.colors.primary.white} />
         </Back>
         <HeaderTitle>Post</HeaderTitle>
         <RightPlaceholder />
@@ -754,7 +955,7 @@ export default function PostDetailScreen() {
                         <MetaRow>
                           <Sub>{createdLabel || '—'}</Sub>
                           <Dot>·</Dot>
-                          <AntDesign name="eyeo" size={12} color="#9aa0a6" />
+                          <Icon type="eye" size={16} color={theme.colors.gray.gray_1} />
                           <Sub style={{ marginLeft: 6 }}>{views}</Sub>
                         </MetaRow>
                       </Meta>
@@ -787,11 +988,7 @@ export default function PostDetailScreen() {
                     $active={postBookmarked}
                     hitSlop={8}
                   >
-                    <MaterialIcons
-                      name={postBookmarked ? 'bookmark' : 'bookmark-border'}
-                      size={20}
-                      color={postBookmarked ? '#30F59B' : '#8a8a8a'}
-                    />
+                    <Icon type={postBookmarked ? 'bookmarkSelected' : 'bookmarkNonSelected'} size={20} />
                   </BookmarkWrap>
                 </Row>
 
@@ -831,16 +1028,16 @@ export default function PostDetailScreen() {
 
                 <Footer>
                   <Act onPress={handleToggleLike} disabled={likeMutation.isPending}>
-                    <AntDesign name="like2" size={16} color={likedByMe ? '#30F59B' : '#cfd4da'} />
+                    <Icon type={likeIconType} size={20} />
                     <ActText>{likeCountUI}</ActText>
                   </Act>
                   <Act>
-                    <AntDesign name="message1" size={16} color="#cfd4da" />
+                    <Icon type="comment" size={20} color={theme.colors.gray.lightGray_1} />
                     <ActText>{commentCount}</ActText>
                   </Act>
                   <Grow />
                   <MoreBtn onPress={openPostSheet} hitSlop={8}>
-                    <Feather name="more-horizontal" size={22} color="#8a8a8a" />
+                    <Icon type="eclipsisGaro" size={20} color={theme.colors.gray.gray_1} />
                   </MoreBtn>
                 </Footer>
               </Card>
@@ -873,13 +1070,15 @@ export default function PostDetailScreen() {
                 }}
               >
                 <AnonLabel>Anonymous</AnonLabel>
-                <Check $active={anonymous}>{anonymous && <AntDesign name="check" size={14} color="#ffffff" />}</Check>
+                <Check $active={anonymous}>
+                  {anonymous && <Icon type="check" size={16} color={theme.colors.primary.white} />}
+                </Check>
               </AnonToggle>
             )}
           </Composer>
 
           <SendBtn onPress={submit} disabled={!canSend} hitSlop={8}>
-            <Feather name="send" size={22} color={canSend ? '#02F59B' : '#D9D9D9'} />
+            <Icon type="send" size={24} color={canSend ? theme.colors.primary.mint : theme.colors.gray.lightGray_1} />
           </SendBtn>
         </InputBar>
       </KeyboardAvoidingView>
@@ -910,7 +1109,7 @@ export default function PostDetailScreen() {
                   }}
                 >
                   <SheetIcon>
-                    <MaterialIcons name="outlined-flag" size={18} color={DANGER} />
+                    <Icon type="alert" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Report This Post</SheetLabel>
                 </SheetItem>
@@ -924,14 +1123,14 @@ export default function PostDetailScreen() {
                   }}
                 >
                   <SheetIcon>
-                    <MaterialIcons name="person-outline" size={18} color={DANGER} />
+                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Report This User</SheetLabel>
                 </SheetItem>
 
                 <SheetItem onPress={blockPostFromSheet}>
                   <SheetIcon>
-                    <MaterialIcons name="block" size={18} color={DANGER} />
+                    <Icon type="close" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Block This Post</SheetLabel>
                 </SheetItem>
@@ -950,24 +1149,23 @@ export default function PostDetailScreen() {
                   }}
                 >
                   <SheetIcon>
-                    <MaterialIcons name="outlined-flag" size={18} color={DANGER} />
+                    <Icon type="alert" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Report This Comment</SheetLabel>
                 </SheetItem>
 
                 <SheetItem onPress={blockCommentFromSheet}>
                   <SheetIcon>
-                    <MaterialIcons name="block" size={18} color={DANGER} />
+                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
-                  <SheetLabel $danger>Block This Comment</SheetLabel>
+                  <SheetLabel $danger>Block This User</SheetLabel>
                 </SheetItem>
               </>
             )}
 
-            <SheetDivider />
             <SheetItem onPress={() => setMenuVisible(false)}>
               <SheetIcon>
-                <AntDesign name="close" size={18} color="#cfd4da" />
+                <Icon type="close" size={24} color={theme.colors.gray.lightGray_1} />
               </SheetIcon>
               <SheetLabel>Cancel</SheetLabel>
             </SheetItem>
@@ -999,11 +1197,11 @@ export default function PostDetailScreen() {
           <Dialog>
             <DialogHeader>
               <DialogTitle>
-                <MaterialCommunityIcons name="flag-variant" size={18} color={DANGER} />
+                <Icon type="alert" size={24} color={theme.colors.secondary.red} />
                 <DialogTitleText $danger> {reportTitle}</DialogTitleText>
               </DialogTitle>
               <CloseBtn onPress={() => setReportOpen(false)}>
-                <AntDesign name="close" size={18} color="#cfd4da" />
+                <Icon type="close" size={16} color="#cfd4da" />
               </CloseBtn>
             </DialogHeader>
 
@@ -1055,11 +1253,11 @@ export default function PostDetailScreen() {
           <EditBox>
             <EditHeader>
               <EditTitle>
-                <AntDesign name="edit" size={16} color="#cfd4da" />
+                <Icon type="edit" size={24} color={theme.colors.primary.white} />
                 <EditTitleText> Edit My Comments</EditTitleText>
               </EditTitle>
               <CloseBtn onPress={() => setEditVisible(false)}>
-                <AntDesign name="close" size={18} color="#cfd4da" />
+                <Icon type="close" size={24} color={theme.colors.primary.white} />
               </CloseBtn>
             </EditHeader>
 
@@ -1083,9 +1281,11 @@ export default function PostDetailScreen() {
         visible={isProfileVisible}
         userData={selectedUser}
         onClose={() => setIsProfileVisible(false)}
-        onFollow={(id) => console.log('follow', id)}
-        onUnfollow={(id) => console.log('unfollow', id)}
-        onChat={() => console.log('chat start')}
+        onFollow={handleFollow}
+        onUnfollow={handleUnfollow}
+        onChat={handleStartChat}
+        isLoadingFollow={isFollowLoading}
+        isLoadingChat={isChatLoading}
       />
     </Safe>
   );

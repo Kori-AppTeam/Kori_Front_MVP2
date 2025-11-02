@@ -1,6 +1,6 @@
 import api from '@/api/axiosInstance';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert } from 'react-native';
@@ -282,7 +282,7 @@ export default function TranslateScreen() {
     <Safe>
       <Header>
         <BackBtn onPress={() => router.back()} hitSlop={HIT}>
-          <AntDesign name="left" size={20} color="#fff" />
+          <Icon type="previous" size={24} color={theme.colors.primary.white} />
         </BackBtn>
 
         <HeaderCenter>
@@ -310,7 +310,7 @@ export default function TranslateScreen() {
               </RowText>
               {active && (
                 <CheckWrap>
-                  <MaterialIcons name="check" size={18} color="#30F59B" />
+                  <Icon type="check" size={24} color={theme.colors.primary.mint} />
                 </CheckWrap>
               )}
             </Row>

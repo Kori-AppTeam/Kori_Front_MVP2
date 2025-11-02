@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import { SafeAreaView, StatusBar, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { useProfile } from '@/app/contexts/ProfileContext';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { SafeAreaView, StatusBar } from 'react-native';
+import styled from 'styled-components/native';
 import SkipHeader from './components/SkipHeader';
 
 export default function BirthdaySelectionScreen() {
@@ -13,10 +14,25 @@ export default function BirthdaySelectionScreen() {
   const { profileData, updateProfile } = useProfile();
 
   const handleChange = (value) => {
-    setText(value);
+    // 1. 입력값에서 숫자만 추출합니다. (백스페이스 등 처리)
+    const digits = value.replace(/\D/g, '');
 
-    if (value.length === 10) {
-      if (validateDate(value)) {
+    // 2. 길이에 따라 MM/DD/YYYY 형식으로 포맷팅합니다.
+    let formattedValue = digits;
+    if (digits.length > 2 && digits.length <= 4) {
+      // "1234" -> "12/34"
+      formattedValue = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    } else if (digits.length > 4) {
+      // "12345678" -> "12/34/5678"
+      formattedValue = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+    }
+
+    // 3. 포맷팅된 값으로 상태를 업데이트합니다.
+    setText(formattedValue);
+
+    // 4. 포맷팅된 값을 기준으로 유효성을 검사합니다. (기존 로직)
+    if (formattedValue.length === 10) {
+      if (validateDate(formattedValue)) {
         setValidBirth(true);
       } else {
         setValidBirth(false);
@@ -44,6 +60,7 @@ export default function BirthdaySelectionScreen() {
   };
 
   const handleSkip = () => {
+    updateProfile('birthday', '');
     router.push('./PurposeStepScreen');
   };
 
@@ -79,18 +96,19 @@ export default function BirthdaySelectionScreen() {
             isValid={validbirth}
             isText={text}
             returnKeyType="done"
+            keyboardType="number-pad"
           />
           {validbirth && text.length === 10 ? (
-            <AntDesign name="check" size={20} color="#02F59B" />
+            <Icon type="check" size={24} color={theme.colors.primary.mint} />
           ) : !validbirth && text.length === 10 ? (
-            <AntDesign name="close" size={20} color="red" />
+            <Icon type="close" size={24} color={theme.colors.secondary.red} />
           ) : null}
         </BirthBox>
 
         {!validbirth && text.length === 10 && (
           <ErrorWrapper>
             <ErrorBox>
-              <AntDesign name="close" size={17} color="red" />
+              <Icon type="close" size={24} color={theme.colors.secondary.red}/>
               <ErrorText>Please insert a valid date</ErrorText>
             </ErrorBox>
           </ErrorWrapper>

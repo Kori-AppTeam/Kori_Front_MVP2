@@ -1,4 +1,5 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import React from 'react';
 import { FlatList, Modal } from 'react-native';
 import styled from 'styled-components/native';
@@ -9,7 +10,8 @@ type Props = {
   onClose: () => void;
   onSelect: (purpose: string) => void;
 };
-
+const INPUT_BORDER = '#FFFFFF';
+const ERROR_COLOR = '#FF6B6B';
 const PURPOSE_OPTIONS = ['Study', 'Work', 'Marriage', 'Travel', 'Business', 'Family'];
 
 export default function PurposePicker({ visible, value, onClose, onSelect }: Props) {
@@ -18,7 +20,7 @@ export default function PurposePicker({ visible, value, onClose, onSelect }: Pro
     return (
       <Row onPress={() => onSelect(item)} selected={selected}>
         <RowText>{item}</RowText>
-        {selected && <AntDesign name="check" size={20} color="#02F59B" />}
+        {selected && <Icon type="check" size={20} color={theme.colors.primary.mint} />}
       </Row>
     );
   };
@@ -43,7 +45,7 @@ export default function PurposePicker({ visible, value, onClose, onSelect }: Pro
   );
 }
 
-export const PurposeDropdownButton = styled.TouchableOpacity<{ selected?: boolean }>`
+export const PurposeDropdownButton = styled.TouchableOpacity<{ selected?: boolean; error?: boolean }>`
   width: 100%;
   height: 50px;
   border-radius: 8px;
@@ -53,7 +55,7 @@ export const PurposeDropdownButton = styled.TouchableOpacity<{ selected?: boolea
   justify-content: space-between;
   padding: 0 16px;
   border-width: 1px;
-  border-color: #949899;
+  border-color: ${({ error }: { error?: boolean }) => (error ? ERROR_COLOR : INPUT_BORDER)};
 `;
 
 export const PurposeDropdownText = styled.Text<{ selected?: boolean }>`

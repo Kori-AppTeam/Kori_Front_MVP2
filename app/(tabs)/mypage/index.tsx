@@ -1,24 +1,21 @@
-import Avatar from '@/components/Avatar';
-import CustomButton from '@/components/CustomButton';
-import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Image, Image as RNImage, ImageSourcePropType, Text } from 'react-native';
-import styled from 'styled-components/native';
-
 import api from '@/api/axiosInstance';
+import Avatar from '@/components/Avatar';
+import Icon from '@/components/common/Icon';
+import CustomButton from '@/components/CustomButton';
 import { useDeleteAccount } from '@/hooks/mutations/useDeleteAccount';
 import { useUpdateProfile } from '@/hooks/mutations/useUpdateProfile';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { uploadLocalImageAndGetKey } from '@/lib/mypage/uploadImage';
 import { Config } from '@/src/lib/config';
+import { theme } from '@/src/styles/theme';
 import { useQueryClient } from '@tanstack/react-query';
-import { useFocusEffect } from 'expo-router';
-import { DeviceEventEmitter } from 'react-native';
-import Icon from '@/components/common/Icon';
+import * as ImagePicker from 'expo-image-picker';
+import { router, useFocusEffect } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, DeviceEventEmitter, ImageSourcePropType, Image as RNImage, Text } from 'react-native';
 import { useTheme } from 'styled-components';
+import styled from 'styled-components/native';
 
 const AVATARS: ImageSourcePropType[] = [
   require('@/assets/images/character1.png'),
@@ -308,9 +305,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Friends List</Text>
           </RowLeft>
-          <Chevron>
-            <Text>›</Text>
-          </Chevron>
+          <Icon type="next" size={20} color={theme.colors.primary.white}/>
         </RowLink>
         <RowSeparator />
 
@@ -345,9 +340,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Chat Translation Language</Text>
           </RowLeft>
-          <Chevron>
-            <Text>›</Text>
-          </Chevron>
+          <Icon type="next" size={20} color={theme.colors.primary.white}/>
         </RowLink>
         <RowSeparator />
 
@@ -362,14 +355,12 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Notification</Text>
           </RowLeft>
-          <Chevron>
-            <Text>›</Text>
-          </Chevron>
+          <Icon type="next" size={20} color={theme.colors.primary.white}/>
         </RowLink>
         <RowSeparator />
 
         <SectionTitleRow>
-          <SectionTitleIconGlobe />
+          <SectionTitleIconAccount />
           <SectionTitle>
             <Text>My Account</Text>
           </SectionTitle>
@@ -379,9 +370,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Account Logout</Text>
           </RowLeft>
-          <Chevron>
-            <Text>›</Text>
-          </Chevron>
+          <Icon type="next" size={20} color={theme.colors.primary.white}/>
         </RowLink>
         <RowSeparator />
 
@@ -458,20 +447,28 @@ const SectionTitleRow = styled.View`
 `;
 function SectionTitleIcon() {
   return (
-    <Ionicons
-      name="person-outline"
-      size={12}
-      color="#9aa0a6"
-      style={{ marginRight: 6, transform: [{ translateY: 1 }] }}
+    <Icon
+      type="person"
+      size={16}
+      color={theme.colors.gray.gray_1}
     />
   );
 }
 function SectionTitleIconGlobe() {
   return (
-    <Image
-      source={require('@/assets/icons/global.png')}
-      resizeMode="contain"
-      style={{ width: 12, height: 12, marginRight: 6, tintColor: '#9aa0a6', transform: [{ translateY: 1 }] }}
+    <Icon
+      type="global"
+      size={16}
+      color={theme.colors.gray.gray_1}
+    />
+  );
+}
+function SectionTitleIconAccount() {
+  return (
+    <Icon
+      type="setting"
+      size={16}
+      color={theme.colors.gray.gray_1}
     />
   );
 }
@@ -486,11 +483,6 @@ const RowLeft = styled.Text`
   color: #e9ecef;
   font-size: 15px;
   font-family: 'PlusJakartaSans_400Regular';
-`;
-const Chevron = styled.Text`
-  color: #b8bdc2;
-  font-size: 18px;
-  margin-left: 8px;
 `;
 
 const RowHeader = styled.Text`

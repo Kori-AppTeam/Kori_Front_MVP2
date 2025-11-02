@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components/native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ScrollView, FlatList, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import api from '@/api/axiosInstance';
-import { useRouter } from 'expo-router';
-import Toast from 'react-native-toast-message';
 import Feather from '@expo/vector-icons/Feather';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { FlatList, ScrollView } from 'react-native';
+import Toast from 'react-native-toast-message';
+import styled from 'styled-components/native';
 
 type RoomDetail = {
   chatRoomId: number;
@@ -38,18 +39,33 @@ const LinkedSpaceDetail = () => {
       router.push({
         pathname: '/(tabs)/chat/ChattingRoomScreen',
         params: {
-          roomId: roomId, // props에서 바로 가져옴
-          roomName: roomDetail?.roomName, // props에서 바로 가져옴
+          roomId: roomId,
+          roomName: roomDetail?.roomName,
         },
       });
     } catch (error: any) {
+      if (error.response?.status === 428) {
+        Toast.show({
+          type: 'error',
+          text1: '"You need to complete your profile to join the chat.',
+        });
+        router.push('/(tabs)/mypage/edit');
+        return;
+      }
+
+      // 기존 에러 처리
       if (error.response) {
         const message = error.response.data?.message;
-
         if (message === '이미 현재의 그룹채팅방에 참여하고 있습니다.') {
           Toast.show({
             type: 'error',
             text1: 'You are already in the current group chat.',
+          });
+        } else {
+          //TODO: 에러 메시지 노출, if/else 구조 개선 필요
+          Toast.show({
+            type: 'error',
+            text1: message || 'Failed to join the group chat.',
           });
         }
       } else {
@@ -77,7 +93,7 @@ const LinkedSpaceDetail = () => {
         <BackgroundContainer>
           <Background source={require('@/assets/images/background1.png')} resizeMode="cover">
             <BackButton onPress={() => router.back()}>
-              <Feather name="arrow-left" size={27} color="#CCCFD0" />
+              <Icon type="previous" size={27} color={theme.colors.gray.lightGray_1} />
             </BackButton>
             <ProfileBox>
               <ProfileImage
@@ -116,7 +132,7 @@ const LinkedSpaceDetail = () => {
             </HostContainer>
             <MembersContainer>
               <InMemberContainer>
-                <MaterialIcons name="person-outline" size={15} color="#949899" />
+                <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
                 <InMemberText>{roomDetail?.participantCount} members in</InMemberText>
                 <Divider />
               </InMemberContainer>

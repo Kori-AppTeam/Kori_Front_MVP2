@@ -1,20 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components/native';
-import Feather from '@expo/vector-icons/Feather';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
-import { useRouter } from 'expo-router';
-import { StatusBar, FlatList, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { Client } from '@stomp/stompjs';
-import * as SecureStore from 'expo-secure-store';
 import api from '@/api/axiosInstance';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Dimensions, Image, InteractionManager } from 'react-native';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { Config } from '@/src/lib/config';
-import { useNavigation } from 'expo-router';
-import { formatDate, formatTime } from '@/src/utils/dateUtils';
+import Icon from '@/components/common/Icon';
+import RawProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
+import { Config } from '@/src/lib/config';
+import { theme } from '@/src/styles/theme';
+import { formatDate, formatTime } from '@/src/utils/dateUtils';
+import { Client } from '@stomp/stompjs';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  Image,
+  InteractionManager,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import styled from 'styled-components/native';
 
 type ChatHistory = {
   id: number;
@@ -59,11 +66,25 @@ const ChattingRoomScreen = () => {
   const [searchBox, setSearchBox] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchMessages, setSearchMessages] = useState<any[]>([]);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
   const pointerRef = useRef(0);
   const flatListRef = useRef<FlatList>(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+
+  const toUrl = (u?: string) => {
+    if (!u) return undefined;
+    if (/^https?:\/\//i.test(u)) return u;
+    const base =
+      (Config as any).EXPO_PUBLIC_NCP_PUBLIC_BASE_URL ||
+      (Config as any).NCP_PUBLIC_BASE_URL ||
+      (Config as any).EXPO_PUBLIC_IMAGE_BASE_URL ||
+      (Config as any).IMAGE_BASE_URL ||
+      '';
+    return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
+  };
 
   // ---------------------- 토큰 refresh 함수 ----------------------
   const refreshTokenIfNeeded = async (): Promise<string | null> => {
@@ -257,6 +278,7 @@ const ChattingRoomScreen = () => {
   };
 
   // 무한 스크롤
+  // TODO: 호출 시점 조정 필요
   const fetchMoreHistory = async () => {
     if (!hasMore) return;
 
@@ -264,7 +286,9 @@ const ChattingRoomScreen = () => {
 
     try {
       const lastMessageId = messages[messages.length - 1]?.id;
-      const res = await api.get(`/api/v1/chat/rooms/${roomId}/messages?lastMessageId=${lastMessageId}`);
+      const res = await api.get(
+        `/api/v1/chat/rooms/${roomId}/messages?lastMessageId=${lastMessageId ? lastMessageId : ''}`,
+      );
 
       const olderMessages: ChatHistory[] = res.data.data;
 
@@ -295,14 +319,79 @@ const ChattingRoomScreen = () => {
     }
   };
 
-  const goBack = async () => {
-    await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${roomId}/read-all`);
-    router.back();
+  const handleFollow = async () => {
+    if (!selectedUser) return;
+
+    // userId를 정확히 추출하고 검증
+    const userId = selectedUser.userId || selectedUser.id;
+    const cleanUserId = String(userId).trim();
+
+    if (!cleanUserId || isNaN(Number(cleanUserId))) {
+      console.error('Invalid userId:', userId);
+      Alert.alert('Error', 'Invalid user ID');
+      return;
+    }
+
+    try {
+      console.log('Following userId:', cleanUserId);
+      await api.post(`/api/v1/home/follow/${cleanUserId}`);
+      setSelectedUser((prev) => ({ ...prev, followStatus: 'PENDING' }));
+      Alert.alert('Follow', 'Follow request sent!');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Follow Error', 'Failed to send follow request.');
+    }
   };
+  const handleUnfollow = async () => {
+    if (!selectedUser) return;
+    const userId = Number(selectedUser.userId);
+    if (!userId) return;
+
+    try {
+      await api.delete(`/api/v1/home/follow/${userId}`);
+      setSelectedUser((prev) => ({ ...prev, followStatus: 'NOT_FOLLOWING' }));
+      Alert.alert('Unfollow', 'Unfollowed successfully.');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Unfollow Error', 'Failed to unfollow user.');
+    }
+  };
+
+  const handleStartChat = async () => {
+    if (!selectedUser) return;
+    const userId = Number(selectedUser.userId);
+    try {
+      const response = await api.post('/api/v1/chat/rooms/oneTone', {
+        otherUserId: Number(userId),
+      });
+
+      const newRoom = response.data.data;
+      const roomId = newRoom?.id;
+      if (!roomId) throw new Error('Chat room ID not found');
+
+      setIsProfileVisible(false);
+      router.push({
+        pathname: '/chat/ChattingRoomScreen',
+        params: { roomId: roomId },
+      });
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Chat Error', 'Failed to start chat.');
+    }
+  };
+
+  const goBack = async () => {
+    //TODO: 채팅방 나가기 전 읽음 처리 API 호출?
+    await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${roomId}/read-all`);
+    // 채팅 목록이 아닌 외부에서 채팅방 접근 시 back을 수행하면 의도하지 않은 화면으로 이동
+    // router.back();
+    router.replace('/(tabs)/chat');
+  };
+
   // 햄버거 버튼 눌렀을때 이동
   const onhandleNext = () => {
     router.push({
-      pathname: './ChatInsideMember',
+      pathname: '/screens/chatscreen/ChatInsideMember',
       params: { roomId, roomName },
     });
   };
@@ -482,10 +571,10 @@ const ChattingRoomScreen = () => {
           {searchBox ? (
             <>
               <TouchableOpacity onPress={closeSearchBox}>
-                <Feather name="arrow-left" size={27} color="#CCCFD0" />
+                <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
               </TouchableOpacity>
               <SearchContainer>
-                <Feather name="search" size={23} color="#CCCFD0" style={{ marginLeft: 8 }} />
+                <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
                 <SearchInputText
                   value={searchText}
                   onChangeText={setSearchText}
@@ -499,7 +588,7 @@ const ChattingRoomScreen = () => {
                       (setSearchText(''), setIsSearching(false));
                     }}
                   >
-                    <AntDesign name="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
+                    <Icon type="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
                   </TouchableOpacity>
                 )}
               </SearchContainer>
@@ -508,7 +597,7 @@ const ChattingRoomScreen = () => {
             <>
               <Left>
                 <TouchableOpacity onPress={goBack}>
-                  <Feather name="arrow-left" size={27} color="#CCCFD0" />
+                  <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
               </Left>
               <Center>
@@ -516,10 +605,10 @@ const ChattingRoomScreen = () => {
               </Center>
               <Right>
                 <TouchableOpacity onPress={showSearchBox}>
-                  <Feather name="search" size={23} color="#CCCFD0" />
+                  <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onhandleNext}>
-                  <SimpleLineIcons name="menu" size={23} color="#CCCFD0" style={{ marginLeft: 20 }} />
+                  <Icon type="hamburger" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
               </Right>
             </>
@@ -628,7 +717,7 @@ const ChattingRoomScreen = () => {
                               onPress={() => fetchUserProfile(item.senderId)}
                               disabled={isLoadingProfile}
                             >
-                              <ProfileImage source={{ uri: item.senderImageUrl }} />
+                              <ProfileImg source={{ uri: item.senderImageUrl }} />
                             </TouchableOpacity>
                           </ProfileBox>
                         </ProfileContainer>
@@ -638,7 +727,7 @@ const ChattingRoomScreen = () => {
                             <OtherFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                searchMessages[pointerRef.current].id === item.id ? (
+                                  searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}
@@ -673,7 +762,7 @@ const ChattingRoomScreen = () => {
                             <OtherNotFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                searchMessages[pointerRef.current].id === item.id ? (
+                                  searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}
@@ -745,9 +834,10 @@ const ChattingRoomScreen = () => {
               visible={isProfileVisible}
               userData={selectedUser}
               onClose={() => setIsProfileVisible(false)}
-              onFollow={(id) => console.log('follow', id)}
-              onUnfollow={(id) => console.log('unfollow', id)}
-              onChat={() => console.log('chat start')}
+              onFollow={handleFollow} // 기존에 작성한 안전한 follow 함수
+              onUnfollow={handleUnfollow} // 기존에 작성한 안전한 unfollow 함수
+              onChat={handleStartChat} // 새 채팅방 생성 후 router 이동까지 처리
+              isLoading={isLoadingProfile}
             />
 
             {!isTranslate && (
@@ -811,7 +901,8 @@ const ChattingScreen = styled.View`
 `;
 const ChattingLeftContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
-})`
+  })<{ showProfile?: boolean }>`
+
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '1px')};
   align-self: flex-start;
   max-width: 280px;
@@ -833,11 +924,11 @@ const ProfileBox = styled.View`
   height: 38px;
   border-radius: 100px;
   overflow: hidden;
+  background-color: #353637;
 `;
-const ProfileImage = styled.Image`
+const ProfileImg = styled(RawProfileImage)`
   width: 100%;
   height: 100%;
-  resize-mode: cover;
 `;
 const OtherContainer = styled.View`
   max-width: 242px;
@@ -882,7 +973,7 @@ const ChatTimeText = styled.Text`
 `;
 const ChattingRightContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
-})`
+})<{ showProfile?: boolean }>`
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '5px')};
   align-self: flex-end;
   max-width: 280px;

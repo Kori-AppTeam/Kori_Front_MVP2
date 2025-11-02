@@ -1,16 +1,18 @@
-import Avatar from '@/components/Avatar';
+import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
 import CustomButton from '@/components/CustomButton';
 import Tag from '@/components/Tag';
 import { Config } from '@/src/lib/config';
 import { getEmojiFor } from '@/src/lib/interests';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
 
-const ICON_PURPOSE = require('@/assets/icons/purpose.png');
-const ICON_GLOBAL = require('@/assets/icons/global.png');
 
+const AV = require('@/assets/images/character1.png');
+
+type FollowStatus = 'SELF' | 'PENDING' | 'ACCEPTED' | 'NOT_FOLLOWING';
 type RequestMode = 'friend' | 'received' | 'sent';
 
 type Props = {
@@ -28,10 +30,11 @@ type Props = {
   imageKey?: string;
 
   personalityEmojis?: string[];
-
-  isFollowed?: boolean;
-  onFollow?: (userId: number) => void;
-  onUnfollow?: (userId: number) => void;
+  followStatus?: FollowStatus;     // 👈 [추가]
+  isLoadingFollow?: boolean;    // 👈 [추가]
+  isLoadingChat?: boolean;      // 👈 [추가]
+  onFollow?: () => void;      // 👈 [수정] (userId: number) 제거
+  onUnfollow?: () => void;    // 👈 [수정] (userId: number) 제거
 
   mode?: RequestMode;
   onAccept?: (userId: number) => void;
@@ -63,12 +66,11 @@ const COL_GAP = 18;
 const BTN_GAP = 14;
 const CARD_OUTER_GAP = 16;
 
-const genderIconByType: Record<NonNullable<Props['gender']>, keyof typeof MaterialCommunityIcons.glyphMap> = {
-  male: 'gender-male',
-  female: 'gender-female',
-  unspecified: 'help-circle-outline',
+const genderIconType: Record<NonNullable<Props['gender']>, import('@/components/common/Icon').IconType> = {
+  male: 'maleColored',
+  female: 'femaleColored',
+  unspecified: 'nogender',
 };
-
 const toUrl = (u?: string) => {
   if (!u) return undefined;
   if (/^https?:\/\//i.test(u)) return u;
@@ -96,8 +98,9 @@ export default function FriendCard(props: Props) {
 
     imageUrl,
     imageKey,
-
-    isFollowed = false,
+    followStatus,
+    isLoadingFollow = false,      // 👈 [추가]
+    isLoadingChat = false,        // 👈 [추가]
     onFollow,
     onUnfollow,
 
@@ -109,10 +112,15 @@ export default function FriendCard(props: Props) {
     onChat,
     footerSlot,
     defaultExpanded = true,
+    
   } = props;
 
   const [expanded, setExpanded] = useState(Boolean(defaultExpanded));
   const finalAvatarUrl = imageUrl || toUrl(imageKey);
+
+  const effectiveStatus: FollowStatus =
+     (followStatus as FollowStatus) ??
+     (mode === 'received' || mode === 'sent' ? 'PENDING' : 'NOT_FOLLOWING');
 
   const handlePrimaryPress = () => {
     if (mode === 'received') {
@@ -123,8 +131,9 @@ export default function FriendCard(props: Props) {
       onCancel?.(userId);
       return;
     }
-    if (isFollowed) onUnfollow?.(userId);
-    else onFollow?.(userId);
+    // 'friend' 모드일 때 (이 코드는 현재 사용되지 않지만, 만약을 위해 수정)
+    if (effectiveStatus === 'ACCEPTED') onUnfollow?.();
+    else if (effectiveStatus === 'NOT_FOLLOWING') onFollow?.();
   };
 
   return (
@@ -136,17 +145,23 @@ export default function FriendCard(props: Props) {
         })}
       >
         <Top>
-          <Avatar uri={finalAvatarUrl} />
+          <AvatarImg source={finalAvatarUrl ? { uri: finalAvatarUrl } : AV} />
 
           <Name>{name}</Name>
 
           <MetaLine>
-            <MetaDim>Birth </MetaDim>
-            <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>
+            <MetaRow>
+              <MetaDim>Birth </MetaDim>
+              <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>       
 
-            <GenderIconSpacer>
-              <MaterialCommunityIcons name={genderIconByType[gender]} size={14} color="#B5B5B5" />
-            </GenderIconSpacer>
+              <GenderIconSpacer>
+                <Icon
+                  type={genderIconType[gender]}
+                  size={16}
+                  color={theme.colors.gray.gray_1}
+                />
+              </GenderIconSpacer>
+            </MetaRow>
 
             <MetaDim>From </MetaDim>
             <MetaStrong>{country}</MetaStrong>
@@ -159,7 +174,7 @@ export default function FriendCard(props: Props) {
           <Divider />
           {collapsible && (
             <ChevronButton onPress={() => setExpanded(!expanded)}>
-              <MaterialIcons name={expanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={20} color="#8a8a8a" />
+              <Icon type={expanded ? 'arrowUp' : 'arrowDown'} size={24}  />
             </ChevronButton>
           )}
         </DividerWrap>
@@ -169,7 +184,9 @@ export default function FriendCard(props: Props) {
             <RowTop>
               <Col>
                 <LabelRow>
-                  <Icon source={ICON_PURPOSE} />
+                  <SmallIconWrap>
+                    <Icon type="purpose" size={16} color={theme.colors.gray.gray_1} />
+                  </SmallIconWrap>
                   <Label>Purpose</Label>
                 </LabelRow>
                 <CategoryValue>{purpose}</CategoryValue>
@@ -177,7 +194,9 @@ export default function FriendCard(props: Props) {
 
               <ColRight>
                 <LabelRow>
-                  <Icon source={ICON_GLOBAL} />
+                  <SmallIconWrap>
+                    <Icon type="global" size={16} color={theme.colors.gray.gray_1}/>
+                  </SmallIconWrap>
                   <Label>Language</Label>
                 </LabelRow>
                 <LangWrap>
@@ -196,7 +215,9 @@ export default function FriendCard(props: Props) {
             </RowTop>
 
             <InterestHeader>
-              <HeartIcon name="heart-outline" size={13} color="#808080" />
+               <SmallIconWrap style={{ marginRight: 4 }}>
+                <Icon type="heartNonSelected" size={16} color={theme.colors.gray.gray_1} />
+              </SmallIconWrap>
               <Label>Interest</Label>
             </InterestHeader>
 
@@ -213,29 +234,33 @@ export default function FriendCard(props: Props) {
         <Actions>
           {mode === 'received' ? (
             <>
-              <CustomButton label="Accept" tone="mint" filled leftIcon="add" onPress={handlePrimaryPress} />
+              <CustomButton label="Accept" tone="mint" filled leftIcon="add" onPress={() => onAccept?.(userId)} />
               <CustomButton label="Decline" tone="danger" filled leftIcon="close" onPress={() => onCancel?.(userId)} />
             </>
           ) : mode === 'sent' ? (
             <>
+              {/* 'sent' 모드에서는 PENDING과 동일한 버튼을 보여줌 */}
               <CustomButton
-                label="Following"
+                label="Pending"
                 tone="muted"
                 filled={false}
                 leftIcon="check"
-                onPress={handlePrimaryPress}
+                disabled={true}
               />
               <CustomButton
                 label="Chat"
                 tone="black"
                 filled
                 leftIcon="chat-bubble-outline"
-                onPress={() => onChat?.()}
+                onPress={onChat}
+                disabled={isLoadingChat}
               />
             </>
           ) : (
+            // 'friend' 모드 (PostDetailScreen에서 사용)
             <>
-              {isFollowed ? (
+              {/* --- Follow/Unfollow/Pending 버튼 --- */}
+              {effectiveStatus === 'ACCEPTED' && (
                 <CustomButton
                   label="Following"
                   tone="black"
@@ -243,18 +268,45 @@ export default function FriendCard(props: Props) {
                   leftIcon="check"
                   borderColor="#949899"
                   labelColor="#949899"
-                  onPress={() => onUnfollow?.(userId)}
+                  onPress={onUnfollow} // 👈 (userId) 제거
+                  disabled={isLoadingFollow} // 👈 로딩 상태 적용
+                  isLoading={isLoadingFollow}// 👈 로딩 인디케이터 (CustomButton이 지원한다면)
                 />
-              ) : (
-                <CustomButton label="Follow" tone="mint" filled leftIcon="add" onPress={() => onFollow?.(userId)} />
               )}
-              <CustomButton
-                label="Chat"
-                tone="black"
-                filled
-                leftIcon="chat-bubble-outline"
-                onPress={() => onChat?.()}
-              />
+              {effectiveStatus === 'NOT_FOLLOWING' && (
+                <CustomButton
+                  label="Follow"
+                  tone="mint"
+                  filled
+                  leftIcon="add"
+                  onPress={onFollow} // 👈 (userId) 제거
+                  disabled={isLoadingFollow} // 👈 로딩 상태 적용
+                  isLoading={isLoadingFollow} // 👈 로딩 인디케이터
+                />
+              )}
+              {effectiveStatus === 'PENDING' && (
+                <CustomButton
+                  label="Pending"
+                  tone="muted"
+                  filled={false}
+                  leftIcon="check"
+                  disabled={true} // 👈 PENDING은 항상 비활성화
+                />
+              )}
+              {/* followStatus === 'SELF'일 경우, 위 3개 버튼 모두 렌더링 안 됨 */}
+
+              {/* --- Chat 버튼 --- */}
+              {effectiveStatus !== 'SELF' && ( // 👈 'SELF'가 아닐 때만 채팅 버튼 표시
+                <CustomButton
+                  label="Chat"
+                  tone="black"
+                  filled
+                  leftIcon="chat-bubble-outline"
+                  onPress={onChat}
+                  disabled={isLoadingChat} // 👈 로딩 상태 적용
+                  isLoading={isLoadingChat}// 👈 로딩 인디케이터
+                />
+              )}
             </>
           )}
         </Actions>
@@ -294,10 +346,23 @@ const Name = styled.Text`
 const MetaLine = styled.View`
   margin-top: ${META_MT}px;
   flex-direction: row;
+  align-items: flex-start;  /* ⬅︎ 세로 가운데 말고 위 기준 */
+  flex-wrap: nowrap;          /* ⬅︎ 줄바꿈 허용 */
+`;
+
+const MetaRow = styled.View`
+  flex-direction: row;
   align-items: center;
 `;
+
 const GenderIconSpacer = styled.View`
-  margin: 1px 4px 0 4px;
+  width: 16px;           /* 아이콘 12~14 추천 */
+  height: 16px;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.colors.gray.lightGray_2};
+  align-items: center;
+  justify-content: center;
+  margin: 0 6px;         /* 텍스트 사이 간격 */
 `;
 const MetaDim = styled.Text`
   font-family: 'PlusJakartaSans_400Regular';
@@ -363,11 +428,6 @@ const LabelRow = styled.View`
   flex-direction: row;
   align-items: center;
 `;
-const Icon = styled.Image`
-  width: 12px;
-  height: 12px;
-  tint-color: #808080;
-`;
 const Label = styled.Text`
   font-size: 12px;
   line-height: 16px;
@@ -416,6 +476,14 @@ const InterestHeader = styled.View`
   margin-top: 14px;
   margin-bottom: 8px;
 `;
-const HeartIcon = styled(MaterialCommunityIcons)`
-  margin-right: 4px;
+const AvatarImg = styled(ProfileImage)`
+  width: 88px;
+  height: 88px;
+  border-radius: 44px;
+  background: #f3f4f5;
+`;
+
+const SmallIconWrap = styled.View`
+  width: 16px;
+  height: 16px;
 `;

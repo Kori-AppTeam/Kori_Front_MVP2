@@ -1,28 +1,35 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import { SafeAreaView, StatusBar, Modal, FlatList, TouchableOpacity, Alert } from 'react-native';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
+import { LANGUAGES } from '@/src/utils/languages';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
-import { useProfile } from '@/app/contexts/ProfileContext';
+import React, { useMemo, useState } from 'react'; // ✅ useMemo 추가
+import { Alert, FlatList, KeyboardAvoidingView, Modal, Platform, SafeAreaView, StatusBar } from 'react-native';
+import styled from 'styled-components/native';
+import { useProfile } from '../../contexts/ProfileContext';
 import SkipHeader from './components/SkipHeader';
-import { LANGUAGES } from '@/src/utils/languages';
+
 export default function LanguageStepScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [search, setSearch] = useState(''); // ✅ 검색어 상태 추가
   const { profileData, updateProfile } = useProfile();
 
   const canProceed = selectedLanguages.length > 0;
   const router = useRouter();
 
+  // ✅ 검색 기능 추가
+  const filteredLanguages = useMemo(() => {
+    if (!search.trim()) return LANGUAGES;
+    return LANGUAGES.filter((lang) => lang.toLowerCase().includes(search.toLowerCase()));
+  }, [search]);
+
   const handleLanguageSelect = (language) => {
     if (selectedLanguages.includes(language)) {
-      // 이미 선택된 언어면 제거
       setSelectedLanguages(selectedLanguages.filter((lang) => lang !== language));
     } else if (selectedLanguages.length < 5) {
-      // 최대 5개까지만 선택 가능
       setSelectedLanguages([...selectedLanguages, language]);
     } else {
-      // 5개 초과 선택시 경고
       Alert.alert('Maximum Selection', 'You can select up to five languages!');
     }
   };
@@ -33,6 +40,7 @@ export default function LanguageStepScreen({ navigation }) {
   };
 
   const handleSkip = () => {
+    updateProfile('language', []);
     router.push({
       pathname: './AboutMeStepScreen',
     });
@@ -42,7 +50,6 @@ export default function LanguageStepScreen({ navigation }) {
     if (selectedLanguages.length === 0) {
       return 'Select your language';
     } else {
-      // 언어 코드만 추출해서 표시
       const codes = selectedLanguages.map((lang) => {
         const match = lang.match(/\(([^)]+)\)/);
         return match ? match[1] : lang;
@@ -51,13 +58,19 @@ export default function LanguageStepScreen({ navigation }) {
     }
   };
 
+  // ✅ 모달 닫기 핸들러 (검색어 초기화 포함)
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSearch('');
+  };
+
   const renderLanguageItem = ({ item }) => {
     const isSelected = selectedLanguages.includes(item);
 
     return (
       <LanguageItem selected={isSelected} onPress={() => handleLanguageSelect(item)}>
         <LanguageText>{item}</LanguageText>
-        {isSelected && <AntDesign name="check" size={20} color="#02F59B" />}
+        {isSelected && <Icon type="check" size={16} color={theme.colors.primary.mint} />}
       </LanguageItem>
     );
   };
@@ -79,7 +92,9 @@ export default function LanguageStepScreen({ navigation }) {
         <Form>
           <DropdownButton selected={selectedLanguages.length > 0} onPress={() => setIsModalVisible(true)}>
             <DropdownText selected={selectedLanguages.length > 0}>{getDisplayText()}</DropdownText>
-            <AntDesign name="down" size={16} color="#949899" />
+            <RotatedIcon>
+              <Icon type="next" size={16} color={theme.colors.gray.gray_1} />
+            </RotatedIcon>
           </DropdownButton>
 
           {selectedLanguages.length > 0 && (
@@ -105,27 +120,54 @@ export default function LanguageStepScreen({ navigation }) {
         <BottomSpacer />
       </Container>
 
-      <Modal visible={isModalVisible} transparent animationType="slide" onRequestClose={() => setIsModalVisible(false)}>
-        <ModalOverlay onPress={() => setIsModalVisible(false)} activeOpacity={1}>
-          <BottomSheetContent>
-            <BottomSheetHeader>
-              <BottomSheetHandle />
-            </BottomSheetHeader>
+      {/* ✅ Modal 수정 */}
+      <Modal visible={isModalVisible} transparent animationType="slide" onRequestClose={handleCloseModal}>
+        <ModalOverlay onPress={handleCloseModal} activeOpacity={1}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
+            style={{ flex: 1, justifyContent: 'flex-end' }}
+          >
+            <BottomSheetContent onStartShouldSetResponder={() => true}>
+              <BottomSheetHeader>
+                <BottomSheetHandle />
+                {/* ✅ 검색창 추가 */}
+                <SearchContainer>
+                  <AntDesign name="search1" size={16} color="#949899" />
+                  <SearchInput
+                    placeholder="Search your language"
+                    placeholderTextColor="#616262"
+                    value={search}
+                    onChangeText={setSearch}
+                  />
+                  {search.length > 0 && (
+                    <ClearButton onPress={() => setSearch('')}>
+                      <AntDesign name="close" size={16} color="#949899" />
+                    </ClearButton>
+                  )}
+                </SearchContainer>
+              </BottomSheetHeader>
 
-            <LanguageList
-              data={LANGUAGES}
-              renderItem={renderLanguageItem}
-              keyExtractor={(item, index) => index.toString()}
-              showsVerticalScrollIndicator={false}
-            />
+              {/* ✅ 필터링된 결과에 따라 조건부 렌더링 */}
+              {filteredLanguages.length > 0 ? (
+                <LanguageList
+                  data={filteredLanguages} // ✅ data prop 수정
+                  renderItem={renderLanguageItem}
+                  keyExtractor={(item, index) => `${item}-${index}`} // ✅ keyExtractor 수정
+                  showsVerticalScrollIndicator={false}
+                />
+              ) : (
+                <NoResultText>No languages found</NoResultText> // ✅ 검색 결과 없을 때
+              )}
 
-            {selectedLanguages.length >= 5 && (
-              <MaxSelectionWarning>
-                <AntDesign name="closecircle" size={16} color="#FF6B6B" />
-                <WarningText>You can select up to five languages!</WarningText>
-              </MaxSelectionWarning>
-            )}
-          </BottomSheetContent>
+              {selectedLanguages.length >= 5 && (
+                <MaxSelectionWarning>
+                  <AntDesign name="closecircle" size={16} color="#FF6B6B" />
+                  <WarningText>You can select up to five languages!</WarningText>
+                </MaxSelectionWarning>
+              )}
+            </BottomSheetContent>
+          </KeyboardAvoidingView>
         </ModalOverlay>
       </Modal>
     </SafeArea>
@@ -135,18 +177,23 @@ export default function LanguageStepScreen({ navigation }) {
 // ------------------------
 // Styled Components
 // ------------------------
+interface SafeAreaProps {
+  bgColor?: string;
+}
+
 const SafeArea = styled(SafeAreaView)`
   flex: 1;
-  background-color: ${(props) => props.bgColor || '#000'};
+  background-color: ${(props: any) => props.bgColor || '#000'};
 `;
 
+// ... (기존 스타일: Container ~ BottomSheetHandle)
 const Container = styled.View`
   flex: 1;
   padding: 0px 20px;
 `;
 
 const StepText = styled.Text`
-  color: #5bd08d;
+  color: ${theme.colors.primary.mint};
   font-size: 13px;
   letter-spacing: 0.2px;
   font-family: 'PlusJakartaSans-Regular';
@@ -158,7 +205,7 @@ const TitleWrapper = styled.View`
 `;
 
 const Title = styled.Text`
-  color: #ffffff;
+  color: ${theme.colors.primary.white};
   font-size: 40px;
   line-height: 45px;
   letter-spacing: 0.2px;
@@ -176,20 +223,24 @@ const Form = styled.View`
   margin-top: 50px;
 `;
 
-const DropdownButton = styled.TouchableOpacity`
+const DropdownButton = styled.TouchableOpacity<{ selected: boolean }>`
   width: 100%;
   height: 50px;
   border-radius: 8px;
-  background-color: #353637;
+
+  background-color: ${theme.colors.gray.darkGray_1};
+
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: 0px 16px;
-  border: 1px solid ${(props) => (props.selected ? '#02F59B99' : '#949899')};
+
+  border-width: 1px;
+  border-color: ${(p) => (p.selected ? theme.colors.primary.mint : theme.colors.gray.gray_1)};
 `;
 
-const DropdownText = styled.Text`
-  color: ${(props) => (props.selected ? '#EDEDED' : '#949899')};
+const DropdownText = styled.Text<{ selected: boolean }>`
+  color: ${(p) => (p.selected ? theme.colors.primary.white : theme.colors.gray.gray_1)};
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
   flex: 1;
@@ -203,13 +254,13 @@ const SelectionInfo = styled.View`
 `;
 
 const SelectionText = styled.Text`
-  color: #ffffff;
+  color: ${theme.colors.primary.white};
   font-size: 12px;
   font-family: 'PlusJakartaSans-Medium';
 `;
 
 const SelectionCount = styled.Text`
-  color: #02f59b;
+  color: ${theme.colors.primary.mint};
   font-size: 13px;
   font-family: 'PlusJakartaSans-Regular';
 `;
@@ -238,6 +289,35 @@ const BottomSheetHandle = styled.View`
   height: 4px;
   background-color: #949899;
   border-radius: 2px;
+  margin-bottom: 16px;
+`;
+
+// ✅ SearchContainer 스타일 추가 (국가 코드에서 복사)
+const SearchContainer = styled.View`
+  width: 95%;
+  height: 44px;
+  border-radius: 8px;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 12px;
+  background-color: #2a2b2d;
+  border-width: 1px;
+  border-color: #4a4b4c;
+`;
+
+// ✅ SearchInput 스타일 추가 (국가 코드에서 복사)
+const SearchInput = styled.TextInput`
+  flex: 1;
+  margin-left: 8px;
+  color: #ededed;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'PlusJakartaSans-SemiBold';
+`;
+
+// ✅ ClearButton 스타일 추가 (국가 코드에서 복사)
+const ClearButton = styled.TouchableOpacity`
+  padding: 4px;
 `;
 
 const LanguageList = styled(FlatList)`
@@ -245,7 +325,7 @@ const LanguageList = styled(FlatList)`
   padding: 0 20px;
 `;
 
-const LanguageItem = styled.TouchableOpacity`
+const LanguageItem = styled.TouchableOpacity<{ selected: boolean }>`
   padding: 16px 0;
   border-bottom-width: 0.5px;
   border-bottom-color: #4a4b4c;
@@ -259,6 +339,15 @@ const LanguageText = styled.Text`
   font-size: 16px;
   font-family: 'PlusJakartaSans-Regular';
   flex: 1;
+`;
+
+// ✅ NoResultText 스타일 추가 (국가 코드에서 복사)
+const NoResultText = styled.Text`
+  color: #949899;
+  font-size: 15px;
+  font-family: 'PlusJakartaSans-Regular';
+  text-align: center;
+  padding: 20px;
 `;
 
 const MaxSelectionWarning = styled.View`
@@ -278,17 +367,16 @@ const WarningText = styled.Text`
   font-family: 'PlusJakartaSans-Regular';
   margin-left: 8px;
 `;
-
+// ... (기존 스타일: Spacer ~ RotatedIcon)
 const Spacer = styled.View`
   flex: 1;
 `;
 
-const ButtonContainer = styled.View`
+const ButtonContainer = styled.View<{ hasSelection: boolean }>`
   margin-bottom: ${(props) => (props.hasSelection ? '20px' : '0px')};
   gap: 12px;
 `;
-
-const NextButton = styled.TouchableOpacity`
+const NextButton = styled.TouchableOpacity<{ canProceed: boolean }>`
   height: 50px;
   border-radius: 8px;
   align-items: center;
@@ -318,4 +406,8 @@ const SkipText = styled.Text`
 
 const BottomSpacer = styled.View`
   height: 25px;
+`;
+
+const RotatedIcon = styled.View`
+  transform: rotate(90deg); /* next(→)를 아래(↓)로 회전 */
 `;

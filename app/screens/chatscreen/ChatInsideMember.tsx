@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components/native';
-import {
-  SafeAreaView,
-  StatusBar,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  Image,
-  Alert,
-} from 'react-native';
-import Feather from '@expo/vector-icons/Feather';
-import { useRouter } from 'expo-router';
-import MembersBox from '@/components/MembersBox';
-import { useLocalSearchParams } from 'expo-router';
-import { FlatList } from 'react-native';
 import api from '@/api/axiosInstance';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Toast from 'react-native-toast-message';
+import Icon from '@/components/common/Icon';
+import MembersBox from '@/components/MembersBox';
+import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { theme } from '@/src/styles/theme';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
+import Toast from 'react-native-toast-message';
+import styled from 'styled-components/native';
 
 type ChatMembers = {
   userId: number;
@@ -39,6 +39,11 @@ const ChatInsideMember = () => {
   const [members, setMembers] = useState<ChatMembers[]>([]);
   const [reportId, setReportId] = useState<string | null>(null);
   const [text, setText] = useState(``);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [isLoadingFollow, setIsLoadingFollow] = useState(false);
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
 
   useEffect(() => {
     const getMembers = async () => {
@@ -53,6 +58,86 @@ const ChatInsideMember = () => {
     };
     getMembers();
   }, [roomId]);
+
+  const handlePressProfile = async (userId: number) => {
+    try {
+      setIsLoadingProfile(true);
+      const res = await api.get(`/api/v1/member/${userId}/info`);
+      setSelectedUser(res.data);
+      setIsProfileVisible(true);
+    } catch (err) {
+      console.error('프로필 불러오기 실패', err);
+      Alert.alert('Error', 'Failed to load user profile');
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
+
+  const handleFollow = async () => {
+    if (!selectedUser) return;
+
+    // userId를 정확히 추출하고 검증
+    const userId = selectedUser.userId || selectedUser.id;
+    const cleanUserId = String(userId).trim();
+
+    if (!cleanUserId || isNaN(Number(cleanUserId))) {
+      console.error('Invalid userId:', userId);
+      Alert.alert('Error', 'Invalid user ID');
+      return;
+    }
+
+    try {
+      console.log('Following userId:', cleanUserId);
+      await api.post(`/api/v1/home/follow/${cleanUserId}`);
+      setSelectedUser((prev) => ({ ...prev, followStatus: 'PENDING' }));
+      Alert.alert('Follow', 'Follow request sent!');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Follow Error', 'Failed to send follow request.');
+    }
+  };
+  const handleUnfollow = async () => {
+    if (!selectedUser) return;
+    const userId = Number(selectedUser.userId);
+    if (!userId) return;
+
+    try {
+      await api.delete(`/api/v1/home/follow/${userId}`);
+      setSelectedUser((prev) => ({ ...prev, followStatus: 'NOT_FOLLOWING' }));
+      Alert.alert('Unfollow', 'Unfollowed successfully.');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Unfollow Error', 'Failed to unfollow user.');
+    }
+  };
+
+  const handleStartChat = async () => {
+    if (!selectedUser) return;
+    const userId = Number(selectedUser.userId);
+    try {
+      const response = await api.post('/api/v1/chat/rooms/oneTone', {
+        otherUserId: Number(userId),
+      });
+
+      const newRoom = response.data.data;
+      const roomId = newRoom?.id;
+      if (!roomId) throw new Error('Chat room ID not found');
+
+      setIsProfileVisible(false);
+      router.push({
+        pathname: '/chat/ChattingRoomScreen',
+        params: { roomId: roomId },
+      });
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Chat Error', 'Failed to start chat.');
+    }
+  };
+
+  const goBack = async () => {
+    await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${roomId}/read-all`);
+    router.back();
+  };
 
   // 채팅방 나가기
   const onLeaveChat = async () => {
@@ -169,7 +254,7 @@ const ChatInsideMember = () => {
         <HeaderContainer>
           <Left>
             <TouchableOpacity onPress={() => router.back()}>
-              <Feather name="arrow-left" size={27} color="#CCCFD0" />
+              <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
             </TouchableOpacity>
           </Left>
           <Center>
@@ -190,6 +275,7 @@ const ChatInsideMember = () => {
                 name={item.firstName + '  ' + item.lastName}
                 isHost={item.isHost}
                 imageUrl={item.userImageUrl}
+                onPressProfile={() => handlePressProfile(item.userId)}
                 onPressMore={() => {
                   setSelectedMember(item.firstName);
                   setModalVisible(true);
@@ -198,6 +284,15 @@ const ChatInsideMember = () => {
               />
             )}
             showsVerticalScrollIndicator={false}
+          />
+          <ProfileModal
+            visible={isProfileVisible}
+            userData={selectedUser}
+            onClose={() => setIsProfileVisible(false)}
+            onFollow={handleFollow}
+            onUnfollow={handleUnfollow}
+            onChat={handleStartChat}
+            isLoading={isLoadingProfile}
           />
         </MembersScreen>
         <LeaveChatButton onPress={onLeaveChat}>
@@ -213,9 +308,11 @@ const ChatInsideMember = () => {
                 <BottomSheetHandle />
               </BottomSheetHeader>
               <ReasonBox onPress={openReportMenu}>
+                <Icon type="person" size={24} color={theme.colors.secondary.red} />
                 <MenuText>Report this user</MenuText>
               </ReasonBox>
               <ReasonBox onPress={openBlockMenu}>
+                <Icon type="person" size={24} color={theme.colors.secondary.red} />
                 <MenuText>Block this user</MenuText>
               </ReasonBox>
               <CancelBox onPress={closeModal}>
@@ -263,10 +360,12 @@ const ChatInsideMember = () => {
             <ReportOveraly>
               <ReportSheetContent>
                 <ReportHeader>
-                  <Image source={require('@/assets/images/alert.png')} style={{ width: 25, height: 25 }} />
+                  <TouchableOpacity onPress={closeReportModal}>
+                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
+                  </TouchableOpacity>
                   <ReportHeaderText>Report this user</ReportHeaderText>
                   <TouchableOpacity onPress={closeReportModal}>
-                    <AntDesign name="close" size={24} color="#CCCFD0" />
+                    <Icon type="close" size={24} color={theme.colors.gray.gray_1} />
                   </TouchableOpacity>
                 </ReportHeader>
                 <ReportBox
@@ -330,7 +429,6 @@ const Right = styled.View`
 `;
 
 const MembersTextContainer = styled.View`
-  height: 50px;
   justify-content: center;
 `;
 const MembersText = styled.Text`

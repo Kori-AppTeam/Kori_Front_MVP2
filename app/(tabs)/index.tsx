@@ -10,8 +10,8 @@ import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
 import { useSentFollowRequestsSet } from '@/hooks/queries/useFollowList';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import useRecommendedFriends from '@/hooks/queries/useRecommendedFriends';
-import { router } from 'expo-router';
 import { Text } from '@react-navigation/elements';
+import { router } from 'expo-router';
 
 const toBirthNumber = (v: unknown): number | undefined => {
   if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
@@ -146,7 +146,9 @@ export default function HomeScreen() {
                   imageKey={(item as any).imageKey}
                   defaultExpanded={false}
                   mode={isSent ? 'sent' : 'friend'}
-                  onFollow={async (id) => {
+                  // --- 👇 [수정] onFollow ---
+                  onFollow={async () => {
+                    const id = uid;
                     if ((myId && id === myId) || inFlight.has(id)) return;
 
                     const already = requested.has(id);
@@ -155,16 +157,31 @@ export default function HomeScreen() {
                     try {
                       lock(id);
                       await followMutation.mutateAsync(id);
-                      // UI 즉시 반영 + 다른 화면 동기화
                       markRequested(id);
                       DeviceEventEmitter.emit('FOLLOW_REQUEST_SENT', { userId: id });
                     } catch (e: any) {
+                      const status = e?.response?.status;
+
+                      if (status === 428) {
+                        unmarkRequested(id);
+                        Alert.alert('Profile Setup Required', 'Please complete your profile before following.', [
+                          {
+                            text: 'Go to Setup',
+                            onPress: () => router.push('/(tabs)/mypage/edit' as any)
+                          },
+                          { text: 'Cancel', style: 'cancel' },
+                        ]);
+                        return;
+                      }
+
                       Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to send request.');
                     } finally {
                       unlock(id);
                     }
                   }}
-                  onCancel={async (id) => {
+                  onCancel={async () => {
+                    // (id) 파라미터 제거
+                    const id = uid; // uid를 직접 사용
                     if ((myId && id === myId) || inFlight.has(id)) return;
                     const wasSent = requested.has(id);
                     if (wasSent) unmarkRequested(id); // 낙관적 제거
@@ -185,11 +202,32 @@ export default function HomeScreen() {
                     }
                   }}
                   onChat={async () => {
-                    const roomId = await createRoom({ otherUserId: uid });
-                    router.push({
-                      pathname: '/(tabs)/chat/ChattingRoomScreen',
-                      params: { userId: String(uid), roomName: encodeURIComponent(item.name || 'Unknown'), roomId },
-                    });
+                    try {
+                      const roomId = await createRoom({ otherUserId: uid });
+                      router.push({
+                        pathname: '/(tabs)/chat/ChattingRoomScreen',
+                        params: { userId: String(uid), roomName: encodeURIComponent(item.name || 'Unknown'), roomId },
+                      });
+                    } catch (err: any) {
+                      const status = err.response?.status;
+
+                      if (status === 428) {
+                        Alert.alert(
+                          'Profile Setup Required',
+                          'Please complete your profile setup before starting a chat.',
+                          [
+                            {
+                              text: 'Go to Setup',
+                              onPress: () =>router.push('/(tabs)/mypage/edit' as any)
+                            },
+                            { text: 'Cancel', style: 'cancel' },
+                          ],
+                        );
+                        return;
+                      }
+
+                      Alert.alert('Chat Error', err?.response?.data?.message ?? 'Failed to create chat room.');
+                    }
                   }}
                 />
               </CardWrap>

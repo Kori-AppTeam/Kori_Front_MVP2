@@ -46,6 +46,7 @@ export default function DetailHeader({
 }
 
 const Header = styled.View`
+  background-color: ${({ theme }) => theme.colors.primary.black};
   flex-direction: row;
   justify-content: space-between;
   align-items: center;

@@ -1,7 +1,9 @@
+import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
+import { theme } from '@/src/styles/theme';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useRouter } from 'expo-router';
 
 const BuzzingRoomBox = ({ data }) => {
   const router = useRouter();
@@ -36,7 +38,7 @@ const BuzzingRoomBox = ({ data }) => {
         </BuzzingTitleContent>
       </BuzzingTitleContainer>
       <BuzzingMemberContainer>
-        <MaterialIcons name="person-outline" size={18} color="#ffffff" />
+        <Icon type="person" size={16} color={theme.colors.gray.lightGray_1} />
         <BuzzingMemberCount>{data.userCount} members in</BuzzingMemberCount>
       </BuzzingMemberContainer>
     </BuzzingBox>
@@ -66,7 +68,7 @@ const BuzzingImageContainer = styled.View`
   justify-content: center;
   overflow: hidden;
 `;
-const BuzzingImage = styled.Image`
+const BuzzingImage = styled(ProfileImage)`
   width: 100%;
   height: 100%;
   resize-mode: contain;

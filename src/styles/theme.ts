@@ -10,6 +10,7 @@ const colors = {
   secondary: {
     red: '#FF4F4F',
     blue: '#49CCEA',
+    maleLine: '#007AFF',
     // gradient: 'linear-gradient(45deg, #02F59B, #44C6E9, #9E70FF)', // TODO React Native 그라디언트 적용
   },
 
@@ -22,6 +23,7 @@ const colors = {
     gray_2: '#949899',
     lightGray_1: '#CCCFD0',
     lightGray_2: '#E9E9E9',
+    overlay: 'rgba(0, 0, 0, 0.6)',
   },
 };
 

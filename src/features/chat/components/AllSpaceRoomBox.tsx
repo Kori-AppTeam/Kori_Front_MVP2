@@ -1,6 +1,8 @@
-import styled from 'styled-components/native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
+import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
+import styled from 'styled-components/native';
 
 const AllSpaceRoomBox = ({ data }) => {
   const router = useRouter();
@@ -25,7 +27,7 @@ const AllSpaceRoomBox = ({ data }) => {
             : ''}
         </AllSpaceTitleContent>
         <AllSpaceMemberContainer>
-          <MaterialIcons name="person-outline" size={16} color="#949899" />
+          <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
           <AllSpaceMemberCount>{data.userCount ?? data.participantCount} members</AllSpaceMemberCount>
         </AllSpaceMemberContainer>
       </AllSpaceTitleContainer>
@@ -90,7 +92,7 @@ const AllSpaceImageContainer = styled.View`
   justify-content: center;
   overflow: hidden;
 `;
-const AllSpaceImage = styled.Image`
+const AllSpaceImage = styled(ProfileImage)`
   width: 100%;
   height: 100%;
   resize-mode: contain;
