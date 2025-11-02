@@ -7,6 +7,7 @@ import Bookmark from '@/assets/icons/bookmark-non-selected.svg';
 import SelectedBookmark from '@/assets/icons/bookmark-selected.svg';
 import Box from '@/assets/icons/box.svg';
 import Business from '@/assets/icons/business.svg';
+import Cancel from '@/assets/icons/cancel.svg';
 import CameraColored from '@/assets/icons/camera-colored.svg';
 import CameraDefault from '@/assets/icons/camera-default.svg';
 import Chat from '@/assets/icons/chat.svg';
@@ -64,6 +65,7 @@ const iconMap = {
   business: Business,
   bookmarkNonSelected: Bookmark,
   bookmarkSelected: SelectedBookmark,
+  cancel: Cancel,
   cameraColored: CameraColored,
   cameraDefault: CameraDefault,
   check: Check,
@@ -96,7 +98,7 @@ const iconMap = {
   purpose: Purpose,
   search: Search,
   send: Send,
-  
+
   setting: Setting,
   share: Share,
   statusOn: StatusOn,
@@ -156,6 +158,5 @@ const Icon = ({ size, type, color = theme.colors.primary.white }: IconProps) => 
 
   return <SelectedIcon width={size} height={size} color={color} />;
 };
-
 
 export default Icon;
