@@ -1,6 +1,6 @@
 import Avatar from '@/components/Avatar';
 import BottomSheetTagPicker, { TagSection } from '@/components/BottomSheetTagPicker';
-import { Ionicons } from '@expo/vector-icons';
+
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
