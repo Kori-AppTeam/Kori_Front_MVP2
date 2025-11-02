@@ -11,7 +11,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, ListRenderItem, type FlatListProps } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, ListRenderItem, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
 
 const isMeaningfulName = (v?: any) => {
@@ -163,7 +163,7 @@ export default function CommunityScreen() {
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [writeLoading, setWriteLoading] = useState(false);
   const sortServer = sort === 'new' ? 'LATEST' : 'POPULAR';
   const boardId = Number(CATEGORY_TO_BOARD_ID[cat]);
 
@@ -258,7 +258,29 @@ export default function CommunityScreen() {
 
     try {
       await likeMutation.mutateAsync({ postId, liked: prevLiked });
-    } catch (e) {
+    } catch (e: any) {
+      const status = e.response?.status;
+        
+        if (status === 428) {
+            // 롤백 (좋아요 상태 원상복구)
+            setLiked(postId, prevLiked);
+            setLikeCount(postId, prevCount);
+            setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
+
+            // 사용자에게 알림 띄우기
+            Alert.alert(
+                'Profile Setup Required', 
+                'You need to complete your profile setup to like posts.', 
+                [
+                    {
+                        text: 'Go to Setup',
+                        onPress: () => router.push('/(tabs)/mypage/edit' as any),
+                    },
+                    { text: 'Cancel', style: 'cancel' },
+                ]
+            );
+            return;
+        }
       setLiked(postId, prevLiked);
       setLikeCount(postId, prevCount);
       setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
@@ -266,8 +288,38 @@ export default function CommunityScreen() {
     }
   };
 
-  const bmBusyRef = useRef<Record<number, boolean>>({});
+const bmBusyRef = useRef<Record<number, boolean>>({});
 
+const handleWritePress = async () => {
+    if (writeLoading) return;
+    try {
+        const response = await api.get(`/api/v1/member/is-completed`);
+        const isProfileCompleted = response.data?.profileCompleted;
+          console.log('[handleWritePress] API response received:', response.data);
+        if (isProfileCompleted === false) { 
+            Alert.alert(
+                'Profile Setup Required', 
+                'You need to complete your profile setup to write a post.', 
+                [
+                    {
+                        text: 'Go to Setup',
+                        onPress: () => router.push('/(tabs)/mypage/edit' as any),
+                    },
+                    { text: 'Cancel', style: 'cancel' },
+                ]
+            );
+        } else {
+            router.push('/community/write');
+        }
+
+    } catch (e: any) {
+        console.error('[write:check] error', e);
+        Alert.alert('Error', 'Failed to check profile status. Please try again.');
+        
+    } finally {
+        setWriteLoading(false);
+    }
+  };
   const handleToggleBookmark = async (postId: number) => {
     if (bmBusyRef.current[postId]) return;
     bmBusyRef.current[postId] = true;
@@ -364,7 +416,7 @@ export default function CommunityScreen() {
         contentContainerStyle={{ paddingBottom: 80 }}
       />
 
-      <WriteFab onPress={() => router.push('/community/write')} />
+      <WriteFab onPress={handleWritePress} />
     </Safe>
   );
 }

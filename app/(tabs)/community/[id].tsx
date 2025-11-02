@@ -124,7 +124,9 @@ export default function PostDetailScreen() {
 
   const postBookmarked = bmMap[postId] ?? false;
 
-  const { data, isLoading, isError } = usePostDetail(Number.isFinite(postId) ? postId : undefined);
+  const { data, isLoading, isError, error } = usePostDetail( 
+    Number.isFinite(postId) ? postId : undefined 
+  );
 
   const fetchUserProfile = async (userId: number) => {
     try {
@@ -321,6 +323,23 @@ export default function PostDetailScreen() {
 
     hydrateLikeFromServer(postId, liked, count);
   }, [postId, post, hydrateLikeFromServer]);
+
+  useEffect(() => {
+   if (isError && error) {
+   const status = (error as any).response?.status;
+
+   if (status === 428) {
+     Alert.alert('Profile Setup Required', 'You need to complete your profile setup to view post details.', [
+          {
+             text: 'Go to Setup',
+            onPress: () => router.push('/(tabs)/mypage/edit' as any),
+          },
+          { text: 'Cancel', style: 'cancel' },
+          ]);
+          return; 
+        }
+      }
+    }, [isError, error]);
 
   useEffect(() => {
     if (openedOnceRef.current) return;
