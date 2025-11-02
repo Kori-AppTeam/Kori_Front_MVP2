@@ -6,8 +6,9 @@ import { theme } from '@/src/styles/theme';
 import { keyToUrl } from '@/utils/image';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, ListRenderItem, TouchableOpacity, View, type FlatListProps } from 'react-native';
+import { ActivityIndicator, FlatList, ListRenderItem, TouchableOpacity, View, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 
 const AV = require('@/assets/images/character1.png');
 
@@ -26,7 +27,7 @@ type ApiItem = {
   postImages?: string[];
   createdAt?: string | number;
   createdTime?: string | number;
-  isLiked?: boolean; 
+  isLiked?: boolean;
 };
 
 type ApiResp = {
@@ -49,7 +50,7 @@ type Row = {
   likes: number;
   comments: number;
   avatar: any;
-  liked: boolean;  
+  liked: boolean;
 };
 
 export default function BookmarksScreen() {
@@ -58,6 +59,7 @@ export default function BookmarksScreen() {
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const { setBookmarked } = usePostUI();
 
@@ -65,8 +67,6 @@ export default function BookmarksScreen() {
   const loadingRef = useRef(false);
 
   const toAbs = (u?: string) => (u ? (u.startsWith('http') ? u : keyToUrl(u)) : undefined);
-
-  
 
   const mapItem = useCallback((raw: ApiItem, respTs?: string): Row => {
     const postId = (raw.postId as number | undefined) ?? (typeof raw.id === 'number' ? raw.id : undefined);
@@ -108,29 +108,17 @@ export default function BookmarksScreen() {
         setHasNext(Boolean(data?.data?.hasNext));
         setCursor(data?.data?.nextCursor ?? undefined);
       } catch (e) {
-      const status = e.response?.status;
-        
+        const status = e.response?.status;
+
         if (status === 428) {
-          Alert.alert(
-            'Profile Setup Required', 
-            'You need to complete your profile setup to view bookmarks.', 
-            [
-              {
-                text: 'Go to Setup',
-                onPress: () => router.push('/(tabs)/mypage/edit' as any),
-              },
-              { text: 'Cancel', style: 'cancel' },
-            ]
-          );
-  
-          setLoading(false); 
-          setRefreshing(false); 
+          setProfileModalVisible(true);
+          setLoading(false);
+          setRefreshing(false);
           loadingRef.current = false;
           return;
         }
 
-        console.error('[bookmarks:list] error', e); // 428이 아닌 다른 에러만 콘솔에  
-        
+        console.error('[bookmarks:list] error', e);
       } finally {
         loadingRef.current = false;
         setLoading(false);
@@ -182,7 +170,7 @@ export default function BookmarksScreen() {
     const likeIconType = item.liked ? 'thumbsUpSelected' : 'thumbsUpNonSelected';
     const likeIconColor = item.liked ? theme.colors.primary.mint : theme.colors.gray.lightGray_1;
 
-    return  (
+    return (
       <Cell activeOpacity={item.postId ? 0.8 : 1} onPress={() => goPostDetail(item.postId)}>
         <RowTop>
           <RowLeft>
@@ -205,7 +193,7 @@ export default function BookmarksScreen() {
             }}
             hitSlop={8}
           >
-            <Icon type="bookmarkSelected" size={20}  />
+            <Icon type="bookmarkSelected" size={20} />
           </IconBtn>
         </RowTop>
 
@@ -228,16 +216,17 @@ export default function BookmarksScreen() {
 
         <Divider />
       </Cell>
-    );};
-
-    const listEmpty = useMemo(
-      () => (
-        <Empty>
-          <EmptyText>No bookmarked posts.</EmptyText>
-        </Empty>
-      ),
-      [],
     );
+  };
+
+  const listEmpty = useMemo(
+    () => (
+      <Empty>
+        <EmptyText>No bookmarked posts.</EmptyText>
+      </Empty>
+    ),
+    [],
+  );
 
   return (
     <Safe>
@@ -270,6 +259,7 @@ export default function BookmarksScreen() {
         }
         contentContainerStyle={{ paddingBottom: 24 }}
       />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
