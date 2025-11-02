@@ -1,12 +1,11 @@
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import api from '@/api/axiosInstance';
-import Feather from '@expo/vector-icons/Feather';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import Toast from 'react-native-toast-message';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import styled from 'styled-components/native';
 
 type RoomDetail = {
@@ -27,6 +26,7 @@ const LinkedSpaceDetail = () => {
 
   const [roomDetail, setRoomDetail] = useState<RoomDetail | null>(null);
   const router = useRouter();
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const getChatRoomDetail = async () => {
     const res = await api.get(`/api/v1/chat/rooms/group/${roomId}`);
@@ -45,11 +45,7 @@ const LinkedSpaceDetail = () => {
       });
     } catch (error: any) {
       if (error.response?.status === 428) {
-        Toast.show({
-          type: 'error',
-          text1: '"You need to complete your profile to join the chat.',
-        });
-        router.push('/(tabs)/mypage/edit');
+        setProfileModalVisible(true);
         return;
       }
 
@@ -171,6 +167,7 @@ const LinkedSpaceDetail = () => {
       </NextButton>
 
       <BottomSpacer />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Container>
   );
 };
