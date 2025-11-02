@@ -182,7 +182,7 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
 
       <FooterRow>
         <IconBtn onPress={onToggleLike} hitSlop={8}>
-          <Icon type="thumbsUpNonSelected" size={20} color={liked ? theme.colors.primary.mint : theme.colors.gray.lightGray_1} />
+          <Icon type={liked ? 'thumbsUpNonSelected' : 'thumbsUpNonSelected'} size={20} />
           <Count>{data.likes}</Count>
         </IconBtn>
 
