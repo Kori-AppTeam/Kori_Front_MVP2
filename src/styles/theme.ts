@@ -23,6 +23,7 @@ const colors = {
     gray_2: '#949899',
     lightGray_1: '#CCCFD0',
     lightGray_2: '#E9E9E9',
+    overlay: 'rgba(0, 0, 0, 0.6)',
   },
 };
 

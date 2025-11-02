@@ -48,12 +48,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
       {userData && (
         <Backdrop onPress={onClose} activeOpacity={1}>
           <ModalContainer onStartShouldSetResponder={() => true}>
@@ -85,16 +80,16 @@ export default ProfileModal;
 
 const Backdrop = styled.TouchableOpacity`
   flex: 1;
-  background-color: transparent;
+  background-color: ${({ theme }) => theme.colors.gray.overlay};
   justify-content: center;
   align-items: center;
 `;
 
+// friendCard보다 넓은 background 영역 투명하게 처리
 const ModalContainer = styled.View`
-  width: 90%;
-  background-color: #fff;
+  width: 100%;
+  /* background-color: #fff; */
   border-radius: 20px;
-  padding: 10px;
   max-height: 90%;
   overflow: hidden;
 `;
