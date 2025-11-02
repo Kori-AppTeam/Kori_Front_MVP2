@@ -35,7 +35,14 @@ const AV = require('@/assets/images/character1.png');
 
 function toDateLabel(v?: unknown): string {
   if (v == null) return '';
-  const d = new Date(v as any);
+
+  let d: Date;
+  if (typeof v === 'number') {
+    d = new Date(v > 10000000000 ? v : v * 1000);
+  } else {
+    d = new Date(v as any);
+  }
+
   if (!isNaN(d.getTime())) {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
@@ -67,17 +74,19 @@ export default function MyHistoryScreen() {
 
   const posts: PostRow[] = useMemo(
     () =>
-      (myPostItems ?? []).map((row: any) => ({
-        id: String(row.postId),
-        author: row.authorName || 'Unknown',
-        avatar: AV,
-        createdAt: toDateLabel(row.createdAt),
-        body: pickBody(row),
-        views: Number(row.viewCount ?? 0),
-        likes: Number(row.likeCount ?? 0),
-        comments: Number(row.commentCount ?? 0),
-        liked: Boolean(row.isLiked ?? row.likedByMe ?? false),
-      })),
+      (myPostItems ?? []).map((row: any) => {
+        return {
+          id: String(row.postId),
+          author: row.authorName || 'Unknown',
+          avatar: AV,
+          createdAt: toDateLabel(row.createdAt),
+          body: pickBody(row),
+          views: Number(row.viewCount ?? 0),
+          likes: Number(row.likeCount ?? 0),
+          comments: Number(row.commentCount ?? 0),
+          liked: Boolean(row.isLiked ?? row.likedByMe ?? false),
+        };
+      }),
     [myPostItems],
   );
 
@@ -95,13 +104,15 @@ export default function MyHistoryScreen() {
 
   const comments: CommentRow[] = useMemo(
     () =>
-      (myCommentItems ?? []).map((row: any) => ({
-        id: String(row.commentId),
-        postId: String(row.postId ?? row.parentPostId ?? ''),
-        myText: String(row.commentContent ?? '').trim(),
-        parentSnippet: String(row.postContent ?? '').trim(),
-        createdAt: toDateLabel(row.createdAt),
-      })),
+      (myCommentItems ?? []).map((row: any) => {
+        return {
+          id: String(row.commentId),
+          postId: String(row.postId ?? row.parentPostId ?? ''),
+          myText: String(row.commentContent ?? '').trim(),
+          parentSnippet: String(row.postContent ?? '').trim(),
+          createdAt: toDateLabel(row.createdAt),
+        };
+      }),
     [myCommentItems],
   );
 
@@ -221,8 +232,8 @@ export default function MyHistoryScreen() {
 
         <ActionRow>
           <Act>
-            <Icon type={likeIconType} size={20}  />
-          <ActText>{item.likes}</ActText>
+            <Icon type={likeIconType} size={20} />
+            <ActText>{item.likes}</ActText>
           </Act>
           <Act>
             <Icon type="comment" size={20} color={theme.colors.gray.gray_1} />
@@ -412,36 +423,6 @@ const RowPress = styled.Pressable`
   border-bottom-color: #222426;
 `;
 
-const PostTopRow = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Avatar = styled.Image`
-  width: 34px;
-  height: 34px;
-  border-radius: 17px;
-  background: #2a2b2c;
-`;
-
-const Meta = styled.View`
-  flex: 1;
-  margin-left: 10px;
-`;
-
-const Author = styled.Text`
-  color: #ffffff;
-  font-size: 13px;
-  font-family: 'PlusJakartaSans_700Bold';
-`;
-
-const SubRow = styled.View`
-  margin-top: 2px;
-  flex-direction: row;
-  align-items: center;
-`;
-
 const Sub = styled.Text`
   color: #9aa0a6;
   font-size: 11px;
@@ -454,12 +435,6 @@ const Dot = styled.Text`
 
 const MoreBtn = styled.Pressable`
   padding: 6px;
-`;
-
-const Body = styled.Text`
-  color: #e6e9ec;
-  margin-top: 10px;
-  font-size: 14px;
 `;
 
 const ActionRow = styled.View`
@@ -593,7 +568,6 @@ const InlineRow = styled.View`
 const PostDateText = styled.Text`
   color: #9aa0a6;
   font-size: 11px;
-  /* flex 없음: 내용만큼만 차지 */
 `;
 
 const PostTitle = styled.Text`

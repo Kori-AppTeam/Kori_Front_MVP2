@@ -364,7 +364,11 @@ export default function WriteScreen() {
                 }}
               >
                 <CatItemText $active={active}>{c}</CatItemText>
-                {active ? <Icon type="check" size={24} color={theme.colors.primary.mint} /> : <View style={{ width: 16 }} />}
+                {active ? (
+                  <Icon type="check" size={24} color={theme.colors.primary.mint} />
+                ) : (
+                  <View style={{ width: 16 }} />
+                )}
               </CatItem>
             );
           })}
