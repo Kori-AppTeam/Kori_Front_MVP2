@@ -4,7 +4,7 @@ import { LANGUAGES } from '@/src/utils/languages';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react'; // ✅ useMemo 추가
-import { Alert, FlatList, Modal, SafeAreaView, StatusBar } from 'react-native';
+import { Alert, FlatList, KeyboardAvoidingView, Modal, Platform, SafeAreaView, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 import { useProfile } from '../../contexts/ProfileContext';
 import SkipHeader from './components/SkipHeader';
@@ -123,45 +123,51 @@ export default function LanguageStepScreen({ navigation }) {
       {/* ✅ Modal 수정 */}
       <Modal visible={isModalVisible} transparent animationType="slide" onRequestClose={handleCloseModal}>
         <ModalOverlay onPress={handleCloseModal} activeOpacity={1}>
-          <BottomSheetContent onStartShouldSetResponder={() => true}>
-            <BottomSheetHeader>
-              <BottomSheetHandle />
-              {/* ✅ 검색창 추가 */}
-              <SearchContainer>
-                <AntDesign name="search1" size={16} color="#949899" />
-                <SearchInput
-                  placeholder="Search your language"
-                  placeholderTextColor="#616262"
-                  value={search}
-                  onChangeText={setSearch}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
+            style={{ flex: 1, justifyContent: 'flex-end' }}
+          >
+            <BottomSheetContent onStartShouldSetResponder={() => true}>
+              <BottomSheetHeader>
+                <BottomSheetHandle />
+                {/* ✅ 검색창 추가 */}
+                <SearchContainer>
+                  <AntDesign name="search1" size={16} color="#949899" />
+                  <SearchInput
+                    placeholder="Search your language"
+                    placeholderTextColor="#616262"
+                    value={search}
+                    onChangeText={setSearch}
+                  />
+                  {search.length > 0 && (
+                    <ClearButton onPress={() => setSearch('')}>
+                      <AntDesign name="close" size={16} color="#949899" />
+                    </ClearButton>
+                  )}
+                </SearchContainer>
+              </BottomSheetHeader>
+
+              {/* ✅ 필터링된 결과에 따라 조건부 렌더링 */}
+              {filteredLanguages.length > 0 ? (
+                <LanguageList
+                  data={filteredLanguages} // ✅ data prop 수정
+                  renderItem={renderLanguageItem}
+                  keyExtractor={(item, index) => `${item}-${index}`} // ✅ keyExtractor 수정
+                  showsVerticalScrollIndicator={false}
                 />
-                {search.length > 0 && (
-                  <ClearButton onPress={() => setSearch('')}>
-                    <AntDesign name="close" size={16} color="#949899" />
-                  </ClearButton>
-                )}
-              </SearchContainer>
-            </BottomSheetHeader>
+              ) : (
+                <NoResultText>No languages found</NoResultText> // ✅ 검색 결과 없을 때
+              )}
 
-            {/* ✅ 필터링된 결과에 따라 조건부 렌더링 */}
-            {filteredLanguages.length > 0 ? (
-              <LanguageList
-                data={filteredLanguages} // ✅ data prop 수정
-                renderItem={renderLanguageItem}
-                keyExtractor={(item, index) => `${item}-${index}`} // ✅ keyExtractor 수정
-                showsVerticalScrollIndicator={false}
-              />
-            ) : (
-              <NoResultText>No languages found</NoResultText> // ✅ 검색 결과 없을 때
-            )}
-
-            {selectedLanguages.length >= 5 && (
-              <MaxSelectionWarning>
-                <AntDesign name="closecircle" size={16} color="#FF6B6B" />
-                <WarningText>You can select up to five languages!</WarningText>
-              </MaxSelectionWarning>
-            )}
-          </BottomSheetContent>
+              {selectedLanguages.length >= 5 && (
+                <MaxSelectionWarning>
+                  <AntDesign name="closecircle" size={16} color="#FF6B6B" />
+                  <WarningText>You can select up to five languages!</WarningText>
+                </MaxSelectionWarning>
+              )}
+            </BottomSheetContent>
+          </KeyboardAvoidingView>
         </ModalOverlay>
       </Modal>
     </SafeArea>
@@ -172,7 +178,7 @@ export default function LanguageStepScreen({ navigation }) {
 // Styled Components
 // ------------------------
 interface SafeAreaProps {
- bgColor?: string;
+  bgColor?: string;
 }
 
 const SafeArea = styled(SafeAreaView)`
@@ -206,8 +212,8 @@ const Title = styled.Text`
   font-family: 'InstrumentSerif-Regular';
 `;
 
-const Subtitle = styled.Text` 
- margin-top: 15px;
+const Subtitle = styled.Text`
+  margin-top: 15px;
   color: #949899;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Light';
@@ -283,7 +289,7 @@ const BottomSheetHandle = styled.View`
   height: 4px;
   background-color: #949899;
   border-radius: 2px;
-  margin-bottom: 16px; 
+  margin-bottom: 16px;
 `;
 
 // ✅ SearchContainer 스타일 추가 (국가 코드에서 복사)

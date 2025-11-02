@@ -5,7 +5,7 @@ import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { COUNTRIES } from '@/src/utils/countries';
 import { useRouter } from 'expo-router';
-import { FlatList, Modal, SafeAreaView, StatusBar } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Modal, Platform, SafeAreaView, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 import SkipHeader from './components/SkipHeader';
 
@@ -33,7 +33,7 @@ export default function CountryStepScreen({ navigation }) {
 
   const handleSkip = () => {
     updateProfile('country', '');
-    router.push('./LangStepScreen');
+    router.push('./LangStepScreen');
   };
 
   const handleNext = () => {
@@ -84,37 +84,43 @@ export default function CountryStepScreen({ navigation }) {
       {/* Country Selection Bottom Sheet */}
       <Modal visible={isModalVisible} transparent animationType="slide" onRequestClose={() => setIsModalVisible(false)}>
         <ModalOverlay onPress={() => setIsModalVisible(false)} activeOpacity={1}>
-          <BottomSheetContent onStartShouldSetResponder={() => true}>
-            <BottomSheetHeader>
-              <BottomSheetHandle />
-              <SearchContainer>
-                <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
-                <SearchInput
-                  placeholder="Search your country"
-                  placeholderTextColor="#616262"
-                  value={search}
-                  onChangeText={setSearch}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
+            style={{ flex: 1, justifyContent: 'flex-end' }}
+          >
+            <BottomSheetContent onStartShouldSetResponder={() => true}>
+              <BottomSheetHeader>
+                <BottomSheetHandle />
+                <SearchContainer>
+                  <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
+                  <SearchInput
+                    placeholder="Search your country"
+                    placeholderTextColor="#616262"
+                    value={search}
+                    onChangeText={setSearch}
+                  />
+                  {search.length > 0 && (
+                    <ClearButton onPress={() => setSearch('')}>
+                      <Icon type="close" size={24} color={theme.colors.gray.lightGray_1} />
+                    </ClearButton>
+                  )}
+                </SearchContainer>
+              </BottomSheetHeader>
+              {filteredCountries.length > 0 ? (
+                <FlatList
+                  data={filteredCountries}
+                  renderItem={renderCountryItem}
+                  keyExtractor={(item, index) => `${item}-${index}`}
+                  showsVerticalScrollIndicator={false}
+                  style={{ maxHeight: 400 }}
+                  contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
                 />
-                {search.length > 0 && (
-                  <ClearButton onPress={() => setSearch('')}>
-                    <Icon type="close" size={24} color={theme.colors.gray.lightGray_1}/>
-                  </ClearButton>
-                )}
-              </SearchContainer>
-            </BottomSheetHeader>
-            {filteredCountries.length > 0 ? (
-              <FlatList
-                data={filteredCountries}
-                renderItem={renderCountryItem}
-                keyExtractor={(item, index) => `${item}-${index}`}
-                showsVerticalScrollIndicator={false}
-                style={{ maxHeight: 400 }}
-                contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-              />
-            ) : (
-              <NoResultText>No countries found</NoResultText>
-            )}
-          </BottomSheetContent>
+              ) : (
+                <NoResultText>No countries found</NoResultText>
+              )}
+            </BottomSheetContent>
+          </KeyboardAvoidingView>
         </ModalOverlay>
       </Modal>
     </SafeArea>
@@ -124,7 +130,7 @@ export default function CountryStepScreen({ navigation }) {
 // ------------------------
 // Styled Components
 // ------------------------
-const SafeArea = styled(SafeAreaView) <{ bgColor?: string }>`
+const SafeArea = styled(SafeAreaView)<{ bgColor?: string }>`
   flex: 1;
   background-color: ${(props) => props.bgColor || '#000'};
 `;
@@ -195,7 +201,7 @@ const BottomSheetContent = styled.View`
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   max-height: 70%;
-  padding-bottom: 40px;
+  padding-bottom: 20px;
 `;
 
 const BottomSheetHeader = styled.View`
@@ -240,7 +246,7 @@ const CountryItem = styled.TouchableOpacity<{ selected: boolean }>`
   flex-direction: row;
   align-items: center;
   padding: 14px 16px;
-  margin-vertical: 6px;
+  margin: 4px 0;
 
   /* 선택됐을 때 캡슐 형태 */
   background-color: ${({ selected }) => (selected ? '#3F4041' : 'transparent')};
