@@ -282,6 +282,7 @@ const RotatedIcon = styled.View`
   transform: rotate(90deg); /* next(→)를 아래(↓)로 회전 */
 `;
 
+// ✅ 여기 NoResultText 정의 추가
 const NoResultText = styled.Text`
   color: #949899;
   font-size: 15px;

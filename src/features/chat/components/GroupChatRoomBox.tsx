@@ -1,6 +1,6 @@
 import api from '@/api/axiosInstance';
-import AllSpaceRoomBox from '@/components/AllSpaceRoomBox';
-import BuzzingRoomBox from '@/components/BuzzingRoomBox';
+import AllSpaceRoomBox from '@/src/features/chat/components/AllSpaceRoomBox';
+import BuzzingRoomBox from '@/src/features/chat/components/BuzzingRoomBox';
 import { useRouter } from 'expo-router';
 import React, { memo, useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';

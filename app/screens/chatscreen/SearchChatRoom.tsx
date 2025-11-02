@@ -1,7 +1,7 @@
 import api from '@/api/axiosInstance';
-import AllSpaceRoomBox from '@/components/AllSpaceRoomBox';
 import Icon from '@/components/common/Icon';
-import MyChatRoomBox from '@/components/MyChatRoomBox';
+import AllSpaceRoomBox from '@/src/features/chat/components/AllSpaceRoomBox';
+import MyChatRoomBox from '@/src/features/chat/components/MyChatRoomBox';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams, useRouter } from 'expo-router';

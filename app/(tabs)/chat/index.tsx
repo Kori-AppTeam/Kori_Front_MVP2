@@ -1,7 +1,7 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import GroupChatRoomBox from '@/components/GroupChatRoomBox';
-import MyChatRoomBox from '@/components/MyChatRoomBox';
+import GroupChatRoomBox from '@/src/features/chat/components/GroupChatRoomBox';
+import MyChatRoomBox from '@/src/features/chat/components/MyChatRoomBox';
 import { theme } from '@/src/styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import { Client } from '@stomp/stompjs';

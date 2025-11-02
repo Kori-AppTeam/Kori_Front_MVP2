@@ -50,6 +50,12 @@ const LinkedSpaceDetail = () => {
             type: 'error',
             text1: 'You are already in the current group chat.',
           });
+        } else {
+          //TODO: 에러 메시지 노출, if/else 구조 개선 필요
+          Toast.show({
+            type: 'error',
+            text1: message || 'Failed to join the group chat.',
+          });
         }
       } else {
         console.error('네트워크 에러:', error.message);
