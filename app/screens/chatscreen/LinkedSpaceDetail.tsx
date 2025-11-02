@@ -1,3 +1,5 @@
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import api from '@/api/axiosInstance';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -59,6 +61,12 @@ const LinkedSpaceDetail = () => {
             type: 'error',
             text1: 'You are already in the current group chat.',
           });
+        } else {
+          //TODO: 에러 메시지 노출, if/else 구조 개선 필요
+          Toast.show({
+            type: 'error',
+            text1: message || 'Failed to join the group chat.',
+          });
         }
       } else {
         console.error('네트워크 에러:', error.message);
@@ -85,7 +93,7 @@ const LinkedSpaceDetail = () => {
         <BackgroundContainer>
           <Background source={require('@/assets/images/background1.png')} resizeMode="cover">
             <BackButton onPress={() => router.back()}>
-              <Feather name="arrow-left" size={27} color="#CCCFD0" />
+              <Icon type="previous" size={27} color={theme.colors.gray.lightGray_1} />
             </BackButton>
             <ProfileBox>
               <ProfileImage
@@ -124,7 +132,7 @@ const LinkedSpaceDetail = () => {
             </HostContainer>
             <MembersContainer>
               <InMemberContainer>
-                <MaterialIcons name="person-outline" size={15} color="#949899" />
+                <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
                 <InMemberText>{roomDetail?.participantCount} members in</InMemberText>
                 <Divider />
               </InMemberContainer>

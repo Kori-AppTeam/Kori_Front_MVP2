@@ -2,6 +2,8 @@ import api from '@/api/axiosInstance';
 import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
+import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import SortTabs, { SortKey } from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
@@ -16,15 +18,12 @@ import { formatCreatedYMD } from '@/src/utils/dateUtils';
 import { loadAspectRatios } from '@/src/utils/image';
 import { LOCAL_ALLOW_ANON, resolvePostCategory } from '@/utils/category';
 import { keysToUrls, keyToUrl } from '@/utils/image';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
 import styled from 'styled-components/native';
 
+import { theme } from '@/src/styles/theme';
 import {
   Alert,
   Animated,
@@ -124,9 +123,7 @@ export default function PostDetailScreen() {
 
   const postBookmarked = bmMap[postId] ?? false;
 
-  const { data, isLoading, isError, error } = usePostDetail( 
-    Number.isFinite(postId) ? postId : undefined 
-  );
+  const { data, isLoading, isError, error } = usePostDetail(Number.isFinite(postId) ? postId : undefined);
 
   const fetchUserProfile = async (userId: number) => {
     try {
@@ -325,21 +322,21 @@ export default function PostDetailScreen() {
   }, [postId, post, hydrateLikeFromServer]);
 
   useEffect(() => {
-   if (isError && error) {
-   const status = (error as any).response?.status;
+    if (isError && error) {
+      const status = (error as any).response?.status;
 
-   if (status === 428) {
-     Alert.alert('Profile Setup Required', 'You need to complete your profile setup to view post details.', [
+      if (status === 428) {
+        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to view post details.', [
           {
-             text: 'Go to Setup',
+            text: 'Go to Setup',
             onPress: () => router.push('/(tabs)/mypage/edit' as any),
           },
           { text: 'Cancel', style: 'cancel' },
-          ]);
-          return; 
-        }
+        ]);
+        return;
       }
-    }, [isError, error]);
+    }
+  }, [isError, error]);
 
   useEffect(() => {
     if (openedOnceRef.current) return;
@@ -364,7 +361,7 @@ export default function PostDetailScreen() {
       <Safe>
         <Header>
           <Back onPress={() => router.back()}>
-            <AntDesign name="left" size={20} color="#fff" />
+            <Icon type="previous" size={20} color={theme.colors.primary.white} />
           </Back>
           <HeaderTitle>Post</HeaderTitle>
           <RightPlaceholder />
@@ -380,7 +377,7 @@ export default function PostDetailScreen() {
       <Safe>
         <Header>
           <Back onPress={() => router.back()}>
-            <AntDesign name="left" size={20} color="#fff" />
+            <Icon type="previous" size={20} color={theme.colors.primary.white} />
           </Back>
           <HeaderTitle>Post</HeaderTitle>
           <RightPlaceholder />
@@ -902,6 +899,8 @@ export default function PostDetailScreen() {
     }
   };
 
+  const likeIconType = likedByMe ? 'thumbsUpSelected' : 'thumbsUpNonSelected';
+
   const reportTitle =
     reportTarget === 'user'
       ? 'Report This User'
@@ -913,7 +912,7 @@ export default function PostDetailScreen() {
     <Safe>
       <Header>
         <Back onPress={() => router.back()}>
-          <AntDesign name="left" size={20} color="#fff" />
+          <Icon type="previous" size={20} color={theme.colors.primary.white} />
         </Back>
         <HeaderTitle>Post</HeaderTitle>
         <RightPlaceholder />
@@ -956,7 +955,7 @@ export default function PostDetailScreen() {
                         <MetaRow>
                           <Sub>{createdLabel || '—'}</Sub>
                           <Dot>·</Dot>
-                          <AntDesign name="eyeo" size={12} color="#9aa0a6" />
+                          <Icon type="eye" size={16} color={theme.colors.gray.gray_1} />
                           <Sub style={{ marginLeft: 6 }}>{views}</Sub>
                         </MetaRow>
                       </Meta>
@@ -989,11 +988,7 @@ export default function PostDetailScreen() {
                     $active={postBookmarked}
                     hitSlop={8}
                   >
-                    <MaterialIcons
-                      name={postBookmarked ? 'bookmark' : 'bookmark-border'}
-                      size={20}
-                      color={postBookmarked ? '#30F59B' : '#8a8a8a'}
-                    />
+                    <Icon type={postBookmarked ? 'bookmarkSelected' : 'bookmarkNonSelected'} size={20} />
                   </BookmarkWrap>
                 </Row>
 
@@ -1033,16 +1028,16 @@ export default function PostDetailScreen() {
 
                 <Footer>
                   <Act onPress={handleToggleLike} disabled={likeMutation.isPending}>
-                    <AntDesign name="like2" size={16} color={likedByMe ? '#30F59B' : '#cfd4da'} />
+                    <Icon type={likeIconType} size={20} />
                     <ActText>{likeCountUI}</ActText>
                   </Act>
                   <Act>
-                    <AntDesign name="message1" size={16} color="#cfd4da" />
+                    <Icon type="comment" size={20} color={theme.colors.gray.lightGray_1} />
                     <ActText>{commentCount}</ActText>
                   </Act>
                   <Grow />
                   <MoreBtn onPress={openPostSheet} hitSlop={8}>
-                    <Feather name="more-horizontal" size={22} color="#8a8a8a" />
+                    <Icon type="eclipsisGaro" size={20} color={theme.colors.gray.gray_1} />
                   </MoreBtn>
                 </Footer>
               </Card>
@@ -1075,13 +1070,15 @@ export default function PostDetailScreen() {
                 }}
               >
                 <AnonLabel>Anonymous</AnonLabel>
-                <Check $active={anonymous}>{anonymous && <AntDesign name="check" size={14} color="#ffffff" />}</Check>
+                <Check $active={anonymous}>
+                  {anonymous && <Icon type="check" size={16} color={theme.colors.primary.white} />}
+                </Check>
               </AnonToggle>
             )}
           </Composer>
 
           <SendBtn onPress={submit} disabled={!canSend} hitSlop={8}>
-            <Feather name="send" size={22} color={canSend ? '#02F59B' : '#D9D9D9'} />
+            <Icon type="send" size={24} color={canSend ? theme.colors.primary.mint : theme.colors.gray.lightGray_1} />
           </SendBtn>
         </InputBar>
       </KeyboardAvoidingView>
@@ -1112,7 +1109,7 @@ export default function PostDetailScreen() {
                   }}
                 >
                   <SheetIcon>
-                    <MaterialIcons name="outlined-flag" size={18} color={DANGER} />
+                    <Icon type="alert" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Report This Post</SheetLabel>
                 </SheetItem>
@@ -1126,14 +1123,14 @@ export default function PostDetailScreen() {
                   }}
                 >
                   <SheetIcon>
-                    <MaterialIcons name="person-outline" size={18} color={DANGER} />
+                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Report This User</SheetLabel>
                 </SheetItem>
 
                 <SheetItem onPress={blockPostFromSheet}>
                   <SheetIcon>
-                    <MaterialIcons name="block" size={18} color={DANGER} />
+                    <Icon type="close" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Block This Post</SheetLabel>
                 </SheetItem>
@@ -1152,24 +1149,23 @@ export default function PostDetailScreen() {
                   }}
                 >
                   <SheetIcon>
-                    <MaterialIcons name="outlined-flag" size={18} color={DANGER} />
+                    <Icon type="alert" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
                   <SheetLabel $danger>Report This Comment</SheetLabel>
                 </SheetItem>
 
                 <SheetItem onPress={blockCommentFromSheet}>
                   <SheetIcon>
-                    <MaterialIcons name="block" size={18} color={DANGER} />
+                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
                   </SheetIcon>
-                  <SheetLabel $danger>Block This Comment</SheetLabel>
+                  <SheetLabel $danger>Block This User</SheetLabel>
                 </SheetItem>
               </>
             )}
 
-            <SheetDivider />
             <SheetItem onPress={() => setMenuVisible(false)}>
               <SheetIcon>
-                <AntDesign name="close" size={18} color="#cfd4da" />
+                <Icon type="close" size={24} color={theme.colors.gray.lightGray_1} />
               </SheetIcon>
               <SheetLabel>Cancel</SheetLabel>
             </SheetItem>
@@ -1201,11 +1197,11 @@ export default function PostDetailScreen() {
           <Dialog>
             <DialogHeader>
               <DialogTitle>
-                <MaterialCommunityIcons name="flag-variant" size={18} color={DANGER} />
+                <Icon type="alert" size={24} color={theme.colors.secondary.red} />
                 <DialogTitleText $danger> {reportTitle}</DialogTitleText>
               </DialogTitle>
               <CloseBtn onPress={() => setReportOpen(false)}>
-                <AntDesign name="close" size={18} color="#cfd4da" />
+                <Icon type="close" size={16} color="#cfd4da" />
               </CloseBtn>
             </DialogHeader>
 
@@ -1257,11 +1253,11 @@ export default function PostDetailScreen() {
           <EditBox>
             <EditHeader>
               <EditTitle>
-                <AntDesign name="edit" size={16} color="#cfd4da" />
+                <Icon type="edit" size={24} color={theme.colors.primary.white} />
                 <EditTitleText> Edit My Comments</EditTitleText>
               </EditTitle>
               <CloseBtn onPress={() => setEditVisible(false)}>
-                <AntDesign name="close" size={18} color="#cfd4da" />
+                <Icon type="close" size={24} color={theme.colors.primary.white} />
               </CloseBtn>
             </EditHeader>
 

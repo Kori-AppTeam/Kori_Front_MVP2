@@ -1,7 +1,9 @@
 import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
 import MembersBox from '@/components/MembersBox';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,7 +16,7 @@ import {
   Modal,
   Platform,
   StatusBar,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
@@ -252,7 +254,7 @@ const ChatInsideMember = () => {
         <HeaderContainer>
           <Left>
             <TouchableOpacity onPress={() => router.back()}>
-              <Feather name="arrow-left" size={27} color="#CCCFD0" />
+              <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
             </TouchableOpacity>
           </Left>
           <Center>
@@ -306,9 +308,11 @@ const ChatInsideMember = () => {
                 <BottomSheetHandle />
               </BottomSheetHeader>
               <ReasonBox onPress={openReportMenu}>
+                <Icon type="person" size={24} color={theme.colors.secondary.red} />
                 <MenuText>Report this user</MenuText>
               </ReasonBox>
               <ReasonBox onPress={openBlockMenu}>
+                <Icon type="person" size={24} color={theme.colors.secondary.red} />
                 <MenuText>Block this user</MenuText>
               </ReasonBox>
               <CancelBox onPress={closeModal}>
@@ -356,10 +360,12 @@ const ChatInsideMember = () => {
             <ReportOveraly>
               <ReportSheetContent>
                 <ReportHeader>
-                  <Image source={require('@/assets/images/alert.png')} style={{ width: 25, height: 25 }} />
+                  <TouchableOpacity onPress={closeReportModal}>
+                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
+                  </TouchableOpacity>
                   <ReportHeaderText>Report this user</ReportHeaderText>
                   <TouchableOpacity onPress={closeReportModal}>
-                    <AntDesign name="close" size={24} color="#CCCFD0" />
+                    <Icon type="close" size={24} color={theme.colors.gray.gray_1} />
                   </TouchableOpacity>
                 </ReportHeader>
                 <ReportBox

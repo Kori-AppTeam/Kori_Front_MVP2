@@ -5,7 +5,6 @@ import Tag from '@/components/Tag';
 import { Config } from '@/src/lib/config';
 import { getEmojiFor } from '@/src/lib/interests';
 import { theme } from '@/src/styles/theme';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
@@ -68,8 +67,8 @@ const BTN_GAP = 14;
 const CARD_OUTER_GAP = 16;
 
 const genderIconType: Record<NonNullable<Props['gender']>, import('@/components/common/Icon').IconType> = {
-  male: 'male',
-  female: 'female',
+  male: 'maleColored',
+  female: 'femaleColored',
   unspecified: 'nogender',
 };
 const toUrl = (u?: string) => {
@@ -151,12 +150,18 @@ export default function FriendCard(props: Props) {
           <Name>{name}</Name>
 
           <MetaLine>
-            <MetaDim>Birth </MetaDim>
-            <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>
+            <MetaRow>
+              <MetaDim>Birth </MetaDim>
+              <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>       
 
-            <GenderIconSpacer>
-              <Icon type={genderIconType[gender]} size={16} color={theme.colors.gray.gray_1} />
-            </GenderIconSpacer>
+              <GenderIconSpacer>
+                <Icon
+                  type={genderIconType[gender]}
+                  size={16}
+                  color={theme.colors.gray.gray_1}
+                />
+              </GenderIconSpacer>
+            </MetaRow>
 
             <MetaDim>From </MetaDim>
             <MetaStrong>{country}</MetaStrong>
@@ -169,7 +174,7 @@ export default function FriendCard(props: Props) {
           <Divider />
           {collapsible && (
             <ChevronButton onPress={() => setExpanded(!expanded)}>
-              <MaterialIcons name={expanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={20} color="#8a8a8a" />
+              <Icon type={expanded ? 'arrowUp' : 'arrowDown'} size={24}  />
             </ChevronButton>
           )}
         </DividerWrap>
@@ -341,10 +346,23 @@ const Name = styled.Text`
 const MetaLine = styled.View`
   margin-top: ${META_MT}px;
   flex-direction: row;
+  align-items: flex-start;  /* ⬅︎ 세로 가운데 말고 위 기준 */
+  flex-wrap: nowrap;          /* ⬅︎ 줄바꿈 허용 */
+`;
+
+const MetaRow = styled.View`
+  flex-direction: row;
   align-items: center;
 `;
+
 const GenderIconSpacer = styled.View`
-  margin: 1px 4px 0 4px;
+  width: 16px;           /* 아이콘 12~14 추천 */
+  height: 16px;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.colors.gray.lightGray_2};
+  align-items: center;
+  justify-content: center;
+  margin: 0 6px;         /* 텍스트 사이 간격 */
 `;
 const MetaDim = styled.Text`
   font-family: 'PlusJakartaSans_400Regular';
@@ -458,10 +476,6 @@ const InterestHeader = styled.View`
   margin-top: 14px;
   margin-bottom: 8px;
 `;
-const HeartIcon = styled(MaterialCommunityIcons)`
-  margin-right: 4px;
-`;
-
 const AvatarImg = styled(ProfileImage)`
   width: 88px;
   height: 88px;

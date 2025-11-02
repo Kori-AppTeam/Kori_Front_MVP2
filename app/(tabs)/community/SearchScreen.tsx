@@ -1,6 +1,8 @@
+// 수정될 코드 (기획과 다름)
 import api from '@/api/axiosInstance';
 import { addBookmark, removeBookmark } from '@/api/community/bookmarks'; // [추가]
 import CategoryChips, { Category } from '@/components/CategoryChips';
+import Icon from '@/components/common/Icon';
 import PostCard, { Post } from '@/components/PostCard';
 import SortTabs, { SortKey } from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
@@ -8,7 +10,7 @@ import { useToggleLike } from '@/hooks/mutations/useToggleLike';
 import useMyProfile from '@/hooks/queries/useMyProfile'; // [추가]
 import { useSearchPosts, type PostExFromSearch } from '@/hooks/queries/useSearchPosts';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
-import { usePostUI } from '@/src/store/usePostUI'; // [추가]
+import { usePostUI } from '@/src/store/usePostUI';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
@@ -272,17 +274,14 @@ export default function CommunityScreen() {
         `/api/v1/member/is-completed/${myId}`, // [수정] myId 사용
       );
 
-      if (data?.profileCompleted) { // [수정] data.data -> data
+      if (data?.profileCompleted) {
+        // [수정] data.data -> data
         router.push('/community/write');
       } else {
-        Alert.alert(
-          'Profile Setup Required',
-          'Please complete your profile setup to write a post.',
-          [
-            { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-            { text: 'Cancel', style: 'cancel' },
-          ],
-        );
+        Alert.alert('Profile Setup Required', 'Please complete your profile setup to write a post.', [
+          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
       }
     } catch (error: any) {
       console.error('프로필 확인 실패:', error);
@@ -354,17 +353,14 @@ export default function CommunityScreen() {
         `/api/v1/member/is-completed/${myId}`, // [수정] myId 사용
       );
 
-      if (data?.profileCompleted) { // [수정] data.data -> data
+      if (data?.profileCompleted) {
+        // [수정] data.data -> data
         router.push({ pathname: '/community/[id]', params: { id: String(postId) } });
       } else {
-        Alert.alert(
-          'Profile Setup Required',
-          'Please complete your profile setup to view posts.',
-          [
-            { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-            { text: 'Cancel', style: 'cancel' },
-          ],
-        );
+        Alert.alert('Profile Setup Required', 'Please complete your profile setup to view posts.', [
+          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
       }
     } catch (error: any) {
       console.error('프로필 확인 실패:', error);
@@ -401,7 +397,6 @@ export default function CommunityScreen() {
   }).current;
   const viewConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
-
   // --- 👇 [수정] handleToggleLike ---
   const handleToggleLike = async (postId: number) => {
     const target = items.find((p) => p.postId === postId);
@@ -414,9 +409,7 @@ export default function CommunityScreen() {
     // 1. 로컬 UI 상태 즉시 업데이트 (usePostUI store + local items)
     toggleLiked(postId);
     setLikeCount(postId, nextCount);
-    setItems((prev) =>
-      prev.map((p) => (p.postId === postId ? { ...p, likedByMe: nextLiked, likes: nextCount } : p)),
-    );
+    setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: nextLiked, likes: nextCount } : p)));
 
     try {
       await likeMutation.mutateAsync({ postId, liked: prevLiked });
@@ -424,21 +417,15 @@ export default function CommunityScreen() {
       // 2. 롤백
       setLiked(postId, prevLiked);
       setLikeCount(postId, prevCount);
-      setItems((prev) =>
-        prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)),
-      );
+      setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
 
       // 3. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
-        Alert.alert(
-          'Profile Setup Required',
-          'Please complete your profile setup to like posts.',
-          [
-            { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-            { text: 'Cancel', style: 'cancel' },
-          ],
-        );
+        Alert.alert('Profile Setup Required', 'Please complete your profile setup to like posts.', [
+          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
         return;
       }
       console.error('[like:list] error', e);
@@ -475,14 +462,10 @@ export default function CommunityScreen() {
       // 4. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
-        Alert.alert(
-          'Profile Setup Required',
-          'Please complete your profile setup to bookmark posts.',
-          [
-            { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-            { text: 'Cancel', style: 'cancel' },
-          ],
-        );
+        Alert.alert('Profile Setup Required', 'Please complete your profile setup to bookmark posts.', [
+          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
         // 428 에러 시에도 finally는 실행되어야 하므로 return 없음
       } else {
         console.error('[bookmark:list] error', e);
@@ -520,13 +503,9 @@ export default function CommunityScreen() {
             </>
           ) : (
             <SearchBox>
-              <Icon>
-                {searching ? (
-                  <ActivityIndicator size="small" />
-                ) : (
-                  <AntDesign name="search1" size={16} color="#9aa0a6" />
-                )}
-              </Icon>
+              <CustomIcon>
+                {searching ? <ActivityIndicator size="small" /> : <Icon type="search" size={16} color="#9aa0a6" />}
+              </CustomIcon>
               <RNTextInput
                 ref={inputRef}
                 value={q}
@@ -603,7 +582,7 @@ export default function CommunityScreen() {
         viewabilityConfig={viewConfig}
       />
 
-      <WriteFab onPress={handleWritePress} disabled={checkingProfile} /> 
+      <WriteFab onPress={handleWritePress} disabled={checkingProfile} />
       {/* [수정] checking -> checkingProfile */}
     </Safe>
   );
@@ -667,7 +646,7 @@ const SearchBox = styled.View`
   padding: 0 6px 0 12px;
   margin-right: 8px;
 `;
-const Icon = styled.View`
+const CustomIcon = styled.View`
   width: 20px;
   align-items: center;
   margin-right: 8px;

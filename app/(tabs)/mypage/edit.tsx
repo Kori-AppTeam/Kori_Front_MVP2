@@ -11,10 +11,7 @@ import styled from 'styled-components/native';
 
 import CountryPicker, { CountryDropdownButton, CountryDropdownText } from '@/components/CountryPicker';
 import GenderPicker, { GenderDropdownButton, GenderDropdownText } from '@/components/GenderPicker';
-import LanguagePicker, {
-  LanguageDropdownButton,
-  LanguageDropdownText
-} from '@/components/LanguagePicker';
+import LanguagePicker, { LanguageDropdownButton, LanguageDropdownText } from '@/components/LanguagePicker';
 import PurposePicker, { PurposeDropdownButton, PurposeDropdownText } from '@/components/PurposePicker';
 import useProfileEdit from '@/hooks/mutations/useProfileEdit';
 import useMyProfile from '@/hooks/queries/useMyProfile';
@@ -24,6 +21,8 @@ import api from '@/api/axiosInstance';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert, Modal, Image as RNImage } from 'react-native';
+import { theme } from '@/src/styles/theme';
+import Icon from '@/components/common/Icon';
 
 const INPUT_HEIGHT = 50;
 const INPUT_RADIUS = 8;
@@ -55,8 +54,6 @@ const AVATAR_URLS = [
   'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_02.png',
   'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_03.png',
 ] as const;
-
-const CAMERA_IMG = require('@/assets/images/camera.png');
 
 const stripHost = (keyOrUrl?: string) => {
   if (!keyOrUrl) return undefined;
@@ -167,11 +164,11 @@ export default function EditProfileScreen() {
   const [pendingImageKey, setPendingImageKey] = useState<string | undefined>(undefined);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const ErrorText = styled.Text`
-  color: ${ERROR_COLOR};
-  font-size: 12px;
-  margin-top: 4px;
-  padding-left: 16px;
-`;
+    color: ${ERROR_COLOR};
+    font-size: 12px;
+    margin-top: 4px;
+    padding-left: 16px;
+  `;
   useEffect(() => {
     if (!me) return;
     const full = [me.firstname, me.lastname].filter(Boolean).join(' ');
@@ -222,29 +219,29 @@ export default function EditProfileScreen() {
     return hasName && hasGender && hasCountry && hasBirth && hasPurpose && hasLanguage && hasInterests && hasAboutMe;
   }, [name, gender, country, birth, purpose, langs, selectedInterests, aboutMe]);
 
-const errors = useMemo(() => {
-  if (isFormValid) return {};
+  const errors = useMemo(() => {
+    if (isFormValid) return {};
 
-  const trimmedName = name.trim().replace(/\s+/g, ' ');
-  const hasSpace = /\s/.test(trimmedName);
-  const nameError = 
-    trimmedName.length === 0 
-      ? 'Please enter your full name.' // 이름을 입력해주세요.
-      : !hasSpace 
-        ? 'Please separate your first and last name with a space. (e.g., John Smith)' // 이름과 성을 공백으로 구분해주세요.
-        : undefined;
+    const trimmedName = name.trim().replace(/\s+/g, ' ');
+    const hasSpace = /\s/.test(trimmedName);
+    const nameError =
+      trimmedName.length === 0
+        ? 'Please enter your full name.' // 이름을 입력해주세요.
+        : !hasSpace
+          ? 'Please separate your first and last name with a space. (e.g., John Smith)' // 이름과 성을 공백으로 구분해주세요.
+          : undefined;
 
-  return {
-    name: nameError, 
-    gender: gender.trim().length === 0 ? 'Please select your gender.' : undefined, // 성별을 선택해주세요.
-    country: country.trim().length === 0 ? 'Please select your country.' : undefined, // 국가를 선택해주세요.
-    birth: birth.trim().length === 0 ? 'Please enter your date of birth.' : undefined, // 생년월일을 입력해주세요.
-    purpose: purpose.trim().length === 0 ? 'Please select your purpose.' : undefined, // 목적을 선택해주세요.
-    language: langs.length === 0 ? 'Please select at least one language.' : undefined, // 언어를 선택해주세요.
-    interests: selectedInterests.length === 0 ? 'Please select at least one interest.' : undefined, // 관심사를 하나 이상 선택해주세요.
-    aboutMe: aboutMe.trim().length === 0 ? 'Please introduce yourself (About Me).' : undefined, // 자기소개를 입력해주세요.
-  };
-}, [isFormValid, name, gender, country, birth, purpose, langs, selectedInterests, aboutMe]);
+    return {
+      name: nameError,
+      gender: gender.trim().length === 0 ? 'Please select your gender.' : undefined, // 성별을 선택해주세요.
+      country: country.trim().length === 0 ? 'Please select your country.' : undefined, // 국가를 선택해주세요.
+      birth: birth.trim().length === 0 ? 'Please enter your date of birth.' : undefined, // 생년월일을 입력해주세요.
+      purpose: purpose.trim().length === 0 ? 'Please select your purpose.' : undefined, // 목적을 선택해주세요.
+      language: langs.length === 0 ? 'Please select at least one language.' : undefined, // 언어를 선택해주세요.
+      interests: selectedInterests.length === 0 ? 'Please select at least one interest.' : undefined, // 관심사를 하나 이상 선택해주세요.
+      aboutMe: aboutMe.trim().length === 0 ? 'Please introduce yourself (About Me).' : undefined, // 자기소개를 입력해주세요.
+    };
+  }, [isFormValid, name, gender, country, birth, purpose, langs, selectedInterests, aboutMe]);
 
   const formatBirth = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 8);
@@ -254,6 +251,7 @@ const errors = useMemo(() => {
   };
 
   const onSave = async () => {
+    console.log('isFormValid:', isFormValid);
     // ✅ 저장 전 유효성 검사
     if (!isFormValid) {
       Alert.alert('필수 정보 입력', '모든 필드를 입력해주세요.');
@@ -373,10 +371,10 @@ const errors = useMemo(() => {
     <Safe>
       <Header>
         <Side onPress={() => router.back()} hitSlop={12} style={{ left: -4 }}>
-          <Ionicons name="chevron-back" size={22} color="#cfd4da" />
+          <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
         </Side>
         <Title>My Profile</Title>
-        <Side onPress={isFormValid ? onSave : undefined} hitSlop={12} style={{ right: -4 }}>
+        <Side onPress={isFormValid ? () => onSave() : undefined} hitSlop={12} style={{ right: -4 }}>
           <SaveText disabled={!isFormValid}>{isFormValid ? 'Save' : 'Complete all'}</SaveText>
         </Side>
       </Header>
@@ -385,7 +383,7 @@ const errors = useMemo(() => {
           <AvatarPress onPress={openAvatarSheet}>
             <Avatar uri={displayAvatarUrl} />
             <CameraBadge>
-              <CameraBadgeImg source={CAMERA_IMG} />
+              <Icon type="cameraColored" size={20} color={theme.colors.primary.black} />
             </CameraBadge>
           </AvatarPress>
           <NameText numberOfLines={1} ellipsizeMode="tail">
@@ -395,41 +393,51 @@ const errors = useMemo(() => {
         </Center>
 
         <Field>
-            <LabelText error={!!errors.name}>Full Name</LabelText>
-            
-            <NameInput
-                value={name}
-                onChangeText={setName}
-                onBlur={handleBlur('name')} 
-                error={!!(errors.name && touched.name)}
-                placeholder="e.g. John Smith" 
-                placeholderTextColor="#EDEDED99"
-            />
-            {errors.name && touched.name && <ErrorText>{errors.name}</ErrorText>}
+          <LabelText error={!!errors.name}>Full Name</LabelText>
+
+          <NameInput
+            value={name}
+            onChangeText={setName}
+            onBlur={handleBlur('name')}
+            error={!!(errors.name && touched.name)}
+            placeholder="e.g. John Smith"
+            placeholderTextColor="#EDEDED99"
+          />
+          {errors.name && touched.name && <ErrorText>{errors.name}</ErrorText>}
         </Field>
 
         <Field>
           <LabelText error={!!errors.gender}>Gender</LabelText>
-          <GenderDropdownButton 
-            selected={!!gender} 
-            onPress={() => { setShowGender(true); handleBlur('gender'); }} 
-            error={!!(errors.gender && touched.gender)} 
+          <GenderDropdownButton
+            selected={!!gender}
+            onPress={() => {
+              setShowGender(true);
+              handleBlur('gender');
+            }}
+            error={!!(errors.gender && touched.gender)}
           >
             <GenderDropdownText selected={!!gender}>{gender || 'Select your gender'}</GenderDropdownText>
-            <AntDesign name="down" size={16} color="#949899" />
+            <Rot90>
+              <Icon type="next" size={24} color={theme.colors.primary.white} />
+            </Rot90>
           </GenderDropdownButton>
-          
+
           {errors.gender && touched.gender && <ErrorText>{errors.gender}</ErrorText>}
         </Field>
         <Field>
-          <LabelText error={!!errors.country}>Country</LabelText> 
-          <CountryDropdownButton 
-            selected={!!country} 
-            onPress={() => { setShowCountry(true); handleBlur('country'); }} 
-            error={!!(errors.country && touched.country)} 
+          <LabelText error={!!errors.country}>Country</LabelText>
+          <CountryDropdownButton
+            selected={!!country}
+            onPress={() => {
+              setShowCountry(true);
+              handleBlur('country');
+            }}
+            error={!!(errors.country && touched.country)}
           >
             <CountryDropdownText selected={!!country}>{country || 'Select your country'}</CountryDropdownText>
-            <AntDesign name="down" size={16} color="#949899" />
+            <Rot90>
+              <Icon type="next" size={24} color={theme.colors.primary.white} />
+            </Rot90>
           </CountryDropdownButton>
           {errors.country && touched.country && <ErrorText>{errors.country}</ErrorText>}
         </Field>
@@ -445,81 +453,89 @@ const errors = useMemo(() => {
             maxLength={10}
             returnKeyType="done"
             onBlur={handleBlur('birth')}
-            error={!!(errors.birth && touched.birth)} 
+            error={!!(errors.birth && touched.birth)}
           />
-          
+
           {errors.birth && touched.birth && <ErrorText>{errors.birth}</ErrorText>}
         </Field>
 
         <Field>
           <LabelText error={!!errors.purpose}>Purpose</LabelText>
-          
-          <PurposeDropdownButton 
-            selected={!!purpose} 
-            onPress={() => { setShowPurpose(true); handleBlur('purpose'); }}
+
+          <PurposeDropdownButton
+            selected={!!purpose}
+            onPress={() => {
+              setShowPurpose(true);
+              handleBlur('purpose');
+            }}
             error={!!(errors.purpose && touched.purpose)}
           >
             <PurposeDropdownText selected={!!purpose}>{purpose || 'Select purpose'}</PurposeDropdownText>
-            <AntDesign name="down" size={16} color="#949899" />
+            <Rot90>
+              <Icon type="next" size={24} color={theme.colors.primary.white} />
+            </Rot90>
           </PurposeDropdownButton>
-   
+
           {errors.purpose && touched.purpose && <ErrorText>{errors.purpose}</ErrorText>}
         </Field>
         <Field>
-            <LabelRow>
-                <LabelText error={!!errors.language}>Language</LabelText>
-            </LabelRow>
-            
-            <LanguageDropdownButton 
-                selected={langs.length > 0} 
-                onPress={() => setShowLang(true)}
-                error={!!(errors.language && touched.language)} 
-            >
-                <LanguageDropdownText selected={langs.length > 0}>{languagesDisplay}</LanguageDropdownText>
-                <AntDesign name="down" size={16} color="#949899" />
-            </LanguageDropdownButton>
-            
-            {errors.language && touched.language && <ErrorText>{errors.language}</ErrorText>}
-        </Field>
-          <Field>
-        <TopRow>
-          <LabelText error={!!errors.interests}>Personality</LabelText> 
-          <SmallMuted>{selectedInterests.length}/5 selected</SmallMuted>
-        </TopRow>
+          <LabelRow>
+            <LabelText error={!!errors.language}>Language</LabelText>
+          </LabelRow>
 
-        <TagsWrap>
-          {selectedInterests.map((t) => (
-            <PreviewTag key={t}>
-              <PreviewTagText>{t}</PreviewTagText>
-            </PreviewTag>
-          ))}
-        </TagsWrap>
-
-        <EditRow>
-          <EditOutlineBtn 
-            onPress={() => { setShowTagPicker(true); handleBlur('interests'); }} 
+          <LanguageDropdownButton
+            selected={langs.length > 0}
+            onPress={() => setShowLang(true)}
+            error={!!(errors.language && touched.language)}
           >
-            <AntDesign name="plus" size={12} color="#30F59B" />
-            <EditOutlineText>Edit</EditOutlineText>
-          </EditOutlineBtn>
-        </EditRow>
-        {errors.interests && touched.interests && <ErrorText>{errors.interests}</ErrorText>}
-      </Field>
+            <LanguageDropdownText selected={langs.length > 0}>{languagesDisplay}</LanguageDropdownText>
+            <AntDesign name="down" size={16} color="#949899" />
+          </LanguageDropdownButton>
 
-      <Field>
-        <LabelText error={!!errors.aboutMe}>About Me</LabelText>
-        
-        <TextArea
-          value={aboutMe}
-          onChangeText={setAboutMe}
-          onBlur={handleBlur('aboutMe')} // ✅ handleBlur 추가
-          placeholder="Introduce yourself"
-          placeholderTextColor="#EDEDED99"
-          multiline
-          error={!!(errors.aboutMe && touched.aboutMe)} 
-        />
-        {errors.aboutMe && touched.aboutMe && <ErrorText>{errors.aboutMe}</ErrorText>}
-      </Field>
+          {errors.language && touched.language && <ErrorText>{errors.language}</ErrorText>}
+        </Field>
+        <Field>
+          <TopRow>
+            <LabelText error={!!errors.interests}>Personality</LabelText>
+            <SmallMuted>{selectedInterests.length}/5 selected</SmallMuted>
+          </TopRow>
+
+          <TagsWrap>
+            {selectedInterests.map((t) => (
+              <PreviewTag key={t}>
+                <PreviewTagText>{t}</PreviewTagText>
+              </PreviewTag>
+            ))}
+          </TagsWrap>
+
+          <EditRow>
+            <EditOutlineBtn
+              onPress={() => {
+                setShowTagPicker(true);
+                handleBlur('interests');
+              }}
+            >
+              <AntDesign name="plus" size={12} color="#30F59B" />
+              <EditOutlineText>Edit</EditOutlineText>
+            </EditOutlineBtn>
+          </EditRow>
+          {errors.interests && touched.interests && <ErrorText>{errors.interests}</ErrorText>}
+        </Field>
+
+        <Field>
+          <LabelText error={!!errors.aboutMe}>About Me</LabelText>
+
+          <TextArea
+            value={aboutMe}
+            onChangeText={setAboutMe}
+            onBlur={handleBlur('aboutMe')} // ✅ handleBlur 추가
+            placeholder="Introduce yourself"
+            placeholderTextColor="#EDEDED99"
+            multiline
+            error={!!(errors.aboutMe && touched.aboutMe)}
+          />
+          {errors.aboutMe && touched.aboutMe && <ErrorText>{errors.aboutMe}</ErrorText>}
+        </Field>
         <BottomPad />
       </Scroll>
       <CountryPicker
@@ -550,7 +566,6 @@ const errors = useMemo(() => {
           setShowGender(false);
         }}
       />
-
       <BottomSheetTagPicker
         visible={showTagPicker}
         value={selectedInterests}
@@ -582,7 +597,7 @@ const errors = useMemo(() => {
                         <AvatarImg source={src} />
                         {selected && (
                           <CheckBadge>
-                            <AntDesign name="check" size={12} color="#0f1011" />
+                            <Icon type="check" size={24} color={theme.colors.primary.white} />
                           </CheckBadge>
                         )}
                       </AvatarCircle>
@@ -602,12 +617,12 @@ const errors = useMemo(() => {
                       <>
                         <AvatarImg source={{ uri: customPhotoUri }} />
                         <CheckBadge>
-                          <AntDesign name="check" size={12} color="#0f1011" />
+                          <Icon type="check" size={16} color={theme.colors.primary.black} />
                         </CheckBadge>
                       </>
                     ) : (
                       <CameraCircleInner>
-                        <Ionicons name="camera" size={22} color="#e8eaed" />
+                        <Icon type="cameraDefault" size={32} color={theme.colors.primary.white} />
                       </CameraCircleInner>
                     )}
                   </AvatarCircle>
@@ -693,7 +708,7 @@ const LabelRow = styled.View`
   justify-content: space-between;
   align-items: flex-end;
 `;
-const LabelText = styled.Text<{ error?: boolean }>` 
+const LabelText = styled.Text<{ error?: boolean }>`
   color: ${({ error }) => (error ? ERROR_COLOR : '#e9ecef')};
   font-size: 13px;
   margin-bottom: 6px;
@@ -930,8 +945,6 @@ const CameraBadge = styled.View`
   elevation: 3;
 `;
 
-const CameraBadgeImg = styled.Image`
-  width: 18px;
-  height: 18px;
-  resize-mode: contain;
+const Rot90 = styled.View`
+  transform: rotate(90deg);
 `;

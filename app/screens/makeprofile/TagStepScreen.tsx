@@ -1,3 +1,5 @@
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import { useProfile } from '@/app/contexts/ProfileContext';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
@@ -25,7 +27,7 @@ const HobbyBox = ({ imogi = [], title, tags, selectedTags, selectTag }) => {
             <HobbyTag key={tag} onPress={() => selectTag(tag)} selected={isSelected}>
               {emoji !== '' && <Imogi>{emoji}</Imogi>}
               <HobbyTagText selected={isSelected}>{tag}</HobbyTagText>
-              {isSelected && <AntDesign name="close" size={14} color="#02F59B" />}
+              {isSelected && <Icon type="close" size={16} color={theme.colors.primary.mint} />}
             </HobbyTag>
           );
         })}

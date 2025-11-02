@@ -1,4 +1,7 @@
 import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
+import { theme } from '@/src/styles/theme';
 import { formatShortDate } from '@/src/utils/dateUtils';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
@@ -251,13 +254,13 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
         accessibilityRole="button"
         accessibilityLabel="More actions"
       >
-        <Feather name="more-horizontal" size={20} color="#8a8a8a" />
+        <Icon type="eclipsisGaro" size={20} color={theme.colors.gray.gray_1} />
       </MoreBtn>
 
       <Row>
         {child && (
           <ReplyIcon>
-            <Feather name="corner-down-right" size={18} color="#9aa0a6" />
+            <Icon type="commentArrow" size={20} color={theme.colors.gray.gray_1} />
           </ReplyIcon>
         )}
         <AvatarButton
@@ -286,9 +289,11 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
 
       <Footer>
         <Act onPress={onPressLike} hitSlop={8} accessibilityRole="button" accessibilityLabel="Like this comment">
-          <AntDesign name={likedByMe ? 'like1' : 'like2'} size={14} color={likedByMe ? '#30F59B' : '#cfd4da'} />
+          <Icon type={likedByMe ? 'thumbsUpSelected' : 'thumbsUpNonSelected'} size={16} />
           <Count $active={likedByMe}>{likeCount}</Count>
         </Act>
+        <Icon type="comment" size={16} />
+        <Count>{0}</Count>
       </Footer>
 
       <ProfileModal

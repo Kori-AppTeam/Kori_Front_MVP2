@@ -1,11 +1,10 @@
 import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
 import RawProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { theme } from '@/src/styles/theme';
 import { formatDate, formatTime } from '@/src/utils/dateUtils';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { Client } from '@stomp/stompjs';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -382,8 +381,11 @@ const ChattingRoomScreen = () => {
   };
 
   const goBack = async () => {
+    //TODO: 채팅방 나가기 전 읽음 처리 API 호출?
     await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${roomId}/read-all`);
-    router.back();
+    // 채팅 목록이 아닌 외부에서 채팅방 접근 시 back을 수행하면 의도하지 않은 화면으로 이동
+    // router.back();
+    router.replace('/(tabs)/chat');
   };
 
   // 햄버거 버튼 눌렀을때 이동
@@ -569,10 +571,10 @@ const ChattingRoomScreen = () => {
           {searchBox ? (
             <>
               <TouchableOpacity onPress={closeSearchBox}>
-                <Feather name="arrow-left" size={27} color="#CCCFD0" />
+                <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
               </TouchableOpacity>
               <SearchContainer>
-                <Feather name="search" size={23} color="#CCCFD0" style={{ marginLeft: 8 }} />
+                <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
                 <SearchInputText
                   value={searchText}
                   onChangeText={setSearchText}
@@ -586,7 +588,7 @@ const ChattingRoomScreen = () => {
                       (setSearchText(''), setIsSearching(false));
                     }}
                   >
-                    <AntDesign name="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
+                    <Icon type="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
                   </TouchableOpacity>
                 )}
               </SearchContainer>
@@ -595,7 +597,7 @@ const ChattingRoomScreen = () => {
             <>
               <Left>
                 <TouchableOpacity onPress={goBack}>
-                  <Feather name="arrow-left" size={27} color="#CCCFD0" />
+                  <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
               </Left>
               <Center>
@@ -603,10 +605,10 @@ const ChattingRoomScreen = () => {
               </Center>
               <Right>
                 <TouchableOpacity onPress={showSearchBox}>
-                  <Feather name="search" size={23} color="#CCCFD0" />
+                  <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onhandleNext}>
-                  <SimpleLineIcons name="menu" size={23} color="#CCCFD0" style={{ marginLeft: 20 }} />
+                  <Icon type="hamburger" size={24} color={theme.colors.gray.lightGray_1} />
                 </TouchableOpacity>
               </Right>
             </>
@@ -725,7 +727,7 @@ const ChattingRoomScreen = () => {
                             <OtherFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                searchMessages[pointerRef.current].id === item.id ? (
+                                  searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}
@@ -760,7 +762,7 @@ const ChattingRoomScreen = () => {
                             <OtherNotFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                searchMessages[pointerRef.current].id === item.id ? (
+                                  searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}

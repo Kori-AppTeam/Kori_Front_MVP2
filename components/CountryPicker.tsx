@@ -1,11 +1,11 @@
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import cancelIconImg from '@/assets/images/cancel.png';
 import searchIconImg from '@/assets/images/search.png';
-import { COUNTRIES } from '@/src/utils/countries';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Modal, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
-
+import { COUNTRIES } from '@/src/utils/countries';
 
 const INPUT_BORDER = '#FFFFFF';
 const ERROR_COLOR = '#FF6B6B';
@@ -31,7 +31,7 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
     return (
       <CountryItem selected={selected} onPress={() => onSelect(item)}>
         <CountryText>{item}</CountryText>
-        {selected && <AntDesign name="check" size={20} color="#02F59B" />}
+        {selected && <Icon type="check" size={20} color={theme.colors.primary.mint} />}
       </CountryItem>
     );
   };

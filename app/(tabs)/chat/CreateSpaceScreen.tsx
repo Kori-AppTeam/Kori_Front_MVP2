@@ -1,22 +1,21 @@
+import Icon from '@/components/common/Icon';
+import CustomButton from '@/components/CustomButton';
+import { theme } from '@/src/styles/theme';
+import { Asset } from 'expo-asset';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import Feather from '@expo/vector-icons/Feather';
 import {
+  Alert,
+  ImageSourcePropType,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Image as RNImage,
   StatusBar,
   TouchableOpacity,
-  Alert,
-  Image as RNImage,
-  ImageSourcePropType,
-  Modal,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useRouter } from 'expo-router';
-import CustomButton from '@/components/CustomButton';
-import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { Asset } from 'expo-asset';
+import styled from 'styled-components/native';
 
 const MOCK_ME = {
   name: 'Alice Kori, Kim',
@@ -142,7 +141,7 @@ const CreateSpaceScreen = () => {
       <Container>
         <HeaderContainer>
           <TouchableOpacity onPress={() => router.back()}>
-            <Feather name="arrow-left" size={23} color="#CCCFD0" />
+            <Icon type='previous' size={24} color={theme.colors.primary.white}/>
           </TouchableOpacity>
           <HeaderTitleText>Create Space</HeaderTitleText>
           <TouchableOpacity onPress={handleSave}>
@@ -159,7 +158,7 @@ const CreateSpaceScreen = () => {
             <ProfileBox onPress={openAvatarSheet}>
               <ProfileImage source={avatarUrl ? { uri: avatarUrl } : AVATARS[0]} />
               <CameraContainer>
-                <FontAwesome name="camera" size={17} color="black" />
+                <Icon type='cameraColored' size={20} color={theme.colors.primary.black}/>
               </CameraContainer>
             </ProfileBox>
           </ProfileContainer>
@@ -227,7 +226,7 @@ const CreateSpaceScreen = () => {
                         <AvatarImg source={img} />
                         {selected && (
                           <CheckBadge>
-                            <Ionicons name="checkmark" size={14} color="#0f1011" />
+                            <Icon type="check" size={16} color={theme.colors.primary.black} />
                           </CheckBadge>
                         )}
                       </AvatarCircle>
@@ -242,12 +241,12 @@ const CreateSpaceScreen = () => {
                       <AvatarImg source={{ uri: customPhotoUri }} />
                     ) : (
                       <CameraCircleInner>
-                        <Ionicons name="camera" size={22} color="#cfd4da" />
+                        <Icon type="cameraColored" size={32} color={theme.colors.gray.lightGray_1} />
                       </CameraCircleInner>
                     )}
                     {!!customPhotoUri && (
                       <CheckBadge>
-                        <Ionicons name="checkmark" size={14} color="#0f1011" />
+                        <Icon type="check" size={16} color={theme.colors.primary.black} />
                       </CheckBadge>
                     )}
                   </AvatarCircle>
