@@ -14,7 +14,7 @@ export function getNotificationDeeplink(data: { [key: string]: string | number |
         return `korifront://(tabs)/community/${data.postId}`;
 
       case 'chat':
-        return `korifront://(tabs)/chat/ChattingRoomScreen?roomId=${data.roomId}&myId=${data.myId}`;
+        return `korifront://(tabs)/chat/ChattingRoomScreen?roomId=${data.roomId}&myId=${data.myId}&roomName=${data.roomName}`; // TODO 알림 데이터에 roomName 요청
 
       case 'follow':
         return `korifront://(tabs)/mypage/follows?followerId=${data.followerId}`;

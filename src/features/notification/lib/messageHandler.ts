@@ -95,7 +95,7 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       setTimeout(() => {
         router.navigate({
           pathname: `/chat/ChattingRoomScreen`,
-          params: { roomId: String(data.roomId), myId: String(data.myId) },
+          params: { roomId: String(data.roomId), myId: String(data.myId), roomName: String(data.roomName) }, // TODO 알림 데이터에 roomName 요청
         });
       }, 500);
       break;
