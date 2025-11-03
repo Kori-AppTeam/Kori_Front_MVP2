@@ -41,6 +41,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
+import { User } from '@/src/shared/types/user';
 
 const SCREEN_W = Dimensions.get('window').width;
 const H_PADDING = 32;
@@ -96,7 +97,7 @@ EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
   const navigation = useNavigation();
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -746,7 +747,7 @@ export default function PostDetailScreen() {
 
       router.push({
         pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        params: { roomId: roomId, roomName: `${selectedUser.firstname} ${selectedUser.lastname}` },
       });
     } catch (err: any) {
       console.error('[Chat] Failed to create chat room:', err);
