@@ -564,7 +564,7 @@ const ChattingRoomScreen = () => {
 
   return (
     <SafeArea>
-      {/* <StatusBar barStyle="light-content" /> */}
+      <StatusBar barStyle="light-content" />
       <Container>
         {/* 헤더 */}
         <HeaderContainer>
@@ -862,7 +862,6 @@ export default ChattingRoomScreen;
 // ===================== styled-components =====================
 const SafeArea = styled.SafeAreaView`
   flex: 1;
-  height: 100%;
   background-color: #1d1e1f;
 `;
 const Container = styled.View`
