@@ -3,7 +3,7 @@ import { theme } from '@/src/styles/theme';
 import cancelIconImg from '@/assets/images/cancel.png';
 import searchIconImg from '@/assets/images/search.png';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Modal, TouchableOpacity } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { COUNTRIES } from '@/src/utils/countries';
 
@@ -28,8 +28,17 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
 
   const renderCountryItem = ({ item }: { item: string }) => {
     const selected = value === item;
+
+    const toggle = (country: string) => {
+      if (value === country) {
+        onSelect('');
+      } else {
+        onSelect(country);
+      }
+    };
+
     return (
-      <CountryItem selected={selected} onPress={() => onSelect(item)}>
+      <CountryItem selected={selected} onPress={() => toggle(item)}>
         <CountryText>{item}</CountryText>
         {selected && <Icon type="check" size={20} color={theme.colors.primary.mint} />}
       </CountryItem>
@@ -47,39 +56,46 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
-        <BottomSheetContent onStartShouldSetResponder={() => true}>
-          <BottomSheetHeader>
-            <BottomSheetHandle />
-            <SearchContainer>
-              <SearchInput
-                placeholder="Search your country"
-                placeholderTextColor="#949899"
-                value={search}
-                onChangeText={setSearch}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
+          style={{ flex: 1, justifyContent: 'flex-end' }}
+        >
+          <BottomSheetContent onStartShouldSetResponder={() => true}>
+            <BottomSheetHeader>
+              <BottomSheetHandle />
+              <SearchContainer>
+                <SearchInput
+                  placeholder="Search your country"
+                  placeholderTextColor="#949899"
+                  value={search}
+                  onChangeText={setSearch}
+                />
+
+                <TouchableOpacity onPress={handleClearSearch}>
+                  <CancelIcon source={cancelIconImg} resizeMode="contain" />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={handleSearchPress}>
+                  <SearchIcon source={searchIconImg} resizeMode="contain" />
+                </TouchableOpacity>
+              </SearchContainer>
+            </BottomSheetHeader>
+
+            {data.length > 0 ? (
+              <FlatList
+                data={data}
+                renderItem={renderCountryItem}
+                keyExtractor={(item, index) => `${item}-${index}`}
+                showsVerticalScrollIndicator={false}
+                style={{ maxHeight: 400 }}
+                // keyboardShouldPersistTaps="handled"
               />
-
-              <TouchableOpacity onPress={handleClearSearch}>
-                <CancelIcon source={cancelIconImg} resizeMode="contain" />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleSearchPress}>
-                <SearchIcon source={searchIconImg} resizeMode="contain" />
-              </TouchableOpacity>
-            </SearchContainer>
-          </BottomSheetHeader>
-
-          {data.length > 0 ? (
-            <FlatList
-              data={data}
-              renderItem={renderCountryItem}
-              keyExtractor={(item, index) => `${item}-${index}`}
-              showsVerticalScrollIndicator={false}
-              style={{ maxHeight: 400 }}
-            />
-          ) : (
-            <NoResultText>No countries found</NoResultText>
-          )}
-        </BottomSheetContent>
+            ) : (
+              <NoResultText>No countries found</NoResultText>
+            )}
+          </BottomSheetContent>
+        </KeyboardAvoidingView>
       </ModalOverlay>
     </Modal>
   );
@@ -97,7 +113,8 @@ const BottomSheetContent = styled.View`
   background-color: #353637;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  max-height: 70%;
+  width: 100%;
+  height: 70%;
   padding-bottom: 20px;
 `;
 

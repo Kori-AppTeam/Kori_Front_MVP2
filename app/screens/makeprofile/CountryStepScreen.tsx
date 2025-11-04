@@ -115,6 +115,7 @@ export default function CountryStepScreen({ navigation }) {
                   showsVerticalScrollIndicator={false}
                   style={{ maxHeight: 400 }}
                   contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                  keyboardShouldPersistTaps="handled"
                 />
               ) : (
                 <NoResultText>No countries found</NoResultText>
