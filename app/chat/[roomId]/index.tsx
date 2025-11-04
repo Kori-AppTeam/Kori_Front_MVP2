@@ -4,7 +4,7 @@ import Icon from '@/components/common/Icon';
 import RawProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
-import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
+import { CHAT_MEMBER_ROUTE, CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { formatDate, formatTime } from '@/src/utils/dateUtils';
 import { Client } from '@stomp/stompjs';
@@ -373,8 +373,7 @@ const ChattingRoomScreen = () => {
 
       setIsProfileVisible(false);
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err) {
       console.error(err);

@@ -4,6 +4,7 @@ import Icon from '@/components/common/Icon';
 import MembersBox from '@/components/MembersBox';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -123,8 +124,7 @@ const ChatInsideMember = () => {
 
       setIsProfileVisible(false);
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err) {
       console.error(err);
