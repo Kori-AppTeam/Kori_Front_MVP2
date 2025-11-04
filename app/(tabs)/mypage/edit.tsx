@@ -147,7 +147,7 @@ export default function EditProfileScreen() {
   const [pendingImageKey, setPendingImageKey] = useState<string | undefined>(undefined);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const ErrorText = styled.Text`
-    color: ${ERROR_COLOR};
+    color: ${theme.colors.secondary.red};
     font-size: 12px;
     margin-top: 4px;
     padding-left: 16px;
@@ -692,7 +692,7 @@ const LabelRow = styled.View`
   align-items: flex-end;
 `;
 const LabelText = styled.Text<{ error?: boolean }>`
-  color: ${({ error }) => (error ? ERROR_COLOR : '#e9ecef')};
+  color: ${({ error }) => (error ? theme.colors.secondary.red : '#e9ecef')};
   font-size: 13px;
   margin-bottom: 6px;
   font-family: 'PlusJakartaSans_600SemiBold';
@@ -709,7 +709,7 @@ const NameInput = styled.TextInput<{ error?: boolean }>`
   padding: 0 16px;
   color: #fff;
   border-width: 0.48px;
-  border-color: ${({ error }) => (error ? ERROR_COLOR : INPUT_BORDER)};
+  border-color: ${({ error }) => (error ? theme.colors.secondary.red : INPUT_BORDER)};
   font-family: 'PlusJakartaSans_400Regular';
 `;
 const BirthInput = styled.TextInput<{ error?: boolean }>`
@@ -719,7 +719,7 @@ const BirthInput = styled.TextInput<{ error?: boolean }>`
   padding: 0 16px;
   color: #fff;
   border-width: 0.48px;
-  border-color: ${({ error }) => (error ? ERROR_COLOR : INPUT_BORDER)};
+  border-color: ${({ error }) => (error ? theme.colors.secondary.red : INPUT_BORDER)};
   font-family: 'PlusJakartaSans_400Regular';
 `;
 const TopRow = styled.View`
@@ -756,7 +756,7 @@ const TextArea = styled.TextInput<{ error?: boolean }>`
   padding: 12px 14px;
   color: #fff;
   border-width: 1px;
-  border-color: ${({ error }) => (error ? ERROR_COLOR : INPUT_BORDER)};
+  border-color: ${({ error }) => (error ? theme.colors.secondary.red : INPUT_BORDER)};
   font-family: 'PlusJakartaSans_400Regular';
   min-height: 110px;
   text-align-vertical: top;

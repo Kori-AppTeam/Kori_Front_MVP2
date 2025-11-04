@@ -231,7 +231,7 @@ export default function AddPhotoStepScreen({}) {
 
 const handleSkip = async () => { 
   setLoading(true);
-  const defaultAvatarUrl = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_01.svg';
+  const defaultAvatarUrl = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_05.svg';
   
   try {
     await CompleteProfile(defaultAvatarUrl); 
