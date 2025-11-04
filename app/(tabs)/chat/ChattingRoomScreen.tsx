@@ -625,8 +625,8 @@ const ChattingRoomScreen = () => {
               onEndReached={fetchMoreHistory} // 스크롤 상단에서 이전 메시지 로딩
               onEndReachedThreshold={0.2}
               renderItem={({ item, index }) => {
-                  const imgUrl = item.senderImageUrl || undefined;
-                  const isVisitor = imgUrl ? !!item.isVisitor : true;
+                const imgUrl = item.senderImageUrl || undefined;
+                const isVisitor = !imgUrl;    
 
                 const isMyMessage = item.senderId.toString() === myUserId;
                 // 프로필 표시 로직

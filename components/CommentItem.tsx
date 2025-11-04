@@ -1,9 +1,8 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
 import { theme } from '@/src/styles/theme';
 import { formatShortDate } from '@/src/utils/dateUtils';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
@@ -299,7 +298,7 @@ const ReplyIcon = styled.View`
   margin-right: 6px;
 `;
 
-const Avatar = styled.Image`
+const Avatar = styled(ProfileImage)`
   width: 28px;
   height: 28px;
   border-radius: 14px;
