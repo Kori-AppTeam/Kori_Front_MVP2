@@ -619,7 +619,7 @@ const ChattingRoomScreen = () => {
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 50 : 30}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
         >
           {/* 채팅 화면 */}
           <ChattingScreen>
@@ -904,7 +904,6 @@ const ChattingScreen = styled.View`
 const ChattingLeftContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
 }) <{ showProfile?: boolean }>`
-
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '1px')};
   align-self: flex-start;
   max-width: 280px;
@@ -1063,7 +1062,7 @@ const BottomInputBox = styled.TextInput`
   color: #ffffff;
   border-radius: 8px;
   width: 85%;
-  height: 45px;
+  height: 40px;
   margin-top: 10px;
   padding-left: 10px;
 `;
