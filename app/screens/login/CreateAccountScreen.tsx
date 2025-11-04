@@ -182,7 +182,7 @@ const CreateAccountScreen = () => {
         <HeaderContainer>
           <HeaderBox>
             <TouchableOpacity onPress={() => router.back()}>
-              <Icon type="search" size={24} color={theme.colors.primary.white} />
+              <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
             </TouchableOpacity>
             <HeaderTitleText>Create your account</HeaderTitleText>
           </HeaderBox>

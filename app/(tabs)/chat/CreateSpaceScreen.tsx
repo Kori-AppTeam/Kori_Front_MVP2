@@ -1,7 +1,7 @@
 import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
 import CustomButton from '@/components/CustomButton';
 import { theme } from '@/src/styles/theme';
-import { Asset } from 'expo-asset';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -11,9 +11,8 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Image as RNImage,
   StatusBar,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -24,9 +23,9 @@ const MOCK_ME = {
 };
 
 const AVATARS: ImageSourcePropType[] = [
-  require('@/assets/images/character1.png'),
-  require('@/assets/images/character2.png'),
-  require('@/assets/images/character3.png'),
+  require('@/assets/images/character_01.svg'),
+  require('@/assets/images/character_02.svg'),
+  require('@/assets/images/character_03.svg'),
 ];
 
 const CreateSpaceScreen = () => {
@@ -41,29 +40,26 @@ const CreateSpaceScreen = () => {
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
 
   const openAvatarSheet = () => {
-    if (avatarUrl) {
-      const cur = AVATARS.findIndex((img) => (RNImage.resolveAssetSource(img)?.uri ?? '') === avatarUrl);
-      if (cur >= 0) {
-        setSelectedAvatarIdx(cur);
-        setCustomPhotoUri(undefined);
-      } else {
-        setSelectedAvatarIdx(-1);
-        setCustomPhotoUri(avatarUrl);
-      }
-    } else {
-      setSelectedAvatarIdx(0);
-      setCustomPhotoUri(undefined);
-    }
-    setShowAvatarSheet(true);
-  };
+  if (avatarUrl) {
+    // 커스텀 사진 모드
+    setSelectedAvatarIdx(-1);
+    setCustomPhotoUri(avatarUrl);
+  } else {
+    // 기본 아바타 모드 (현재 선택 유지, 없으면 0)
+    if (selectedAvatarIdx < 0) setSelectedAvatarIdx(0);
+    setCustomPhotoUri(undefined);
+  }
+  setShowAvatarSheet(true);
+};
 
   const saveAvatar = async () => {
     if (customPhotoUri) {
-      setAvatarUrl(customPhotoUri);
+      // 사용자 사진 선택
+      setAvatarUrl(customPhotoUri);  
+      setSelectedAvatarIdx(-1);
     } else if (selectedAvatarIdx >= 0) {
-      const asset = Asset.fromModule(AVATARS[selectedAvatarIdx]);
-      await asset.downloadAsync();
-      if (asset.localUri) setAvatarUrl(asset.localUri);
+      // 기본 SVG 아바타 선택
+      setAvatarUrl(undefined);       
     }
     setShowAvatarSheet(false);
   };
@@ -156,7 +152,13 @@ const CreateSpaceScreen = () => {
         >
           <ProfileContainer>
             <ProfileBox onPress={openAvatarSheet}>
-              <ProfileImage source={avatarUrl ? { uri: avatarUrl } : AVATARS[0]} />
+              <AvatarMain
+                source={
+                  avatarUrl
+                    ? { uri: avatarUrl }                         // 사용자 사진
+                    : AVATARS[Math.max(0, selectedAvatarIdx)]    // 선택한 기본 SVG
+                }
+              />
               <CameraContainer>
                 <Icon type='cameraColored' size={20} color={theme.colors.primary.black}/>
               </CameraContainer>
@@ -223,7 +225,7 @@ const CreateSpaceScreen = () => {
                       }}
                     >
                       <AvatarCircle selected={selected}>
-                        <AvatarImg source={img} />
+                        <AvatarThumb source={img} />
                         {selected && (
                           <CheckBadge>
                             <Icon type="check" size={16} color={theme.colors.primary.black} />
@@ -238,7 +240,7 @@ const CreateSpaceScreen = () => {
                 <AvatarItem onPress={pickFromCameraOrGallery}>
                   <AvatarCircle selected={!!customPhotoUri}>
                     {customPhotoUri ? (
-                      <AvatarImg source={{ uri: customPhotoUri }} />
+                      <AvatarThumb source={{ uri: customPhotoUri }} />
                     ) : (
                       <CameraCircleInner>
                         <Icon type="cameraColored" size={32} color={theme.colors.gray.lightGray_1} />
@@ -313,11 +315,16 @@ const CameraContainer = styled.View`
   align-items: center;
   z-index: 999;
 `;
-const ProfileImage = styled.Image`
+const AvatarMain = styled(ProfileImage)`
   width: 100%;
   height: 100%;
-  border-radius: 75px; /* 반지름을 width/2 값으로 */
-  resize-mode: contain; /* 사진을 꽉 채우게 */
+  border-radius: 75px;
+`;
+
+const AvatarThumb = styled(ProfileImage)`
+  width: 64px;
+  height: 64px;
+  border-radius: 32px;
 `;
 const SpaceNameContainer = styled.View`
   height: 40px;

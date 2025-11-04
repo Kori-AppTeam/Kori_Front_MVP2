@@ -5,6 +5,7 @@ import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
 import { theme } from '@/src/styles/theme';
 import { formatDate, formatTime } from '@/src/utils/dateUtils';
+import { AntDesign } from '@expo/vector-icons';
 import { Client } from '@stomp/stompjs';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -73,18 +74,6 @@ const ChattingRoomScreen = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-
-  const toUrl = (u?: string) => {
-    if (!u) return undefined;
-    if (/^https?:\/\//i.test(u)) return u;
-    const base =
-      (Config as any).EXPO_PUBLIC_NCP_PUBLIC_BASE_URL ||
-      (Config as any).NCP_PUBLIC_BASE_URL ||
-      (Config as any).EXPO_PUBLIC_IMAGE_BASE_URL ||
-      (Config as any).IMAGE_BASE_URL ||
-      '';
-    return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
-  };
 
   // ---------------------- 토큰 refresh 함수 ----------------------
   const refreshTokenIfNeeded = async (): Promise<string | null> => {
@@ -588,7 +577,7 @@ const ChattingRoomScreen = () => {
                       (setSearchText(''), setIsSearching(false));
                     }}
                   >
-                    <Icon type="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
+                    <AntDesign type="closecircle" size={24} color="#CCCFD0" style={{ marginRight: 8 }} />
                   </TouchableOpacity>
                 )}
               </SearchContainer>
@@ -636,6 +625,9 @@ const ChattingRoomScreen = () => {
               onEndReached={fetchMoreHistory} // 스크롤 상단에서 이전 메시지 로딩
               onEndReachedThreshold={0.2}
               renderItem={({ item, index }) => {
+                  const imgUrl = item.senderImageUrl || undefined;
+                  const isVisitor = imgUrl ? !!item.isVisitor : true;
+
                 const isMyMessage = item.senderId.toString() === myUserId;
                 // 프로필 표시 로직
                 const showProfile =
@@ -717,7 +709,10 @@ const ChattingRoomScreen = () => {
                               onPress={() => fetchUserProfile(item.senderId)}
                               disabled={isLoadingProfile}
                             >
-                              <ProfileImg source={{ uri: item.senderImageUrl }} />
+                              <ProfileImg
+                                imageUrl={imgUrl}
+                                isVisitor={isVisitor}
+                              />
                             </TouchableOpacity>
                           </ProfileBox>
                         </ProfileContainer>

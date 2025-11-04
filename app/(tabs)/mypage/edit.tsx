@@ -1,6 +1,5 @@
 import Avatar from '@/components/Avatar';
 import BottomSheetTagPicker, { TagSection } from '@/components/BottomSheetTagPicker';
-import { Ionicons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -9,40 +8,24 @@ import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/native';
 
+import api from '@/api/axiosInstance';
 import CountryPicker, { CountryDropdownButton, CountryDropdownText } from '@/components/CountryPicker';
 import GenderPicker, { GenderDropdownButton, GenderDropdownText } from '@/components/GenderPicker';
 import LanguagePicker, { LanguageDropdownButton, LanguageDropdownText } from '@/components/LanguagePicker';
 import PurposePicker, { PurposeDropdownButton, PurposeDropdownText } from '@/components/PurposePicker';
 import useProfileEdit from '@/hooks/mutations/useProfileEdit';
 import useMyProfile from '@/hooks/queries/useMyProfile';
-import { Config } from '@/src/lib/config';
 
-import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert, Modal, Image as RNImage } from 'react-native';
-import { theme } from '@/src/styles/theme';
-import Icon from '@/components/common/Icon';
 
 const INPUT_HEIGHT = 50;
 const INPUT_RADIUS = 8;
 const INPUT_BG = '#353637';
 const INPUT_BORDER = '#FFFFFF';
-const ERROR_COLOR = '#FF6B6B';
-
-const toUrl = (u?: string) => {
-  if (!u) return undefined;
-  if (/^https?:\/\//i.test(u)) return u;
-  if (/^(asset|file|data):/i.test(u)) return u;
-  const base =
-    (Config as any).EXPO_PUBLIC_NCP_PUBLIC_BASE_URL ||
-    (Config as any).NCP_PUBLIC_BASE_URL ||
-    (Config as any).EXPO_PUBLIC_IMAGE_BASE_URL ||
-    (Config as any).IMAGE_BASE_URL ||
-    '';
-  return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
-};
-
 const AVATARS = [
   require('@/assets/images/character1.png'),
   require('@/assets/images/character2.png'),
@@ -153,7 +136,7 @@ export default function EditProfileScreen() {
   const displayAvatarUrl = useMemo(() => {
     const idx = detectPresetIndex(avatarKeyOrUrl);
     if (idx >= 0) return RNImage.resolveAssetSource(AVATARS[idx])?.uri;
-    return toUrl(avatarKeyOrUrl);
+    return avatarKeyOrUrl;
   }, [avatarKeyOrUrl]);
 
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
@@ -346,7 +329,7 @@ export default function EditProfileScreen() {
       if (tempIdx === -1) {
         if (!customPhotoUri) throw new Error('No custom photo selected');
         const key = await uploadLocalImageAndGetKeyInline(customPhotoUri);
-        const publicUrl = toUrl(key);
+        const publicUrl = key;
         setPendingImageKey(key);
         setAvatarKeyOrUrl(publicUrl || customPhotoUri);
       } else if (tempIdx !== null && tempIdx >= 0) {
