@@ -1,6 +1,7 @@
 import api from '@/api/axiosInstance';
 import RawProfileImage from '@/components/common/ProfileImage';
 import { Config } from '@/src/lib/config';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
@@ -28,7 +29,7 @@ const MyChatRoomBox = ({ data }) => {
       const res = await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${data.roomId}/read-all`);
       if (res.status === 200) {
         router.push({
-          pathname: '/(tabs)/chat/ChattingRoomScreen',
+          pathname: `${CHAT_ROUTE(data.roomId)}`,
           params: {
             roomId: data.roomId, // props에서 바로 가져옴
             roomName: data.roomName, // props에서 바로 가져옴

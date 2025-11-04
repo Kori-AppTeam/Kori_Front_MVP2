@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import { useLocalSearchParams } from 'expo-router';
+//링크드 스페이스 생성 완료 페이지
 import api from '@/api/axiosInstance';
-import * as Crypto from 'expo-crypto';
-import { Buffer } from 'buffer';
-import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { Buffer } from 'buffer';
+import * as Crypto from 'expo-crypto';
+import * as FileSystem from 'expo-file-system';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import Toast from 'react-native-toast-message';
+import styled from 'styled-components/native';
 
 const NewSpaceCreated = () => {
   const { spaceName, spaceDescription, spaceImageUrl } = useLocalSearchParams<{

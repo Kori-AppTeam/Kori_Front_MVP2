@@ -1,11 +1,12 @@
-import Icon from '@/components/common/Icon';
-import { theme } from '@/src/styles/theme';
+//링크드 스페이스 상세 페이지
 import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import { theme } from '@/src/styles/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import Toast from 'react-native-toast-message';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import styled from 'styled-components/native';
 
 type RoomDetail = {
