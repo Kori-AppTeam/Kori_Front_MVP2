@@ -15,6 +15,7 @@ export default function SortTabs({ value, onChange }: Props) {
       <Tab $active={value === 'new'} onPress={() => onChange('new')}>
         <TabText $active={value === 'new'}>New</TabText>
       </Tab>
+      <Divider>❘</Divider>
       <Tab $active={value === 'hot'} onPress={() => onChange('hot')}>
         <TabText $active={value === 'hot'}>Hot</TabText>
       </Tab>
@@ -39,4 +40,9 @@ const TabText = styled.Text<{ $active?: boolean }>`
   color: ${({ $active }) => ($active ? '#E9E9E9' : '#848687')};
   font-size: 13px;
   font-family: 'PlusJakartaSans_Regular';
+`;
+
+const Divider = styled.Text`
+  margin: 0 1px;
+  color: gray;
 `;
