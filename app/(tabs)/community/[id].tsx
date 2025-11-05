@@ -42,6 +42,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
+import { User } from '@/src/shared/types/user';
 
 const SCREEN_W = Dimensions.get('window').width;
 const H_PADDING = 32;
@@ -97,7 +98,7 @@ EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
   const navigation = useNavigation();
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -387,14 +388,14 @@ export default function PostDetailScreen() {
 
   const authorId: string = String(
     post.userId ??
-    post.authorId ??
-    post.memberId ??
-    post.writerId ??
-    post.ownerId ??
-    post.creatorId ??
-    post.author?.id ??
-    post.user?.id ??
-    '',
+      post.authorId ??
+      post.memberId ??
+      post.writerId ??
+      post.ownerId ??
+      post.creatorId ??
+      post.author?.id ??
+      post.user?.id ??
+      '',
   );
   const authorName: string =
     post.userName ??
@@ -432,7 +433,7 @@ export default function PostDetailScreen() {
     console.groupCollapsed('[post-meta]');
     const keys = Object.keys(post || {});
     console.groupEnd();
-  } catch { }
+  } catch {}
 
   const toggleCommentLike = (comment: Comment) => {
     const cmtId = Number((comment as any).id ?? (comment as any).commentId);
@@ -746,7 +747,7 @@ export default function PostDetailScreen() {
       setIsProfileVisible(false);
 
       router.push({
-        pathname: CHAT_ROUTE(roomId)
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err: any) {
       console.error('[Chat] Failed to create chat room:', err);
