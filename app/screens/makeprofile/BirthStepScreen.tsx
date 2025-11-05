@@ -147,6 +147,7 @@ export default function BirthdaySelectionScreen() {
           onChange={onDateChange}
           maximumDate={maxDate}
           onPointerCancel={cancelDate} // (바깥쪽 터치 시)
+          themeVariant="dark"
         />
       )}
 
@@ -161,6 +162,7 @@ export default function BirthdaySelectionScreen() {
                 onChange={onDateChange}
                 maximumDate={maxDate}
                 textColor={theme.colors.primary.white} // (iOS 휠 텍스트 색상)
+                themeVariant="dark"
               />
               <ModalButtonContainer>
                 <ModalButton onPress={cancelDate}>
