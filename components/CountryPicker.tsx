@@ -54,11 +54,11 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent={true}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} // 헤더 높이에 따라 조정
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
           <BottomSheetContent onStartShouldSetResponder={() => true}>
@@ -89,7 +89,7 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
                 keyExtractor={(item, index) => `${item}-${index}`}
                 showsVerticalScrollIndicator={false}
                 style={{ maxHeight: 400 }}
-                // keyboardShouldPersistTaps="handled"
+                keyboardShouldPersistTaps="handled"
               />
             ) : (
               <NoResultText>No countries found</NoResultText>
@@ -114,7 +114,7 @@ const BottomSheetContent = styled.View`
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   width: 100%;
-  height: 70%;
+  height: 50%;
   padding-bottom: 20px;
 `;
 
