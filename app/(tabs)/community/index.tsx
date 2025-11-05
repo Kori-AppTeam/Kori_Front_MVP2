@@ -263,7 +263,6 @@ export default function CommunityScreen() {
       const status = e.response?.status;
 
       if (status === 428) {
-        // 롤백 (좋아요 상태 원상복구)
         setLiked(postId, prevLiked);
         setLikeCount(postId, prevCount);
         setItems((prev) =>
