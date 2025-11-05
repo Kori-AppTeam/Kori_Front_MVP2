@@ -13,6 +13,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, ListRenderItem, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 
 const isMeaningfulName = (v?: any) => {
   const s = String(v ?? '').trim();
@@ -30,7 +31,8 @@ const pickNonEmpty = (...vals: any[]) => {
 };
 
 const ICON = require('@/assets/images/IsolationMode.png');
-const AV = require('@/assets/images/character1.png');
+const VisitorImage = require('@/assets/images/character_05.svg');
+const AnonymityImage= require('@/assets/images/character_04.svg');
 
 const MAX_IMAGES = 5;
 
@@ -116,7 +118,7 @@ type PostEx = Post & {
 };
 
 const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
-  const isAnon = (row as any)?.isAnonymous ?? (row as any)?.anonymous ?? false;
+  const isAnon = Boolean(row.isAnonymous);
 
   const createdRaw = row.createdAt ?? row.createdTime;
   const liked = (row as any).likedByMe ?? (row as any).isLike ?? (row as any).isLiked ?? false;
@@ -128,6 +130,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
 
   const pickedRaw = pickNonEmpty(row.authorName, row.userName, row.nickname, row.memberName, row.writerName);
   const display = isMeaningfulName(pickedRaw) ? pickedRaw : isAnon ? 'Anonymous' : '—';
+  const safeUserImageUrl = !isAnon && row.userImageUrl ? row.userImageUrl : undefined;
 
   const niceCategory =
     row.boardCategory && typeof row.boardCategory === 'string'
@@ -139,8 +142,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
     postId: row.postId,
     author: display,
     authorName: display,
-    isAnonymous: Boolean(isAnon),
-    avatar: AV,
+    isAnonymous: isAnon,
     category: niceCategory,
     createdAt: toDateLabel(createdRaw, respTimestamp),
     body: row.contentPreview ?? row.content ?? '',
@@ -150,7 +152,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
     hotScore: typeof row.score === 'number' ? row.score : 0,
     likedByMe: Boolean(liked),
     viewCount: Number(row.viewCount ?? 0),
-    ...(row.userImageUrl ? { userImageUrl: row.userImageUrl } : {}),
+    ...(safeUserImageUrl ? { userImageUrl: safeUserImageUrl } : {}),
   };
 };
 
@@ -166,6 +168,7 @@ export default function CommunityScreen() {
   const [writeLoading, setWriteLoading] = useState(false);
   const sortServer = sort === 'new' ? 'LATEST' : 'POPULAR';
   const boardId = Number(CATEGORY_TO_BOARD_ID[cat]);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const likeMutation = useToggleLike();
 
@@ -260,27 +263,21 @@ export default function CommunityScreen() {
       await likeMutation.mutateAsync({ postId, liked: prevLiked });
     } catch (e: any) {
       const status = e.response?.status;
-        
-        if (status === 428) {
-            // 롤백 (좋아요 상태 원상복구)
-            setLiked(postId, prevLiked);
-            setLikeCount(postId, prevCount);
-            setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
 
-            // 사용자에게 알림 띄우기
-            Alert.alert(
-                'Profile Setup Required', 
-                'You need to complete your profile setup to like posts.', 
-                [
-                    {
-                        text: 'Go to Setup',
-                        onPress: () => router.push('/(tabs)/mypage/edit' as any),
-                    },
-                    { text: 'Cancel', style: 'cancel' },
-                ]
-            );
-            return;
-        }
+      if (status === 428) {
+        setLiked(postId, prevLiked);
+        setLikeCount(postId, prevCount);
+        setItems((prev) =>
+          prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)),
+        );
+        setProfileModalVisible(true);
+        return;
+      }
+
+      setLiked(postId, prevLiked);
+      setLikeCount(postId, prevCount);
+      setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
+      console.error('[like:list] error', e);
       setLiked(postId, prevLiked);
       setLikeCount(postId, prevCount);
       setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
@@ -288,35 +285,29 @@ export default function CommunityScreen() {
     }
   };
 
-const bmBusyRef = useRef<Record<number, boolean>>({});
+  const bmBusyRef = useRef<Record<number, boolean>>({});
 
-const handleWritePress = async () => {
+  const handleWritePress = async () => {
     if (writeLoading) return;
     try {
-        const response = await api.get(`/api/v1/member/is-completed`);
-        const isProfileCompleted = response.data?.profileCompleted;
-        if (isProfileCompleted === false) { 
-            Alert.alert(
-                'Profile Setup Required', 
-                'You need to complete your profile setup to write a post.', 
-                [
-                    {
-                        text: 'Go to Setup',
-                        onPress: () => router.push('/(tabs)/mypage/edit' as any),
-                    },
-                    { text: 'Cancel', style: 'cancel' },
-                ]
-            );
-        } else {
-            router.push('/community/write');
-        }
-
+      const response = await api.get(`/api/v1/member/is-completed`);
+      const isProfileCompleted = response.data?.profileCompleted;
+      if (isProfileCompleted === false) {
+        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to write a post.', [
+          {
+            text: 'Go to Setup',
+            onPress: () => router.push('/(tabs)/mypage/edit' as any),
+          },
+          { text: 'Cancel', style: 'cancel' },
+        ]);
+      } else {
+        router.push('/community/write');
+      }
     } catch (e: any) {
-        console.error('[write:check] error', e);
-        Alert.alert('Error', 'Failed to check profile status. Please try again.');
-        
+      console.error('[write:check] error', e);
+      Alert.alert('Error', 'Failed to check profile status. Please try again.');
     } finally {
-        setWriteLoading(false);
+      setWriteLoading(false);
     }
   };
   const handleToggleBookmark = async (postId: number) => {
@@ -380,7 +371,7 @@ const handleWritePress = async () => {
           </IconBtn>
 
           <IconBtn onPress={() => router.push('/community/my-history')}>
-            <Icon type='person' size={24} color={theme.colors.gray.lightGray_1} />
+            <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
           </IconBtn>
         </Right>
       </Header>
@@ -416,6 +407,7 @@ const handleWritePress = async () => {
       />
 
       <WriteFab onPress={handleWritePress} />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }

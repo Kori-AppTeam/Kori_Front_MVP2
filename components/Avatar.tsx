@@ -1,14 +1,26 @@
-// components/Avatar.tsx
 import ProfileImage from '@/components/common/ProfileImage';
 import styled from 'styled-components/native';
 
-type AvatarProps = { uri?: string; size?: number; bg?: string };
+type AvatarProps = {
+  uri?: string;
+  size?: number;
+  bg?: string;
+  showVisitorOnEmpty?: boolean;   // ← 추가: 값 없을 때 방문자 처리 여부
+};
 
-export default function Avatar({ uri, size = 120, bg = '#2a2f33' }: AvatarProps) {
+export default function Avatar({
+  uri,
+  size = 120,
+  bg = '#2a2f33',
+  showVisitorOnEmpty = true,
+}: AvatarProps) {
+  const isEmpty = !uri || String(uri).trim().length === 0;
+
   return (
     <Frame $size={size} $bg={bg}>
       <Img
-        source={uri ? { uri } : require('@/assets/images/avatar-placeholder.png')}
+        imageUrl={uri}
+        isVisitor={showVisitorOnEmpty && isEmpty}
         resizeMode="cover"
       />
     </Frame>

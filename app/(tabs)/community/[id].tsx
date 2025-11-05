@@ -3,7 +3,6 @@ import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
-import ProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import SortTabs, { SortKey } from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
@@ -13,17 +12,18 @@ import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
 import { usePostDetail } from '@/hooks/queries/usePostDetail';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { usePostUI } from '@/src/store/usePostUI';
+import { theme } from '@/src/styles/theme';
 import { formatCreatedYMD } from '@/src/utils/dateUtils';
 import { loadAspectRatios } from '@/src/utils/image';
 import { LOCAL_ALLOW_ANON, resolvePostCategory } from '@/utils/category';
-import { keysToUrls, keyToUrl } from '@/utils/image';
+import { keysToUrls } from '@/utils/image';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import styled from 'styled-components/native';
-
-import { theme } from '@/src/styles/theme';
 import {
   Alert,
   Animated,
@@ -41,6 +41,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
+import { User } from '@/src/shared/types/user';
 
 const SCREEN_W = Dimensions.get('window').width;
 const H_PADDING = 32;
@@ -78,9 +79,6 @@ function ResponsiveImage({ uri, width, radius = 12 }: { uri: string; width: numb
   );
 }
 
-const AV = require('@/assets/images/character1.png');
-const DANGER = '#FF4D4F';
-
 const StyledEditInput = styled(RNTextInput)`
   min-height: 220px;
   border-radius: 8px;
@@ -96,11 +94,12 @@ EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
   const navigation = useNavigation();
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
   const { id, focusCommentId, intent, commentId } = useLocalSearchParams<{
     id: string;
     focusCommentId?: string;
@@ -326,13 +325,7 @@ export default function PostDetailScreen() {
       const status = (error as any).response?.status;
 
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to view post details.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => router.push('/(tabs)/mypage/edit' as any),
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
     }
@@ -361,7 +354,7 @@ export default function PostDetailScreen() {
       <Safe>
         <Header>
           <Back onPress={() => router.back()}>
-            <Icon type="previous" size={20} color={theme.colors.primary.white} />
+            <Icon type="previous" size={20} color={theme.colors.gray.lightGray_1} />
           </Back>
           <HeaderTitle>Post</HeaderTitle>
           <RightPlaceholder />
@@ -377,7 +370,7 @@ export default function PostDetailScreen() {
       <Safe>
         <Header>
           <Back onPress={() => router.back()}>
-            <Icon type="previous" size={20} color={theme.colors.primary.white} />
+            <Icon type="previous" size={20} color={theme.colors.gray.lightGray_1} />
           </Back>
           <HeaderTitle>Post</HeaderTitle>
           <RightPlaceholder />
@@ -389,35 +382,16 @@ export default function PostDetailScreen() {
     );
   }
 
-  const authorId: string = String(
-    post.userId ??
-      post.authorId ??
-      post.memberId ??
-      post.writerId ??
-      post.ownerId ??
-      post.creatorId ??
-      post.author?.id ??
-      post.user?.id ??
-      '',
-  );
-  const authorName: string =
-    post.userName ??
-    post.authorName ??
-    post.memberName ??
-    post.writerName ??
-    post.ownerName ??
-    post.creatorName ??
-    post.author?.name ??
-    post.user?.name ??
-    'Unknown';
+  const authorId: string = String(post.authorId ?? '');
+  const authorName: string = post.authorName ?? 'Unknown';
   const postType = post.type ?? post.category ?? post.postType ?? post.kind ?? 'unknown';
-  const isAnonymous = Boolean(post.anonymous ?? post.isAnonymous ?? post.private);
   const isBlocked = Boolean(post.blocked ?? post.isBlocked);
   const isDeleted = Boolean(post.deleted ?? post.isDeleted ?? post.status === 'DELETED');
 
-  const author = isAnonymous ? '익명' : authorName;
-  const avatarUrl = post.userImageUrl ? keyToUrl(post.userImageUrl) : undefined;
-  const avatarSrc = isAnonymous ? AV : avatarUrl ? { uri: avatarUrl } : AV;
+  const isAnonymous = Boolean(post.anonymous ?? post.isAnonymous ?? post.private);
+  const author = isAnonymous ? 'Anonymity' : authorName;
+  const avatarUrl = post.userImageUrl || undefined;
+  const isVisitorAvatar = !avatarUrl;
 
   const createdRaw = post.createdTime ?? post.createdAt ?? post.timestamp;
   const createdLabel = formatCreatedYMD(createdRaw);
@@ -717,11 +691,13 @@ export default function PostDetailScreen() {
     ]);
   };
   const handleStartChat = async () => {
+    // 2. 이미 로딩 중이거나 선택된 유저가 없으면 중단
     if (isChatLoading || !selectedUser) {
       console.log('Chat creation in progress or no user selected.');
       return;
     }
 
+    // 3. selectedUser에서 상대방 ID 추출 (키 이름은 실제 데이터에 맞게 조정 필요)
     const otherUserId = (selectedUser as any)?.id ?? (selectedUser as any)?.userId;
 
     if (!otherUserId) {
@@ -733,10 +709,13 @@ export default function PostDetailScreen() {
     setIsChatLoading(true);
 
     try {
+      // 4. API 호출
       const response = await api.post('/api/v1/chat/rooms/oneTone', {
         otherUserId: Number(otherUserId),
       });
 
+      // 5. 응답 데이터에서 채팅방 ID 추출
+      // API 응답 본문이 { "id": ..., "participants": ... } 형태이므로 response.data가 바로 채팅방 객체입니다.
       console.log('[Chat] API Response Data:', JSON.stringify(response.data, null, 2));
       const newRoom = response.data.data;
       const roomId = newRoom?.id;
@@ -747,27 +726,21 @@ export default function PostDetailScreen() {
 
       console.log(`[Chat] Successfully created room. ID: ${roomId}`);
 
+      // 6. 성공 시 프로필 모달 닫기
       setIsProfileVisible(false);
 
+      // 7. expo-router를 사용해 채팅방으로 이동
+      //    (경로는 실제 채팅방 스크린 경로에 맞게 수정하세요. 예: '/chat/[id]')
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err: any) {
+      // 8. 에러 처리
       console.error('[Chat] Failed to create chat room:', err);
       const status = err.response?.status;
 
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup before starting a chat.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit');
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
@@ -775,13 +748,17 @@ export default function PostDetailScreen() {
         status === 400 ? 'Invalid request.' : status === 401 ? 'Please log in to chat.' : 'Failed to start chat.';
       Alert.alert('Chat Error', msg);
     } finally {
+      // 9. 로딩 상태 해제
       setIsChatLoading(false);
     }
   };
 
+  // 🔽 [추가] 팔로우 요청 함수
   const handleFollow = async () => {
+    // 로딩 중이거나, 유저 정보가 없으면 중단
     if (isFollowLoading || !selectedUser) return;
 
+    // selectedUser에서 ID와 현재 팔로우 상태를 가져옵니다.
     const targetUserId = (selectedUser as any)?.userId;
     const currentStatus = (selectedUser as any)?.followStatus;
 
@@ -790,6 +767,7 @@ export default function PostDetailScreen() {
       return;
     }
 
+    // "NOT_FOLLOWING" 상태일 때만 팔로우 요청을 보냅니다.
     if (currentStatus !== 'NOT_FOLLOWING') {
       console.log(`[Follow] Action ignored. Current status: ${currentStatus}`);
       return;
@@ -799,8 +777,11 @@ export default function PostDetailScreen() {
     setIsFollowLoading(true);
 
     try {
+      // 1. API 호출: POST /api/v1/home/follow/{userId}
       await api.post(`/api/v1/home/follow/${targetUserId}`);
 
+      // 2. API 성공 시, 로컬 state를 "PENDING"으로 즉시 변경 (Optimistic UI)
+      //    (모달이 이 state를 보고 버튼 모양을 "Pending"으로 바꿀 겁니다)
       setSelectedUser((prevUser) => ({
         ...(prevUser as any),
         followStatus: 'PENDING',
@@ -808,35 +789,27 @@ export default function PostDetailScreen() {
 
       Alert.alert('Follow', 'Follow request sent!');
     } catch (err: any) {
+      // 3. 에러 처리 (백엔드 로직에 맞게)
       console.error('[Follow] Failed to send follow request:', err);
 
       const status = err.response?.status;
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile before following.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit' as any);
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
-      // 기존 에러 처리
       const errorData = err.response?.data;
-      const errorCode = errorData?.code;
+      const errorCode = errorData?.code; // 백엔드에서 보낸 에러 코드
 
       let msg = 'Failed to send follow request.';
       if (errorCode === 'PROFILE_SET_NOT_COMPLETED') {
         msg = 'You must complete your own profile before you can follow others.';
       } else if (errorCode === 'FOLLOW_ALREADY_EXISTS') {
         msg = 'You have already sent a request or are already following this user.';
+        // 혹시 모르니 state를 PENDING으로 강제 동기화
         setSelectedUser((prevUser) => ({
           ...(prevUser as any),
-          followStatus: 'PENDING',
+          followStatus: 'PENDING', // 또는 'ACCEPTED'일 수 있으나 PENDING이 더 가능성 높음
         }));
       } else if (errorCode === 'CANNOT_FOLLOW_YOURSELF') {
         msg = 'You cannot follow yourself.';
@@ -847,6 +820,7 @@ export default function PostDetailScreen() {
       setIsFollowLoading(false);
     }
   };
+
   const handleUnfollow = async () => {
     // 로딩 중이거나, 유저 정보가 없으면 중단
     if (isFollowLoading || !selectedUser) return;
@@ -949,7 +923,7 @@ export default function PostDetailScreen() {
                       onPress={() => fetchUserProfile(Number(authorId))}
                       style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
-                      <Avatar source={avatarSrc} />
+                      <Avatar imageUrl={avatarUrl} isAnonymous={isAnonymous} isVisitor={isVisitorAvatar} />
                       <Meta>
                         <Author>{author}</Author>
                         <MetaRow>
@@ -1287,6 +1261,7 @@ export default function PostDetailScreen() {
         isLoadingFollow={isFollowLoading}
         isLoadingChat={isChatLoading}
       />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
@@ -1335,7 +1310,7 @@ const Row = styled.View`
   flex-direction: row;
   align-items: center;
 `;
-const Avatar = styled.Image`
+const Avatar = styled(ProfileImage)`
   width: 34px;
   height: 34px;
   border-radius: 17px;

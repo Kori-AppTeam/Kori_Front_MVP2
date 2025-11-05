@@ -25,7 +25,7 @@ export function probeDisplayName(row: any): NameProbe {
   const firstKey = Object.keys(candidates).find((k) => candidates[k]);
   const firstVal = firstKey ? candidates[firstKey] : undefined;
 
-  const picked = firstVal ?? (isAnonymousFlag ? '익명' : row?.userName === null ? '탈퇴한 회원' : 'Unknown');
+  const picked = firstVal ?? (isAnonymousFlag ? 'Anonymity' : row?.userName === null ? '탈퇴한 회원' : 'Unknown');
 
   const reason = firstVal
     ? `first-candidate:${firstKey}`

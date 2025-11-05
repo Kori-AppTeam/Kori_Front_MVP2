@@ -35,6 +35,7 @@ import Male from '@/assets/icons/male.svg';
 import Next from '@/assets/icons/next.svg';
 import Nogender from '@/assets/icons/nogender.svg';
 import Notice from '@/assets/icons/notice.svg';
+import Notice1 from '@/assets/icons/notice_modal.svg';
 import Pagination1 from '@/assets/icons/pagination_status=1.svg';
 import Pagination2 from '@/assets/icons/pagination_status=2.svg';
 import Pagination3 from '@/assets/icons/pagination_status=3.svg';
@@ -89,6 +90,7 @@ const iconMap = {
   next: Next,
   nogender: Nogender,
   notice: Notice,
+  notice1: Notice1,
   plus: Plus,
   person: Person,
   photo: Photo,
@@ -96,7 +98,7 @@ const iconMap = {
   purpose: Purpose,
   search: Search,
   send: Send,
-  
+
   setting: Setting,
   share: Share,
   statusOn: StatusOn,
@@ -124,7 +126,7 @@ const iconMap = {
 export type IconType = keyof typeof iconMap;
 
 interface IconProps {
-  size: 16 | 20 | 24 | 32;
+  size: 16 | 20 | 24 | 32 |40;
   type: IconType;
   color?: string;
 }
@@ -156,6 +158,5 @@ const Icon = ({ size, type, color = theme.colors.primary.white }: IconProps) => 
 
   return <SelectedIcon width={size} height={size} color={color} />;
 };
-
 
 export default Icon;

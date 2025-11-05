@@ -1,7 +1,7 @@
-import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import { theme } from '@/src/styles/theme';
-import { keysToUrls, keyToUrl } from '@/utils/image';
+import { keysToUrls } from '@/utils/image';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useMemo, useRef, useState } from 'react';
 import { FlatList, Image, LayoutChangeEvent, ViewabilityConfig, ViewToken } from 'react-native';
 import styled from 'styled-components/native';
@@ -33,12 +33,10 @@ type Props = {
   onToggleBookmark?: () => void;
 };
 
-const AV = require('@/assets/images/character1.png'); // 기본 아바타
-
 export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark }: Props) {
   const isAnon =
     Boolean((data as any).isAnonymous) ||
-    String((data as any).authorName || (data as any).author || '').trim() === '익명';
+    String((data as any).authorName || (data as any).author || '').trim() === 'Anonymity';
   const showUnit = typeof data.minutesAgo === 'number';
   const timeLabel = showUnit
     ? data.minutesAgo! < 60
@@ -47,19 +45,15 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
     : data.createdAt.slice(5, 10).replace('-', '/');
 
   const viewCount = data.viewCount ?? 0;
-  const ANON_LABEL = '익명';
+  const ANON_LABEL = 'Anonymity';
 
   const avatarUrl = isAnon
     ? undefined
-    : ((data as any).avatarUrl ??
-      (data as any).userImageUrl ??
-      (typeof data.avatar === 'string' ? data.avatar : undefined));
-
-  const avatarSource = isAnon
-    ? AV
-    : typeof avatarUrl === 'string' && avatarUrl
-      ? { uri: keyToUrl(avatarUrl) }
-      : (data.avatar as any) || AV;
+    : (
+        (data as any).avatarUrl ??
+        (data as any).userImageUrl ??
+        (typeof (data as any).avatar === 'string' ? (data as any).avatar : undefined)
+      ) || undefined;
 
   const displayAuthor = isAnon
     ? ANON_LABEL
@@ -106,14 +100,17 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
     }
   }).current;
 
-  const PostImage = styled(ProfileImage)``;
   const liked = Boolean((data as any).likedByMe ?? (data as any).isLiked ?? (data as any).liked ?? false);
 
   return (
     <Wrap onPress={onPress}>
       <HeaderRow>
-        {/* 익명이면 회색 원만 보이도록 source 생략 */}
-        <Avatar source={avatarSource} />
+        {/* Anonymity이면 회색 원만 보이도록 source 생략 */}
+        <Avatar
+          imageUrl={avatarUrl}
+          isAnonymous={isAnon}
+          isVisitor={!isAnon && !avatarUrl}
+        />
 
         <Meta>
           <Author>{displayAuthor}</Author>
@@ -123,14 +120,14 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
               <CatText>{String(data.category)}</CatText>
             </CatBadge>
             <Dot>•</Dot>
-            <Icon type="eye" size={16} color={theme.colors.gray.gray_1} />
+            <AntDesign name="eyeo" size={12} color="#9aa0a6" />
             <SmallCount>{viewCount}</SmallCount>
           </SubRow>
         </Meta>
 
         <BookBtn onPress={onToggleBookmark} hitSlop={8}>
-          <Icon
-            type={data.bookmarked ? 'bookmarkSelected' : 'bookmarkNonSelected'}
+          <MaterialIcons
+            name={data.bookmarked ? 'bookmark' : 'bookmark-border'}
             size={20}
             color={data.bookmarked ? '#30F59B' : '#8a8a8a'}
           />
@@ -148,7 +145,7 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
                 const h = imgHeights[item] ?? Math.round((boxW * 9) / 16);
                 return (
                   <Slide style={{ width: boxW }}>
-                    <PostImage
+                    <Image
                       source={{ uri: item }}
                       style={{ width: '100%', height: h, borderRadius: 12 }}
                       resizeMode="contain"
@@ -167,7 +164,7 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
             />
           ) : (
             <Slide>
-              <PostImage
+              <Image
                 source={{ uri: imageUrls[0] }}
                 style={{ width: '100%', height: 180, borderRadius: 12 }}
                 resizeMode="contain"
@@ -182,12 +179,12 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
 
       <FooterRow>
         <IconBtn onPress={onToggleLike} hitSlop={8}>
-          <Icon type="thumbsUpNonSelected" size={20} color={liked ? theme.colors.primary.mint : theme.colors.gray.lightGray_1} />
+          <AntDesign name="like2" size={16} color={liked ? '#02F59B' : '#CCCFD0'} />
           <Count>{data.likes}</Count>
         </IconBtn>
 
         <IconBtn hitSlop={8}>
-          <Icon type="comment" size={20} color={theme.colors.gray.lightGray_1} />
+          <AntDesign name="message1" size={16} color="#cfd4da" />
           <Count>{data.comments}</Count>
         </IconBtn>
 

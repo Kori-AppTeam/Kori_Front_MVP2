@@ -1,18 +1,16 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import ProfileImage from '@/components/common/ProfileImage';
 import { theme } from '@/src/styles/theme';
 import { formatShortDate } from '@/src/utils/dateUtils';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import { Alert } from 'react-native';
 import styled from 'styled-components/native';
+import ProfileSetupModal from './common/ProfileSetupModal';
 import ProfileModal from './ProfileModal';
-
-const DEFAULT_AV = require('@/assets/images/character1.png');
 
 export type Comment = {
   id: string | number;
@@ -38,40 +36,23 @@ type Props = {
 };
 
 function isAnon(row: any): boolean {
-  const explicit =
-    row?.anonymous ??
-    row?.isAnonymous ??
-    row?.isAnonymousWriter ??
-    row?.writerAnonymous ??
-    (typeof row?.anonymousYn === 'string' && row.anonymousYn.toUpperCase() === 'Y');
-
-  const label = row?.author ?? row?.authorName ?? row?.nickname ?? row?.userName ?? row?.writerName ?? '';
-  const labelAnon = String(label).trim().toLowerCase() === '익명' || String(label).trim().toLowerCase() === 'anonymous';
-
-  const hasAnyName =
-    [row?.author, row?.authorName, row?.nickname, row?.userName, row?.writerName].filter(
-      (v) => !!String(v ?? '').trim(),
-    ).length > 0;
-
-  return Boolean(explicit || labelAnon || !hasAnyName);
+  return Boolean(row?.isAnonymous); // ✅ 오직 isAnonymous만
 }
 
 function resolveAuthor(row: any): string {
   const cands = [row?.author, row?.authorName, row?.memberName, row?.nickname, row?.userName, row?.writerName]
     .map((v) => (v == null ? undefined : String(v).trim()))
     .filter(Boolean) as string[];
-  return cands[0] ?? '익명';
+  return cands[0] ?? 'Anonymity';
 }
 
-function resolveAvatar(row: any): ImageSourcePropType | undefined {
+function resolveAvatarUrl(row: any): string | undefined {
   const url =
     row?.userImage ??
     row?.userImageUrl ??
     row?.avatarUrl ??
     (typeof row?.avatar === 'string' ? row?.avatar : undefined);
-  if (typeof url === 'string' && url.trim()) return { uri: url };
-  if (row?.avatar) return row.avatar as ImageSourcePropType;
-  return undefined;
+  return typeof url === 'string' && url.trim() ? url : undefined;
 }
 
 function resolveBody(row: any): string {
@@ -96,9 +77,8 @@ function resolveUserId(row: any): number | undefined {
 export default function CommentItem({ data, onPressLike, isFirst, onPressMore, onPressProfile }: Props) {
   const child = !!data?.isChild;
   const anon = isAnon(data);
-  const authorLabel = resolveAuthor(data);
-  const avatarResolved = resolveAvatar(data);
-  const avatarSrc = anon ? DEFAULT_AV : avatarResolved || DEFAULT_AV;
+  const authorLabel = anon ? 'Anonymity' : resolveAuthor(data);
+  const avatarUrl = resolveAvatarUrl(data);
   const dateLabel = useMemo(() => formatShortDate(data?.createdAt), [data?.createdAt]);
   const bodyText = resolveBody(data);
   const likeCount = resolveLikes(data);
@@ -109,6 +89,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const handlePressProfile = async () => {
     if (anon || !userId) {
@@ -160,7 +141,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
       setIsProfileVisible(false);
 
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
+        pathname: CHAT_ROUTE(roomId),
         params: { roomId: roomId },
       });
     } catch (err: any) {
@@ -168,16 +149,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
       const status = err.response?.status;
 
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup before starting a chat.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit' as any);
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
@@ -211,18 +183,8 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
       console.error('[Follow] Failed to send follow request:', err);
       const status = err.response?.status;
 
-      // 428 에러 처리
       if (status === 428) {
-        Alert.alert('Profile Setup Required', 'Please complete your profile before following.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => {
-              setIsProfileVisible(false);
-              router.push('/(tabs)/mypage/edit' as any);
-            },
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true);
         return;
       }
 
@@ -269,14 +231,14 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
           accessibilityRole="button"
           accessibilityLabel="View profile"
         >
-          <Avatar source={avatarSrc} />
+          <Avatar imageUrl={avatarUrl} isAnonymous={anon} isVisitor={!anon && !avatarUrl} />
         </AvatarButton>
 
         <Meta>
           <AuthorRow>
             {anon && (
               <AnonBadgeWrapper>
-                <AnonBadgeText>익명</AnonBadgeText>
+                <AnonBadgeText>Anonymity</AnonBadgeText>
               </AnonBadgeWrapper>
             )}
             <Author>{authorLabel}</Author>
@@ -305,6 +267,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
         isLoadingChat={isChatLoading}
         isLoadingFollow={isFollowLoading}
       />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Wrap>
   );
 }
@@ -332,7 +295,7 @@ const ReplyIcon = styled.View`
   margin-right: 6px;
 `;
 
-const Avatar = styled.Image`
+const Avatar = styled(ProfileImage)`
   width: 28px;
   height: 28px;
   border-radius: 14px;

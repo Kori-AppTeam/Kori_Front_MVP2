@@ -1,5 +1,6 @@
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
+import { LINKED_SPACE_DETAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import styled from 'styled-components/native';
@@ -9,10 +10,7 @@ const AllSpaceRoomBox = ({ data }) => {
   const onhandleNext = () => {
     const roomId = data.roomId ?? data.chatRoomId;
     router.push({
-      pathname: '/screens/chatscreen/LinkedSpaceDetail',
-      params: {
-        roomId: roomId, // props에서 바로 가져옴
-      },
+      pathname: LINKED_SPACE_DETAIL_ROUTE(roomId),
     });
   };
   return (
@@ -33,11 +31,8 @@ const AllSpaceRoomBox = ({ data }) => {
       </AllSpaceTitleContainer>
       <AllSpaceImageContainer>
         <AllSpaceImage
-          source={
-            data.roomImageUrl
-              ? { uri: data.roomImageUrl } // URL이 있으면 원격 이미지
-              : require('@/assets/images/character1.png') // 없으면 로컬 디폴트 이미지
-          }
+          imageUrl={data.roomImageUrl}       
+          isVisitor={!data.roomImageUrl}     
         />
       </AllSpaceImageContainer>
     </AllSpacesBox>

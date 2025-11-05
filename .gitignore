@@ -48,7 +48,6 @@ GoogleService-Info.plist
 google-services.json
 
 # github
-.github
 
 app-example
 .env

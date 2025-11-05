@@ -3,6 +3,7 @@ import FriendCard from '@/components/FriendCard';
 import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
 import useUnfollowAccepted from '@/hooks/mutations/useUnfollowAccepted'; // ✅ 변경
 import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useMemo, useRef, useState } from 'react';
@@ -148,7 +149,7 @@ export default function FriendsOnlyScreen() {
                   try {
                     const roomId = await createRoom({ otherUserId: item.id });
                     router.push({
-                      pathname: '/(tabs)/chat/ChattingRoomScreen',
+                      pathname: CHAT_ROUTE(roomId),
                       params: {
                         userId: String(item.id),
                         roomName: encodeURIComponent(item.name || 'Unknown'),
