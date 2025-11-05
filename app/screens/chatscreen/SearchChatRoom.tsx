@@ -6,7 +6,12 @@ import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, StatusBar, TouchableOpacity } from 'react-native';
+import {
+  FlatList,
+  Keyboard,
+  StatusBar, TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import styled from 'styled-components/native';
 
 type MyChatRoom = {
@@ -71,6 +76,7 @@ const SearchChatRoom = () => {
   return (
     <Safe>
       <StatusBar barStyle="light-content" />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Container>
         <Header>
           <TouchableOpacity onPress={() => router.back()}>
@@ -111,6 +117,7 @@ const SearchChatRoom = () => {
             ))}
         </SearchScreen>
       </Container>
+      </TouchableWithoutFeedback>
     </Safe>
   );
 };
