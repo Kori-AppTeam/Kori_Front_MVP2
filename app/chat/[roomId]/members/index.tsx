@@ -1,13 +1,14 @@
 //채팅방 구성원 확인 페이지
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import MembersBox from '@/components/MembersBox';
+import ProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+
 import {
   Alert,
   FlatList,
@@ -269,8 +270,8 @@ const ChatInsideMember = () => {
             data={members}
             keyExtractor={(item) => item.userId.toString()}
             renderItem={({ item }) => (
-              <MembersBox
-                name={item.firstName + '  ' + item.lastName}
+              <MemberRow
+                name={`${item.firstName}  ${item.lastName}`}
                 isHost={item.isHost}
                 imageUrl={item.userImageUrl}
                 onPressProfile={() => handlePressProfile(item.userId)}
@@ -563,3 +564,86 @@ const ReposrtSubmitButtonText = styled.Text`
 `;
 const CancelBox = styled(ReasonBox)``;
 const CancelText = styled(ReasonText)``;
+
+
+type MemberRowProps = {
+  name: string;
+  isHost: boolean;
+  imageUrl?: string;
+  onPressProfile: () => void;
+  onPressMore: () => void;
+};
+
+const MemberRow: React.FC<MemberRowProps> = ({
+  name,
+  isHost,
+  imageUrl,
+  onPressProfile,
+  onPressMore,
+}) => {
+  const img = imageUrl || undefined; 
+
+  return (
+    <MemberRowWrap>
+      <MemberLeft onPress={onPressProfile} activeOpacity={0.8}>
+        <MemberAvatar
+          imageUrl={img}
+          isVisitor={!img}
+        />
+        <MemberMeta>
+          <MemberName numberOfLines={1}>{name}</MemberName>
+          {isHost ? (
+            <HostBadge>
+              <HostBadgeText>Host</HostBadgeText>
+            </HostBadge>
+          ) : null}
+        </MemberMeta>
+      </MemberLeft>
+
+      <TouchableOpacity onPress={onPressMore} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <Icon type="eclipsisGaro" size={20} color={theme.colors.gray.gray_1} />
+      </TouchableOpacity>
+    </MemberRowWrap>
+  );
+};
+
+// ✅ ProfileImage 기반 아바타 (필수)
+const MemberAvatar = styled(ProfileImage)`
+  width: 42px;
+  height: 42px;
+  border-radius: 21px;
+  background: #2a2b2c;
+`;
+
+// ✅ 나머지 행 스타일
+const MemberRowWrap = styled.View`
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 4px;
+`;
+const MemberLeft = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+`;
+const MemberMeta = styled.View`
+  margin-left: 10px;
+  flex: 1;
+`;
+const MemberName = styled.Text`
+  color: #ffffff;
+  font-size: 14px;
+  font-family: PlusJakartaSans_600SemiBold;
+`;
+const HostBadge = styled.View`
+  align-self: flex-start;
+  background-color: #02f59b40;
+  padding: 4px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+`;
+const HostBadgeText = styled.Text`
+  color: #ffffff;
+  font-size: 11px;
+  font-family: PlusJakartaSans_500Medium;
+`;

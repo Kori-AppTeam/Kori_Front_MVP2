@@ -9,9 +9,6 @@ import React, { useState } from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
 
-
-const AV = require('@/assets/images/character1.png');
-
 type FollowStatus = 'SELF' | 'PENDING' | 'ACCEPTED' | 'NOT_FOLLOWING';
 type RequestMode = 'friend' | 'received' | 'sent';
 
@@ -95,7 +92,6 @@ export default function FriendCard(props: Props) {
     personalities = [],
     personalityEmojis = [],
     bio = 'Hello~ I came to Korea from\nthe U.S. as an exchange student',
-
     imageUrl,
     imageKey,
     followStatus,
@@ -116,7 +112,7 @@ export default function FriendCard(props: Props) {
   } = props;
 
   const [expanded, setExpanded] = useState(Boolean(defaultExpanded));
-  const finalAvatarUrl = imageUrl || toUrl(imageKey);
+  const finalAvatarUrl = imageUrl ?? imageKey ?? null;
 
   const effectiveStatus: FollowStatus =
      (followStatus as FollowStatus) ??
@@ -145,7 +141,10 @@ export default function FriendCard(props: Props) {
         })}
       >
         <Top>
-          <AvatarImg source={finalAvatarUrl ? { uri: finalAvatarUrl } : AV} />
+          <AvatarImg
+            imageUrl={finalAvatarUrl}   
+            isVisitor={!finalAvatarUrl} 
+          />
 
           <Name>{name}</Name>
 

@@ -1,16 +1,15 @@
 import api from '@/api/axiosInstance';
 import { removeBookmark as apiRemoveBookmark } from '@/api/community/bookmarks';
 import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
-import { keyToUrl } from '@/utils/image';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, ListRenderItem, TouchableOpacity, View, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 
-const AV = require('@/assets/images/character1.png');
 
 type ApiItem = {
   postId?: number;
@@ -27,7 +26,8 @@ type ApiItem = {
   postImages?: string[];
   createdAt?: string | number;
   createdTime?: string | number;
-  isLiked?: boolean;
+  isLiked?: boolean; 
+  isAnonymous?: boolean; 
 };
 
 type ApiResp = {
@@ -49,8 +49,10 @@ type Row = {
   body: string;
   likes: number;
   comments: number;
-  avatar: any;
-  liked: boolean;
+  avatarUrl?: string;
+  isAnonymous?: boolean;
+  isVisitor?: boolean;
+  liked: boolean;  
 };
 
 export default function BookmarksScreen() {
@@ -66,23 +68,26 @@ export default function BookmarksScreen() {
   const busyRef = useRef<Record<string, boolean>>({});
   const loadingRef = useRef(false);
 
-  const toAbs = (u?: string) => (u ? (u.startsWith('http') ? u : keyToUrl(u)) : undefined);
-
   const mapItem = useCallback((raw: ApiItem, respTs?: string): Row => {
     const postId = (raw.postId as number | undefined) ?? (typeof raw.id === 'number' ? raw.id : undefined);
 
-    const avatarUrl = toAbs(raw.userImageUrl ?? raw.userImage);
+    const isAnon = Boolean((raw as any).isAnonymous ?? (raw as any).anonymous);
+    const avatarUrl = raw.userImageUrl ?? raw.userImage;
+    const isVisitor = !avatarUrl; // 이미지가 없으면 방문자 처리
 
     return {
       postId,
       displayId: String(raw.bookmarkId ?? postId ?? cryptoRandom()),
-      author: (raw.authorName && String(raw.authorName).trim()) || 'Anonymity',
+      author: isAnon ? 'Anonymity' : (raw.authorName?.trim() || '—'),
       createdAtLabel: toDateLabel(raw.createdAt ?? raw.createdTime ?? respTs),
       views: Number((raw.viewCount ?? raw.checkCount ?? 0) as number),
       body: (raw.content && String(raw.content)) || '',
       likes: Number(raw.likeCount ?? 0),
       comments: Number(raw.commentCount ?? 0),
-      avatar: avatarUrl ? { uri: avatarUrl } : AV,
+      avatarUrl,
+      isAnonymous: isAnon,
+      isVisitor,
+
       liked: Boolean(raw.isLiked),
     };
   }, []);
@@ -174,7 +179,11 @@ export default function BookmarksScreen() {
       <Cell activeOpacity={item.postId ? 0.8 : 1} onPress={() => goPostDetail(item.postId)}>
         <RowTop>
           <RowLeft>
-            <Avatar source={item.avatar} />
+            <Avatar
+              imageUrl={item.avatarUrl}
+              isAnonymous={item.isAnonymous}
+              isVisitor={item.isVisitor}
+            />
             <Meta>
               <Author>{item.author}</Author>
               <MetaRow>
@@ -329,7 +338,7 @@ const RowLeft = styled.View`
   padding-right: 8px;
 `;
 
-const Avatar = styled.Image`
+const Avatar = styled(ProfileImage)`
   width: 36px;
   height: 36px;
   border-radius: 18px;

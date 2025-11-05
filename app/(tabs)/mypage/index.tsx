@@ -1,6 +1,6 @@
 import api from '@/api/axiosInstance';
-import Avatar from '@/components/Avatar';
 import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
 import CustomButton from '@/components/CustomButton';
 import { useDeleteAccount } from '@/hooks/mutations/useDeleteAccount';
 import { useUpdateProfile } from '@/hooks/mutations/useUpdateProfile';
@@ -282,7 +282,10 @@ export default function MyPageScreen() {
 
         <ProfileView>
           <AvatarPress onPress={openAvatarSheet}>
-            <Avatar uri={toUrl(avatarKeyOrUrl)} />
+            <AvatarMain
+              imageUrl={displayAvatarUrl}
+              isVisitor={!displayAvatarUrl}  // URL 없을 때 방문자 기본 이미지
+            />
           </AvatarPress>
 
           <Name numberOfLines={1} ellipsizeMode="tail">
@@ -538,4 +541,9 @@ const DeleteText = styled.Text`
   color: #ff5a5a;
   font-size: 14px;
   font-family: 'PlusJakartaSans_600SemiBold';
+`;
+const AvatarMain = styled(ProfileImage)`
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
 `;
