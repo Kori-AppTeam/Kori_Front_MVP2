@@ -3,6 +3,7 @@ import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import ProfileModal from '@/components/ProfileModal';
 import SortTabs, { SortKey } from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
@@ -12,6 +13,7 @@ import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
 import { usePostDetail } from '@/hooks/queries/usePostDetail';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { usePostUI } from '@/src/store/usePostUI';
 import { formatCreatedYMD } from '@/src/utils/dateUtils';
 import { loadAspectRatios } from '@/src/utils/image';
@@ -20,7 +22,6 @@ import { keysToUrls, keyToUrl } from '@/utils/image';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import styled from 'styled-components/native';
 
 import { theme } from '@/src/styles/theme';
@@ -746,8 +747,7 @@ export default function PostDetailScreen() {
       setIsProfileVisible(false);
 
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId, roomName: `${selectedUser.firstname} ${selectedUser.lastname}` },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err: any) {
       console.error('[Chat] Failed to create chat room:', err);

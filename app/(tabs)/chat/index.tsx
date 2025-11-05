@@ -2,6 +2,7 @@ import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import GroupChatRoomBox from '@/src/features/chat/components/GroupChatRoomBox';
 import MyChatRoomBox from '@/src/features/chat/components/MyChatRoomBox';
+import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import { Client } from '@stomp/stompjs';
@@ -29,7 +30,7 @@ export default function ChatScreen() {
 
   const changeTomyChat = () => setisGroupChat(false);
   const changeToGroupChat = () => setisGroupChat(true);
-  const createNewSpace = () => router.push('/chat/CreateSpaceScreen');
+  const createNewSpace = () => router.push(CREATE_LINKED_SPACE_ROUTE);
 
   // 🔹 accessToken 재발급 함수
   const refreshTokenIfNeeded = async (): Promise<string | null> => {
@@ -126,7 +127,7 @@ export default function ChatScreen() {
 
   const goSearch = () => {
     router.push({
-      pathname: '../../screens/chatscreen/SearchChatRoom',
+      pathname: CHAT_SEARCH_ROUTE,
       params: { isGroupChat: String(isGroupChat) },
     });
   };
