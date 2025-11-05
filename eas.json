@@ -32,6 +32,7 @@
         },
         "production": {
             "environment": "production",
+            "channel": "production",
             "env": {
                 "EXPO_PUBLIC_SERVER_URL": "https://dev.ko-ri.cloud",
                 "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "86972168076-3bllmjnmkf9o6o7puri902co61jonbmi.apps.googleusercontent.com",
