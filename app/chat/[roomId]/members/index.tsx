@@ -1,23 +1,22 @@
+//채팅방 구성원 확인 페이지
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
 import {
   Alert,
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
   StatusBar,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
@@ -126,8 +125,7 @@ const ChatInsideMember = () => {
 
       setIsProfileVisible(false);
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err) {
       console.error(err);

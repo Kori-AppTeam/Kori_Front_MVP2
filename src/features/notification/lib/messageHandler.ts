@@ -1,3 +1,4 @@
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { Href, router } from 'expo-router';
@@ -58,7 +59,7 @@ const TARGET_ROUTER: Record<string, Href> = {
   post: '/community/[id]',
   comment: '/community/[id]',
   followUserPost: '/community/[id]',
-  chat: '/chat/ChattingRoomScreen',
+  // chat: '/chat/ChattingRoomScreen',
   follow: '/(tabs)/mypage/follows',
   receive: '/(tabs)/mypage/friends',
 };
@@ -94,8 +95,8 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       if (!pathname.includes('chat')) router.replace('/chat');
       setTimeout(() => {
         router.navigate({
-          pathname: `/chat/ChattingRoomScreen`,
-          params: { roomId: String(data.roomId), myId: String(data.myId) },
+          pathname: CHAT_ROUTE(data.roomId),
+          params: { myId: String(data.myId) },
         });
       }, 500);
       break;

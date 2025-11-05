@@ -3,8 +3,6 @@ import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
-import ProfileImage from '@/components/common/ProfileImage';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import ProfileModal from '@/components/ProfileModal';
 import SortTabs, { SortKey } from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
@@ -14,6 +12,7 @@ import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
 import { usePostDetail } from '@/hooks/queries/usePostDetail';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
 import { formatCreatedYMD } from '@/src/utils/dateUtils';
@@ -23,6 +22,8 @@ import { keysToUrls } from '@/utils/image';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import styled from 'styled-components/native';
 import {
   Alert,
   Animated,
@@ -40,7 +41,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
-import styled from 'styled-components/native';
+import { User } from '@/src/shared/types/user';
 
 const SCREEN_W = Dimensions.get('window').width;
 const H_PADDING = 32;
@@ -93,7 +94,7 @@ EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
   const navigation = useNavigation();
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -319,7 +320,7 @@ export default function PostDetailScreen() {
     hydrateLikeFromServer(postId, liked, count);
   }, [postId, post, hydrateLikeFromServer]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (isError && error) {
       const status = (error as any).response?.status;
 
@@ -381,13 +382,8 @@ export default function PostDetailScreen() {
     );
   }
 
-  const authorId: string = String(
-      post.authorId ??
-      '',
-  );
-  const authorName: string =
-    post.authorName ??
-    'Unknown';
+  const authorId: string = String(post.authorId ?? '');
+  const authorName: string = post.authorName ?? 'Unknown';
   const postType = post.type ?? post.category ?? post.postType ?? post.kind ?? 'unknown';
   const isBlocked = Boolean(post.blocked ?? post.isBlocked);
   const isDeleted = Boolean(post.deleted ?? post.isDeleted ?? post.status === 'DELETED');
@@ -736,8 +732,7 @@ export default function PostDetailScreen() {
       // 7. expo-router를 사용해 채팅방으로 이동
       //    (경로는 실제 채팅방 스크린 경로에 맞게 수정하세요. 예: '/chat/[id]')
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err: any) {
       // 8. 에러 처리
@@ -802,7 +797,7 @@ export default function PostDetailScreen() {
         setProfileModalVisible(true);
         return;
       }
-      
+
       const errorData = err.response?.data;
       const errorCode = errorData?.code; // 백엔드에서 보낸 에러 코드
 
@@ -928,11 +923,7 @@ export default function PostDetailScreen() {
                       onPress={() => fetchUserProfile(Number(authorId))}
                       style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
-                      <Avatar
-                        imageUrl={avatarUrl}
-                        isAnonymous={isAnonymous}
-                        isVisitor={isVisitorAvatar}
-                      />
+                      <Avatar imageUrl={avatarUrl} isAnonymous={isAnonymous} isVisitor={isVisitorAvatar} />
                       <Meta>
                         <Author>{author}</Author>
                         <MetaRow>
@@ -971,10 +962,7 @@ export default function PostDetailScreen() {
                     $active={postBookmarked}
                     hitSlop={8}
                   >
-                    <Icon
-                      type={postBookmarked ?'bookmarkSelected' : 'bookmarkNonSelected'}
-                      size={20}
-                    />
+                    <Icon type={postBookmarked ? 'bookmarkSelected' : 'bookmarkNonSelected'} size={20} />
                   </BookmarkWrap>
                 </Row>
 

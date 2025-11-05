@@ -116,7 +116,7 @@ const NewSpaceCreated = () => {
       <ProfileBox>
         <ProfileImageStyled
           imageUrl={typeof spaceImageUrl === 'string' ? spaceImageUrl : undefined}
-          isVisitor={!spaceImageUrl}   // 이미지 없을 때 기본 원형만
+          isVisitor={!spaceImageUrl} // 이미지 없을 때 기본 원형만
         />
       </ProfileBox>
       <TextBox>

@@ -26,7 +26,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-SplashScreen.preventAutoHideAsync().catch(() => { });
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
@@ -85,7 +85,7 @@ export default function RootLayout() {
       setIsLoggedIn(false);
     } finally {
       setCheckingToken(false);
-      SplashScreen.hideAsync().catch(() => { });
+      SplashScreen.hideAsync().catch(() => {});
     }
   }, []);
 
@@ -96,7 +96,7 @@ export default function RootLayout() {
 
   /* ------------ foreground 메시지 수신 메서드 초기화 ------------ */
   useEffect(() => {
-    // if (!isLoggedIn) return;
+    if (!isLoggedIn || !pathname) return;
 
     const unsubscribeOnMessage = messaging().onMessage(messageHandler);
     const unsubscribeNotifee = handleNotificationPress(pathname);
@@ -104,7 +104,7 @@ export default function RootLayout() {
       unsubscribeOnMessage();
       unsubscribeNotifee();
     };
-  }, []);
+  }, [pathname]);
 
   /* 백그라운드, quit 상태에서 알림 클릭 시 관련 라우터로 이동 */
   useEffect(() => {

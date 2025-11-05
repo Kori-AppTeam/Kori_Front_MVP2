@@ -1,5 +1,6 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import ProfileImage from '@/components/common/ProfileImage';
 import { theme } from '@/src/styles/theme';
 import { formatShortDate } from '@/src/utils/dateUtils';
@@ -35,7 +36,7 @@ type Props = {
 };
 
 function isAnon(row: any): boolean {
-  return Boolean(row?.isAnonymous);   // ✅ 오직 isAnonymous만
+  return Boolean(row?.isAnonymous); // ✅ 오직 isAnonymous만
 }
 
 function resolveAuthor(row: any): string {
@@ -140,7 +141,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
       setIsProfileVisible(false);
 
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
+        pathname: CHAT_ROUTE(roomId),
         params: { roomId: roomId },
       });
     } catch (err: any) {
@@ -230,11 +231,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
           accessibilityRole="button"
           accessibilityLabel="View profile"
         >
-          <Avatar 
-            imageUrl={avatarUrl}
-            isAnonymous={anon}
-            isVisitor={!anon && !avatarUrl}
-          />
+          <Avatar imageUrl={avatarUrl} isAnonymous={anon} isVisitor={!anon && !avatarUrl} />
         </AvatarButton>
 
         <Meta>

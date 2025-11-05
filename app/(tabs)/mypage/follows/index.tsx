@@ -5,6 +5,7 @@ import useCancelFollowRequest from '@/hooks/mutations/useCancelFollowRequest';
 import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
 import useDeclineFollow from '@/hooks/mutations/useDeclineFollow';
 import { useFollowList } from '@/hooks/queries/useFollowList';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -263,7 +264,7 @@ export default function FollowListScreen() {
                     mode="received"
                     onAccept={handleAccept}
                     onCancel={handleDecline}
-                    onChat={() => {}}
+                    onChat={() => { }}
                   />
                 </Inner>
               </Page>
@@ -324,17 +325,16 @@ export default function FollowListScreen() {
                     imageUrl={item.imageUrl}
                     collapsible={false}
                     mode="sent"
-                    onAccept={() => {}}
+                    onAccept={() => { }}
                     onCancel={() => handleCancelSent(item.id)}
                     onChat={async () => {
                       try {
                         const roomId = await createRoom({ otherUserId: item.id });
                         router.push({
-                          pathname: '/(tabs)/chat/ChattingRoomScreen',
+                          pathname: CHAT_ROUTE(roomId),
                           params: {
                             userId: String(item.id),
                             roomName: encodeURIComponent(item.name || 'Unknown'),
-                            roomId,
                           },
                         });
                       } catch (e: any) {

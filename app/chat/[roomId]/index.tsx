@@ -1,8 +1,10 @@
+//채팅방 화면
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import RawProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { CHAT_MEMBER_ROUTE, CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { formatDate, formatTime } from '@/src/utils/dateUtils';
 import { AntDesign } from '@expo/vector-icons';
@@ -360,8 +362,7 @@ const ChattingRoomScreen = () => {
 
       setIsProfileVisible(false);
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err) {
       console.error(err);
@@ -380,7 +381,7 @@ const ChattingRoomScreen = () => {
   // 햄버거 버튼 눌렀을때 이동
   const onhandleNext = () => {
     router.push({
-      pathname: '/screens/chatscreen/ChatInsideMember',
+      pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
       params: { roomId, roomName },
     });
   };
@@ -606,7 +607,7 @@ const ChattingRoomScreen = () => {
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 50 : 30}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
         >
           {/* 채팅 화면 */}
           <ChattingScreen>
@@ -896,8 +897,7 @@ const ChattingScreen = styled.View`
 `;
 const ChattingLeftContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
-  })<{ showProfile?: boolean }>`
-
+}) <{ showProfile?: boolean }>`
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '1px')};
   align-self: flex-start;
   max-width: 280px;
@@ -968,7 +968,7 @@ const ChatTimeText = styled.Text`
 `;
 const ChattingRightContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
-})<{ showProfile?: boolean }>`
+}) <{ showProfile?: boolean }>`
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '5px')};
   align-self: flex-end;
   max-width: 280px;
@@ -1056,7 +1056,7 @@ const BottomInputBox = styled.TextInput`
   color: #ffffff;
   border-radius: 8px;
   width: 85%;
-  height: 45px;
+  height: 40px;
   margin-top: 10px;
   padding-left: 10px;
 `;
