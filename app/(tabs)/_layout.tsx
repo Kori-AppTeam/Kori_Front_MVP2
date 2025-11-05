@@ -21,9 +21,6 @@ export default function TabLayout() {
   const pathname = usePathname();
   const isCheckingPermissions = useRef(false);
 
-  // 채팅방 스크린들에서는 탭 바를 숨김
-  const shouldHideTabBar = pathname.includes('/CreateSpaceScreen') || pathname.includes('/ChattingRoomScreen');
-
   /* 1. FCM 토큰 등록 */
   const updateFcmToken = async () => {
     await messaging().registerDeviceForRemoteMessages();
@@ -113,15 +110,13 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarStyle: shouldHideTabBar
-            ? { display: 'none' }
-            : {
-                backgroundColor: '#1D1E1F', // 원하는 배경색
-                borderTopWidth: 1,
-                borderColor: '#353637',
-                height: TAB_BAR_HEIGHT,
-                paddingTop: 10,
-              },
+          tabBarStyle: {
+            backgroundColor: '#1D1E1F', // 원하는 배경색
+            borderTopWidth: 1,
+            borderColor: '#353637',
+            height: TAB_BAR_HEIGHT,
+            paddingTop: 10,
+          },
         }}
       >
         <Tabs.Screen

@@ -1,5 +1,7 @@
+//링크드 스페이스 생성 페이지
 import Icon from '@/components/common/Icon';
 import CustomButton from '@/components/CustomButton';
+import { CREATE_LINKED_SPACE_DONE_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { Asset } from 'expo-asset';
 import * as ImagePicker from 'expo-image-picker';
@@ -125,7 +127,7 @@ const CreateSpaceScreen = () => {
 
   const handleSave = () => {
     router.push({
-      pathname: '/screens/chatscreen/NewSpaceCreated',
+      pathname: CREATE_LINKED_SPACE_DONE_ROUTE,
       params: {
         spaceName: text,
         spaceDescription: explainText,
@@ -141,7 +143,7 @@ const CreateSpaceScreen = () => {
       <Container>
         <HeaderContainer>
           <TouchableOpacity onPress={() => router.back()}>
-            <Icon type='previous' size={24} color={theme.colors.primary.white}/>
+            <Icon type='previous' size={24} color={theme.colors.primary.white} />
           </TouchableOpacity>
           <HeaderTitleText>Create Space</HeaderTitleText>
           <TouchableOpacity onPress={handleSave}>
@@ -158,7 +160,7 @@ const CreateSpaceScreen = () => {
             <ProfileBox onPress={openAvatarSheet}>
               <ProfileImage source={avatarUrl ? { uri: avatarUrl } : AVATARS[0]} />
               <CameraContainer>
-                <Icon type='cameraColored' size={20} color={theme.colors.primary.black}/>
+                <Icon type='cameraColored' size={20} color={theme.colors.primary.black} />
               </CameraContainer>
             </ProfileBox>
           </ProfileContainer>

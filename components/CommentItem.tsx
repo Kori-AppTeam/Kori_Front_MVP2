@@ -1,9 +1,8 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { formatShortDate } from '@/src/utils/dateUtils';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
@@ -161,7 +160,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
       setIsProfileVisible(false);
 
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
+        pathname: CHAT_ROUTE(roomId),
         params: { roomId: roomId },
       });
     } catch (err: any) {
