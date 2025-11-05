@@ -7,12 +7,13 @@ import { theme } from '@/src/styles/theme';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
 import { Alert, Modal, StatusBar, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styled from 'styled-components/native';
+import * as Location from 'expo-location';
 
 enum isDuplicatedEmail {
   Init = 'Init',
@@ -42,6 +43,8 @@ const CreateAccountScreen = () => {
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
   const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
+  const pathname = usePathname();
+  const [isNextButtonClicked, setIsNextButtonClicked] = useState<boolean>(false);
 
   const [checks, setChecks] = useState({
     isnull: true,
@@ -150,10 +153,10 @@ const CreateAccountScreen = () => {
         return;
       }
 
-      const { accessToken, refreshToken, userId} = response.data;
+      const { accessToken, refreshToken, userId } = response.data;
       await SecureStore.setItemAsync(ACCESS_KEY, accessToken);
       await SecureStore.setItemAsync(REFRESH_KEY, refreshToken);
-      await SecureStore.setItemAsync("MyuserId",userId.toString());
+      await SecureStore.setItemAsync('MyuserId', userId.toString());
 
       await patchLocation(latitude, longitude);
       router.replace('./SignUpDoneScreen');
@@ -164,16 +167,27 @@ const CreateAccountScreen = () => {
   };
 
   const showModal = () => {
+    setIsNextButtonClicked(true); // 버튼 클릭 여부 저장
     setModalVisible(true); // Next 버튼 클릭 시 모달 열기
   };
 
   const showTermsAndConditions = () => {
+    setModalVisible(false);
     router.push('./TermsAndConditionsScreen');
   };
 
   const showPrivacyPolicy = () => {
+    setModalVisible(false);
     router.push('./PrivacyPolicyScreen');
   };
+
+  // next 버튼 클릭 상태에 따라 모달 열기
+  useEffect(() => {
+    // 회원가입 페이지가 아닌 경우 모달 닫음
+    if (pathname !== '/screens/login/CreateAccountScreen') return;
+
+    if (isNextButtonClicked) setModalVisible(true);
+  }, [pathname]);
 
   return (
     <SafeArea>
@@ -182,7 +196,7 @@ const CreateAccountScreen = () => {
         <HeaderContainer>
           <HeaderBox>
             <TouchableOpacity onPress={() => router.back()}>
-              <Icon type="search" size={24} color={theme.colors.primary.white} />
+              <Icon type="previous" size={24} color={theme.colors.primary.white} />
             </TouchableOpacity>
             <HeaderTitleText>Create your account</HeaderTitleText>
           </HeaderBox>
@@ -426,8 +440,14 @@ const CreateAccountScreen = () => {
         </NextButtonContainer>
       </Container>
       <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
-        <ModalOverlay activeOpacity={1}>
-          <BottomSheetContent>
+        <ModalOverlay
+          activeOpacity={1}
+          onPress={() => {
+            setModalVisible(false);
+            setIsNextButtonClicked(false);
+          }}
+        >
+          <BottomSheetContent onStartShouldSetResponder={() => true}>
             <BottomSheetHeader>
               <BottomSheetHandle />
             </BottomSheetHeader>
