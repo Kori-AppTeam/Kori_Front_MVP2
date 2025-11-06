@@ -5,7 +5,7 @@ export default {
     name: 'Kori',
     slug: 'Kori_Front',
     owner: 'koriapp',
-    version: '1.2.1', // TODO 버전 업데이트
+    version: '1.2.2', // TODO 버전 업데이트
     orientation: 'portrait',
     icon: './assets/images/Kori_Icon.png',
     scheme: 'korifront',
