@@ -12,6 +12,13 @@ export default {
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
 
+    updates: {
+      url: 'https://u.expo.dev/ebde49c4-4dbe-4c95-9f09-52f33096566c',
+    },
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
+
     splash: {
       image: './assets/images/character2.png',
       resizeMode: 'contain',
