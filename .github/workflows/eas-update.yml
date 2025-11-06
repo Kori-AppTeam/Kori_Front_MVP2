@@ -28,4 +28,4 @@ jobs:
         run: npm ci
 
       - name: 🚀 Create update
-        run: eas update --channel production --non-interactive
+        run: eas update --auto --channel production --non-interactive
