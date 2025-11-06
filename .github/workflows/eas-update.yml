@@ -28,4 +28,4 @@ jobs:
         run: npm ci
 
       - name: 🚀 Create update
-        run: eas update --branch main --message "Update from GitHub Actions" --channel production
+        run: eas update --branch main --message "Update from GitHub Actions"
