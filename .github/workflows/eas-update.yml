@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - main
+
 jobs:
   update:
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
@@ -28,4 +28,4 @@ jobs:
         run: npm ci
 
       - name: 🚀 Create update
-        run: eas update --auto --channel production --non-interactive
+        run: eas update --branch main --message "Update from GitHub Actions" --channel production
