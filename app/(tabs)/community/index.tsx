@@ -32,7 +32,7 @@ const pickNonEmpty = (...vals: any[]) => {
 
 const ICON = require('@/assets/images/IsolationMode.png');
 const VisitorImage = require('@/assets/images/character_05.svg');
-const AnonymityImage= require('@/assets/images/character_04.svg');
+const AnonymityImage = require('@/assets/images/character_04.svg');
 
 const MAX_IMAGES = 5;
 
@@ -335,10 +335,14 @@ export default function CommunityScreen() {
     }
   };
 
+  const onPostPressHandler = (postId: number) => {
+    console.log('postId:', postId);
+    router.push({ pathname: `(tabs)/community/${String(postId)}` });
+  };
   const renderPost: ListRenderItem<PostEx> = ({ item }) => (
     <PostCard
       data={{ ...item, category: cat === 'All' ? item.category : cat }}
-      onPress={() => router.push({ pathname: '/community/[id]', params: { id: String(item.postId) } })}
+      onPress={() => onPostPressHandler(item.postId)}
       onToggleLike={() => handleToggleLike(item.postId)}
       onToggleBookmark={() => handleToggleBookmark(item.postId)}
     />
