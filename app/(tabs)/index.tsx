@@ -1,6 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
-import styled from 'styled-components/native';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import FriendCard from '@/components/FriendCard';
 import useCancelFollowRequest from '@/hooks/mutations/useCancelFollowRequest';
 import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
@@ -9,9 +7,12 @@ import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
 import { useSentFollowRequestsSet } from '@/hooks/queries/useFollowList';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import useRecommendedFriends from '@/hooks/queries/useRecommendedFriends';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { Text } from '@react-navigation/elements';
 import { router } from 'expo-router';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
+import styled from 'styled-components/native';
 
 const toBirthNumber = (v: unknown): number | undefined => {
   if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
@@ -197,8 +198,8 @@ export default function HomeScreen() {
                     try {
                       const roomId = await createRoom({ otherUserId: uid });
                       router.push({
-                        pathname: '/(tabs)/chat/ChattingRoomScreen',
-                        params: { userId: String(uid), roomName: encodeURIComponent(item.name || 'Unknown'), roomId },
+                        pathname: CHAT_ROUTE(roomId),
+                        params: { userId: String(uid), roomName: encodeURIComponent(item.name || 'Unknown') },
                       });
                     } catch (err: any) {
                       const status = err.response?.status;

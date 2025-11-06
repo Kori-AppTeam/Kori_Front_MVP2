@@ -1,5 +1,6 @@
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
+import { LINKED_SPACE_DETAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -9,10 +10,7 @@ const BuzzingRoomBox = ({ data }) => {
   const router = useRouter();
   const onhandleNext = () => {
     router.push({
-      pathname: '../screens/chatscreen/LinkedSpaceDetail',
-      params: {
-        roomId: data.roomId, // props에서 바로 가져옴
-      },
+      pathname: LINKED_SPACE_DETAIL_ROUTE(data.roomId),
     });
   };
 

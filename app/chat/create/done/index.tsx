@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import { useLocalSearchParams } from 'expo-router';
 import api from '@/api/axiosInstance';
-import * as Crypto from 'expo-crypto';
-import { Buffer } from 'buffer';
-import * as FileSystem from 'expo-file-system';
+import ProfileImage from '@/components/common/ProfileImage';
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { Buffer } from 'buffer';
+import * as Crypto from 'expo-crypto';
+import * as FileSystem from 'expo-file-system';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import Toast from 'react-native-toast-message';
+import styled from 'styled-components/native';
 
 const NewSpaceCreated = () => {
   const { spaceName, spaceDescription, spaceImageUrl } = useLocalSearchParams<{
@@ -53,11 +53,11 @@ const NewSpaceCreated = () => {
       // 기본 아이콘 선택시
       let url;
       if (isIcon === 0) {
-        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/l';
+        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_01.svg';
       } else if (isIcon === 1) {
-        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_02.png';
+        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_02.svg';
       } else {
-        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_03.png';
+        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_03.svg';
       }
       await CompleteCreateNewSpace(url);
     }
@@ -114,7 +114,10 @@ const NewSpaceCreated = () => {
   return (
     <Background source={require('@/assets/images/background2.png')} resizeMode="cover">
       <ProfileBox>
-        <ProfileImage source={{ uri: spaceImageUrl }} />
+        <ProfileImageStyled
+          imageUrl={typeof spaceImageUrl === 'string' ? spaceImageUrl : undefined}
+          isVisitor={!spaceImageUrl} // 이미지 없을 때 기본 원형만
+        />
       </ProfileBox>
       <TextBox>
         <BigText>New Spaces Created</BigText>
@@ -142,10 +145,9 @@ const ProfileBox = styled.View`
   height: 160px;
   overflow: hidden;
 `;
-const ProfileImage = styled.Image`
+const ProfileImageStyled = styled(ProfileImage)`
   width: 100%;
   height: 100%;
-  resize-mode: contain;
   border-radius: 100px;
 `;
 

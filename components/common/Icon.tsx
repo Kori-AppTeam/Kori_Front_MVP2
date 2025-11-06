@@ -126,7 +126,7 @@ const iconMap = {
 export type IconType = keyof typeof iconMap;
 
 interface IconProps {
-  size: 16 | 20 | 24 | 32;
+  size: 16 | 20 | 24 | 32 |40;
   type: IconType;
   color?: string;
 }
