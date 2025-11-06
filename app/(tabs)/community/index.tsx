@@ -293,13 +293,8 @@ export default function CommunityScreen() {
       const response = await api.get(`/api/v1/member/is-completed`);
       const isProfileCompleted = response.data?.profileCompleted;
       if (isProfileCompleted === false) {
-        Alert.alert('Profile Setup Required', 'You need to complete your profile setup to write a post.', [
-          {
-            text: 'Go to Setup',
-            onPress: () => router.push('/(tabs)/mypage/edit' as any),
-          },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true); // alert를 modal로 수정
+        return;
       } else {
         router.push('/community/write');
       }
@@ -336,7 +331,6 @@ export default function CommunityScreen() {
   };
 
   const onPostPressHandler = (postId: number) => {
-    console.log('postId:', postId);
     router.push({ pathname: `(tabs)/community/${String(postId)}` });
   };
   const renderPost: ListRenderItem<PostEx> = ({ item }) => (
