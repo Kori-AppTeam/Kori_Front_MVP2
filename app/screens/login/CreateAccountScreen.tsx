@@ -150,10 +150,10 @@ const CreateAccountScreen = () => {
         return;
       }
 
-      const { accessToken, refreshToken, userId} = response.data;
+      const { accessToken, refreshToken, userId } = response.data;
       await SecureStore.setItemAsync(ACCESS_KEY, accessToken);
       await SecureStore.setItemAsync(REFRESH_KEY, refreshToken);
-      await SecureStore.setItemAsync("MyuserId",userId.toString());
+      await SecureStore.setItemAsync('MyuserId', userId.toString());
 
       await patchLocation(latitude, longitude);
       router.replace('./SignUpDoneScreen');
@@ -426,8 +426,8 @@ const CreateAccountScreen = () => {
         </NextButtonContainer>
       </Container>
       <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
-        <ModalOverlay activeOpacity={1}>
-          <BottomSheetContent>
+        <ModalOverlay activeOpacity={1} onPress={() => setModalVisible(false)}>
+          <BottomSheetContent onStartShouldSetResponder={() => true}>
             <BottomSheetHeader>
               <BottomSheetHandle />
             </BottomSheetHeader>
