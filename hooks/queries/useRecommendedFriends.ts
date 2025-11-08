@@ -6,7 +6,7 @@ export type FriendCardItem = {
   otherUserId?: number;
   name: string;
   country?: string;
-  birth?: number;
+  birth?: number | string;
   gender?: 'male' | 'female' | 'unspecified';
   purpose?: string;
   languages: string[];

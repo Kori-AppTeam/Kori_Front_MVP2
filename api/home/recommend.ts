@@ -7,7 +7,7 @@ export type RecommendedFriendDto = {
   firstname?: string | null;
   lastname?: string | null;
   gender?: string | null;
-  birthday?: number;
+  birthday?: string | null;
   country?: string | null;
   introduction?: string | null;
   purpose?: string | null;
@@ -37,16 +37,30 @@ const mapGender = (g?: string | null): FriendCardData['gender'] => {
   return 'unspecified';
 };
 
+const extractBirthYear = (dto: RecommendedFriendDto): number | undefined => {
+  const rawDate = (dto.birthday ?? (dto as any).birth ?? '').toString().trim();
+  const y = rawDate.match(/\d{4}/)?.[0];
+  if (y && Number.isFinite(+y)) return +y;
+
+  const ageRaw = (dto as any).age;
+  const age = typeof ageRaw === 'string' ? parseInt(ageRaw, 10) : Number(ageRaw);
+  if (Number.isFinite(age) && age > 0) {
+    const now = new Date().getFullYear();
+    return now - age;
+  }
+  return undefined;
+};
 
 export function toFriendCard(dto: RecommendedFriendDto, idx: number): FriendCardData {
   const name = [dto.firstname, dto.lastname].filter(Boolean).join(' ').trim() || 'Unknown';
+  const year = extractBirthYear(dto);
   const id = dto.userId ?? dto.memberId ?? `rec-${idx}`;
 
   return {
     id,
     name,
     country: dto.country ?? '-',
-    birth: dto.birthday ,
+    birth: year,
     gender: mapGender(dto.gender),
     purpose: dto.purpose ?? '-',
     languages: dto.language ?? [],

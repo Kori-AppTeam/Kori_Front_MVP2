@@ -19,7 +19,10 @@ export type RawFollowUser = {
 
   sex?: string;
   gender?: string;
-  birthday?: number;
+
+  birth?: string;
+  birthday?: string;
+
   purpose?: string;
 
   language?: string[];
@@ -42,7 +45,7 @@ export type FollowUserItem = {
   name: string;
   country?: string;
   gender?: string;
-  birth?: number;
+  birthYear?: number;
   purpose?: string;
   languages: string[];
   hobbies: string[];
@@ -50,6 +53,18 @@ export type FollowUserItem = {
   imageKey?: string;
   imageUrl?: string;
   raw: RawFollowUser;
+};
+
+const toYear = (v?: unknown): number | undefined => {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  const s = (v ?? '').toString().trim();
+  if (!s) return undefined;
+
+  const matches = s.match(/\b(19|20)\d{2}\b/g);
+  if (matches && matches.length) return Number(matches[matches.length - 1]);
+
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? undefined : d.getUTCFullYear();
 };
 
 const adapt = (u: RawFollowUser): FollowUserItem => {
@@ -62,7 +77,7 @@ const adapt = (u: RawFollowUser): FollowUserItem => {
 
   const country = u?.country ?? u?.nationality ?? '';
   const gender = u?.gender ?? u?.sex;
-  const birth = u?.birthday;
+  const birthYear = toYear(u?.birthday ?? u?.birth);
   const purpose = u?.purpose ?? '';
 
   const languages = Array.isArray(u?.languages) ? u.languages : Array.isArray(u?.language) ? u.language : [];
@@ -78,7 +93,7 @@ const adapt = (u: RawFollowUser): FollowUserItem => {
     name,
     country,
     gender,
-    birth,
+    birthYear,
     purpose,
     languages,
     hobbies,
