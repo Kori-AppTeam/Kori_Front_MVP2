@@ -14,6 +14,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
 
+const toBirthNumber = (v: unknown): number | undefined => {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  const n = Number(v as any);
+  return Number.isFinite(n) ? n : undefined;
+};
 
 export default function HomeScreen() {
   const { data: friends, isLoading, isFetching, refetch } = useRecommendedFriends(20);
@@ -134,7 +139,7 @@ export default function HomeScreen() {
                   userId={uid}
                   name={item.name || 'Unknown'}
                   country={item.country || '-'}
-                  birth={item.birth}
+                  birth={toBirthNumber(item.birth)}
                   gender={item.gender || 'unspecified'}
                   purpose={item.purpose || '-'}
                   languages={item.languages || []}

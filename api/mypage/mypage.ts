@@ -6,7 +6,7 @@ export type Profile = {
   firstname?: string;
   lastname?: string;
   gender?: string;
-  birthday?: number;
+  birthday?: string;
   country?: string;
   introduction?: string;
   purpose?: string;
@@ -32,7 +32,7 @@ export type ProfileEditBody = {
   firstname?: string;
   lastname?: string;
   gender?: string;
-  birthday?: number;
+  birthday?: string;
   country?: string;
   introduction?: string;
   purpose?: string;
