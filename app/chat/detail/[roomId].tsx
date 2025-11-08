@@ -1,11 +1,14 @@
-import Icon from '@/components/common/Icon';
-import { theme } from '@/src/styles/theme';
+//링크드 스페이스 상세 페이지
+import ProfileImage from '@/components/common/ProfileImage';
 import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import { theme } from '@/src/styles/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import Toast from 'react-native-toast-message';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import styled from 'styled-components/native';
 
 type RoomDetail = {
@@ -37,9 +40,8 @@ const LinkedSpaceDetail = () => {
     try {
       const res = await api.post(`/api/v1/chat/rooms/group/${roomId}/join`);
       router.push({
-        pathname: '/(tabs)/chat/ChattingRoomScreen',
+        pathname: CHAT_ROUTE(roomId),
         params: {
-          roomId: roomId,
           roomName: roomDetail?.roomName,
         },
       });
@@ -89,15 +91,13 @@ const LinkedSpaceDetail = () => {
         <BackgroundContainer>
           <Background source={require('@/assets/images/background1.png')} resizeMode="cover">
             <BackButton onPress={() => router.back()}>
-              <Icon type="previous" size={27} color={theme.colors.gray.lightGray_1} />
+              <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
             </BackButton>
             <ProfileBox>
-              <ProfileImage
-                source={
-                  roomDetail?.roomImageUrl
-                    ? { uri: roomDetail?.roomImageUrl } // URL이 있으면 원격 이미지
-                    : require('@/assets/images/character1.png') // 없으면 로컬 디폴트 이미지
-                }
+              <ProfileImageStyled
+                imageUrl={roomDetail?.roomImageUrl}
+                isAnonymous={false}
+                isVisitor={!roomDetail?.roomImageUrl}
               />
             </ProfileBox>
           </Background>
@@ -117,7 +117,7 @@ const LinkedSpaceDetail = () => {
                   source={
                     roomDetail?.ownerImageUrl
                       ? { uri: roomDetail?.ownerImageUrl }
-                      : require('@/assets/images/character3.png')
+                      : require('@/assets/images/character_05.svg')
                   }
                 />
               </HostImageBox>
@@ -135,13 +135,13 @@ const LinkedSpaceDetail = () => {
               <MemberImageContainer>
                 <MembersBox>
                   <FlatList
-                    data={roomDetail?.participantsImageUrls.slice(0, 5)} // 최대 5개
+                    data={(roomDetail?.participantsImageUrls ?? []).slice(0, 5)}
                     keyExtractor={(item, index) => index.toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
                       <MemberImageBox>
-                        <MemberImage source={{ uri: item }} />
+                        <MemberImage imageUrl={item} isAnonymous={false} isVisitor={!item} />
                       </MemberImageBox>
                     )}
                   />
@@ -195,10 +195,9 @@ const ProfileBox = styled.View`
   justify-content: center;
   overflow: hidden;
 `;
-const ProfileImage = styled.Image`
+const ProfileImageStyled = styled(ProfileImage)`
   width: 100%;
   height: 100%;
-  resize-mode: cover;
 `;
 const DetailContainer = styled.View`
   flex: 2;
@@ -239,10 +238,9 @@ const HostImageBox = styled.View`
   height: 50px;
   overflow: hidden;
 `;
-const HostImage = styled.Image`
+const HostImage = styled(ProfileImage)`
   width: 100%;
   height: 100%;
-  resize-mode: cover;
 `;
 const HostNameText = styled.Text`
   font-size: 15px;
@@ -302,10 +300,9 @@ const MemberImageBox = styled.View`
   height: 30px;
   flex-direction: row;
 `;
-const MemberImage = styled.Image`
+const MemberImage = styled(ProfileImage)`
   width: 100%;
   height: 100%;
-  resize-mode: contain;
 `;
 const MemberCountText = styled.Text`
   color: #cccfd0;

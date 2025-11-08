@@ -40,30 +40,36 @@ function isAnonRow(r: RawComment): boolean {
   const label = (r as any).authorName ?? (r as any).userName ?? (r as any).nickname ?? (r as any).writerName ?? '';
   const lab = String(label).trim().toLowerCase();
 
-  return Boolean(yn || lab === '익명' || lab === 'anonymous' || !String(label).trim());
+  return Boolean(yn || lab === 'Anonymity' || lab === 'anonymous' || !String(label).trim());
 }
 
-function mapRow(r: RawComment): Comment {
-  const anon = isAnonRow(r);
+function mapRow(r: RawComment): Comment &{
+  isAnonymous?: boolean;
+  userImageUrl?: string;
+  userImage?: string;
+  avatarUrl?: string;
+}{
+  const anon = Boolean((r as any).isAnonymous);
 
   const authorLabel =
-    (r as any).authorName ?? (r as any).userName ?? (r as any).nickname ?? (r as any).writerName ?? '익명';
+    (r as any).authorName  ?? 'Anonymity';
 
-  const avatarUrl = (r as any).userImage ?? (r as any).userImageUrl ?? (r as any).avatarUrl;
+  const url = (r as any).userImage;
 
-  const userId = Number((r as any).authorId ?? (r as any).userId ?? (r as any).memberId ?? (r as any).writerId ?? 0);
+  const userId = Number((r as any).authorId ?? 0);
   return {
     id: String((r as any).commentId ?? (r as any).id),
     author: authorLabel,
     authorId: userId > 0 ? userId : undefined,
-    avatar: avatarUrl ? { uri: avatarUrl } : require('@/assets/images/character1.png'),
     createdAt: toYmd((r as any).createdAt),
     body: String((r as any).content ?? (r as any).comment ?? ''),
     likes: Number((r as any).likeCount ?? (r as any).likes ?? 0),
     likedByMe: Boolean((r as any).likedByMe ?? (r as any).isLiked ?? (r as any).isLike ?? false),
     isChild: Boolean((r as any).parentId ?? (r as any).isChild),
     hotScore: 0,
-    anonymous: anon,
+    isAnonymous: anon,   // (반드시)
+    anonymous: anon,     // (호환용)
+    userImageUrl: url, 
   };
 }
 

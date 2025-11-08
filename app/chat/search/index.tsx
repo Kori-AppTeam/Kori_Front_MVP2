@@ -1,3 +1,4 @@
+//채팅방 검색 화면
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import AllSpaceRoomBox from '@/src/features/chat/components/AllSpaceRoomBox';
