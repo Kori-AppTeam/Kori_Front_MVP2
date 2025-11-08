@@ -8,7 +8,7 @@ interface BirthPickerProps {
   date?: string;
 }
 
-export default function BirthPicker({ isShow, onClose, date, setDate }: BirthPickerProps) {
+export default function BirthPicker({ isShow, onClose, date = '01/01/2000', setDate }: BirthPickerProps) {
   const minDate = useMemo(() => new Date(1900, 0, 1), []);
   const maxDate = useMemo(() => {
     return new Date(new Date().setHours(0, 0, 0, 0));
