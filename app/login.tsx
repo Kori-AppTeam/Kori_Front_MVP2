@@ -16,20 +16,21 @@ import {
 import { CommonActions } from '@react-navigation/native';
 import axios from 'axios';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { Asset } from 'expo-asset';
 import { randomUUID } from 'expo-crypto';
 import { useNavigation, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Animated,
-  Dimensions,
   ImageBackground,
   Modal,
   Platform,
   StatusBar,
   TouchableOpacity,
-  useWindowDimensions,
+  useWindowDimensions
 } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -51,13 +52,18 @@ type AppLoginResponse = {
 };
 
 type OnBoardingItem = {
-  id: string; // id는 문자열
-  image: any; // require()로 불러오기 때문에 any 사용
-  TitleText: string; // 제목 텍스트
-  SubTitleText: string; // 부제목 텍스트
+  id: string;
+  image: any; // require 사용
+  TitleText: string;
+  SubTitleText: string;
 };
 
-const { width } = Dimensions.get('window');
+// ✅ 프리로드 대상 에셋
+const onboardingSources = [
+  require('@/assets/images/onboarding1.png'),
+  require('@/assets/images/onboarding2.png'),
+  require('@/assets/images/onboarding3.png'),
+];
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -72,22 +78,42 @@ const LoginScreen = () => {
   const [appleLoading, setAppleLoading] = useState(false);
   const [isAppleLogin, setIsAppleLogin] = useState(false);
 
+  // ✅ 에셋 프리로드 준비 상태
+  const [assetsReady, setAssetsReady] = useState(false);
+
+  // ✅ 첫 렌더 전에 온보딩 이미지 프리로드
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        await Promise.all(
+          onboardingSources.map(src => Asset.fromModule(src).downloadAsync())
+        );
+      } catch (e) {
+        console.warn('onboarding images preload failed', e);
+      } finally {
+        if (mounted) setAssetsReady(true);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
   const onBoardingData: OnBoardingItem[] = [
     {
       id: '1',
-      image: require('@/assets/images/onboarding1.png'),
+      image: onboardingSources[0],
       TitleText: 'Meet New friends',
       SubTitleText: 'Connect with people abroad in Korea for\nstudy, work, travel, or more.',
     },
     {
       id: '2',
-      image: require('@/assets/images/onboarding2.png'),
+      image: onboardingSources[1],
       TitleText: 'Chat Without Barriers',
       SubTitleText: 'Chat in your own language.\nJust hit the translate button to read theirs.',
     },
     {
       id: '3',
-      image: require('@/assets/images/onboarding3.png'),
+      image: onboardingSources[2],
       TitleText: 'Connect in our community',
       SubTitleText: 'Have questions or stories to tell?\nJoin in and talk freely with everyone.',
     },
@@ -132,7 +158,6 @@ const LoginScreen = () => {
       if (isNewUser) {
         showModal();
       } else {
-        // 기존 화면 스택 삭제 후 tab으로 이동
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -148,7 +173,7 @@ const LoginScreen = () => {
   // 구글 로그인
   const googleSignIn = async () => {
     try {
-      setGoogleLoading(true); // 로딩 시작
+      setGoogleLoading(true);
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
 
@@ -156,8 +181,7 @@ const LoginScreen = () => {
         setUserInfo({ userInfo: response.data });
         const code = response.data.serverAuthCode;
         if (!code) {
-          setGoogleLoading(false); // 로딩 끝
-
+          setGoogleLoading(false);
           return;
         }
         await sendGoogleTokenToServer(code);
@@ -177,7 +201,7 @@ const LoginScreen = () => {
         console.error('Google Sign-In 이외 오류', error);
       }
     } finally {
-      setGoogleLoading(false); // 로딩 끝
+      setGoogleLoading(false);
     }
   };
 
@@ -195,7 +219,6 @@ const LoginScreen = () => {
       });
 
       const res = await axios.post<AppLoginResponse>(
-        // 애플 로그인 API 주소로 바꿔야함
         `${Config.SERVER_URL}/api/v1/member/apple/app-login`,
         {
           identityToken: credential.identityToken,
@@ -227,7 +250,6 @@ const LoginScreen = () => {
           const res = await api.get(`${Config.SERVER_URL}/api/v1/member/${userId}/is-apple`);
           const { isRejoiningWithoutFullName } = res.data.data;
           if (isRejoiningWithoutFullName) {
-            // 알림 띄워주기
             Alert.alert(
               'Apple Sign-In Not Completed!',
               [
@@ -238,7 +260,6 @@ const LoginScreen = () => {
               [{ text: 'OK', onPress: () => console.log('ok') }],
             );
           } else {
-            // 바로 약관 동의 보여주기
             showModal();
             setIsAppleLogin(true);
           }
@@ -246,7 +267,6 @@ const LoginScreen = () => {
           console.error('error', error);
         }
       } else {
-        // 기존 화면 스택 삭제 후 tab으로 이동
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -264,25 +284,32 @@ const LoginScreen = () => {
     }
   };
 
-  // 이메일 로그인 화면으로 이동
   const goEmailLoginScreen = async () => {
     router.push('./screens/login/GeneralLoginScreen');
   };
 
-  // 약관 동의 화면 보여줌
   const showModal = () => {
     setModalVisible(true);
   };
 
-  // TermsAndConditions 상세 페이지
   const showTermsAndConditions = () => {
     router.push('/screens/login/TermsAndConditionsScreen');
   };
 
-  // PrivacyPolicy 상세 페이지
   const showPrivacyPolicy = () => {
     router.push('/screens/login/PrivacyPolicyScreen');
   };
+
+  // ✅ 프리로드가 끝나기 전에는 로딩 UI
+  if (!assetsReady) {
+    return (
+      <SafeArea>
+        <Container style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator />
+        </Container>
+      </SafeArea>
+    );
+  }
 
   return (
     <SafeArea>
@@ -296,13 +323,25 @@ const LoginScreen = () => {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.id}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: true }
+            )}
             onMomentumScrollEnd={(e) => {
               const page = Math.round(e.nativeEvent.contentOffset.x / width);
               setCurrentPage(page);
             }}
+            // ✅ 초기 렌더/리사이클 안정화
+            initialNumToRender={3}
+            windowSize={3}
+            removeClippedSubviews={false}
             renderItem={({ item }) => (
-              <Slide source={item.image} resizeMode="cover" style={{ width, height: height * 0.55 }}>
+              <Slide
+                source={item.image}
+                defaultSource={onboardingSources[0]} // 첫 페인트 보완
+                resizeMode="cover"
+                style={{ width, height: height * 0.55 }}
+              >
                 <Overlay>
                   <OnBoardingText>{item.TitleText}</OnBoardingText>
                   <OnBoardingSubText>{item.SubTitleText}</OnBoardingSubText>
@@ -330,6 +369,7 @@ const LoginScreen = () => {
             See how we use your data in our <HighlightText> Privacy Policy.</HighlightText>
           </SmallText>
         </ButtonContainer>
+
         <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
           <ModalOverlay activeOpacity={1}>
             <BottomSheetContent>
@@ -405,7 +445,7 @@ const OnBoardingContainer = styled.View`
   flex: 2;
 `;
 
-const AnimatedFlatList = styled(Animated.FlatList)``;
+const AnimatedFlatList = styled(Animated.FlatList as any)``;
 
 const Slide = styled(ImageBackground)`
   flex: 1;
@@ -414,7 +454,7 @@ const Slide = styled(ImageBackground)`
 
 const Overlay = styled.View`
   position: absolute;
-  bottom: -25;
+  bottom: -25px;
   padding: 16px 24px;
   border-radius: 12px;
   align-items: center;
@@ -460,8 +500,8 @@ const SmallText = styled.Text`
 `;
 
 const HighlightText = styled.Text`
-  color: #ffffff; /* 원하는 색상 */
-  font-size: 12px; /* 원하는 크기 */
+  color: ${theme.colors.primary.white};
+  font-size: 12px;
   font-family: PlusJakartaSans_600SemiBold;
 `;
 
@@ -544,7 +584,7 @@ const CheckText = styled.Text`
   flex: 1;
 `;
 
-const ConfirmButton = styled.TouchableOpacity`
+const ConfirmButton = styled.TouchableOpacity<{ allCheck: boolean }>`
   opacity: ${(props) => (props.allCheck ? 1 : 0.5)};
   background-color: #02f59b;
   height: 50px;
