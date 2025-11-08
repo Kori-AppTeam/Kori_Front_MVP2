@@ -20,7 +20,7 @@ import { Config } from '@/src/lib/config';
 import api from '@/api/axiosInstance';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import { Alert, Modal, Image as RNImage } from 'react-native';
+import { Alert, Modal, Image as RNImage, TouchableOpacity } from 'react-native';
 import { theme } from '@/src/styles/theme';
 import Icon from '@/components/common/Icon';
 import BirthPicker from '@/src/shared/components/BirthPicker';
@@ -440,17 +440,18 @@ export default function EditProfileScreen() {
 
         <Field>
           <LabelText error={!!errors.birth}>Birth</LabelText>
-          <BirthInput
-            value={birth}
-            placeholder="MM/DD/YY"
-            placeholderTextColor="#EDEDED99"
-            onBlur={handleBlur('birth')}
-            error={!!(errors.birth && touched.birth)}
-            editable={false}
-            showSoftInputOnFocus={false}
-            onPressIn={() => setShowBirthPicker(true)}
-          />
-
+          <TouchableOpacity onPress={() => setShowBirthPicker(true)}>
+            <BirthInput
+              value={birth}
+              placeholder="MM/DD/YY"
+              placeholderTextColor="#EDEDED99"
+              onBlur={handleBlur('birth')}
+              error={!!(errors.birth && touched.birth)}
+              editable={false}
+              showSoftInputOnFocus={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
           {errors.birth && touched.birth && <ErrorText>{errors.birth}</ErrorText>}
         </Field>
 
