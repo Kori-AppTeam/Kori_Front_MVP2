@@ -33,6 +33,8 @@ type Props = {
   onToggleBookmark?: () => void;
 };
 
+const AV = require('@/assets/images/character1.png');
+
 export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark }: Props) {
   const isAnon =
     Boolean((data as any).isAnonymous) ||
@@ -42,18 +44,17 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
     ? data.minutesAgo! < 60
       ? `${data.minutesAgo} min ago`
       : `${Math.floor(data.minutesAgo! / 60)} hours ago`
-    : data.createdAt.slice(5, 10).replace('-', '/');
+    : data.createdAt.slice(0, 10).replace(/-/g, '/');
 
   const viewCount = data.viewCount ?? 0;
   const ANON_LABEL = 'Anonymity';
 
   const avatarUrl = isAnon
     ? undefined
-    : (
-        (data as any).avatarUrl ??
+    : ((data as any).avatarUrl ??
         (data as any).userImageUrl ??
-        (typeof (data as any).avatar === 'string' ? (data as any).avatar : undefined)
-      ) || undefined;
+        (typeof (data as any).avatar === 'string' ? (data as any).avatar : undefined)) ||
+      undefined;
 
   const displayAuthor = isAnon
     ? ANON_LABEL
@@ -106,11 +107,7 @@ export default function PostCard({ data, onPress, onToggleLike, onToggleBookmark
     <Wrap onPress={onPress}>
       <HeaderRow>
         {/* Anonymity이면 회색 원만 보이도록 source 생략 */}
-        <Avatar
-          imageUrl={avatarUrl}
-          isAnonymous={isAnon}
-          isVisitor={!isAnon && !avatarUrl}
-        />
+        <Avatar imageUrl={avatarUrl} isAnonymous={isAnon} isVisitor={!isAnon && !avatarUrl} />
 
         <Meta>
           <Author>{displayAuthor}</Author>
@@ -205,9 +202,9 @@ const HeaderRow = styled.View`
   align-items: center;
 `;
 const Avatar = styled(ProfileImage)`
-  width: 34px;
-  height: 34px;
-  border-radius: 17px;
+  width: 44px;
+  height: 44px;
+  border-radius: 100px;
   background: #2a2b2c;
 `;
 const Meta = styled.View`
@@ -218,6 +215,7 @@ const Author = styled.Text`
   color: #fff;
   font-size: 13px;
   font-family: 'PlusJakartaSans_700Bold';
+  margin-bottom: 5px;
 `;
 const SubRow = styled.View`
   margin-top: 2px;
@@ -278,7 +276,7 @@ const Title = styled.Text`
 `;
 const Body = styled.Text`
   color: #d9dcdf;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 18px;
 `;
 const FooterRow = styled.View`
@@ -294,7 +292,7 @@ const IconBtn = styled.Pressable`
 const Count = styled.Text`
   color: #cfd4da;
   margin-left: 6px;
-  font-size: 12px;
+  font-size: 14px;
 `;
 const More = styled.Text`
   margin-left: auto;
