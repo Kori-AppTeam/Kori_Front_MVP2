@@ -428,6 +428,7 @@ const Header = styled.View`
 const Left = styled.View`
   flex-direction: row;
   align-items: center;
+  margin-left: 10px;
 `;
 const Title = styled.Text`
   color: #ffffff;
@@ -454,7 +455,8 @@ const ChipsWrap = styled.View`
 `;
 const SortWrap = styled.View`
   margin-top: 20px;
-  margin-bottom: 14px;
+  margin-left: 10px;
+  margin-bottom: 10px;
 `;
 const List = styled(FlatList as React.ComponentType<FlatListProps<PostEx>>)``;
 const FooterLoading = styled.View`
