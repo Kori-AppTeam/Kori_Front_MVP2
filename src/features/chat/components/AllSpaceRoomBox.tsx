@@ -31,11 +31,8 @@ const AllSpaceRoomBox = ({ data }) => {
       </AllSpaceTitleContainer>
       <AllSpaceImageContainer>
         <AllSpaceImage
-          source={
-            data.roomImageUrl
-              ? { uri: data.roomImageUrl } // URL이 있으면 원격 이미지
-              : require('@/assets/images/character1.png') // 없으면 로컬 디폴트 이미지
-          }
+          imageUrl={data.roomImageUrl}       
+          isVisitor={!data.roomImageUrl}     
         />
       </AllSpaceImageContainer>
     </AllSpacesBox>

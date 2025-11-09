@@ -1,5 +1,5 @@
-//링크드 스페이스 생성 완료 페이지
 import api from '@/api/axiosInstance';
+import ProfileImage from '@/components/common/ProfileImage';
 import axios from 'axios';
 import { Buffer } from 'buffer';
 import * as Crypto from 'expo-crypto';
@@ -53,11 +53,11 @@ const NewSpaceCreated = () => {
       // 기본 아이콘 선택시
       let url;
       if (isIcon === 0) {
-        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/l';
+        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_01.svg';
       } else if (isIcon === 1) {
-        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_02.png';
+        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_02.svg';
       } else {
-        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_03.png';
+        url = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_03.svg';
       }
       await CompleteCreateNewSpace(url);
     }
@@ -114,7 +114,10 @@ const NewSpaceCreated = () => {
   return (
     <Background source={require('@/assets/images/background2.png')} resizeMode="cover">
       <ProfileBox>
-        <ProfileImage source={{ uri: spaceImageUrl }} />
+        <ProfileImageStyled
+          imageUrl={typeof spaceImageUrl === 'string' ? spaceImageUrl : undefined}
+          isVisitor={!spaceImageUrl} // 이미지 없을 때 기본 원형만
+        />
       </ProfileBox>
       <TextBox>
         <BigText>New Spaces Created</BigText>
@@ -142,10 +145,9 @@ const ProfileBox = styled.View`
   height: 160px;
   overflow: hidden;
 `;
-const ProfileImage = styled.Image`
+const ProfileImageStyled = styled(ProfileImage)`
   width: 100%;
   height: 100%;
-  resize-mode: contain;
   border-radius: 100px;
 `;
 

@@ -6,7 +6,7 @@ export type AcceptedFriendRow = {
   firstname?: string;
   lastname?: string;
   gender?: string;
-  birthday?: string;
+  birthday?: number;
   country?: string;
   introduction?: string;
   purpose?: string;

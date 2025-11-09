@@ -30,7 +30,8 @@ const pickNonEmpty = (...vals: any[]) => {
 };
 
 const ICON = require('@/assets/images/IsolationMode.png');
-const AV = require('@/assets/images/character1.png');
+const VisitorImage = require('@/assets/images/character_05.svg');
+const AnonymityImage = require('@/assets/images/character_04.svg');
 
 const MAX_IMAGES = 5;
 
@@ -116,7 +117,7 @@ type PostEx = Post & {
 };
 
 const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
-  const isAnon = (row as any)?.isAnonymous ?? (row as any)?.anonymous ?? false;
+  const isAnon = Boolean(row.isAnonymous);
 
   const createdRaw = row.createdAt ?? row.createdTime;
   const liked = (row as any).likedByMe ?? (row as any).isLike ?? (row as any).isLiked ?? false;
@@ -128,6 +129,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
 
   const pickedRaw = pickNonEmpty(row.authorName, row.userName, row.nickname, row.memberName, row.writerName);
   const display = isMeaningfulName(pickedRaw) ? pickedRaw : isAnon ? 'Anonymous' : '—';
+  const safeUserImageUrl = !isAnon && row.userImageUrl ? row.userImageUrl : undefined;
 
   const niceCategory =
     row.boardCategory && typeof row.boardCategory === 'string'
@@ -139,8 +141,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
     postId: row.postId,
     author: display,
     authorName: display,
-    isAnonymous: Boolean(isAnon),
-    avatar: AV,
+    isAnonymous: isAnon,
     category: niceCategory,
     createdAt: toDateLabel(createdRaw, respTimestamp),
     body: row.contentPreview ?? row.content ?? '',
@@ -150,7 +151,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
     hotScore: typeof row.score === 'number' ? row.score : 0,
     likedByMe: Boolean(liked),
     viewCount: Number(row.viewCount ?? 0),
-    ...(row.userImageUrl ? { userImageUrl: row.userImageUrl } : {}),
+    ...(safeUserImageUrl ? { userImageUrl: safeUserImageUrl } : {}),
   };
 };
 
@@ -332,10 +333,14 @@ export default function CommunityScreen() {
     }
   };
 
+  const onPostPressHandler = (postId: number) => {
+    console.log('postId:', postId);
+    router.push({ pathname: `(tabs)/community/${String(postId)}` });
+  };
   const renderPost: ListRenderItem<PostEx> = ({ item }) => (
     <PostCard
       data={{ ...item, category: cat === 'All' ? item.category : cat }}
-      onPress={() => router.push({ pathname: '/community/[id]', params: { id: String(item.postId) } })}
+      onPress={() => onPostPressHandler(item.postId)}
       onToggleLike={() => handleToggleLike(item.postId)}
       onToggleBookmark={() => handleToggleBookmark(item.postId)}
     />

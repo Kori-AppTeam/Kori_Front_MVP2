@@ -91,7 +91,7 @@ function resolveAuthor(row: any): string {
   ]
     .map((v) => (v == null ? undefined : String(v).trim()))
     .filter(Boolean) as string[];
-  return (isAnon ? cands[0] || '익명' : cands[0]) || '익명';
+  return (isAnon ? cands[0] || 'Anonymity' : cands[0]) || 'Anonymity';
 }
 
 const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {

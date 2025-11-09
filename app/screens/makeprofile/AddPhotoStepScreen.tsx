@@ -1,7 +1,7 @@
 import api from '@/api/axiosInstance';
+import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import Fontisto from '@expo/vector-icons/Fontisto';
+import { theme } from '@/src/styles/theme';
 import axios from 'axios';
 import { Buffer } from 'buffer';
 import * as Crypto from 'expo-crypto';
@@ -218,7 +218,6 @@ export default function AddPhotoStepScreen({}) {
         ...profileWithoutPhoto,
         imageKey,
       };
-
       // 서버로 전송
       const res = await api.patch('/api/v1/member/profile/setup', payload);
       router.dismissAll(); // 네비게이션 스택 다 비움
@@ -231,7 +230,7 @@ export default function AddPhotoStepScreen({}) {
 
 const handleSkip = async () => { 
   setLoading(true);
-  const defaultAvatarUrl = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_01.svg';
+  const defaultAvatarUrl = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_05.svg';
   
   try {
     await CompleteProfile(defaultAvatarUrl); 
@@ -266,7 +265,7 @@ const handleSkip = async () => {
               </ImageContainer>
               {selectedAvatar === index && !selectedPhoto && (
                 <CheckmarkContainer>
-                  <FontAwesome6 name="check" size={19} color="black" />
+                  <Icon type="check" size={24} color={theme.colors.primary.black} />
                 </CheckmarkContainer>
               )}
             </AvatarContainer>
@@ -280,13 +279,13 @@ const handleSkip = async () => {
                 </PhotoContainer>
                 {selectedPhoto && (
                   <CheckmarkContainer>
-                    <FontAwesome6 name="check" size={19} color="black" />
+                    <Icon type="check" size={24} color={theme.colors.primary.black} />
                   </CheckmarkContainer>
                 )}
               </>
             ) : (
               <CameraAvatar>
-                <Fontisto name="camera" size={30} color="#b3b2ad" />
+                <Icon type="cameraColored" size={40} color={theme.colors.gray.lightGray_1} />
               </CameraAvatar>
             )}
           </AvatarContainer>
