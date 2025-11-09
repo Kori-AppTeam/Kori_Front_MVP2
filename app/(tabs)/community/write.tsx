@@ -8,12 +8,11 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
   Image as RNImage,
   TextInput as RNTextInput,
   ScrollView,
-  TouchableWithoutFeedback,
   View,
+  FlatList,
 } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -28,12 +27,11 @@ import { uploadImageToPresignedUrl } from '@/utils/uploadImageToPresignedUrl';
 import { router, useLocalSearchParams } from 'expo-router';
 
 const LOCAL_ALLOW_ANON = new Set<Category>(['Free talk', 'Q&A']);
-
 const CATS: Category[] = ['News', 'Tip', 'Q&A', 'Event', 'Free talk', 'Activity'];
 const GREEN = '#30F59B';
 
 export default function WriteScreen() {
-  const savingRef = useRef(false);
+  const savingRef = useRef<{ current: boolean }>({ current: false });
   const [saving, setSaving] = useState(false);
 
   const params = useLocalSearchParams<{ mode?: string; postId?: string; initial?: string }>();
@@ -42,24 +40,20 @@ export default function WriteScreen() {
 
   const [category, setCategory] = useState<Category>('Activity');
   const boardId = useMemo(() => CATEGORY_TO_BOARD_ID[category], [category]);
+  const [catOpen, setCatOpen] = useState(false);
 
   const { data: writeOpt, isFetching: loadingOpt, isError, error } = useBoardWriteOptions(boardId);
   const serverAnonymousAllowed = writeOpt?.anonymousWritable ?? false;
 
+  useEffect(() => console.log('[write-options:request]', { boardId }), [boardId]);
   useEffect(() => {
-    console.log('[write-options:request]', { boardId });
-  }, [boardId]);
-  useEffect(() => {
-    if (loadingOpt) console.log('[write-options:loading]', { boardId });
-  }, [loadingOpt, boardId]);
-  useEffect(() => {
-    if (writeOpt) {
-      console.log('[write-options:success]', {
-        boardId,
-        response: writeOpt,
-        serverAnonymousAllowed,
-      });
+    if (loadingOpt) {
+      console.log('[write-options:loading]', { boardId });
     }
+  }, [loadingOpt, boardId]);
+
+  useEffect(() => {
+    if (writeOpt) console.log('[write-options:success]', { boardId, response: writeOpt, serverAnonymousAllowed });
   }, [writeOpt, boardId, serverAnonymousAllowed]);
   useEffect(() => {
     if (isError) {
@@ -75,13 +69,9 @@ export default function WriteScreen() {
 
   const [body, setBody] = useState<string>(params.initial ?? '');
   const [anonymous, setAnonymous] = useState(false);
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [catOpen, setCatOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
-
   const inputRef = useRef<RNTextInput>(null);
   const canSave = useMemo(() => body.trim().length > 0, [body]);
-
   const canToggleAnon = LOCAL_ALLOW_ANON.has(category);
 
   useEffect(() => {
@@ -106,9 +96,8 @@ export default function WriteScreen() {
 
     const { status, granted, canAskAgain } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!granted) {
-      if (!canAskAgain) {
+      if (!canAskAgain)
         Alert.alert('Permission Required', 'Please allow Photos access in Settings > [App Name] > Photos.');
-      }
       return;
     }
 
@@ -117,34 +106,32 @@ export default function WriteScreen() {
       allowsMultipleSelection: true,
       quality: 0.9,
     });
+
     if (!res.canceled) {
       const uris = res.assets.map((a) => a.uri);
       setImages((prev) => [...prev, ...uris]);
     }
   }
 
-  const pickImage = async () => {
-    setPickerOpen(false);
-    await confirmPurposeAndPick(setImages);
-  };
-
-  const removeImage = (uri: string) => {
-    console.log('[image:remove]', uri);
-    setImages((prev) => prev.filter((u) => u !== uri));
-  };
+  const pickImage = async () => await confirmPurposeAndPick(setImages);
+  const removeImage = (uri: string) => setImages((prev) => prev.filter((u) => u !== uri));
 
   const onSave = async () => {
-    if (!canSave) return;
-    if (savingRef.current || presignMutation.isPending || createMutation.isPending || updateMutation.isPending) {
+    if (
+      !canSave ||
+      savingRef.current.current ||
+      presignMutation.isPending ||
+      createMutation.isPending ||
+      updateMutation.isPending
+    )
       return;
-    }
-    savingRef.current = true;
+
+    savingRef.current.current = true;
     setSaving(true);
     const content = body.trim();
 
     try {
       let uploadedKeys: string[] = [];
-
       if (images.length > 0) {
         const uploadSessionId = `sess_${Date.now()}`;
         const files = images.map((uri, idx) => {
@@ -152,70 +139,32 @@ export default function WriteScreen() {
           return { filename, contentType: 'image/jpeg' as const };
         });
 
-        console.log('[presign:request]', { uploadSessionId, filesCount: files.length, files });
-
-        const presignRes = await presignMutation.mutateAsync({
-          imageType: 'POST',
-          uploadSessionId,
-          files,
-        });
+        const presignRes = await presignMutation.mutateAsync({ imageType: 'POST', uploadSessionId, files });
         await Promise.all(
           presignRes.map((p, i) =>
-            uploadImageToPresignedUrl({
-              putUrl: p.putUrl,
-              headers: p.headers ?? {},
-              fileUri: images[i],
-            }),
+            uploadImageToPresignedUrl({ putUrl: p.putUrl, headers: p.headers ?? {}, fileUri: images[i] }),
           ),
         );
         uploadedKeys = presignRes.map((p) => p.key);
-
-        console.log('[upload:done]', { uploadedKeys });
       }
 
       if (isEdit && postIdNum) {
-        console.log('[post:update:request]', {
-          postId: postIdNum,
-          contentLen: content.length,
-          images: uploadedKeys,
-        });
-        const res = await updateMutation.mutateAsync({
+        await updateMutation.mutateAsync({
           postId: postIdNum,
           body: { content, images: uploadedKeys, removedImages: [] },
         });
         Alert.alert('Saved', 'Post updated successfully.');
       } else {
-        const payload = {
-          content,
-          imageUrls: uploadedKeys,
-          isAnonymous: anonymous,
-        } as const;
-
-        console.log('[post:create:request]', {
-          boardId,
-          category,
-          chosenAnonymous: anonymous,
-          canToggleAnon,
-          serverAnonymousAllowed,
-          payload,
-        });
-
-        const res = await createMutation.mutateAsync(payload);
-        console.log('[post:create:response]', res);
-
+        await createMutation.mutateAsync({ content, imageUrls: uploadedKeys, isAnonymous: anonymous });
         Alert.alert('Success', 'Post created successfully!');
       }
 
       router.back();
     } catch (e: any) {
-      console.log('[write:save:error]', {
-        status: e?.response?.status,
-        data: e?.response?.data,
-        message: e?.message,
-      });
+      console.log('[write:save:error]', { status: e?.response?.status, data: e?.response?.data, message: e?.message });
       Alert.alert('Error', isEdit ? 'Failed to update post.' : 'Failed to create post.');
     } finally {
-      savingRef.current = false;
+      savingRef.current.current = false;
       setSaving(false);
     }
   };
@@ -289,7 +238,7 @@ export default function WriteScreen() {
 
             <BottomBar pointerEvents="box-none">
               <BarLeft pointerEvents="box-only">
-                <BarIcon onPress={() => setPickerOpen(true)}>
+                <BarIcon onPress={pickImage}>
                   <Icon type="photo" size={20} color={theme.colors.gray.lightGray_1} />
                 </BarIcon>
               </BarLeft>
@@ -300,19 +249,10 @@ export default function WriteScreen() {
                   $disabled={!canToggleAnon}
                   onPress={() => {
                     if (!canToggleAnon) {
-                      console.log('[anon:blocked]', { category, boardId });
                       Alert.alert('Anonymous not available', 'Only Free talk and Q&A support anonymous posts.');
                       return;
                     }
-                    const next = !anonymous;
-                    console.log('[anon:toggle]', {
-                      before: anonymous,
-                      after: next,
-                      category,
-                      boardId,
-                      serverAnonymousAllowed,
-                    });
-                    setAnonymous(next);
+                    setAnonymous(!anonymous);
                   }}
                 >
                   <AnonText $active={anonymous}>
@@ -335,42 +275,32 @@ export default function WriteScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <Modal visible={pickerOpen} transparent animationType="fade" onRequestClose={() => setPickerOpen(false)}>
-        <SheetBackdrop onPress={() => setPickerOpen(false)} />
-        <Sheet>
-          <SheetBtn onPress={pickImage}>
-            <SheetBtnText>Select from the album</SheetBtnText>
-          </SheetBtn>
-          <SheetBtn onPress={() => setPickerOpen(false)}>
-            <SheetBtnText>Cancel</SheetBtnText>
-          </SheetBtn>
-        </Sheet>
-      </Modal>
-
-      <Modal visible={catOpen} transparent animationType="fade" onRequestClose={() => setCatOpen(false)}>
-        <SheetBackdrop onPress={() => setCatOpen(false)} />
-        <CatSheet>
-          {CATS.map((c) => {
-            const active = c === category;
-            return (
-              <CatItem
-                key={c}
-                onPress={() => {
-                  console.log('[category:select]', { from: category, to: c });
-                  setCategory(c);
-                  setCatOpen(false);
-                }}
-              >
-                <CatItemText $active={active}>{c}</CatItemText>
-                {active ? (
-                  <Icon type="check" size={24} color={theme.colors.primary.mint} />
-                ) : (
-                  <View style={{ width: 16 }} />
-                )}
-              </CatItem>
-            );
-          })}
-        </CatSheet>
+      <Modal visible={catOpen} transparent animationType="slide" onRequestClose={() => setCatOpen(false)}>
+        <Overlay activeOpacity={1} onPress={() => setCatOpen(false)}>
+          <Sheet onStartShouldSetResponder={() => true}>
+            <HandleWrap>
+              <Handle />
+            </HandleWrap>
+            <FlatList
+              data={CATS}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <CatSheetItem
+                  onPress={() => {
+                    setCategory(item);
+                    setCatOpen(false);
+                  }}
+                >
+                  <CatSheetItemText active={item === category}>{item}</CatSheetItemText>
+                  {item === category ? <AntDesign name="check" size={20} color="#30F59B" /> : null}
+                </CatSheetItem>
+              )}
+              ItemSeparatorComponent={() => <Divider />}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 20 }}
+            />
+          </Sheet>
+        </Overlay>
       </Modal>
     </Safe>
   );
@@ -404,10 +334,7 @@ const SaveText = styled.Text<{ $enabled: boolean }>`
   font-size: 16px;
   font-family: 'PlusJakartaSans_700Bold';
 `;
-const DebugText = styled.Text`
-  color: #9aa0a6;
-  font-size: 12px;
-`;
+
 const CatRow = styled.Pressable<{ disabled?: boolean }>`
   padding: 10px 12px 8px;
   opacity: ${(p) => (p.disabled ? 0.5 : 1)};
@@ -423,14 +350,20 @@ const CatChip = styled.View`
   flex-direction: row;
   align-items: center;
   gap: 6px;
+  margin-top: 8px;
 `;
 const CatText = styled.Text`
   color: #cfd4da;
   font-size: 16px;
+  flex: 1;
 `;
+const RotatedIcon = styled.View`
+  transform: rotate(90deg);
+`;
+
 const Divider = styled.View`
   height: 1px;
-  background: #222426;
+  background: #4a4b4c;
 `;
 const BodyWrap = styled.View`
   flex: 1;
@@ -510,53 +443,38 @@ const AnonText = styled.Text<{ $active?: boolean }>`
   font-family: 'PlusJakartaSans_600SemiBold';
   font-size: 12px;
 `;
-const SheetBackdrop = styled(Pressable)`
+
+const Overlay = styled.TouchableOpacity`
   flex: 1;
-  background: rgba(0, 0, 0, 0.35);
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: flex-end;
 `;
-const SheetBase = styled.View`
-  background: #111213;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  padding: 8px 10px 20px;
+const Sheet = styled.View`
+  background-color: #353637;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  max-height: 70%;
+  padding-bottom: 20px;
 `;
-const Sheet = styled(SheetBase)`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`;
-const SheetBtn = styled.Pressable`
-  height: 52px;
-  border-radius: 12px;
-  background: #1a1b1c;
-  border: 1px solid #2a2b2c;
+const HandleWrap = styled.View`
   align-items: center;
-  justify-content: center;
-  margin: 6px 12px 0;
+  padding: 20px 20px 10px 20px;
 `;
-const SheetBtnText = styled.Text`
-  color: #cfd4da;
-  font-size: 15px;
+const Handle = styled.View`
+  width: 40px;
+  height: 4px;
+  background-color: #949899;
+  border-radius: 2px;
 `;
-const CatSheet = styled(SheetBase)`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding-top: 12px;
-`;
-const CatItem = styled.Pressable`
-  height: 48px;
-  padding: 0 16px;
+const CatSheetItem = styled.Pressable<{ active?: boolean }>`
+  padding: 16px 0;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 `;
-const CatItemText = styled.Text<{ $active?: boolean }>`
-  color: ${(p) => (p.$active ? '#e6e9ec' : '#cfd4da')};
-  font-size: 15px;
-`;
-const RotatedIcon = styled.View`
-  transform: rotate(90deg); /* next(→)를 아래(↓)로 회전 */
+const CatSheetItemText = styled.Text<{ active?: boolean }>`
+  color: ${(p) => (p.active ? '#e6e9ec' : '#cfd4da')};
+  font-size: 16px;
+  font-family: 'PlusJakartaSans-Regular';
+  flex: 1;
 `;
