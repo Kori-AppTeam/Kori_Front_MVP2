@@ -14,7 +14,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, ListRenderItem, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-
 const isMeaningfulName = (v?: any) => {
   const s = String(v ?? '').trim();
   if (!s) return false;
@@ -160,6 +159,7 @@ export default function CommunityScreen() {
   const [cat, setCat] = useState<Category>('All');
   const [sort, setSort] = useState<'new' | 'hot'>('new');
   const [checkingProfile, setCheckingProfile] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [items, setItems] = useState<PostEx[]>([]);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasNext, setHasNext] = useState(true);
@@ -168,7 +168,6 @@ export default function CommunityScreen() {
   const [writeLoading, setWriteLoading] = useState(false);
   const sortServer = sort === 'new' ? 'LATEST' : 'POPULAR';
   const boardId = Number(CATEGORY_TO_BOARD_ID[cat]);
-  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const likeMutation = useToggleLike();
 
@@ -273,7 +272,6 @@ export default function CommunityScreen() {
         setProfileModalVisible(true);
         return;
       }
-
       setLiked(postId, prevLiked);
       setLikeCount(postId, prevCount);
       setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
@@ -430,6 +428,7 @@ const Header = styled.View`
 const Left = styled.View`
   flex-direction: row;
   align-items: center;
+  margin-left: 10px;
 `;
 const Title = styled.Text`
   color: #ffffff;
@@ -456,7 +455,8 @@ const ChipsWrap = styled.View`
 `;
 const SortWrap = styled.View`
   margin-top: 20px;
-  margin-bottom: 14px;
+  margin-left: 10px;
+  margin-bottom: 10px;
 `;
 const List = styled(FlatList as React.ComponentType<FlatListProps<PostEx>>)``;
 const FooterLoading = styled.View`

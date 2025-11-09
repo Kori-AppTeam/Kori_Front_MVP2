@@ -1,28 +1,29 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
+import Icon from './common/Icon';
 import React from 'react';
 import styled from 'styled-components/native';
 
 export default function WriteFab({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) {
   return (
-    <Fab onPress={onPress} disabled={disabled} opacity={disabled ? 0.6 : 1}>
-      <AntDesign name="edit" size={22} color="#0f1011" />
+    <Fab onPress={onPress} disabled={disabled}>
+      <Icon type="write" size={16} />
     </Fab>
   );
 }
 
 const Fab = styled.Pressable`
   position: absolute;
-  right: 16px;
-  bottom: 26px;
-  width: 52px;
-  height: 52px;
-  border-radius: 26px;
-  background: #30f59b;
+  right: 20px;
+  bottom: 20px;
+  width: 54px;
+  padding: 15px;
+  height: 54px;
+  border-radius: 100px;
+  background: #02f59b;
   align-items: center;
   justify-content: center;
-  shadow-color: #000;
-  shadow-opacity: 0.25;
-  shadow-radius: 10px;
-  shadow-offset: 0px 6px;
-  elevation: 6;
+  shadow-color: rgba(0, 0, 0, 0.25);
+  shadow-offset: 4px 4px;
+  shadow-opacity: 1;
+  shadow-radius: 8;
+  elevation: 8;
 `;

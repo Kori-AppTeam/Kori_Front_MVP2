@@ -1,14 +1,13 @@
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
-import cancelIconImg from '@/assets/images/cancel.png';
-import searchIconImg from '@/assets/images/search.png';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Modal, TouchableOpacity } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { COUNTRIES } from '@/src/utils/countries';
 
 const INPUT_BORDER = '#FFFFFF';
 const ERROR_COLOR = '#FF6B6B';
+
 type Props = {
   visible: boolean;
   value?: string;
@@ -36,50 +35,50 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
     );
   };
 
-  const handleSearchPress = () => {
-    console.log('Searching:', search);
-  };
-
-  const handleClearSearch = () => {
-    setSearch('');
-  };
+  const handleClearSearch = () => setSearch('');
+  const handleSearchPress = () => console.log('Searching:', search);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
-        <BottomSheetContent onStartShouldSetResponder={() => true}>
-          <BottomSheetHeader>
-            <BottomSheetHandle />
-            <SearchContainer>
-              <SearchInput
-                placeholder="Search your country"
-                placeholderTextColor="#949899"
-                value={search}
-                onChangeText={setSearch}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1, justifyContent: 'flex-end' }}
+        >
+          <BottomSheetContent onStartShouldSetResponder={() => true}>
+            <BottomSheetHeader>
+              <BottomSheetHandle />
+              <SearchContainer>
+                <SearchInput
+                  placeholder="Search your country"
+                  placeholderTextColor="#949899"
+                  value={search}
+                  onChangeText={setSearch}
+                />
+                <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
+                  <IconWrapper>
+                    <Icon type="cancel" size={16} />
+                  </IconWrapper>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleSearchPress}>
+                  <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
+                </TouchableOpacity>
+              </SearchContainer>
+            </BottomSheetHeader>
+
+            {data.length > 0 ? (
+              <FlatList
+                data={data}
+                renderItem={renderCountryItem}
+                keyExtractor={(item, index) => `${item}-${index}`}
+                showsVerticalScrollIndicator={false}
+                style={{ maxHeight: 400 }}
               />
-
-              <TouchableOpacity onPress={handleClearSearch}>
-                <CancelIcon source={cancelIconImg} resizeMode="contain" />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleSearchPress}>
-                <SearchIcon source={searchIconImg} resizeMode="contain" />
-              </TouchableOpacity>
-            </SearchContainer>
-          </BottomSheetHeader>
-
-          {data.length > 0 ? (
-            <FlatList
-              data={data}
-              renderItem={renderCountryItem}
-              keyExtractor={(item, index) => `${item}-${index}`}
-              showsVerticalScrollIndicator={false}
-              style={{ maxHeight: 400 }}
-            />
-          ) : (
-            <NoResultText>No countries found</NoResultText>
-          )}
-        </BottomSheetContent>
+            ) : (
+              <NoResultText>No countries found</NoResultText>
+            )}
+          </BottomSheetContent>
+        </KeyboardAvoidingView>
       </ModalOverlay>
     </Modal>
   );
@@ -125,23 +124,9 @@ const SearchContainer = styled.View`
   border-color: #949899;
 `;
 
-const SearchIcon = styled.Image`
-  width: 20px;
-  height: 20px;
-  tint-color: #949899;
-`;
-
 const SearchInput = styled.TextInput`
   flex: 1;
   color: #ededed;
-  font-size: 15px;
-  font-family: 'PlusJakartaSans-Regular';
-`;
-
-const NoResultText = styled.Text`
-  text-align: center;
-  color: #949899;
-  margin-top: 20px;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
 `;
@@ -164,11 +149,16 @@ const CountryText = styled.Text`
   font-family: 'PlusJakartaSans-Regular';
 `;
 
-const CancelIcon = styled.Image`
-  width: 18px;
-  height: 18px;
+const IconWrapper = styled.View`
   margin-right: 8px;
-  tint-color: #949899;
+`;
+
+const NoResultText = styled.Text`
+  text-align: center;
+  color: #949899;
+  margin-top: 20px;
+  font-size: 15px;
+  font-family: 'PlusJakartaSans-Regular';
 `;
 
 export const CountryDropdownButton = styled.TouchableOpacity<{ selected?: boolean; error?: boolean }>`
