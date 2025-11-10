@@ -218,7 +218,6 @@ export default function AddPhotoStepScreen({}) {
         ...profileWithoutPhoto,
         imageKey,
       };
-
       // 서버로 전송
       const res = await api.patch('/api/v1/member/profile/setup', payload);
       router.dismissAll(); // 네비게이션 스택 다 비움

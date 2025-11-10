@@ -279,9 +279,20 @@ function cryptoRandom() {
 
 function toDateLabel(raw?: unknown): string {
   if (raw == null) return '';
-  const s = String(raw);
-  const d = !s.includes('T') && s.includes(' ') ? new Date(s.replace(' ', 'T')) : new Date(s);
-  if (isNaN(d.getTime())) return '';
+
+  let d: Date | null = null;
+  if (typeof raw === 'number') {
+    d = raw > 1e12 ? new Date(raw) : new Date(raw * 1000);
+  } else if (!isNaN(Number(raw))) {
+    const num = Number(raw);
+    d = num > 1e12 ? new Date(num) : new Date(num * 1000);
+  } else if (typeof raw === 'string') {
+    const s = raw.includes('T') ? raw : raw.replace(' ', 'T');
+    d = new Date(s);
+  }
+
+  if (!d || isNaN(d.getTime())) return '';
+
   try {
     return new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Seoul',
