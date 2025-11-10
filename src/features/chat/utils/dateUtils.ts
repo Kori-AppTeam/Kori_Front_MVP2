@@ -32,8 +32,8 @@ export const formatTime = (sentAt: string | number): string => {
 /**
  * UTC 초를 YYYY.MM.DD (Weekday) 형식으로 변환
  */
-export const formatDate = (utcSeconds: number): string => {
-  const date = new Date(utcSeconds * 1000);
+export const formatDate = (utcSeconds: string | number): string => {
+  const date = new Date(Number(utcSeconds) * 1000);
   const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const year = date.getUTCFullYear();
