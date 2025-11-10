@@ -1,8 +1,8 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
+import { formatShortDate } from '@/src/features/chat/utils/dateUtils';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
-import { formatShortDate } from '@/src/utils/dateUtils';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
