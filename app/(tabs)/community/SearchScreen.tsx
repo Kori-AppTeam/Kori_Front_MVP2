@@ -248,10 +248,7 @@ export default function CommunityScreen() {
       if (data?.profileCompleted) {
         router.push('/community/write');
       } else {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to write a post.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true); // alert를 모달로 변경
       }
     } catch (error: any) {
       console.error('프로필 확인 실패:', error);
@@ -332,10 +329,7 @@ export default function CommunityScreen() {
       if (data?.profileCompleted) {
         router.push({ pathname: '/community/[id]', params: { id: String(postId) } });
       } else {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to view posts.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true); // alert를 modal로 변경
       }
     } catch (error: any) {
       console.error('프로필 확인 실패:', error);
