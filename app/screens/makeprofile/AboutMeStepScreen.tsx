@@ -1,7 +1,7 @@
 import { useProfile } from '@/app/contexts/ProfileContext';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, StatusBar } from 'react-native';
+import { Keyboard, SafeAreaView, StatusBar, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
 import SkipHeader from './components/SkipHeader';
 // ------------------------
@@ -18,7 +18,7 @@ export default function NameStepScreen() {
   const canProceed = AboutMe.trim().length >= minLength && !isOverLimit;
 
   const handleSkip = () => {
-    updateProfile('introduction', ''); 
+    updateProfile('introduction', '');
     router.push('./BirthStepScreen');
   };
 
@@ -31,47 +31,52 @@ export default function NameStepScreen() {
 
   return (
     <SafeArea bgColor="#0F0F10">
+      {/* [수정] StatusBar를 TouchableWithoutFeedback 바깥으로 이동시킵니다. */}
       <StatusBar barStyle="light-content" />
-      <Container>
-        <SkipHeader onSkip={handleSkip} />
-        <StepText>Step 5 / 9</StepText>
 
-        <TitleWrapper>
-          <Title>About me</Title>
-        </TitleWrapper>
+      {/* [수정] 이제 TouchableWithoutFeedback은 <Container>라는 단 하나의 자식만 가집니다. */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Container>
+          <SkipHeader onSkip={handleSkip} />
+          <StepText>Step 5 / 9</StepText>
 
-        <Subtitle>Tell us about your short story.</Subtitle>
+          <TitleWrapper>
+            <Title>About me</Title>
+          </TitleWrapper>
 
-        <Form>
-          <InputWrapper>
-            <Input
-              value={AboutMe}
-              onChangeText={setAboutMe}
-              placeholder="Describe myself here"
-              placeholderTextColor="#616262"
-              returnKeyType="done"
-              multiline
-              textAlignVertical="top"
-              maxLength={70} // 소프트 리미트보다 약간 높게 설정
-              submitBehavior="blurAndSubmit"
-            />
+          <Subtitle>Tell us about your short story.</Subtitle>
 
-            <CharacterCountWrapper>
-              <CharacterCount isError={isOverLimit}>
-                {AboutMe.length}/{maxLength} limit
-              </CharacterCount>
-            </CharacterCountWrapper>
-          </InputWrapper>
-        </Form>
+          <Form>
+            <InputWrapper>
+              <Input
+                value={AboutMe}
+                onChangeText={setAboutMe}
+                placeholder="Describe myself here"
+                placeholderTextColor="#616262"
+                returnKeyType="done"
+                multiline
+                textAlignVertical="top"
+                maxLength={70}
+                submitBehavior="blurAndSubmit"
+              />
 
-        <Spacer />
+              <CharacterCountWrapper>
+                <CharacterCount isError={isOverLimit}>
+                  {AboutMe.length}/{maxLength} limit
+                </CharacterCount>
+              </CharacterCountWrapper>
+            </InputWrapper>
+          </Form>
 
-        <NextButton onPress={handleNext} disabled={!canProceed} canProceed={canProceed}>
-          <ButtonText>Next</ButtonText>
-        </NextButton>
+          <Spacer />
 
-        <BottomSpacer />
-      </Container>
+          <NextButton onPress={handleNext} disabled={!canProceed} canProceed={canProceed}>
+            <ButtonText>Next</ButtonText>
+          </NextButton>
+
+          <BottomSpacer />
+        </Container>
+      </TouchableWithoutFeedback>
     </SafeArea>
   );
 }
@@ -79,7 +84,7 @@ export default function NameStepScreen() {
 // ------------------------
 // Styled Components
 // ------------------------
-const SafeArea = styled(SafeAreaView)`
+const SafeArea = styled(SafeAreaView)<{ bgColor?: string }>`
   flex: 1;
   background-color: ${(props) => props.bgColor || '#000'};
 `;

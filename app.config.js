@@ -5,12 +5,19 @@ export default {
     name: 'Kori',
     slug: 'Kori_Front',
     owner: 'koriapp',
-    version: '1.2.0',
+    version: '1.2.2', // TODO 버전 업데이트
     orientation: 'portrait',
     icon: './assets/images/Kori_Icon.png',
     scheme: 'korifront',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
+
+    updates: {
+      url: 'https://u.expo.dev/ebde49c4-4dbe-4c95-9f09-52f33096566c',
+    },
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
 
     splash: {
       image: './assets/images/character2.png',

@@ -1,25 +1,15 @@
 import api from '@/api/axiosInstance';
-import RawProfileImage from '@/components/common/ProfileImage';
+import ProfileImage from '@/components/common/ProfileImage';
 import { Config } from '@/src/lib/config';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
 const SWIPE_THRESHOLD = 80; // 드래그해야 열림/닫힘이 되는 기준
 
-const toUrl = (u?: string) => {
-  if (!u) return undefined;
-  if (/^https?:\/\//i.test(u)) return u;
-  const base =
-    (Config as any).EXPO_PUBLIC_NCP_PUBLIC_BASE_URL ||
-    (Config as any).NCP_PUBLIC_BASE_URL ||
-    (Config as any).EXPO_PUBLIC_IMAGE_BASE_URL ||
-    (Config as any).IMAGE_BASE_URL ||
-    '';
-  return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
-};
-
 const MyChatRoomBox = ({ data }) => {
   const router = useRouter();
+  console.info(data);
 
   //채팅방 진입
   const enterChattingRoom = async () => {
@@ -28,7 +18,7 @@ const MyChatRoomBox = ({ data }) => {
       const res = await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${data.roomId}/read-all`);
       if (res.status === 200) {
         router.push({
-          pathname: '/(tabs)/chat/ChattingRoomScreen',
+          pathname: `${CHAT_ROUTE(data.roomId)}`,
           params: {
             roomId: data.roomId, // props에서 바로 가져옴
             roomName: data.roomName, // props에서 바로 가져옴
@@ -54,13 +44,7 @@ const MyChatRoomBox = ({ data }) => {
     <ChatRoom>
       <RoomBox activeOpacity={0.8} onPress={enterChattingRoom}>
         <RoomImageContainer>
-          <RoomImage
-            source={
-              data.roomImageUrl
-                ? { uri: data.roomImageUrl } // URL이 있으면 원격 이미지
-                : require('@/assets/images/character1.png') // 없으면 로컬 디폴트 이미지
-            }
-          />
+          <RoomImage imageUrl={data.roomImageUrl} isVisitor={!data.roomImageUrl} />
         </RoomImageContainer>
         <RoomWrapper>
           <RoomTop>
@@ -119,7 +103,7 @@ const RoomImageContainer = styled.View`
   justify-content: center;
 `;
 
-const RoomImage = styled(RawProfileImage)`
+const RoomImage = styled(ProfileImage)`
   width: 80%;
   height: 80%;
   border-radius: 30px;

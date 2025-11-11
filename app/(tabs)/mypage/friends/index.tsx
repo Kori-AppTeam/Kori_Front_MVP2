@@ -3,6 +3,7 @@ import FriendCard from '@/components/FriendCard';
 import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
 import useUnfollowAccepted from '@/hooks/mutations/useUnfollowAccepted'; // ✅ 변경
 import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
+import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useMemo, useRef, useState } from 'react';
@@ -23,26 +24,17 @@ type FriendItem = {
   imageKey?: string;
 };
 
-const yearFromBirthday = (b?: string | number) => {
-  if (typeof b === 'number') return Number.isFinite(b) ? b : undefined;
-  const s = (b ?? '').toString();
-  const m = s.match(/\d{4}/)?.[0];
-  return m ? Number(m) : undefined;
-};
-
 const toFriendItem = (row: any): FriendItem => {
   const id = Number(row?.id ?? row?.userId);
   const first = (row?.firstname ?? '').trim();
   const last = (row?.lastname ?? '').trim();
   const name = [first, last].filter(Boolean).join(' ') || row?.email || 'Unknown';
 
-  const birth = row?.birthYear ?? yearFromBirthday(row?.birthday ?? row?.birth ?? row?.birthDate ?? row?.dateOfBirth);
-
   return {
     id,
     name,
     country: row?.country ?? '',
-    birth: yearFromBirthday(row?.birthday),
+    birth: row?.birthday,
     purpose: row?.purpose ?? '',
     languages: Array.isArray(row?.language) ? row.language : [],
     personalities: Array.isArray(row?.hobby) ? row.hobby : [],
@@ -141,14 +133,13 @@ export default function FriendsOnlyScreen() {
                 personalities={item.personalities}
                 bio={item.bio}
                 imageKey={item.imageKey}
-                isFollowed
                 collapsible={false}
                 onUnfollow={() => confirmUnfollow(item.id)}
                 onChat={async () => {
                   try {
                     const roomId = await createRoom({ otherUserId: item.id });
                     router.push({
-                      pathname: '/(tabs)/chat/ChattingRoomScreen',
+                      pathname: CHAT_ROUTE(roomId),
                       params: {
                         userId: String(item.id),
                         roomName: encodeURIComponent(item.name || 'Unknown'),

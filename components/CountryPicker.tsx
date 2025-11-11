@@ -9,6 +9,7 @@ import styled from 'styled-components/native';
 
 const INPUT_BORDER = '#FFFFFF';
 const ERROR_COLOR = '#FF6B6B';
+
 type Props = {
   visible: boolean;
   value?: string;
@@ -45,13 +46,8 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
     );
   };
 
-  const handleSearchPress = () => {
-    console.log('Searching:', search);
-  };
-
-  const handleClearSearch = () => {
-    setSearch('');
-  };
+  const handleClearSearch = () => setSearch('');
+  const handleSearchPress = () => console.log('Searching:', search);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent={true}>
@@ -141,23 +137,9 @@ const SearchContainer = styled.View`
   border-color: #949899;
 `;
 
-const SearchIcon = styled.Image`
-  width: 20px;
-  height: 20px;
-  tint-color: #949899;
-`;
-
 const SearchInput = styled.TextInput`
   flex: 1;
   color: #ededed;
-  font-size: 15px;
-  font-family: 'PlusJakartaSans-Regular';
-`;
-
-const NoResultText = styled.Text`
-  text-align: center;
-  color: #949899;
-  margin-top: 20px;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
 `;
@@ -180,11 +162,16 @@ const CountryText = styled.Text`
   font-family: 'PlusJakartaSans-Regular';
 `;
 
-const CancelIcon = styled.Image`
-  width: 18px;
-  height: 18px;
+const IconWrapper = styled.View`
   margin-right: 8px;
-  tint-color: #949899;
+`;
+
+const NoResultText = styled.Text`
+  text-align: center;
+  color: #949899;
+  margin-top: 20px;
+  font-size: 15px;
+  font-family: 'PlusJakartaSans-Regular';
 `;
 
 export const CountryDropdownButton = styled.TouchableOpacity<{ selected?: boolean; error?: boolean }>`

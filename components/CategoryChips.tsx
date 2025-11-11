@@ -23,7 +23,7 @@ export default function CategoryChips({ value, onChange }: Props) {
 }
 
 const Row = styled.ScrollView`
-  padding: 8px 12px 0 12px;
+  padding: 8px 12px 0 10px;
   gap: 8px;
 ` as unknown as typeof import('react-native').ScrollView;
 

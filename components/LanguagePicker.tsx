@@ -131,7 +131,7 @@ const BottomSheetHeader = styled.View`
 `;
 
 const BottomSheetHandle = styled.View`
-  width: 50px;
+  width: 20px;
   height: 4px;
   background-color: #949899;
   border-radius: 2px;
@@ -154,13 +154,6 @@ const SearchInput = styled.TextInput`
   color: #ededed;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
-`;
-
-const CancelIcon = styled.Image`
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
-  tint-color: #949899;
 `;
 
 const LanguageItem = styled.TouchableOpacity<{ selected?: boolean }>`
@@ -206,10 +199,8 @@ const WarnText = styled.Text`
   margin-left: 8px;
 `;
 
-const SearchIcon = styled.Image`
-  width: 20px;
-  height: 20px;
-  tint-color: #949899;
+const IconWrapper = styled.View`
+  margin-right: 8px;
 `;
 
 export const LanguageDropdownButton = styled.TouchableOpacity<{ selected?: boolean; error?: boolean }>`

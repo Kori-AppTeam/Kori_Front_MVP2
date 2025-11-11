@@ -1,10 +1,13 @@
+//채팅방 화면
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import RawProfileImage from '@/components/common/ProfileImage';
 import ProfileModal from '@/components/ProfileModal';
 import { Config } from '@/src/lib/config';
+import { CHAT_MEMBER_ROUTE, CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { formatDate, formatTime } from '@/src/utils/dateUtils';
+import { AntDesign } from '@expo/vector-icons';
 import { Client } from '@stomp/stompjs';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -73,18 +76,6 @@ const ChattingRoomScreen = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-
-  const toUrl = (u?: string) => {
-    if (!u) return undefined;
-    if (/^https?:\/\//i.test(u)) return u;
-    const base =
-      (Config as any).EXPO_PUBLIC_NCP_PUBLIC_BASE_URL ||
-      (Config as any).NCP_PUBLIC_BASE_URL ||
-      (Config as any).EXPO_PUBLIC_IMAGE_BASE_URL ||
-      (Config as any).IMAGE_BASE_URL ||
-      '';
-    return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
-  };
 
   // ---------------------- 토큰 refresh 함수 ----------------------
   const refreshTokenIfNeeded = async (): Promise<string | null> => {
@@ -371,8 +362,7 @@ const ChattingRoomScreen = () => {
 
       setIsProfileVisible(false);
       router.push({
-        pathname: '/chat/ChattingRoomScreen',
-        params: { roomId: roomId },
+        pathname: CHAT_ROUTE(roomId),
       });
     } catch (err) {
       console.error(err);
@@ -391,7 +381,7 @@ const ChattingRoomScreen = () => {
   // 햄버거 버튼 눌렀을때 이동
   const onhandleNext = () => {
     router.push({
-      pathname: '/screens/chatscreen/ChatInsideMember',
+      pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
       params: { roomId, roomName },
     });
   };
@@ -588,7 +578,7 @@ const ChattingRoomScreen = () => {
                       (setSearchText(''), setIsSearching(false));
                     }}
                   >
-                    <Icon type="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
+                    <AntDesign type="closecircle" size={24} color="#CCCFD0" style={{ marginRight: 8 }} />
                   </TouchableOpacity>
                 )}
               </SearchContainer>
@@ -617,7 +607,7 @@ const ChattingRoomScreen = () => {
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 50 : 30}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
         >
           {/* 채팅 화면 */}
           <ChattingScreen>
@@ -636,6 +626,9 @@ const ChattingRoomScreen = () => {
               onEndReached={fetchMoreHistory} // 스크롤 상단에서 이전 메시지 로딩
               onEndReachedThreshold={0.2}
               renderItem={({ item, index }) => {
+                const imgUrl = item.senderImageUrl || undefined;
+                const isVisitor = !imgUrl;
+
                 const isMyMessage = item.senderId.toString() === myUserId;
                 // 프로필 표시 로직
                 const showProfile =
@@ -717,7 +710,7 @@ const ChattingRoomScreen = () => {
                               onPress={() => fetchUserProfile(item.senderId)}
                               disabled={isLoadingProfile}
                             >
-                              <ProfileImg source={{ uri: item.senderImageUrl }} />
+                              <ProfileImg imageUrl={imgUrl} isVisitor={isVisitor} />
                             </TouchableOpacity>
                           </ProfileBox>
                         </ProfileContainer>
@@ -727,7 +720,7 @@ const ChattingRoomScreen = () => {
                             <OtherFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                  searchMessages[pointerRef.current].id === item.id ? (
+                                searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}
@@ -762,7 +755,7 @@ const ChattingRoomScreen = () => {
                             <OtherNotFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                  searchMessages[pointerRef.current].id === item.id ? (
+                                searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}
@@ -901,8 +894,7 @@ const ChattingScreen = styled.View`
 `;
 const ChattingLeftContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
-  })<{ showProfile?: boolean }>`
-
+})<{ showProfile?: boolean }>`
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '1px')};
   align-self: flex-start;
   max-width: 280px;
@@ -1061,7 +1053,7 @@ const BottomInputBox = styled.TextInput`
   color: #ffffff;
   border-radius: 8px;
   width: 85%;
-  height: 45px;
+  height: 40px;
   margin-top: 10px;
   padding-left: 10px;
 `;

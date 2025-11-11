@@ -55,7 +55,12 @@ export default tseslint.config(
       ...reactNative.configs.all.rules,
 
       // Prettier 연동
-      'prettier/prettier': 'error',
+      'prettier/prettier': [
+        'error',
+        {
+          endOfLine: 'lf',
+        },
+      ],
 
       // 기타 JS 스타일 설정
       'arrow-body-style': 'off',
