@@ -2,32 +2,19 @@ import api from '@/api/axiosInstance';
 import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import CategoryChips, { Category } from '@/components/CategoryChips';
 import Icon from '@/components/common/Icon';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import PostCard, { Post } from '@/components/PostCard';
 import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
 import { useToggleLike } from '@/hooks/mutations/useToggleLike';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { isMeaningfulName, pickNonEmpty, toDateLabel } from '@/src/features/community/utils/indexUtils';
 import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, ListRenderItem, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-const isMeaningfulName = (v?: any) => {
-  const s = String(v ?? '').trim();
-  if (!s) return false;
-  const lower = s.toLowerCase();
-  return !['unknown', 'null', 'undefined', '-', '—'].includes(lower);
-};
-
-const pickNonEmpty = (...vals: any[]) => {
-  for (const v of vals) {
-    const s = String(v ?? '').trim();
-    if (s) return s;
-  }
-  return '';
-};
 
 const ICON = require('@/assets/images/IsolationMode.png');
 const VisitorImage = require('@/assets/images/character_05.svg');
@@ -76,34 +63,6 @@ type PostsListResp = {
   };
   timestamp?: string;
 };
-
-function pad2(n: number) {
-  return n < 10 ? `0${n}` : String(n);
-}
-function parseDateFlexible(v?: unknown): Date | null {
-  if (v == null) return null;
-  let s = String(v).trim();
-  if (/^\d+(\.\d+)?$/.test(s)) return new Date(parseFloat(s) * 1000);
-  if (!s.includes('T') && s.includes(' ')) s = s.replace(' ', 'T');
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? null : d;
-}
-function toDateLabel(raw?: unknown, fallbackIso?: string): string {
-  let d = parseDateFlexible(raw);
-  if ((!d || isNaN(d.getTime())) && fallbackIso) d = parseDateFlexible(fallbackIso);
-  if (!d) return '';
-  try {
-    const fmt = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Seoul',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-    return fmt.format(d).replace(/-/g, '/');
-  } catch {
-    return `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}`;
-  }
-}
 
 type PostEx = Post & {
   postId: number;
