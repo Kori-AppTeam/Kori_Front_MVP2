@@ -27,11 +27,11 @@ type Props = {
   imageKey?: string;
 
   personalityEmojis?: string[];
-  followStatus?: FollowStatus;     // 👈 [추가]
-  isLoadingFollow?: boolean;    // 👈 [추가]
-  isLoadingChat?: boolean;      // 👈 [추가]
-  onFollow?: () => void;      // 👈 [수정] (userId: number) 제거
-  onUnfollow?: () => void;    // 👈 [수정] (userId: number) 제거
+  followStatus?: FollowStatus; // 👈 [추가]
+  isLoadingFollow?: boolean; // 👈 [추가]
+  isLoadingChat?: boolean; // 👈 [추가]
+  onFollow?: () => void; // 👈 [수정] (userId: number) 제거
+  onUnfollow?: () => void; // 👈 [수정] (userId: number) 제거
 
   mode?: RequestMode;
   onAccept?: (userId: number) => void;
@@ -95,8 +95,8 @@ export default function FriendCard(props: Props) {
     imageUrl,
     imageKey,
     followStatus,
-    isLoadingFollow = false,      // 👈 [추가]
-    isLoadingChat = false,        // 👈 [추가]
+    isLoadingFollow = false, // 👈 [추가]
+    isLoadingChat = false, // 👈 [추가]
     onFollow,
     onUnfollow,
 
@@ -108,15 +108,13 @@ export default function FriendCard(props: Props) {
     onChat,
     footerSlot,
     defaultExpanded = true,
-    
   } = props;
 
   const [expanded, setExpanded] = useState(Boolean(defaultExpanded));
   const finalAvatarUrl = imageUrl ?? imageKey ?? null;
 
   const effectiveStatus: FollowStatus =
-     (followStatus as FollowStatus) ??
-     (mode === 'received' || mode === 'sent' ? 'PENDING' : 'NOT_FOLLOWING');
+    (followStatus as FollowStatus) ?? (mode === 'received' || mode === 'sent' ? 'PENDING' : 'NOT_FOLLOWING');
 
   const handlePrimaryPress = () => {
     if (mode === 'received') {
@@ -141,24 +139,17 @@ export default function FriendCard(props: Props) {
         })}
       >
         <Top>
-          <AvatarImg
-            imageUrl={finalAvatarUrl}   
-            isVisitor={!finalAvatarUrl} 
-          />
+          <AvatarImg imageUrl={finalAvatarUrl} isVisitor={!finalAvatarUrl} />
 
           <Name>{name}</Name>
 
           <MetaLine>
             <MetaRow>
               <MetaDim>Birth </MetaDim>
-              <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>       
+              <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>
 
               <GenderIconSpacer>
-                <Icon
-                  type={genderIconType[gender]}
-                  size={16}
-                  color={theme.colors.gray.gray_1}
-                />
+                <Icon type={genderIconType[gender]} size={16} color={theme.colors.gray.gray_1} />
               </GenderIconSpacer>
             </MetaRow>
 
@@ -173,7 +164,7 @@ export default function FriendCard(props: Props) {
           <Divider />
           {collapsible && (
             <ChevronButton onPress={() => setExpanded(!expanded)}>
-              <Icon type={expanded ? 'arrowUp' : 'arrowDown'} size={24}  />
+              <Icon type={expanded ? 'arrowUp' : 'arrowDown'} size={24} />
             </ChevronButton>
           )}
         </DividerWrap>
@@ -194,7 +185,7 @@ export default function FriendCard(props: Props) {
               <ColRight>
                 <LabelRow>
                   <SmallIconWrap>
-                    <Icon type="global" size={16} color={theme.colors.gray.gray_1}/>
+                    <Icon type="global" size={16} color={theme.colors.gray.gray_1} />
                   </SmallIconWrap>
                   <Label>Language</Label>
                 </LabelRow>
@@ -214,7 +205,7 @@ export default function FriendCard(props: Props) {
             </RowTop>
 
             <InterestHeader>
-               <SmallIconWrap style={{ marginRight: 4 }}>
+              <SmallIconWrap style={{ marginRight: 4 }}>
                 <Icon type="heartNonSelected" size={16} color={theme.colors.gray.gray_1} />
               </SmallIconWrap>
               <Label>Interest</Label>
@@ -239,13 +230,7 @@ export default function FriendCard(props: Props) {
           ) : mode === 'sent' ? (
             <>
               {/* 'sent' 모드에서는 PENDING과 동일한 버튼을 보여줌 */}
-              <CustomButton
-                label="Pending"
-                tone="muted"
-                filled={false}
-                leftIcon="check"
-                disabled={true}
-              />
+              <CustomButton label="Pending" tone="muted" filled={false} leftIcon="check" disabled={true} />
               <CustomButton
                 label="Chat"
                 tone="black"
@@ -269,7 +254,7 @@ export default function FriendCard(props: Props) {
                   labelColor="#949899"
                   onPress={onUnfollow} // 👈 (userId) 제거
                   disabled={isLoadingFollow} // 👈 로딩 상태 적용
-                  isLoading={isLoadingFollow}// 👈 로딩 인디케이터 (CustomButton이 지원한다면)
+                  isLoading={isLoadingFollow} // 👈 로딩 인디케이터 (CustomButton이 지원한다면)
                 />
               )}
               {effectiveStatus === 'NOT_FOLLOWING' && (
@@ -303,7 +288,7 @@ export default function FriendCard(props: Props) {
                   leftIcon="chat-bubble-outline"
                   onPress={onChat}
                   disabled={isLoadingChat} // 👈 로딩 상태 적용
-                  isLoading={isLoadingChat}// 👈 로딩 인디케이터
+                  isLoading={isLoadingChat} // 👈 로딩 인디케이터
                 />
               )}
             </>
@@ -345,8 +330,8 @@ const Name = styled.Text`
 const MetaLine = styled.View`
   margin-top: ${META_MT}px;
   flex-direction: row;
-  align-items: flex-start;  /* ⬅︎ 세로 가운데 말고 위 기준 */
-  flex-wrap: nowrap;          /* ⬅︎ 줄바꿈 허용 */
+  align-items: flex-start; /* ⬅︎ 세로 가운데 말고 위 기준 */
+  flex-wrap: nowrap; /* ⬅︎ 줄바꿈 허용 */
 `;
 
 const MetaRow = styled.View`
@@ -355,13 +340,13 @@ const MetaRow = styled.View`
 `;
 
 const GenderIconSpacer = styled.View`
-  width: 16px;           /* 아이콘 12~14 추천 */
+  width: 16px; /* 아이콘 12~14 추천 */
   height: 16px;
   border-radius: 8px;
   background-color: ${({ theme }) => theme.colors.gray.lightGray_2};
   align-items: center;
   justify-content: center;
-  margin: 0 6px;         /* 텍스트 사이 간격 */
+  margin: 0 6px; /* 텍스트 사이 간격 */
 `;
 const MetaDim = styled.Text`
   font-family: 'PlusJakartaSans_400Regular';

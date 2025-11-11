@@ -14,7 +14,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
 
-
 export default function HomeScreen() {
   const { data: friends, isLoading, isFetching, refetch } = useRecommendedFriends(20);
   const followMutation = useFollowUser();

@@ -43,16 +43,15 @@ function isAnonRow(r: RawComment): boolean {
   return Boolean(yn || lab === 'Anonymity' || lab === 'anonymous' || !String(label).trim());
 }
 
-function mapRow(r: RawComment): Comment &{
+function mapRow(r: RawComment): Comment & {
   isAnonymous?: boolean;
   userImageUrl?: string;
   userImage?: string;
   avatarUrl?: string;
-}{
+} {
   const anon = Boolean((r as any).isAnonymous);
 
-  const authorLabel =
-    (r as any).authorName  ?? 'Anonymity';
+  const authorLabel = (r as any).authorName ?? 'Anonymity';
 
   const url = (r as any).userImage;
 
@@ -67,9 +66,9 @@ function mapRow(r: RawComment): Comment &{
     likedByMe: Boolean((r as any).likedByMe ?? (r as any).isLiked ?? (r as any).isLike ?? false),
     isChild: Boolean((r as any).parentId ?? (r as any).isChild),
     hotScore: 0,
-    isAnonymous: anon,   // (반드시)
-    anonymous: anon,     // (호환용)
-    userImageUrl: url, 
+    isAnonymous: anon, // (반드시)
+    anonymous: anon, // (호환용)
+    userImageUrl: url,
   };
 }
 

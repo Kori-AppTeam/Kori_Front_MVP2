@@ -3,7 +3,7 @@ import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Platform, SafeAreaView, StatusBar } from 'react-native';
+import { Keyboard, Platform, SafeAreaView, StatusBar, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
 import SkipHeader from './components/SkipHeader';
 // ------------------------
@@ -31,51 +31,57 @@ export default function NameStepScreen() {
 
   return (
     <SafeArea bgColor="#0F0F10">
+      {/* [수정] StatusBar를 TouchableWithoutFeedback 바깥으로 이동시킵니다. */}
       <StatusBar barStyle="light-content" />
-      <Container>
-        {Platform.OS === 'ios' && <SkipHeader onSkip={handleSkip} />}
-        <StepText>Step 1 / 9</StepText>
 
-        <TitleWrapper>
-          <Title>Tell us</Title>
-          <Title>about your name.</Title>
-        </TitleWrapper>
+      {/* [수정] 이제 TouchableWithoutFeedback은 <Container>라는 자식 1개만 가집니다. */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Container>
+          {Platform.OS === 'ios' && <SkipHeader onSkip={handleSkip} />}
+          <StepText>Step 1 / 9</StepText>
 
-        <Subtitle>This is how it’ll appear on your profile.</Subtitle>
-        <Form>
-          <InputWrapper>
-            <Input
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder="First Name"
-              placeholderTextColor="#616262"
-              autoCapitalize="words"
-            />
-            {firstName && firstName.trim().length > 0 && (
-              <Icon type="check" size={20} color={theme.colors.primary.mint} />
-            )}
-          </InputWrapper>
-          <InputWrapper>
-            <Input
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder="Last Name"
-              placeholderTextColor="#616262"
-              autoCapitalize="words"
-            />
-            {lastName && lastName.trim().length > 0 && (
-              <Icon type="check" size={20} color={theme.colors.primary.mint} />
-            )}
-          </InputWrapper>
-        </Form>
+          <TitleWrapper>
+            <Title>Tell us</Title>
+            <Title>about your name.</Title>
+          </TitleWrapper>
 
-        <Spacer />
-        <NextButton onPress={handleNext} disabled={!canProceed} canProceed={canProceed}>
-          <ButtonText>Next</ButtonText>
-        </NextButton>
+          <Subtitle>This is how it’ll appear on your profile.</Subtitle>
+          <Form>
+            {/* ... (Input 폼 등 나머지 코드는 동일) ... */}
+            <InputWrapper>
+              <Input
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="First Name"
+                placeholderTextColor="#616262"
+                autoCapitalize="words"
+              />
+              {firstName && firstName.trim().length > 0 && (
+                <Icon type="check" size={20} color={theme.colors.primary.mint} />
+              )}
+            </InputWrapper>
+            <InputWrapper>
+              <Input
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Last Name"
+                placeholderTextColor="#616262"
+                autoCapitalize="words"
+              />
+              {lastName && lastName.trim().length > 0 && (
+                <Icon type="check" size={20} color={theme.colors.primary.mint} />
+              )}
+            </InputWrapper>
+          </Form>
 
-        <BottomSpacer />
-      </Container>
+          <Spacer />
+          <NextButton onPress={handleNext} disabled={!canProceed} canProceed={canProceed}>
+            <ButtonText>Next</ButtonText>
+          </NextButton>
+
+          <BottomSpacer />
+        </Container>
+      </TouchableWithoutFeedback>
     </SafeArea>
   );
 }

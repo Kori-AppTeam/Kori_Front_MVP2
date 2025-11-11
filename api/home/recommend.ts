@@ -37,7 +37,6 @@ const mapGender = (g?: string | null): FriendCardData['gender'] => {
   return 'unspecified';
 };
 
-
 export function toFriendCard(dto: RecommendedFriendDto, idx: number): FriendCardData {
   const name = [dto.firstname, dto.lastname].filter(Boolean).join(' ').trim() || 'Unknown';
   const id = dto.userId ?? dto.memberId ?? `rec-${idx}`;
@@ -46,7 +45,7 @@ export function toFriendCard(dto: RecommendedFriendDto, idx: number): FriendCard
     id,
     name,
     country: dto.country ?? '-',
-    birth: dto.birthday ,
+    birth: dto.birthday,
     gender: mapGender(dto.gender),
     purpose: dto.purpose ?? '-',
     languages: dto.language ?? [],

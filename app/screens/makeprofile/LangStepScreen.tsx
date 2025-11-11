@@ -155,6 +155,7 @@ export default function LanguageStepScreen({ navigation }) {
                   renderItem={renderLanguageItem}
                   keyExtractor={(item, index) => `${item}-${index}`} // ✅ keyExtractor 수정
                   showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
                 />
               ) : (
                 <NoResultText>No languages found</NoResultText> // ✅ 검색 결과 없을 때

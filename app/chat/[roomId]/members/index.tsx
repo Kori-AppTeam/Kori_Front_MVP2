@@ -9,15 +9,7 @@ import { theme } from '@/src/styles/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
-import {
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  StatusBar,
-  TouchableOpacity
-} from 'react-native';
+import { Alert, FlatList, KeyboardAvoidingView, Modal, Platform, StatusBar, TouchableOpacity } from 'react-native';
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 
@@ -565,7 +557,6 @@ const ReposrtSubmitButtonText = styled.Text`
 const CancelBox = styled(ReasonBox)``;
 const CancelText = styled(ReasonText)``;
 
-
 type MemberRowProps = {
   name: string;
   isHost: boolean;
@@ -574,22 +565,13 @@ type MemberRowProps = {
   onPressMore: () => void;
 };
 
-const MemberRow: React.FC<MemberRowProps> = ({
-  name,
-  isHost,
-  imageUrl,
-  onPressProfile,
-  onPressMore,
-}) => {
-  const img = imageUrl || undefined; 
+const MemberRow: React.FC<MemberRowProps> = ({ name, isHost, imageUrl, onPressProfile, onPressMore }) => {
+  const img = imageUrl || undefined;
 
   return (
     <MemberRowWrap>
       <MemberLeft onPress={onPressProfile} activeOpacity={0.8}>
-        <MemberAvatar
-          imageUrl={img}
-          isVisitor={!img}
-        />
+        <MemberAvatar imageUrl={img} isVisitor={!img} />
         <MemberMeta>
           <MemberName numberOfLines={1}>{name}</MemberName>
           {isHost ? (

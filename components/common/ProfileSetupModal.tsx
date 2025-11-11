@@ -13,7 +13,8 @@ interface ProfileSetupModal {
 const ProfileSetupModal = ({ visible, onClose }: ProfileSetupModal) => {
   const handleGoToProfile = () => {
     onClose();
-    router.push('/(tabs)/mypage/edit' as any);
+    router.replace('/(tabs)/mypage'); // mypage를 화면 stack에 쌓은 후 edit으로 이동
+    setTimeout(() => router.push('/(tabs)/mypage/edit' as any), 500);
   };
   return (
     <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}>

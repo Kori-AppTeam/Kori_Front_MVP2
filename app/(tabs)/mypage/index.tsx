@@ -284,7 +284,7 @@ export default function MyPageScreen() {
           <AvatarPress onPress={openAvatarSheet}>
             <AvatarMain
               imageUrl={displayAvatarUrl}
-              isVisitor={!displayAvatarUrl}  // URL 없을 때 방문자 기본 이미지
+              isVisitor={!displayAvatarUrl} // URL 없을 때 방문자 기본 이미지
             />
           </AvatarPress>
 
@@ -308,7 +308,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Friends List</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -343,7 +343,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Chat Translation Language</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -358,7 +358,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Notification</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -373,7 +373,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Account Logout</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -449,31 +449,13 @@ const SectionTitleRow = styled.View`
   gap: 4px;
 `;
 function SectionTitleIcon() {
-  return (
-    <Icon
-      type="person"
-      size={16}
-      color={theme.colors.gray.gray_1}
-    />
-  );
+  return <Icon type="person" size={16} color={theme.colors.gray.gray_1} />;
 }
 function SectionTitleIconGlobe() {
-  return (
-    <Icon
-      type="global"
-      size={16}
-      color={theme.colors.gray.gray_1}
-    />
-  );
+  return <Icon type="global" size={16} color={theme.colors.gray.gray_1} />;
 }
 function SectionTitleIconAccount() {
-  return (
-    <Icon
-      type="setting"
-      size={16}
-      color={theme.colors.gray.gray_1}
-    />
-  );
+  return <Icon type="setting" size={16} color={theme.colors.gray.gray_1} />;
 }
 
 const RowLink = styled.Pressable`

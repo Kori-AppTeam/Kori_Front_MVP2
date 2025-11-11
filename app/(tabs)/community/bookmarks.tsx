@@ -10,7 +10,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList, ListRenderItem, TouchableOpacity, View, type FlatListProps } from 'react-native';
 import styled from 'styled-components/native';
 
-
 type ApiItem = {
   postId?: number;
   id?: number;
@@ -26,8 +25,8 @@ type ApiItem = {
   postImages?: string[];
   createdAt?: string | number;
   createdTime?: string | number;
-  isLiked?: boolean; 
-  isAnonymous?: boolean; 
+  isLiked?: boolean;
+  isAnonymous?: boolean;
 };
 
 type ApiResp = {
@@ -52,7 +51,7 @@ type Row = {
   avatarUrl?: string;
   isAnonymous?: boolean;
   isVisitor?: boolean;
-  liked: boolean;  
+  liked: boolean;
 };
 
 export default function BookmarksScreen() {
@@ -78,7 +77,7 @@ export default function BookmarksScreen() {
     return {
       postId,
       displayId: String(raw.bookmarkId ?? postId ?? cryptoRandom()),
-      author: isAnon ? 'Anonymity' : (raw.authorName?.trim() || '—'),
+      author: isAnon ? 'Anonymity' : raw.authorName?.trim() || '—',
       createdAtLabel: toDateLabel(raw.createdAt ?? raw.createdTime ?? respTs),
       views: Number((raw.viewCount ?? raw.checkCount ?? 0) as number),
       body: (raw.content && String(raw.content)) || '',
@@ -179,11 +178,7 @@ export default function BookmarksScreen() {
       <Cell activeOpacity={item.postId ? 0.8 : 1} onPress={() => goPostDetail(item.postId)}>
         <RowTop>
           <RowLeft>
-            <Avatar
-              imageUrl={item.avatarUrl}
-              isAnonymous={item.isAnonymous}
-              isVisitor={item.isVisitor}
-            />
+            <Avatar imageUrl={item.avatarUrl} isAnonymous={item.isAnonymous} isVisitor={item.isVisitor} />
             <Meta>
               <Author>{item.author}</Author>
               <MetaRow>

@@ -7,7 +7,7 @@ import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, StatusBar, TouchableOpacity } from 'react-native';
+import { FlatList, Keyboard, StatusBar, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
 
 type MyChatRoom = {
@@ -72,46 +72,48 @@ const SearchChatRoom = () => {
   return (
     <Safe>
       <StatusBar barStyle="light-content" />
-      <Container>
-        <Header>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Icon type="previous" size={24} color={theme.colors.primary.white} />
-          </TouchableOpacity>
-          <SearchContainer>
-            <Icon type="search" size={24} color={theme.colors.primary.white} />
-            <SearchInputText
-              value={searchText}
-              onChangeText={setSearchText}
-              placeholder={isGroupChatBool ? 'Search linked space' : 'Search my chat'}
-              placeholderTextColor="#616262"
-            />
-            {searchText && (
-              <TouchableOpacity onPress={() => setSearchText('')}>
-                <AntDesign name="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
-              </TouchableOpacity>
-            )}
-          </SearchContainer>
-        </Header>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Container>
+          <Header>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Icon type="previous" size={24} color={theme.colors.primary.white} />
+            </TouchableOpacity>
+            <SearchContainer>
+              <Icon type="search" size={24} color={theme.colors.primary.white} />
+              <SearchInputText
+                value={searchText}
+                onChangeText={setSearchText}
+                placeholder={isGroupChatBool ? 'Search linked space' : 'Search my chat'}
+                placeholderTextColor="#616262"
+              />
+              {searchText && (
+                <TouchableOpacity onPress={() => setSearchText('')}>
+                  <AntDesign name="closecircle" size={23} color="#CCCFD0" style={{ marginRight: 8 }} />
+                </TouchableOpacity>
+              )}
+            </SearchContainer>
+          </Header>
 
-        <SearchScreen>
-          {searchText &&
-            (isGroupChatBool ? (
-              <FlatList
-                data={groupChatRooms}
-                keyExtractor={(item) => item.chatRoomId.toString()}
-                renderItem={({ item }) => <AllSpaceRoomBox data={item} />}
-                showsVerticalScrollIndicator={false}
-              />
-            ) : (
-              <FlatList
-                data={myChatRooms}
-                keyExtractor={(item) => item.roomId.toString()}
-                renderItem={({ item }) => <MyChatRoomBox data={item} />}
-                showsVerticalScrollIndicator={false}
-              />
-            ))}
-        </SearchScreen>
-      </Container>
+          <SearchScreen>
+            {searchText &&
+              (isGroupChatBool ? (
+                <FlatList
+                  data={groupChatRooms}
+                  keyExtractor={(item) => item.chatRoomId.toString()}
+                  renderItem={({ item }) => <AllSpaceRoomBox data={item} />}
+                  showsVerticalScrollIndicator={false}
+                />
+              ) : (
+                <FlatList
+                  data={myChatRooms}
+                  keyExtractor={(item) => item.roomId.toString()}
+                  renderItem={({ item }) => <MyChatRoomBox data={item} />}
+                  showsVerticalScrollIndicator={false}
+                />
+              ))}
+          </SearchScreen>
+        </Container>
+      </TouchableWithoutFeedback>
     </Safe>
   );
 };

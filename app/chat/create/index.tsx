@@ -14,7 +14,7 @@ import {
   Modal,
   Platform,
   StatusBar,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -42,26 +42,26 @@ const CreateSpaceScreen = () => {
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
 
   const openAvatarSheet = () => {
-  if (avatarUrl) {
-    // 커스텀 사진 모드
-    setSelectedAvatarIdx(-1);
-    setCustomPhotoUri(avatarUrl);
-  } else {
-    // 기본 아바타 모드 (현재 선택 유지, 없으면 0)
-    if (selectedAvatarIdx < 0) setSelectedAvatarIdx(0);
-    setCustomPhotoUri(undefined);
-  }
-  setShowAvatarSheet(true);
-};
+    if (avatarUrl) {
+      // 커스텀 사진 모드
+      setSelectedAvatarIdx(-1);
+      setCustomPhotoUri(avatarUrl);
+    } else {
+      // 기본 아바타 모드 (현재 선택 유지, 없으면 0)
+      if (selectedAvatarIdx < 0) setSelectedAvatarIdx(0);
+      setCustomPhotoUri(undefined);
+    }
+    setShowAvatarSheet(true);
+  };
 
   const saveAvatar = async () => {
     if (customPhotoUri) {
       // 사용자 사진 선택
-      setAvatarUrl(customPhotoUri);  
+      setAvatarUrl(customPhotoUri);
       setSelectedAvatarIdx(-1);
     } else if (selectedAvatarIdx >= 0) {
       // 기본 SVG 아바타 선택
-      setAvatarUrl(undefined);       
+      setAvatarUrl(undefined);
     }
     setShowAvatarSheet(false);
   };
@@ -139,7 +139,7 @@ const CreateSpaceScreen = () => {
       <Container>
         <HeaderContainer>
           <TouchableOpacity onPress={() => router.back()}>
-            <Icon type='previous' size={24} color={theme.colors.primary.white} />
+            <Icon type="previous" size={24} color={theme.colors.primary.white} />
           </TouchableOpacity>
           <HeaderTitleText>Create Space</HeaderTitleText>
           <TouchableOpacity onPress={handleSave}>
@@ -157,12 +157,12 @@ const CreateSpaceScreen = () => {
               <AvatarMain
                 source={
                   avatarUrl
-                    ? { uri: avatarUrl }                         // 사용자 사진
-                    : AVATARS[Math.max(0, selectedAvatarIdx)]    // 선택한 기본 SVG
+                    ? { uri: avatarUrl } // 사용자 사진
+                    : AVATARS[Math.max(0, selectedAvatarIdx)] // 선택한 기본 SVG
                 }
               />
               <CameraContainer>
-                <Icon type='cameraColored' size={20} color={theme.colors.primary.black} />
+                <Icon type="cameraColored" size={20} color={theme.colors.primary.black} />
               </CameraContainer>
             </ProfileBox>
           </ProfileContainer>
