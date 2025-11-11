@@ -21,7 +21,7 @@ import BirthPicker from '@/src/shared/components/BirthPicker';
 import { theme } from '@/src/styles/theme';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import { Alert, Modal, Image as RNImage, TouchableOpacity } from 'react-native';
+import { Alert, Modal, Platform, Image as RNImage, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const INPUT_HEIGHT = 50;
@@ -360,7 +360,7 @@ export default function EditProfileScreen() {
       </Header>
       <KeyboardAwareScrollView
         enableOnAndroid
-        extraScrollHeight={40}
+        extraScrollHeight={Platform.OS === 'ios' ? 0 : 160}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
       >
