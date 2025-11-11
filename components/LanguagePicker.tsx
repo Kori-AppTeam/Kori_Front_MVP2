@@ -3,8 +3,7 @@ import { theme } from '@/src/styles/theme';
 import { LANGUAGES } from '@/src/utils/languages';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useMemo, useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
-
+import { FlatList, KeyboardAvoidingView, Modal, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 export const MAX_LANGUAGES = 5;
@@ -39,6 +38,7 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
 
   const renderItem = ({ item }: { item: string }) => {
     const selected = value.includes(item);
+
     return (
       <LanguageItem selected={selected} onPress={() => toggle(item)}>
         <LanguageText>{item}</LanguageText>
@@ -59,7 +59,8 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={'padding'}
+          keyboardVerticalOffset={0} // 헤더 높이에 따라 조정
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
           <BottomSheet onStartShouldSetResponder={() => true}>
@@ -72,14 +73,14 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
                   value={search}
                   onChangeText={setSearch}
                 />
-                <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
-                  <IconWrapper>
-                    <Icon type="cancel" size={16} />
-                  </IconWrapper>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleSearchPress}>
-                  <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
-                </TouchableOpacity>
+                <SearchButtonsWrapper>
+                  <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
+                    <Icon size={20} type="cancel" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSearchPress}>
+                    <Icon size={24} type="search" />
+                  </TouchableOpacity>
+                </SearchButtonsWrapper>
               </SearchContainer>
             </BottomSheetHeader>
 
@@ -89,7 +90,7 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
                 renderItem={renderItem}
                 keyExtractor={(item, index) => `${item}-${index}`}
                 showsVerticalScrollIndicator={false}
-                style={{ maxHeight: 400 }}
+                keyboardShouldPersistTaps="handled"
               />
             ) : (
               <NoResultText>No languages found</NoResultText>
@@ -120,7 +121,7 @@ const BottomSheet = styled.View`
   background-color: #353637;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  max-height: 70%;
+  height: 70%;
   padding-bottom: 20px;
 `;
 
@@ -153,6 +154,12 @@ const SearchInput = styled.TextInput`
   color: #ededed;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
+`;
+
+const SearchButtonsWrapper = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 `;
 
 const LanguageItem = styled.TouchableOpacity<{ selected?: boolean }>`

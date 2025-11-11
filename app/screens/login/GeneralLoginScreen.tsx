@@ -60,58 +60,58 @@ const GeneralLoginScreen = () => {
     <SafeArea>
       <DetailHeader title={'Continue with email'} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Container>
-        <GeneralLoginContainer>
-          <TitleContainer>
-            <TitleText>Email</TitleText>
-          </TitleContainer>
-          <InputBox
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter email address"
-            placeholderTextColor={'#616262'}
-          />
-          <TitleContainer>
-            <TitleText>Password</TitleText>
-          </TitleContainer>
-          <PasswordContainer>
-            <PasswordInputBox
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter Password"
+        <Container>
+          <GeneralLoginContainer>
+            <TitleContainer>
+              <TitleText>Email</TitleText>
+            </TitleContainer>
+            <InputBox
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter email address"
               placeholderTextColor={'#616262'}
-              secureTextEntry={lookPassword}
             />
-            <EyeIconBox>
-              <TouchableOpacity onPress={() => setLookPassword(!lookPassword)}>
-                <Ionicons name={lookPassword ? 'eye-off-outline' : 'eye-outline'} size={25} color="#616262" />
+            <TitleContainer>
+              <TitleText>Password</TitleText>
+            </TitleContainer>
+            <PasswordContainer>
+              <PasswordInputBox
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Enter Password"
+                placeholderTextColor={'#616262'}
+                secureTextEntry={lookPassword}
+              />
+              <EyeIconBox>
+                <TouchableOpacity onPress={() => setLookPassword(!lookPassword)}>
+                  <Ionicons name={lookPassword ? 'eye-off-outline' : 'eye-outline'} size={25} color="#616262" />
+                </TouchableOpacity>
+              </EyeIconBox>
+            </PasswordContainer>
+            <ForgotContainer>
+              <TouchableOpacity onPress={goResetScreen}>
+                <ForgotText>Forgot Password?</ForgotText>
               </TouchableOpacity>
-            </EyeIconBox>
-          </PasswordContainer>
-          <ForgotContainer>
-            <TouchableOpacity onPress={goResetScreen}>
-              <ForgotText>Forgot Password?</ForgotText>
+            </ForgotContainer>
+          </GeneralLoginContainer>
+          {error && (
+            <ErrorContainer>
+              <ErrorBox>
+                <Icon type="info" size={24} color={theme.colors.secondary.red} />
+                <ErrorText>Your ID or password is incorrect.{'\n'}Please check again.</ErrorText>
+              </ErrorBox>
+            </ErrorContainer>
+          )}
+          <LoginButtonContainer isFull={isFull} disabled={!isFull} onPress={goLogin}>
+            <LoginText>Login</LoginText>
+          </LoginButtonContainer>
+          <CNAContainter>
+            <TouchableOpacity onPress={createAccount}>
+              <CNAText>Create new account</CNAText>
             </TouchableOpacity>
-          </ForgotContainer>
-        </GeneralLoginContainer>
-        {error && (
-          <ErrorContainer>
-            <ErrorBox>
-              <Icon type="info" size={24} color={theme.colors.secondary.red} />
-              <ErrorText>Your ID or password is incorrect.{'\n'}Please check again.</ErrorText>
-            </ErrorBox>
-          </ErrorContainer>
-        )}
-        <LoginButtonContainer isFull={isFull} disabled={!isFull} onPress={goLogin}>
-          <LoginText>Login</LoginText>
-        </LoginButtonContainer>
-        <CNAContainter>
-          <TouchableOpacity onPress={createAccount}>
-            <CNAText>Create new account</CNAText>
-          </TouchableOpacity>
-        </CNAContainter>
-      </Container>
-    </TouchableWithoutFeedback>
+          </CNAContainter>
+        </Container>
+      </TouchableWithoutFeedback>
     </SafeArea>
   );
 };

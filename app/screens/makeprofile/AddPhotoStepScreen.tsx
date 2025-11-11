@@ -34,8 +34,6 @@ export default function AddPhotoStepScreen({}) {
     { Comp: Character03, bgColor: '#2266aa' },
   ];
 
-
-
   const handleAvatarSelect = async (index: number) => {
     setSelectedAvatar(index);
     setSelectedPhoto(null);
@@ -67,9 +65,7 @@ export default function AddPhotoStepScreen({}) {
     return true;
   };
 
-  const MediaTypeCompat =
-  (ImagePicker as any).MediaType
-  || (ImagePicker as any).MediaTypeOptions;
+  const MediaTypeCompat = (ImagePicker as any).MediaType || (ImagePicker as any).MediaTypeOptions;
 
   // 카메라 버튼 클릭 시
   const PickProfilePhoto = async () => {
@@ -119,7 +115,6 @@ export default function AddPhotoStepScreen({}) {
       aspect: [1, 1],
       quality: 1,
     });
-  
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
@@ -228,18 +223,18 @@ export default function AddPhotoStepScreen({}) {
     }
   };
 
-const handleSkip = async () => { 
-  setLoading(true);
-  const defaultAvatarUrl = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_05.svg';
-  
-  try {
-    await CompleteProfile(defaultAvatarUrl); 
-  } catch (err) {
-    console.error('스킵 후 프로필 업데이트 실패', err);
-    setLoading(false); 
-    Alert.alert("오류", "프로필 저장에 실패했습니다. 다시 시도해 주세요.");
-  }
-};
+  const handleSkip = async () => {
+    setLoading(true);
+    const defaultAvatarUrl = 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_05.svg';
+
+    try {
+      await CompleteProfile(defaultAvatarUrl);
+    } catch (err) {
+      console.error('스킵 후 프로필 업데이트 실패', err);
+      setLoading(false);
+      Alert.alert('오류', '프로필 저장에 실패했습니다. 다시 시도해 주세요.');
+    }
+  };
   return (
     <SafeArea bgColor="#0F0F10">
       <StatusBar barStyle="light-content" />
@@ -404,9 +399,9 @@ const PhotoContainer = styled.View<{ selected?: boolean }>`
 `;
 
 const PhotoAvatar = styled(ProfileImage)`
-   width: 100%;
-   height: 100%;
- `;
+  width: 100%;
+  height: 100%;
+`;
 
 const CheckmarkContainer = styled.View`
   position: absolute;

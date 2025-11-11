@@ -1,9 +1,9 @@
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
+import { COUNTRIES } from '@/src/utils/countries';
 import React, { useMemo, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
-import { COUNTRIES } from '@/src/utils/countries';
 
 const INPUT_BORDER = '#FFFFFF';
 const ERROR_COLOR = '#FF6B6B';
@@ -27,8 +27,17 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
 
   const renderCountryItem = ({ item }: { item: string }) => {
     const selected = value === item;
+
+    const toggle = (country: string) => {
+      if (value === country) {
+        onSelect('');
+      } else {
+        onSelect(country);
+      }
+    };
+
     return (
-      <CountryItem selected={selected} onPress={() => onSelect(item)}>
+      <CountryItem selected={selected} onPress={() => toggle(item)}>
         <CountryText>{item}</CountryText>
         {selected && <Icon type="check" size={20} color={theme.colors.primary.mint} />}
       </CountryItem>
@@ -39,10 +48,11 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
   const handleSearchPress = () => console.log('Searching:', search);
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent={true}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={'padding'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
           <BottomSheetContent onStartShouldSetResponder={() => true}>
@@ -55,14 +65,15 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
                   value={search}
                   onChangeText={setSearch}
                 />
-                <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
-                  <IconWrapper>
-                    <Icon type="cancel" size={16} />
-                  </IconWrapper>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleSearchPress}>
-                  <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
-                </TouchableOpacity>
+
+                <SearchButtonsWrapper>
+                  <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
+                    <Icon size={20} type="cancel" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSearchPress}>
+                    <Icon size={24} type="search" />
+                  </TouchableOpacity>
+                </SearchButtonsWrapper>
               </SearchContainer>
             </BottomSheetHeader>
 
@@ -72,7 +83,7 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
                 renderItem={renderCountryItem}
                 keyExtractor={(item, index) => `${item}-${index}`}
                 showsVerticalScrollIndicator={false}
-                style={{ maxHeight: 400 }}
+                keyboardShouldPersistTaps="handled"
               />
             ) : (
               <NoResultText>No countries found</NoResultText>
@@ -96,7 +107,8 @@ const BottomSheetContent = styled.View`
   background-color: #353637;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  max-height: 70%;
+  width: 100%;
+  height: 50%;
   padding-bottom: 20px;
 `;
 
@@ -129,6 +141,12 @@ const SearchInput = styled.TextInput`
   color: #ededed;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
+`;
+
+const SearchButtonsWrapper = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 `;
 
 const CountryItem = styled.TouchableOpacity<{ selected?: boolean }>`

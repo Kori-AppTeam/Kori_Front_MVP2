@@ -5,24 +5,15 @@ type AvatarProps = {
   uri?: string;
   size?: number;
   bg?: string;
-  showVisitorOnEmpty?: boolean;   // ← 추가: 값 없을 때 방문자 처리 여부
+  showVisitorOnEmpty?: boolean; // ← 추가: 값 없을 때 방문자 처리 여부
 };
 
-export default function Avatar({
-  uri,
-  size = 120,
-  bg = '#2a2f33',
-  showVisitorOnEmpty = true,
-}: AvatarProps) {
+export default function Avatar({ uri, size = 120, bg = '#2a2f33', showVisitorOnEmpty = true }: AvatarProps) {
   const isEmpty = !uri || String(uri).trim().length === 0;
 
   return (
     <Frame $size={size} $bg={bg}>
-      <Img
-        imageUrl={uri}
-        isVisitor={showVisitorOnEmpty && isEmpty}
-        resizeMode="cover"
-      />
+      <Img imageUrl={uri} isVisitor={showVisitorOnEmpty && isEmpty} resizeMode="cover" />
     </Frame>
   );
 }

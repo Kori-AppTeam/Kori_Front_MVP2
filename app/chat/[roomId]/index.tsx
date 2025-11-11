@@ -627,7 +627,7 @@ const ChattingRoomScreen = () => {
               onEndReachedThreshold={0.2}
               renderItem={({ item, index }) => {
                 const imgUrl = item.senderImageUrl || undefined;
-                const isVisitor = !imgUrl;    
+                const isVisitor = !imgUrl;
 
                 const isMyMessage = item.senderId.toString() === myUserId;
                 // 프로필 표시 로직
@@ -710,10 +710,7 @@ const ChattingRoomScreen = () => {
                               onPress={() => fetchUserProfile(item.senderId)}
                               disabled={isLoadingProfile}
                             >
-                              <ProfileImg
-                                imageUrl={imgUrl}
-                                isVisitor={isVisitor}
-                              />
+                              <ProfileImg imageUrl={imgUrl} isVisitor={isVisitor} />
                             </TouchableOpacity>
                           </ProfileBox>
                         </ProfileContainer>
@@ -723,7 +720,7 @@ const ChattingRoomScreen = () => {
                             <OtherFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                  searchMessages[pointerRef.current].id === item.id ? (
+                                searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}
@@ -758,7 +755,7 @@ const ChattingRoomScreen = () => {
                             <OtherNotFirstTextBox>
                               {isSearching ? (
                                 searchMessages[pointerRef.current] &&
-                                  searchMessages[pointerRef.current].id === item.id ? (
+                                searchMessages[pointerRef.current].id === item.id ? (
                                   <HighlightOtherText
                                     text={isTranslate ? item.targetContent : item.content || item.originContent}
                                     keyword={searchText}
@@ -897,7 +894,7 @@ const ChattingScreen = styled.View`
 `;
 const ChattingLeftContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
-}) <{ showProfile?: boolean }>`
+})<{ showProfile?: boolean }>`
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '1px')};
   align-self: flex-start;
   max-width: 280px;
@@ -968,7 +965,7 @@ const ChatTimeText = styled.Text`
 `;
 const ChattingRightContainer = styled.TouchableOpacity.attrs({
   activeOpacity: 0.9,
-}) <{ showProfile?: boolean }>`
+})<{ showProfile?: boolean }>`
   margin-top: ${({ showProfile }) => (showProfile ? '30px' : '5px')};
   align-self: flex-end;
   max-width: 280px;
