@@ -16,11 +16,12 @@ import PurposePicker, { PurposeDropdownButton, PurposeDropdownText } from '@/com
 import useProfileEdit from '@/hooks/mutations/useProfileEdit';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 
-import Icon from '@/components/common/Icon';
-import { theme } from '@/src/styles/theme';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import { Alert, Modal, Image as RNImage } from 'react-native';
+import { Alert, Modal, Image as RNImage, TouchableOpacity } from 'react-native';
+import { theme } from '@/src/styles/theme';
+import Icon from '@/components/common/Icon';
+import BirthPicker from '@/src/shared/components/BirthPicker';
 
 const INPUT_HEIGHT = 50;
 const INPUT_RADIUS = 8;
@@ -125,6 +126,7 @@ export default function EditProfileScreen() {
   const [showLang, setShowLang] = useState(false);
 
   const [birth, setBirth] = useState('');
+  const [showBirthPicker, setShowBirthPicker] = useState<boolean>(false);
   const [purpose, setPurpose] = useState('');
   const [showPurpose, setShowPurpose] = useState(false);
 
@@ -152,6 +154,7 @@ export default function EditProfileScreen() {
     margin-top: 4px;
     padding-left: 16px;
   `;
+
   useEffect(() => {
     if (!me) return;
     const full = [me.firstname, me.lastname].filter(Boolean).join(' ');
@@ -225,13 +228,6 @@ export default function EditProfileScreen() {
       aboutMe: aboutMe.trim().length === 0 ? 'Please introduce yourself (About Me).' : undefined, // 자기소개를 입력해주세요.
     };
   }, [isFormValid, name, gender, country, birth, purpose, langs, selectedInterests, aboutMe]);
-
-  const formatBirth = (value: string) => {
-    const digits = value.replace(/\D/g, '').slice(0, 8);
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
-  };
 
   const onSave = async () => {
     console.log('isFormValid:', isFormValid);
@@ -427,18 +423,18 @@ export default function EditProfileScreen() {
 
         <Field>
           <LabelText error={!!errors.birth}>Birth</LabelText>
-          <BirthInput
-            value={birth}
-            onChangeText={(t: string) => setBirth(formatBirth(t))}
-            placeholder="MM/DD/YY"
-            placeholderTextColor="#EDEDED99"
-            keyboardType="number-pad"
-            maxLength={10}
-            returnKeyType="done"
-            onBlur={handleBlur('birth')}
-            error={!!(errors.birth && touched.birth)}
-          />
-
+          <TouchableOpacity onPress={() => setShowBirthPicker(true)}>
+            <BirthInput
+              value={birth}
+              placeholder="MM/DD/YY"
+              placeholderTextColor="#EDEDED99"
+              onBlur={handleBlur('birth')}
+              error={!!(errors.birth && touched.birth)}
+              editable={false}
+              showSoftInputOnFocus={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
           {errors.birth && touched.birth && <ErrorText>{errors.birth}</ErrorText>}
         </Field>
 
@@ -558,6 +554,12 @@ export default function EditProfileScreen() {
         max={5}
         title="Select your interests"
       />
+      <BirthPicker
+        isShow={showBirthPicker}
+        onClose={() => setShowBirthPicker(false)}
+        date={birth}
+        setDate={(date) => setBirth(date)}
+      />
       {showAvatarSheet && (
         <Modal visible transparent animationType="fade" onRequestClose={() => setShowAvatarSheet(false)}>
           <SheetOverlay activeOpacity={1} onPress={() => setShowAvatarSheet(false)}>
@@ -634,10 +636,14 @@ export default function EditProfileScreen() {
 
 const Safe = styled.SafeAreaView`
   flex: 1;
+  width: 100%;
+  height: 100%;
   background: #171818;
 `;
 const Scroll = styled.ScrollView`
   padding: 0 16px;
+  width: 100%;
+  height: 100%;
 `;
 const Header = styled.View`
   height: 52px;

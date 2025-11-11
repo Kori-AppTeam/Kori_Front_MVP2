@@ -204,7 +204,7 @@ const CreateAccountScreen = () => {
         {/* ScrollView 안에는 입력 폼만 */}
         <KeyboardAwareScrollView
           contentContainerStyle={{ flexGrow: 1 }}
-          extraScrollHeight={20} // 입력창 위로 조금만 올리기
+          extraScrollHeight={40} // 입력창 위로 조금만 올리기
           enableOnAndroid={true}
         >
           <GeneralLoginContainer>
@@ -440,13 +440,7 @@ const CreateAccountScreen = () => {
         </NextButtonContainer>
       </Container>
       <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
-        <ModalOverlay
-          activeOpacity={1}
-          onPress={() => {
-            setModalVisible(false);
-            setIsNextButtonClicked(false);
-          }}
-        >
+        <ModalOverlay activeOpacity={1} onPress={() => setModalVisible(false)}>
           <BottomSheetContent onStartShouldSetResponder={() => true}>
             <BottomSheetHeader>
               <BottomSheetHandle />
@@ -535,7 +529,7 @@ const HeaderTitleText = styled.Text`
 `;
 
 const GeneralLoginContainer = styled.View`
-  flex: 1;
+  padding-bottom: 40px;
 `;
 
 const TitleContainer = styled.View`

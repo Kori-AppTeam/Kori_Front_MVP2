@@ -7,7 +7,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useState } from 'react';
-import { StatusBar, TouchableOpacity } from 'react-native';
+import { Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
 
 type AppLoginResponse = {
@@ -59,6 +59,7 @@ const GeneralLoginScreen = () => {
   return (
     <SafeArea>
       <DetailHeader title={'Continue with email'} />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <Container>
         <GeneralLoginContainer>
           <TitleContainer>
@@ -110,6 +111,7 @@ const GeneralLoginScreen = () => {
           </TouchableOpacity>
         </CNAContainter>
       </Container>
+    </TouchableWithoutFeedback>
     </SafeArea>
   );
 };
