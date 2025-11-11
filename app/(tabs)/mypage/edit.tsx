@@ -360,7 +360,7 @@ export default function EditProfileScreen() {
       </Header>
       <KeyboardAwareScrollView
         enableOnAndroid
-        extraScrollHeight={Platform.OS === 'ios' ? 0 : 160}
+        extraScrollHeight={Platform.OS === 'ios' ? 52 : 160}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
       >
