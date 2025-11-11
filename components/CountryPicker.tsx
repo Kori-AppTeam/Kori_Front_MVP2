@@ -1,11 +1,11 @@
-import Icon from '@/components/common/Icon';
-import { theme } from '@/src/styles/theme';
 import cancelIconImg from '@/assets/images/cancel.png';
 import searchIconImg from '@/assets/images/search.png';
+import Icon from '@/components/common/Icon';
+import { theme } from '@/src/styles/theme';
+import { COUNTRIES } from '@/src/utils/countries';
 import React, { useMemo, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
-import { COUNTRIES } from '@/src/utils/countries';
 
 const INPUT_BORDER = '#FFFFFF';
 const ERROR_COLOR = '#FF6B6B';
@@ -57,8 +57,8 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent={true}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} // 헤더 높이에 따라 조정
+          behavior={'padding'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
           <BottomSheetContent onStartShouldSetResponder={() => true}>
@@ -88,7 +88,6 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
                 renderItem={renderCountryItem}
                 keyExtractor={(item, index) => `${item}-${index}`}
                 showsVerticalScrollIndicator={false}
-                style={{ maxHeight: 400 }}
                 keyboardShouldPersistTaps="handled"
               />
             ) : (

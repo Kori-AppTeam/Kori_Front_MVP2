@@ -5,7 +5,7 @@ import { theme } from '@/src/styles/theme';
 import { LANGUAGES } from '@/src/utils/languages';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Keyboard, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 export const MAX_LANGUAGES = 5;
@@ -61,8 +61,8 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // 헤더 높이에 따라 조정
+          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+          keyboardVerticalOffset={0} // 헤더 높이에 따라 조정
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
           <BottomSheet onStartShouldSetResponder={() => true}>
@@ -90,7 +90,6 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
                 renderItem={renderItem}
                 keyExtractor={(item, index) => `${item}-${index}`}
                 showsVerticalScrollIndicator={false}
-                style={{ maxHeight: 400 }}
                 keyboardShouldPersistTaps="handled"
               />
             ) : (
