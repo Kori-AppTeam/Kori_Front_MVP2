@@ -1,11 +1,9 @@
-import cancelIconImg from '@/assets/images/cancel.png';
-import searchIconImg from '@/assets/images/search.png';
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { LANGUAGES } from '@/src/utils/languages';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useMemo, useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Modal, Platform, TouchableOpacity } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Modal, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 export const MAX_LANGUAGES = 5;
@@ -61,7 +59,7 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+          behavior={'padding'}
           keyboardVerticalOffset={0} // 헤더 높이에 따라 조정
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
@@ -75,12 +73,14 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
                   value={search}
                   onChangeText={setSearch}
                 />
-                <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
-                  <CancelIcon source={cancelIconImg} resizeMode="contain" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleSearchPress}>
-                  <SearchIcon source={searchIconImg} resizeMode="contain" />
-                </TouchableOpacity>
+                <SearchButtonsWrapper>
+                  <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
+                    <Icon size={20} type="cancel" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSearchPress}>
+                    <Icon size={24} type="search" />
+                  </TouchableOpacity>
+                </SearchButtonsWrapper>
               </SearchContainer>
             </BottomSheetHeader>
 
@@ -154,6 +154,12 @@ const SearchInput = styled.TextInput`
   color: #ededed;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
+`;
+
+const SearchButtonsWrapper = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 `;
 
 const LanguageItem = styled.TouchableOpacity<{ selected?: boolean }>`

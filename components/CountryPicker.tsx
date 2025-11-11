@@ -1,5 +1,3 @@
-import cancelIconImg from '@/assets/images/cancel.png';
-import searchIconImg from '@/assets/images/search.png';
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { COUNTRIES } from '@/src/utils/countries';
@@ -68,13 +66,14 @@ export default function CountryPicker({ visible, value, onClose, onSelect, count
                   onChangeText={setSearch}
                 />
 
-                <TouchableOpacity onPress={handleClearSearch}>
-                  <CancelIcon source={cancelIconImg} resizeMode="contain" />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={handleSearchPress}>
-                  <SearchIcon source={searchIconImg} resizeMode="contain" />
-                </TouchableOpacity>
+                <SearchButtonsWrapper>
+                  <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
+                    <Icon size={20} type="cancel" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSearchPress}>
+                    <Icon size={24} type="search" />
+                  </TouchableOpacity>
+                </SearchButtonsWrapper>
               </SearchContainer>
             </BottomSheetHeader>
 
@@ -142,6 +141,12 @@ const SearchInput = styled.TextInput`
   color: #ededed;
   font-size: 15px;
   font-family: 'PlusJakartaSans-Regular';
+`;
+
+const SearchButtonsWrapper = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 `;
 
 const CountryItem = styled.TouchableOpacity<{ selected?: boolean }>`
