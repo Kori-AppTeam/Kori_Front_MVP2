@@ -3,11 +3,12 @@ import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import CategoryChips, { Category } from '@/components/CategoryChips';
 import Icon from '@/components/common/Icon';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-import PostCard, { Post } from '@/components/PostCard';
+import PostCard from '@/components/PostCard';
 import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
 import { useToggleLike } from '@/hooks/mutations/useToggleLike';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { PostEx, PostsListItem, PostsListResp } from '@/src/features/community/types/postsListType';
 import { isMeaningfulName, pickNonEmpty, toDateLabel } from '@/src/features/community/utils/indexUtils';
 import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
@@ -21,59 +22,6 @@ const VisitorImage = require('@/assets/images/character_05.svg');
 const AnonymityImage = require('@/assets/images/character_04.svg');
 
 const MAX_IMAGES = 5;
-
-type PostsListItem = {
-  postId: number;
-  title?: string;
-  contentPreview?: string;
-  content?: string;
-
-  authorName?: string;
-  userName?: string | null;
-  nickname?: string;
-  memberName?: string;
-  writerName?: string;
-
-  createdAt?: string | number;
-  createdTime?: string | number;
-  likeCount?: number;
-  commentCount?: number;
-  viewCount?: number;
-  score?: number;
-  likedByMe?: boolean;
-  isLike?: boolean;
-  isLiked?: boolean;
-
-  contentImageUrls?: string[];
-  imageUrls?: string[];
-  contentImageUrl?: string | null;
-  imageUrl?: string | null;
-
-  userImageUrl?: string;
-  boardCategory: Category | string;
-  isAnonymous?: boolean;
-};
-
-type PostsListResp = {
-  success: boolean;
-  data: {
-    items: PostsListItem[];
-    hasNext: boolean;
-    nextCursor?: string;
-  };
-  timestamp?: string;
-};
-
-type PostEx = Post & {
-  postId: number;
-  authorName?: string;
-  hotScore?: number;
-  minutesAgo?: number;
-  bookmarked?: boolean;
-  likedByMe?: boolean;
-  userImageUrl?: string;
-  isAnonymous?: boolean;
-};
 
 const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
   const isAnon = Boolean(row.isAnonymous);
