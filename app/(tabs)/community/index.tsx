@@ -7,8 +7,9 @@ import PostCard from '@/components/PostCard';
 import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { useGetPosts } from '@/src/features/community/hooks/useGetPosts';
 import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
-import { PostEx, PostsListItem, PostsListResp } from '@/src/features/community/types/postsListType';
+import { PostEx, PostsListItem, RequestPageParams } from '@/src/features/community/types/postsListType';
 import { isMeaningfulName, pickNonEmpty, toDateLabel } from '@/src/features/community/utils/indexUtils';
 import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
@@ -73,9 +74,9 @@ export default function CommunityScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [writeLoading, setWriteLoading] = useState(false);
-  const sortServer = sort === 'new' ? 'LATEST' : 'POPULAR';
-  const boardId = Number(CATEGORY_TO_BOARD_ID[cat]);
 
+  const sortServer = sort === 'new' ? 'LATEST' : 'POPULAR';
+  const boardId = CATEGORY_TO_BOARD_ID[cat];
   const likeMutation = useToggleLike();
 
   const {
@@ -101,8 +102,8 @@ export default function CommunityScreen() {
     if (loading) return;
     setLoading(true);
     try {
-      const params = { sort: sortServer, size: 20, ...(after ? { cursor: after } : {}) };
-      const { data } = await api.get<PostsListResp>(`/api/v1/boards/${boardId}/posts`, { params });
+      const params: RequestPageParams = { sort: sortServer, size: 20, ...(after ? { cursor: after } : {}) };
+      const data = useGetPosts(boardId, params);
       const respTimestamp = data?.timestamp;
       const list = (data?.data?.items ?? []).map((item) => mapItem(item, respTimestamp));
 
