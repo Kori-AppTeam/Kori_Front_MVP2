@@ -77,3 +77,22 @@ export interface CreatePostBody {
   isAnonymous: boolean;
   imageUrls?: string[];
 }
+
+// page별 post 호출
+export interface PostsCursorPage {
+  items: PostsListItem[];
+  hasNext: boolean;
+  nextCursor?: string | null;
+}
+
+export interface PostsListServerResp extends PostsCursorPage {
+  success: boolean;
+  data: PostsCursorPage;
+  timestamp?: string;
+}
+
+export interface RequestPageParams {
+  sort?: SortParam;
+  size?: number;
+  cursor?: string;
+}
