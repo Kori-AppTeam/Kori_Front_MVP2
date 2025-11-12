@@ -1,11 +1,9 @@
 import api from '@/api/axiosInstance';
 import type { Category } from '@/components/CategoryChips';
+import { BoardId, PostDetail, PostsListItem, SortParam } from '@/src/features/community/types/postsListType';
 
-export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
-export type SortParam = 'LATEST' | 'POPULAR';
-
-export function categoryToBoardId(cat: string): BoardId {
-  switch (cat) {
+export function categoryToBoardId(category: string): BoardId {
+  switch (category) {
     case 'All':
       return 1;
     case 'News':
@@ -76,45 +74,8 @@ export function pickAuthorId(row: any): string | undefined {
   return id != null ? String(id) : undefined;
 }
 
-export type PostListItem = {
-  postId: number;
-
-  title?: string | null;
-  contentPreview?: string | null;
-  content?: string | null;
-
-  authorName?: string | null;
-  userName?: string | null;
-  nickname?: string | null;
-  memberName?: string | null;
-  writerName?: string | null;
-
-  isAnonymous?: boolean;
-  userImageUrl?: string | null;
-
-  boardCategory?: string | Category;
-  categoryId?: number;
-  createdAt?: string | number | null;
-  createdTime?: string | number | null;
-  likeCount?: number | null;
-  commentCount?: number | null;
-  viewCount?: number | null;
-  score?: number | null;
-
-  likedByMe?: boolean;
-  isLike?: boolean;
-  isLiked?: boolean;
-
-  contentImageUrls?: string[] | null;
-  imageUrls?: string[] | null;
-  contentImageUrl?: string | null;
-  imageUrl?: string | null;
-
-  imageCount?: number | null;
-};
-
 export type PostsCursorPage = {
-  items: PostListItem[];
+  items: PostsListItem[];
   hasNext: boolean;
   nextCursor?: string | null;
 };
@@ -132,38 +93,6 @@ export async function getPostsPage(
   return data.data;
 }
 
-export type PostDetail = {
-  postId: number;
-
-  content: string;
-  link?: string | null;
-
-  authorId?: string | number | null;
-  userId?: string | number | null;
-  memberId?: string | number | null;
-  writerId?: string | number | null;
-  authorName?: string | null;
-  userName?: string | null;
-  nickname?: string | null;
-  memberName?: string | null;
-  writerName?: string | null;
-
-  userImageUrl?: string | null;
-  isAnonymous?: boolean;
-
-  boardCategory?: string;
-  createdTime: number | string | null; // 서버가 epoch(초/밀리초) 또는 ISO 문자열 줄 수 있음
-
-  likeCount: number;
-  commentCount: number;
-  viewCount: number;
-
-  contentImageUrls?: string[] | null;
-  imageUrls?: string[] | null;
-  contentImageUrl?: string | null;
-  imageCount?: number | null;
-};
-
 type PostDetailServerResp = { message?: string; data: PostDetail; timestamp?: string };
 
 export async function getPostDetail(postId: number): Promise<PostDetail & { timestamp?: string }> {
@@ -179,15 +108,4 @@ export async function getPostDetail(postId: number): Promise<PostDetail & { time
 
   // 평면 객체로 직접 주는 경우
   return data as PostDetail & { timestamp?: string };
-}
-
-export type CreatePostBody = {
-  content: string;
-  isAnonymous: boolean;
-  imageUrls?: string[];
-};
-
-export async function createPost(boardId: number, body: CreatePostBody) {
-  const { data } = await api.post(`/api/v1/boards/${boardId}/posts`, body);
-  return data as string;
 }

@@ -1,41 +1,47 @@
 import { Category } from '@/components/CategoryChips';
 import { Post } from '@/components/PostCard';
 
-// index.tsx
+export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type SortParam = 'LATEST' | 'POPULAR';
 
-export type PostsListItem = {
+export interface PostsListItem {
   postId: number;
-  title?: string;
-  contentPreview?: string;
-  content?: string;
+  title?: string | null;
+  contentPreview?: string | null;
+  content?: string | null;
 
-  authorName?: string;
+  authorName?: string | null;
   userName?: string | null;
-  nickname?: string;
-  memberName?: string;
-  writerName?: string;
+  nickname?: string | null;
+  memberName?: string | null;
+  writerName?: string | null;
 
-  createdAt?: string | number;
-  createdTime?: string | number;
-  likeCount?: number;
-  commentCount?: number;
-  viewCount?: number;
-  score?: number;
-  likedByMe?: boolean;
-  isLike?: boolean;
-  isLiked?: boolean;
+  isAnonymous?: boolean;
+  userImageUrl?: string | null;
 
-  contentImageUrls?: string[];
-  imageUrls?: string[];
+  boardCategory: Category | string;
+  categoryId?: number;
+
+  createdAt?: string | number | null;
+  createdTime?: string | number | null;
+
+  likeCount?: number | null;
+  commentCount?: number | null;
+  viewCount?: number | null;
+  imageCount?: number | null;
+  score?: number | null;
+
+  likedByMe?: boolean | null;
+  isLike?: boolean | null;
+  isLiked?: boolean | null;
+
+  contentImageUrls?: string[] | null;
+  imageUrls?: string[] | null;
   contentImageUrl?: string | null;
   imageUrl?: string | null;
+}
 
-  userImageUrl?: string;
-  boardCategory: Category | string;
-  isAnonymous?: boolean;
-};
-
-export type PostsListResp = {
+export interface PostsListResp {
   success: boolean;
   data: {
     items: PostsListItem[];
@@ -43,7 +49,16 @@ export type PostsListResp = {
     nextCursor?: string;
   };
   timestamp?: string;
-};
+}
+
+// 게시글 상세
+export interface PostDetail extends PostsListItem {
+  link?: string | null;
+  authorId?: string | number | null;
+  userId?: string | number | null;
+  memberId?: string | number | null;
+  writerId?: string | number | null;
+}
 
 export type PostEx = Post & {
   postId: number;
@@ -55,3 +70,10 @@ export type PostEx = Post & {
   userImageUrl?: string;
   isAnonymous?: boolean;
 };
+
+// 게시글 작성
+export interface CreatePostBody {
+  content: string;
+  isAnonymous: boolean;
+  imageUrls?: string[];
+}
