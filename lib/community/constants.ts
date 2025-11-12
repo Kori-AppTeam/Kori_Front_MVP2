@@ -1,4 +1,5 @@
 import { Category } from '@/components/CategoryChips';
+import { BoardId } from '@/src/features/community/types/postsListType';
 
 export const CLIENT_TO_SERVER_CAT: Record<Category, '' | 'NEWS' | 'TIP' | 'QNA' | 'EVENT' | 'FREE_TALK' | 'ACTIVITY'> =
   {
@@ -11,7 +12,7 @@ export const CLIENT_TO_SERVER_CAT: Record<Category, '' | 'NEWS' | 'TIP' | 'QNA' 
     Activity: 'ACTIVITY',
   };
 
-export const CATEGORY_TO_BOARD_ID: Record<Category, number> = {
+export const CATEGORY_TO_BOARD_ID: Record<Category, BoardId> = {
   All: 1,
   News: 2,
   Tip: 3,
