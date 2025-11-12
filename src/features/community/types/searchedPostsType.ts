@@ -1,4 +1,4 @@
-import { Post } from '@/components/PostCard';
+import { Post } from '@/src/features/community/components/PostCard';
 
 export type SearchedPosts = {
   postId: number;

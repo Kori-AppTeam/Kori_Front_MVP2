@@ -1,5 +1,5 @@
 import { Category } from '@/components/CategoryChips';
-import { Post } from '@/components/PostCard';
+import { Post } from '@/src/features/community/components/PostCard';
 
 export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type SortParam = 'LATEST' | 'POPULAR';
