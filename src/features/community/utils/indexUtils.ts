@@ -1,5 +1,5 @@
-export const isMeaningfulName = (v?: any) => {
-  const s = String(v ?? '').trim();
+export const isMeaningfulName = (value?: any) => {
+  const s = String(value ?? '').trim();
   if (!s) return false;
   const lower = s.toLowerCase();
   return !['unknown', 'null', 'undefined', '-', '—'].includes(lower);

@@ -6,8 +6,8 @@ import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import PostCard from '@/components/PostCard';
 import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
-import { useToggleLike } from '@/hooks/mutations/useToggleLike';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
 import { PostEx, PostsListItem, PostsListResp } from '@/src/features/community/types/postsListType';
 import { isMeaningfulName, pickNonEmpty, toDateLabel } from '@/src/features/community/utils/indexUtils';
 import { usePostUI } from '@/src/store/usePostUI';
@@ -23,41 +23,41 @@ const AnonymityImage = require('@/assets/images/character_04.svg');
 
 const MAX_IMAGES = 5;
 
-const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
-  const isAnon = Boolean(row.isAnonymous);
+const mapItem = (post: PostsListItem, respTimestamp?: string): PostEx => {
+  const isAnon = Boolean(post.isAnonymous);
 
-  const createdRaw = row.createdAt ?? row.createdTime;
-  const liked = (row as any).likedByMe ?? (row as any).isLike ?? (row as any).isLiked ?? false;
+  const createdRaw = post.createdAt ?? post.createdTime;
+  const liked = post?.likedByMe ?? post?.isLike ?? post?.isLiked ?? false;
 
   const imageKeys: string[] =
-    row.contentImageUrls ??
-    row.imageUrls ??
-    (row.contentImageUrl ? [row.contentImageUrl] : row.imageUrl ? [row.imageUrl] : []);
+    post.contentImageUrls ??
+    post.imageUrls ??
+    (post.contentImageUrl ? [post.contentImageUrl] : post.imageUrl ? [post.imageUrl] : []);
 
-  const pickedRaw = pickNonEmpty(row.authorName, row.userName, row.nickname, row.memberName, row.writerName);
+  const pickedRaw = pickNonEmpty(post.authorName, post.userName, post.nickname, post.memberName, post.writerName);
   const display = isMeaningfulName(pickedRaw) ? pickedRaw : isAnon ? 'Anonymous' : '—';
-  const safeUserImageUrl = !isAnon && row.userImageUrl ? row.userImageUrl : undefined;
+  const safeUserImageUrl = !isAnon && post.userImageUrl ? post.userImageUrl : undefined;
 
   const niceCategory =
-    row.boardCategory && typeof row.boardCategory === 'string'
-      ? ((row.boardCategory[0] + row.boardCategory.slice(1).toLowerCase()) as Category)
+    post.boardCategory && typeof post.boardCategory === 'string'
+      ? ((post.boardCategory[0] + post.boardCategory.slice(1).toLowerCase()) as Category)
       : ('Free talk' as Category);
 
   return {
-    id: String(row.postId),
-    postId: row.postId,
+    id: String(post.postId),
+    postId: post.postId,
     author: display,
     authorName: display,
     isAnonymous: isAnon,
     category: niceCategory,
     createdAt: toDateLabel(createdRaw, respTimestamp),
-    body: row.contentPreview ?? row.content ?? '',
-    likes: Number(row.likeCount ?? 0),
-    comments: Number(row.commentCount ?? 0),
+    body: post.contentPreview ?? post.content ?? '',
+    likes: Number(post.likeCount ?? 0),
+    comments: Number(post.commentCount ?? 0),
     images: (imageKeys || []).filter(Boolean).slice(0, MAX_IMAGES),
-    hotScore: typeof row.score === 'number' ? row.score : 0,
+    hotScore: typeof post.score === 'number' ? post.score : 0,
     likedByMe: Boolean(liked),
-    viewCount: Number(row.viewCount ?? 0),
+    viewCount: Number(post.viewCount ?? 0),
     ...(safeUserImageUrl ? { userImageUrl: safeUserImageUrl } : {}),
   };
 };
