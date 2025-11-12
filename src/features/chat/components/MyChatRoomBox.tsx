@@ -44,10 +44,7 @@ const MyChatRoomBox = ({ data }) => {
     <ChatRoom>
       <RoomBox activeOpacity={0.8} onPress={enterChattingRoom}>
         <RoomImageContainer>
-          <RoomImage
-            imageUrl={data.roomImageUrl}
-            isVisitor={!data.roomImageUrl}
-          />
+          <RoomImage imageUrl={data.roomImageUrl} isVisitor={!data.roomImageUrl} />
         </RoomImageContainer>
         <RoomWrapper>
           <RoomTop>

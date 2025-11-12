@@ -16,12 +16,13 @@ import PurposePicker, { PurposeDropdownButton, PurposeDropdownText } from '@/com
 import useProfileEdit from '@/hooks/mutations/useProfileEdit';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 
-import * as FileSystem from 'expo-file-system';
-import * as ImagePicker from 'expo-image-picker';
-import { Alert, Modal, Image as RNImage, TouchableOpacity } from 'react-native';
-import { theme } from '@/src/styles/theme';
 import Icon from '@/components/common/Icon';
 import BirthPicker from '@/src/shared/components/BirthPicker';
+import { theme } from '@/src/styles/theme';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
+import { Alert, Modal, Platform, Image as RNImage, TouchableOpacity } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const INPUT_HEIGHT = 50;
 const INPUT_RADIUS = 8;
@@ -357,7 +358,12 @@ export default function EditProfileScreen() {
           <SaveText disabled={!isFormValid}>{isFormValid ? 'Save' : 'Complete all'}</SaveText>
         </Side>
       </Header>
-      <Scroll showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        extraScrollHeight={Platform.OS === 'ios' ? 52 : 160}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
+      >
         <Center>
           <AvatarPress onPress={openAvatarSheet}>
             <Avatar uri={displayAvatarUrl} />
@@ -516,44 +522,44 @@ export default function EditProfileScreen() {
           {errors.aboutMe && touched.aboutMe && <ErrorText>{errors.aboutMe}</ErrorText>}
         </Field>
         <BottomPad />
-      </Scroll>
-      <CountryPicker
-        visible={showCountry}
-        value={country}
-        onClose={() => setShowCountry(false)}
-        onSelect={(c) => {
-          setCountry(c);
-          setShowCountry(false);
-        }}
-      />
-      <LanguagePicker visible={showLang} value={langs} onClose={() => setShowLang(false)} onChange={setLangs} />
-      <PurposePicker
-        visible={showPurpose}
-        value={purpose}
-        onClose={() => setShowPurpose(false)}
-        onSelect={(p) => {
-          setPurpose(p);
-          setShowPurpose(false);
-        }}
-      />
-      <GenderPicker
-        visible={showGender}
-        value={gender}
-        onClose={() => setShowGender(false)}
-        onSelect={(g) => {
-          setGender(g);
-          setShowGender(false);
-        }}
-      />
-      <BottomSheetTagPicker
-        visible={showTagPicker}
-        value={selectedInterests}
-        onClose={() => setShowTagPicker(false)}
-        onChange={setSelectedInterests}
-        sections={TAG_SECTIONS}
-        max={5}
-        title="Select your interests"
-      />
+        <CountryPicker
+          visible={showCountry}
+          value={country}
+          onClose={() => setShowCountry(false)}
+          onSelect={(c) => {
+            setCountry(c);
+            setShowCountry(false);
+          }}
+        />
+        <LanguagePicker visible={showLang} value={langs} onClose={() => setShowLang(false)} onChange={setLangs} />
+        <PurposePicker
+          visible={showPurpose}
+          value={purpose}
+          onClose={() => setShowPurpose(false)}
+          onSelect={(p) => {
+            setPurpose(p);
+            setShowPurpose(false);
+          }}
+        />
+        <GenderPicker
+          visible={showGender}
+          value={gender}
+          onClose={() => setShowGender(false)}
+          onSelect={(g) => {
+            setGender(g);
+            setShowGender(false);
+          }}
+        />
+        <BottomSheetTagPicker
+          visible={showTagPicker}
+          value={selectedInterests}
+          onClose={() => setShowTagPicker(false)}
+          onChange={setSelectedInterests}
+          sections={TAG_SECTIONS}
+          max={5}
+          title="Select your interests"
+        />
+      </KeyboardAwareScrollView>
       <BirthPicker
         isShow={showBirthPicker}
         onClose={() => setShowBirthPicker(false)}

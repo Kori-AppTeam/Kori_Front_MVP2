@@ -18,8 +18,8 @@ type ProfileImageProps = Omit<RNImageProps, 'source'> & {
   isVisitor?: boolean;
 };
 
-const IMG_ANON = require('@/assets/images/character_04.svg');     // 익명 (SVG)
-const IMG_VISITOR = require('@/assets/images/character_05.svg');  // 방문자 (SVG)
+const IMG_ANON = require('@/assets/images/character_04.svg'); // 익명 (SVG)
+const IMG_VISITOR = require('@/assets/images/character_05.svg'); // 방문자 (SVG)
 
 function getLocalSvgComponent(source: any) {
   if (source && typeof source === 'object' && typeof source.default === 'function') return source.default;
@@ -55,7 +55,7 @@ function isUsableUrl(u?: string | null): u is string {
 
 const ProfileImage = forwardRef<any, ProfileImageProps>(function ProfileImage(
   { source, imageUrl, isAnonymous, isVisitor, style, resizeMode = 'cover', onError, ...rest },
-  ref
+  ref,
 ) {
   const [failed, setFailed] = React.useState(false);
 
@@ -63,15 +63,15 @@ const ProfileImage = forwardRef<any, ProfileImageProps>(function ProfileImage(
   let policySource: ImageSourcePropType | undefined;
 
   if (isAnonymous) {
-    policySource = IMG_ANON;                        // 1) 무조건 익명 우선
+    policySource = IMG_ANON; // 1) 무조건 익명 우선
   } else if (!failed && isUsableUrl(imageUrl)) {
-    policySource = { uri: imageUrl! };              // 2) 유효한 절대 URL이면 그 이미지
+    policySource = { uri: imageUrl! }; // 2) 유효한 절대 URL이면 그 이미지
   } else if (isVisitor) {
-    policySource = IMG_VISITOR;                     // 3) 방문자(이미지 없음 등)
+    policySource = IMG_VISITOR; // 3) 방문자(이미지 없음 등)
   } else if (source) {
-    policySource = source;                          // 4) 명시적 source
+    policySource = source; // 4) 명시적 source
   } else {
-    policySource = undefined;                       // 5) 아무 것도 없으면 빈 뷰(공간 유지)
+    policySource = undefined; // 5) 아무 것도 없으면 빈 뷰(공간 유지)
   }
 
   // 로컬 SVG(컴포넌트)면 직접 렌더

@@ -251,7 +251,7 @@ export default function FollowListScreen() {
                     mode="received"
                     onAccept={handleAccept}
                     onCancel={handleDecline}
-                    onChat={() => { }}
+                    onChat={() => {}}
                   />
                 </Inner>
               </Page>
@@ -312,7 +312,7 @@ export default function FollowListScreen() {
                     imageUrl={item.imageUrl}
                     collapsible={false}
                     mode="sent"
-                    onAccept={() => { }}
+                    onAccept={() => {}}
                     onCancel={() => handleCancelSent(item.id)}
                     onChat={async () => {
                       try {

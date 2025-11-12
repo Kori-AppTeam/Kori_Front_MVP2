@@ -29,10 +29,10 @@ export default function NameStepScreen() {
     router.push('./GenderStepScreen');
   };
 
-return (
+  return (
     <SafeArea bgColor="#0F0F10">
       {/* [수정] StatusBar를 TouchableWithoutFeedback 바깥으로 이동시킵니다. */}
-      <StatusBar barStyle="light-content" /> 
+      <StatusBar barStyle="light-content" />
 
       {/* [수정] 이제 TouchableWithoutFeedback은 <Container>라는 자식 1개만 가집니다. */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

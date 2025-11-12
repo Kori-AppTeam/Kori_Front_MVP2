@@ -30,10 +30,7 @@ const AllSpaceRoomBox = ({ data }) => {
         </AllSpaceMemberContainer>
       </AllSpaceTitleContainer>
       <AllSpaceImageContainer>
-        <AllSpaceImage
-          imageUrl={data.roomImageUrl}       
-          isVisitor={!data.roomImageUrl}     
-        />
+        <AllSpaceImage imageUrl={data.roomImageUrl} isVisitor={!data.roomImageUrl} />
       </AllSpaceImageContainer>
     </AllSpacesBox>
   );
