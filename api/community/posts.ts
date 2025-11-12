@@ -1,6 +1,6 @@
 import api from '@/api/axiosInstance';
 import type { Category } from '@/components/CategoryChips';
-import { BoardId, PostDetail, PostsListItem, SortParam } from '@/src/features/community/types/postsListType';
+import { BoardId, PostDetail } from '@/src/features/community/types/postsListType';
 
 export function categoryToBoardId(category: string): BoardId {
   switch (category) {
@@ -72,25 +72,6 @@ export function pickAuthorId(row: any): string | undefined {
     row?.author?.id ??
     row?.user?.id;
   return id != null ? String(id) : undefined;
-}
-
-export type PostsCursorPage = {
-  items: PostsListItem[];
-  hasNext: boolean;
-  nextCursor?: string | null;
-};
-
-type PostsListServerResp = { success: boolean; data: PostsCursorPage; timestamp?: string };
-
-export async function getPostsPage(
-  boardId: BoardId,
-  params: { sort?: SortParam; size?: number; cursor?: string },
-): Promise<PostsCursorPage> {
-  const { sort = 'LATEST', size = 20, cursor } = params ?? {};
-  const { data } = await api.get<PostsListServerResp>(`/api/v1/boards/${boardId}/posts`, {
-    params: { sort, size, cursor },
-  });
-  return data.data;
 }
 
 type PostDetailServerResp = { message?: string; data: PostDetail; timestamp?: string };
