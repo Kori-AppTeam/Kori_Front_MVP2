@@ -12,7 +12,7 @@ import { useLikeComment } from '@/hooks/mutations/useLikeComment';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
-import { usePostDetail } from '@/hooks/queries/usePostDetail';
+import { usePostDetail } from '@/src/features/community/hooks/usePostDetail';
 import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { User } from '@/src/shared/types/user';

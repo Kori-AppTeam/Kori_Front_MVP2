@@ -1,5 +1,11 @@
 import api from '@/api/axiosInstance';
-import { BoardId, CreatePostBody, PostsListServerResp, RequestPageParams } from '../types/postsListType';
+import {
+  BoardId,
+  CreatePostBody,
+  PostDetailServerResp,
+  PostsListServerResp,
+  RequestPageParams,
+} from '../types/postsListType';
 
 // 게시글 목록 조회
 export async function getPosts(boardId: BoardId, params: RequestPageParams): Promise<PostsListServerResp> {
@@ -7,6 +13,12 @@ export async function getPosts(boardId: BoardId, params: RequestPageParams): Pro
   const { data } = await api.get<PostsListServerResp>(`/api/v1/boards/${boardId}/posts`, {
     params: { sort, size, cursor },
   });
+  return data;
+}
+
+// 게시글 상세조회
+export async function getPostDetail(postId: number): Promise<PostDetailServerResp> {
+  const { data } = await api.get<PostDetailServerResp>(`/api/v1/posts/${postId}`);
   return data;
 }
 

@@ -55,9 +55,15 @@ export interface PostsListResp {
 export interface PostDetail extends PostsListItem {
   link?: string | null;
   authorId?: string | number | null;
-  userId?: string | number | null;
-  memberId?: string | number | null;
-  writerId?: string | number | null;
+  // userId?: string | number | null;
+  // memberId?: string | number | null;
+  // writerId?: string | number | null;
+}
+
+export interface PostDetailServerResp {
+  message?: string;
+  data: PostDetail;
+  timestamp?: string;
 }
 
 export type PostEx = Post & {
