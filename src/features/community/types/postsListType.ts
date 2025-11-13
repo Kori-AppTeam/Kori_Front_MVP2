@@ -1,63 +1,99 @@
-import { Category } from '@/components/CategoryChips';
 import { Post } from '@/src/features/community/components/PostCard';
 
 export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type SortParam = 'LATEST' | 'POPULAR';
+export type AllowedCategory = 'ALL' | 'NEWS' | 'TIP' | 'QNA' | 'EVENT' | 'FREE_TALK' | 'ACTIVITY';
 
+// export interface PostsListItem {
+//   postId: number;
+//   title?: string | null;
+//   contentPreview?: string | null;
+//   content?: string | null;
+
+//   authorName?: string | null;
+//   userName?: string | null;
+//   nickname?: string | null;
+//   memberName?: string | null;
+//   writerName?: string | null;
+
+//   isAnonymous?: boolean;
+//   userImageUrl?: string | null;
+
+//   boardCategory: Category | string;
+//   categoryId?: number;
+
+//   createdAt?: string | number | null;
+//   createdTime?: string | number | null;
+
+//   likeCount?: number | null;
+//   commentCount?: number | null;
+//   viewCount?: number | null;
+//   imageCount?: number | null;
+//   score?: number | null;
+
+//   likedByMe?: boolean | null;
+//   isLike?: boolean | null;
+//   isLiked?: boolean | null;
+
+//   contentImageUrls?: string[] | null;
+//   imageUrls?: string[] | null;
+//   contentImageUrl?: string | null;
+//   imageUrl?: string | null;
+// }
+
+// 게시글 상세
+export interface PostDetail {
+  postId: number;
+  content: string;
+  authorId: number;
+  authorName: string | null;
+  boardCategory: AllowedCategory;
+  createdTime: string;
+  link: string;
+  isAnonymous: boolean;
+  isLiked: boolean;
+  likeCount: number;
+  commentCount: number;
+  viewCount: number;
+  userImageUrl: string;
+  contentImageUrls?: string[];
+  imageCount: number;
+}
+
+// 게시글 전체목록 조회 시 게시글
 export interface PostsListItem {
   postId: number;
-  title?: string | null;
-  contentPreview?: string | null;
-  content?: string | null;
+  contentPreview: string;
+  authorId: number;
+  authorName: string | null;
+  boardCategory: AllowedCategory;
+  createdAt: string;
+  isAnonymous: boolean;
+  isLiked: boolean;
+  likeCount: number;
+  commentCount: number;
+  viewCount: number;
+  userImageUrl: string | null;
+  contentImageUrl: string | null;
+  imageCount: number;
+  score: number | null;
+}
 
-  authorName?: string | null;
-  userName?: string | null;
-  nickname?: string | null;
-  memberName?: string | null;
-  writerName?: string | null;
-
-  isAnonymous?: boolean;
-  userImageUrl?: string | null;
-
-  boardCategory: Category | string;
-  categoryId?: number;
-
-  createdAt?: string | number | null;
-  createdTime?: string | number | null;
-
-  likeCount?: number | null;
-  commentCount?: number | null;
-  viewCount?: number | null;
-  imageCount?: number | null;
-  score?: number | null;
-
-  likedByMe?: boolean | null;
-  isLike?: boolean | null;
-  isLiked?: boolean | null;
-
-  contentImageUrls?: string[] | null;
-  imageUrls?: string[] | null;
-  contentImageUrl?: string | null;
-  imageUrl?: string | null;
+// page별 post 호출
+export interface PostsCursorPage {
+  items: PostsListItem[];
+  hasNext: boolean;
+  nextCursor?: string | null;
 }
 
 export interface PostsListResp {
-  success: boolean;
+  message: string;
   data: {
     items: PostsListItem[];
     hasNext: boolean;
-    nextCursor?: string;
+    nextCursor?: string | null;
   };
   timestamp?: string;
-}
-
-// 게시글 상세
-export interface PostDetail extends PostsListItem {
-  link?: string | null;
-  authorId?: string | number | null;
-  // userId?: string | number | null;
-  // memberId?: string | number | null;
-  // writerId?: string | number | null;
 }
 
 export interface PostDetailServerResp {
@@ -82,13 +118,6 @@ export interface CreatePostBody {
   content: string;
   isAnonymous: boolean;
   imageUrls?: string[];
-}
-
-// page별 post 호출
-export interface PostsCursorPage {
-  items: PostsListItem[];
-  hasNext: boolean;
-  nextCursor?: string | null;
 }
 
 export interface PostsListServerResp extends PostsCursorPage {

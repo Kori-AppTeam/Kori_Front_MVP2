@@ -3,17 +3,19 @@ import {
   BoardId,
   CreatePostBody,
   PostDetailServerResp,
-  PostsListServerResp,
+  PostsListResp,
   RequestPageParams,
 } from '../types/postsListType';
 
 // 게시글 목록 조회
-export async function getPosts(boardId: BoardId, params: RequestPageParams): Promise<PostsListServerResp> {
+export async function getPosts(boardId: BoardId, params: RequestPageParams): Promise<PostsListResp> {
   const { sort = 'LATEST', size = 20, cursor } = params ?? {};
-  const { data } = await api.get<PostsListServerResp>(`/api/v1/boards/${boardId}/posts`, {
+
+  const response = await api.get<PostsListResp>(`/api/v1/boards/${boardId}/posts`, {
     params: { sort, size, cursor },
   });
-  return data;
+
+  return response.data;
 }
 
 // 게시글 상세조회
