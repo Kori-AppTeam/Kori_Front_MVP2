@@ -1,4 +1,4 @@
-import NotificationPermissionModal from '@/components/NotificationPermissionModal';
+import NotificationPermissionModal from '@/src/features/notification/components/NotificationPermissionModal';
 import { initNotificationsSettingStatus, putOSPushAgreement } from '@/src/features/notification/api/notifications';
 import useNotificationPermission from '@/src/features/notification/hooks/useNotificationPermission';
 import { Tabs, usePathname } from 'expo-router';

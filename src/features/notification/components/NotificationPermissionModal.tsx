@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import CustomButton from './CustomButton';
+import CustomButton from '../../../../components/CustomButton';
 import { Text, Modal } from 'react-native';
-import Icon from './common/Icon';
+import Icon from '../../../../components/common/Icon';
 
 interface NotificationPermissionModalProps {
   visible: boolean;
