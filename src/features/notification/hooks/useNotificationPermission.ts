@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as Notifications from 'expo-notifications';
-import { Alert, AppState, AppStateStatus } from 'react-native';
+import { Alert } from 'react-native';
 import {
   getNotificationsSettingStatus,
   initNotificationsSettingStatus,

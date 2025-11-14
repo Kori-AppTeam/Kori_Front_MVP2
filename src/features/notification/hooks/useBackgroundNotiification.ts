@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import * as Linking from 'expo-linking';
-import { getNotificationDeeplink } from '../lib/getNotificationDeeplink';
+import { getNotificationDeeplink } from '@/src/features/notification/lib/getNotificationDeeplink';
 
 /* ------------ Background 또는 Quit 메시지 수신 및 클릭 핸들링 ------------ */
 export const useBackgroundNotification = (isLoggedIn: boolean, checkingToken: boolean) => {
