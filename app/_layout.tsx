@@ -1,7 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 import queryClient from '@/api/queryClient';
-import { getNotificationDeeplink } from '@/src/features/notification/lib/getNotificationDeeplink';
-import { handleNotificationPress, messageHandler } from '@/src/features/notification/lib/messageHandler';
 import { theme } from '@/src/styles/theme';
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
 import {
@@ -11,11 +9,9 @@ import {
   PlusJakartaSans_600SemiBold,
   PlusJakartaSans_700Bold,
 } from '@expo-google-fonts/plus-jakarta-sans';
-import messaging from '@react-native-firebase/messaging';
 import { QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
-import * as Linking from 'expo-linking';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
@@ -26,6 +22,8 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
+import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
+import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
@@ -94,38 +92,6 @@ export default function RootLayout() {
     if (loaded) checkAndRefreshToken();
   }, [loaded, checkAndRefreshToken]);
 
-  /* ------------ foreground 메시지 수신 메서드 초기화 ------------ */
-  useEffect(() => {
-    if (!isLoggedIn || !pathname) return;
-
-    const unsubscribeOnMessage = messaging().onMessage(messageHandler);
-    const unsubscribeNotifee = handleNotificationPress(pathname);
-    return () => {
-      unsubscribeOnMessage();
-      unsubscribeNotifee();
-    };
-  }, [pathname]);
-
-  /* 백그라운드, quit 상태에서 알림 클릭 시 관련 라우터로 이동 */
-  useEffect(() => {
-    if (!isLoggedIn || checkingToken) return;
-
-    messaging()
-      .getInitialNotification()
-      .then((message) => message && Linking.openURL(getNotificationDeeplink(message?.data!) ?? '/'))
-      .catch((error) => console.error('[ERROR] 앱 종료 시점에 알림 클릭 시 이동 실패:', error));
-
-    const unsubscribe = messaging().onNotificationOpenedApp(
-      (message) => message && Linking.openURL(getNotificationDeeplink(message?.data!) ?? '/'),
-    );
-    return unsubscribe;
-  }, [isLoggedIn, checkingToken]);
-
-  // 🚨🚨🚨 [삭제됨] 🚨🚨🚨
-  // 여기에 있던 중복된 useEffect 블록을 삭제했습니다.
-  // 🚨🚨🚨
-
-  // 이 useEffect가 실제 화면 이동을 담당합니다.
   useEffect(() => {
     // 폰트가 로드 안 됐거나, 토큰 확인 중이면 아무것도 안 함 (스플래시 스크린 계속 표시)
     if (!loaded || checkingToken) {
@@ -141,6 +107,9 @@ export default function RootLayout() {
       router.replace('/login');
     }
   }, [loaded, checkingToken, isLoggedIn, router]); // 이 상태들이 바뀔 때마다 실행
+
+  useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
+  useBackgroundNotification(isLoggedIn, checkingToken); // 백그라운드 알림 수신
 
   if (!loaded || checkingToken) return null;
 
