@@ -1,18 +1,16 @@
-import NotificationPermissionModal from '@/components/NotificationPermissionModal';
+import NotificationPermissionModal from '@/src/features/notification/components/NotificationPermissionModal';
 import { initNotificationsSettingStatus, putOSPushAgreement } from '@/src/features/notification/api/notifications';
 import useNotificationPermission from '@/src/features/notification/hooks/useNotificationPermission';
-import { Tabs, usePathname } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { AppState, AppStateStatus, Dimensions, Image, Text } from 'react-native';
+import { Tabs } from 'expo-router';
+import React, { useState } from 'react';
+import { Dimensions, Image, Text } from 'react-native';
 
 const { height: screenHeight } = Dimensions.get('window');
 const TAB_BAR_HEIGHT = screenHeight * 0.117; // 화면 높이의 15%
 
 export default function TabLayout() {
-  const appState = useRef<AppStateStatus>(AppState.currentState);
+  // TODO 모달 테스트 및 모달 관련 상태값 제거 필요
   const [isNotificationPermissionModalOpen, setIsNotificationPermissionModalOpen] = useState(false);
-  const pathname = usePathname();
-  const isCheckingPermissions = useRef(false);
   const { permissionSetupRequired, setPermissionSetupRequired, requestOSPermission } = useNotificationPermission();
 
   return (
