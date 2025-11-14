@@ -10,7 +10,7 @@ import { defaultSettings, useNotificationSettings } from '@/src/features/notific
 import useUpdateNotificationSettings from '@/src/features/notification/hooks/mutations/useUpdateNotifications';
 import { showNotificationPermissionAlert } from '@/src/features/notification/lib/showNotificationPermissionAlert';
 import * as Notifications from 'expo-notifications';
-import { NotificationSetting, NotificationType } from '@/src/features/notification/types/notification';
+import { NotificationSetting, NotificationType } from '@/src/features/notification/types/notification.types';
 
 type NotificationSettingListText = {
   title: string;
