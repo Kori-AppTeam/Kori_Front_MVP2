@@ -1,4 +1,4 @@
-import { toggleLike } from '@/api/community/likes';
+import { toggleLike } from '@/src/features/community/apis/likes';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 
@@ -24,7 +24,8 @@ export function useToggleLike() {
         };
       });
 
-      qc.invalidateQueries({ queryKey: ['my-posts'] });
+      // 북마크 훅과 동일하게 수정 필요
+      qc.invalidateQueries({ queryKey: ['post-list'] });
     },
   });
 }
