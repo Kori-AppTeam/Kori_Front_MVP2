@@ -2,44 +2,9 @@ import { Post } from '@/src/features/community/components/PostCard';
 
 export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type SortParam = 'LATEST' | 'POPULAR';
+export type ClientSortParam = 'New' | 'Hot';
 export type AllowedCategory = 'ALL' | 'NEWS' | 'TIP' | 'QNA' | 'EVENT' | 'FREE_TALK' | 'ACTIVITY';
-
-// export interface PostsListItem {
-//   postId: number;
-//   title?: string | null;
-//   contentPreview?: string | null;
-//   content?: string | null;
-
-//   authorName?: string | null;
-//   userName?: string | null;
-//   nickname?: string | null;
-//   memberName?: string | null;
-//   writerName?: string | null;
-
-//   isAnonymous?: boolean;
-//   userImageUrl?: string | null;
-
-//   boardCategory: Category | string;
-//   categoryId?: number;
-
-//   createdAt?: string | number | null;
-//   createdTime?: string | number | null;
-
-//   likeCount?: number | null;
-//   commentCount?: number | null;
-//   viewCount?: number | null;
-//   imageCount?: number | null;
-//   score?: number | null;
-
-//   likedByMe?: boolean | null;
-//   isLike?: boolean | null;
-//   isLiked?: boolean | null;
-
-//   contentImageUrls?: string[] | null;
-//   imageUrls?: string[] | null;
-//   contentImageUrl?: string | null;
-//   imageUrl?: string | null;
-// }
+export type AllowedClientCategory = 'All' | 'News' | 'Tip' | 'Q&A' | 'Event' | 'Free talk' | 'Activity';
 
 // 게시글 상세
 export interface PostDetail {
@@ -52,6 +17,7 @@ export interface PostDetail {
   link: string;
   isAnonymous: boolean;
   isLiked: boolean;
+  isBookmarked: boolean;
   likeCount: number;
   commentCount: number;
   viewCount: number;
@@ -70,6 +36,7 @@ export interface PostsListItem {
   createdAt: string;
   isAnonymous: boolean;
   isLiked: boolean;
+  isBookmarked: boolean;
   likeCount: number;
   commentCount: number;
   viewCount: number;
@@ -129,5 +96,5 @@ export interface PostsListServerResp extends PostsCursorPage {
 export interface RequestPageParams {
   sort?: SortParam;
   size?: number;
-  cursor?: string;
+  cursor?: string | null;
 }
