@@ -1,6 +1,7 @@
 import DetailHeader from '@/components/common/DetailHeader';
 import Icon from '@/components/common/Icon';
 import { Config } from '@/src/lib/config';
+import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
@@ -49,11 +50,11 @@ const GeneralLoginScreen = () => {
   };
 
   const createAccount = () => {
-    router.push('./CreateAccountScreen');
+    router.push(SIGNUP_ROUTE);
   };
 
   const goResetScreen = () => {
-    router.push('./ResetPasswordEmail');
+    router.push(VERIFY_EMAIL_ROUTE);
   };
 
   return (

@@ -7,6 +7,11 @@ import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
 import OnboardingCarousel from '@/src/features/auth/components/OnboardingCarousel';
 import { Config } from '@/src/lib/config';
+import {
+  LOGIN_ROUTE,
+  SIGNUP_PRIVACY_POLICY_ROUTE,
+  SIGNUP_TERMS_AND_CONDITIONS_ROUTE,
+} from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import {
   GoogleSignin,
@@ -233,11 +238,19 @@ const LoginScreen = () => {
   };
 
   const goEmailLoginScreen = async () => {
-    router.push('./screens/login/GeneralLoginScreen');
+    router.push(LOGIN_ROUTE);
   };
 
   const showModal = () => {
     setModalVisible(true);
+  };
+
+  const showTermsAndConditions = () => {
+    router.push(SIGNUP_TERMS_AND_CONDITIONS_ROUTE);
+  };
+
+  const showPrivacyPolicy = () => {
+    router.push(SIGNUP_PRIVACY_POLICY_ROUTE);
   };
 
   // ✅ 프리로드가 끝나기 전에는 로딩 UI

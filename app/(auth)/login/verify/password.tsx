@@ -1,5 +1,6 @@
 import Icon from '@/components/common/Icon';
 import { Config } from '@/src/lib/config';
+import { LOGIN_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
@@ -45,7 +46,7 @@ const ResetPasswordScreen = () => {
         email: email,
         newPassword: password,
       });
-      router.replace('./GeneralLoginScreen');
+      router.replace(LOGIN_ROUTE);
     } catch (error) {
       console.error('비밀번호 재설정 실패', error);
     }

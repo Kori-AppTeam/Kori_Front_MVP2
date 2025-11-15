@@ -24,6 +24,7 @@ import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
@@ -104,7 +105,7 @@ export default function RootLayout() {
       router.replace('/(tabs)');
     } else {
       // 로그인이 안 되어있으면 login 화면으로 이동
-      router.replace('/login');
+      router.replace(AUTH_ROUTE);
     }
   }, [loaded, checkingToken, isLoggedIn, router]); // 이 상태들이 바뀔 때마다 실행
 
@@ -122,7 +123,7 @@ export default function RootLayout() {
               {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="login" />
+                <Stack.Screen name="(auth)" />
                 <Stack.Screen name="+not-found" />
               </Stack>
               <Toast />

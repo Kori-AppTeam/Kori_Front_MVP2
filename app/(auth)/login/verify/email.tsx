@@ -1,5 +1,6 @@
 import Icon from '@/components/common/Icon';
 import { Config } from '@/src/lib/config';
+import { VERIFY_PASSWORD_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import Entypo from '@expo/vector-icons/Entypo';
 import axios from 'axios';
@@ -84,7 +85,7 @@ const CreateAccountScreen = () => {
   const goNextScreen = async () => {
     await SecureStore.setItemAsync('emailCode', code);
     router.replace({
-      pathname: './ResetPasswordScreen',
+      pathname: VERIFY_PASSWORD_ROUTE,
       params: { email: email },
     });
   };
