@@ -1,5 +1,5 @@
-import api from '../../../../api/axiosInstance';
-import { NotificationSetting, notificationType } from '../types/notification';
+import api from '@/api/axiosInstance';
+import { NotificationSetting, notificationType } from '@/src/features/notification/types/notification.types';
 
 /* ---------- FCM 기기 토큰 등록/갱신 ----------- */
 export async function postFcmDeviceToken(fcmDeviceToken: string) {
