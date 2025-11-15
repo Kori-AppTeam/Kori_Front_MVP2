@@ -1,33 +1,21 @@
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { getPosts } from '../apis/post';
-import { BoardId, PostsListResp, RequestPageParams } from '../types/postsListType';
+import { BoardId, PostsCursorPage, PostsListResp, SortParam } from '../types/postsListType';
 
-export function useGetPosts(boardId: BoardId, params: RequestPageParams) {
-  try {
-    const result = useQuery<PostsListResp>({
-      queryKey: ['communityPosts'],
-      queryFn: () => getPosts(boardId, params),
-      retry: 3,
+export function useGetPosts(boardId: BoardId, sort: SortParam) {
+  const { data, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
+    useInfiniteQuery<PostsListResp>({
+      queryKey: ['post-list', boardId, sort],
+      initialPageParam: undefined,
+      queryFn: ({ pageParam }) => getPosts(boardId, { sort: sort, size: 20, cursor: pageParam as string | undefined }),
+      getNextPageParam: (lastItem) => {
+        const item: PostsCursorPage = lastItem.data;
+
+        return item.hasNext ? (item.nextCursor ?? undefined) : undefined;
+      },
     });
 
-    return result.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-      const message = error.response?.data.message || 'Unknown Error';
+  const posts = data?.pages.flatMap((p) => p.data.items) ?? [];
 
-      if (status === 400) {
-        return message;
-      } else if (status === 404) {
-        return message;
-      } else if (status === 500) {
-        console.log('Server Error: ', error);
-        return 'Server Error';
-      } else {
-        console.log('UnKnown Error: ', error);
-        return 'UnKnown Error';
-      }
-    }
-  }
+  return { data, posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage };
 }
