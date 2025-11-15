@@ -1,23 +1,32 @@
-import { Category } from '@/components/CategoryChips';
-import { BoardId } from '@/src/features/community/types/postsListType';
+import {
+  AllowedCategory,
+  AllowedClientCategory,
+  BoardId,
+  ClientSortParam,
+  SortParam,
+} from '@/src/features/community/types/postsListType';
 
-export const CLIENT_TO_SERVER_CAT: Record<Category, '' | 'NEWS' | 'TIP' | 'QNA' | 'EVENT' | 'FREE_TALK' | 'ACTIVITY'> =
-  {
-    All: '',
-    News: 'NEWS',
-    Tip: 'TIP',
-    'Q&A': 'QNA',
-    Event: 'EVENT',
-    'Free talk': 'FREE_TALK',
-    Activity: 'ACTIVITY',
-  };
+export const CLIENT_CATEGORY_NAME: Record<AllowedCategory, AllowedClientCategory> = {
+  ALL: 'All',
+  NEWS: 'News',
+  TIP: 'Tip',
+  QNA: 'Q&A',
+  EVENT: 'Event',
+  FREE_TALK: 'Free talk',
+  ACTIVITY: 'Activity',
+};
 
-export const CATEGORY_TO_BOARD_ID: Record<Category, BoardId> = {
-  All: 1,
-  News: 2,
-  Tip: 3,
-  'Q&A': 4,
-  Event: 5,
-  'Free talk': 6,
-  Activity: 7,
+export const CATEGORY_TO_BOARD_ID: Record<AllowedCategory, BoardId> = {
+  ALL: 1,
+  NEWS: 2,
+  TIP: 3,
+  QNA: 4,
+  EVENT: 5,
+  FREE_TALK: 6,
+  ACTIVITY: 7,
+};
+
+export const CLIENT_SORT_NAME: Record<SortParam, ClientSortParam> = {
+  LATEST: 'New',
+  POPULAR: 'Hot',
 };
