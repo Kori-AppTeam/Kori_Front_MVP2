@@ -1,10 +1,11 @@
 import api from '@/api/axiosInstance';
 import { patchLocation } from '@/api/member/location';
 import AppleSignInButton from '@/components/AppleSignInButton';
-import Icon, { type IconType } from '@/components/common/Icon';
+import Icon from '@/components/common/Icon';
 import EmailSignButton from '@/components/EmailSignButton';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
+import OnboardingCarousel from '@/src/features/auth/components/OnboardingCarousel';
 import { Config } from '@/src/lib/config';
 import { theme } from '@/src/styles/theme';
 import {
@@ -20,18 +21,8 @@ import { Asset } from 'expo-asset';
 import { randomUUID } from 'expo-crypto';
 import { useNavigation, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Animated,
-  ImageBackground,
-  Modal,
-  Platform,
-  StatusBar,
-  TouchableOpacity,
-  useWindowDimensions
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Modal, Platform, StatusBar, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 GoogleSignin.configure({
@@ -50,21 +41,11 @@ type AppLoginResponse = {
   message: string;
   timestamp: string;
 };
-
-type OnBoardingItem = {
-  id: string;
-  image: any; // require 사용
-  TitleText: string;
-  SubTitleText: string;
-};
-
-// ✅ 프리로드 대상 에셋
-const onboardingSources = [
+const onboardingImages = [
   require('@/assets/images/onboarding1.png'),
   require('@/assets/images/onboarding2.png'),
   require('@/assets/images/onboarding3.png'),
 ];
-
 const LoginScreen = () => {
   const router = useRouter();
   const navigation = useNavigation();
@@ -86,42 +67,17 @@ const LoginScreen = () => {
     let mounted = true;
     (async () => {
       try {
-        await Promise.all(
-          onboardingSources.map(src => Asset.fromModule(src).downloadAsync())
-        );
+        await Promise.all(onboardingImages.map((src) => Asset.fromModule(src).downloadAsync()));
       } catch (e) {
         console.warn('onboarding images preload failed', e);
       } finally {
         if (mounted) setAssetsReady(true);
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
-
-  const onBoardingData: OnBoardingItem[] = [
-    {
-      id: '1',
-      image: onboardingSources[0],
-      TitleText: 'Meet New friends',
-      SubTitleText: 'Connect with people abroad in Korea for\nstudy, work, travel, or more.',
-    },
-    {
-      id: '2',
-      image: onboardingSources[1],
-      TitleText: 'Chat Without Barriers',
-      SubTitleText: 'Chat in your own language.\nJust hit the translate button to read theirs.',
-    },
-    {
-      id: '3',
-      image: onboardingSources[2],
-      TitleText: 'Connect in our community',
-      SubTitleText: 'Have questions or stories to tell?\nJoin in and talk freely with everyone.',
-    },
-  ];
-
-  const { width, height } = useWindowDimensions();
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const animatedCurrent = useRef(Animated.divide(scrollX, width)).current;
 
   const confirmAndGoSetProfilePage = async () => {
     const { latitude, longitude } = await requestLocationPermission();
@@ -135,9 +91,6 @@ const LoginScreen = () => {
       router.push('/screens/makeprofile/NameStepScreen');
     }
   };
-
-  const [currentPage, setCurrentPage] = useState(0);
-  const PAGE_ICONS = ['page1', 'page2', 'page3'] as const;
 
   // 서버로 구글 로그인 토큰 전송
   const sendGoogleTokenToServer = async (code: string) => {
@@ -218,19 +171,16 @@ const LoginScreen = () => {
         nonce: rawNonce,
       });
 
-      const res = await axios.post<AppLoginResponse>(
-        `${Config.SERVER_URL}/api/v1/member/apple/app-login`,
-        {
-          identityToken: credential.identityToken,
-          authorizationCode: credential.authorizationCode,
-          nonce: rawNonce,
-          email: credential.email,
-          fullName: {
-            givenName: credential.fullName?.givenName,
-            familyName: credential.fullName?.familyName,
-          },
+      const res = await axios.post<AppLoginResponse>(`${Config.SERVER_URL}/api/v1/member/apple/app-login`, {
+        identityToken: credential.identityToken,
+        authorizationCode: credential.authorizationCode,
+        nonce: rawNonce,
+        email: credential.email,
+        fullName: {
+          givenName: credential.fullName?.givenName,
+          familyName: credential.fullName?.familyName,
         },
-      );
+      });
 
       const { accessToken, refreshToken, userId, isNewUser } = res.data.data;
       await SecureStore.setItemAsync('jwt', accessToken, {
@@ -242,8 +192,6 @@ const LoginScreen = () => {
       await SecureStore.setItemAsync('MyuserId', userId.toString(), {
         keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
       });
-
-      console.log('✨✨✨✨✨✨✨✨apple login data:', res.data.data);
 
       if (isNewUser) {
         try {
@@ -292,14 +240,6 @@ const LoginScreen = () => {
     setModalVisible(true);
   };
 
-  const showTermsAndConditions = () => {
-    router.push('/screens/login/TermsAndConditionsScreen');
-  };
-
-  const showPrivacyPolicy = () => {
-    router.push('/screens/login/PrivacyPolicyScreen');
-  };
-
   // ✅ 프리로드가 끝나기 전에는 로딩 UI
   if (!assetsReady) {
     return (
@@ -315,46 +255,7 @@ const LoginScreen = () => {
     <SafeArea>
       <StatusBar barStyle="light-content" />
       <Container>
-        {/* 온보딩 이미지 영역 */}
-        <OnBoardingContainer>
-          <AnimatedFlatList
-            data={onBoardingData}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-              { useNativeDriver: true }
-            )}
-            onMomentumScrollEnd={(e) => {
-              const page = Math.round(e.nativeEvent.contentOffset.x / width);
-              setCurrentPage(page);
-            }}
-            // ✅ 초기 렌더/리사이클 안정화
-            initialNumToRender={3}
-            windowSize={3}
-            removeClippedSubviews={false}
-            renderItem={({ item }) => (
-              <Slide
-                source={item.image}
-                defaultSource={onboardingSources[0]} // 첫 페인트 보완
-                resizeMode="cover"
-                style={{ width, height: height * 0.55 }}
-              >
-                <Overlay>
-                  <OnBoardingText>{item.TitleText}</OnBoardingText>
-                  <OnBoardingSubText>{item.SubTitleText}</OnBoardingSubText>
-                </Overlay>
-              </Slide>
-            )}
-          />
-
-          {/* 페이지 인디케이터 */}
-          <PageIndicatorWrapper>
-            <Icon type={(PAGE_ICONS[currentPage] ?? 'page1') as IconType} size={32} color="#02F59B" />
-          </PageIndicatorWrapper>
-        </OnBoardingContainer>
+        <OnboardingCarousel onboardingImages={onboardingImages} />
 
         {/* 로그인 버튼 영역 */}
         <ButtonContainer>
@@ -429,8 +330,6 @@ const LoginScreen = () => {
 
 export default LoginScreen;
 
-// ---------------- Styled Components ----------------
-
 const SafeArea = styled.SafeAreaView`
   flex: 1;
   background-color: #1d1e1f;
@@ -439,49 +338,6 @@ const SafeArea = styled.SafeAreaView`
 const Container = styled.View`
   flex: 1;
   background-color: #1d1e1f;
-`;
-
-const OnBoardingContainer = styled.View`
-  flex: 2;
-`;
-
-const AnimatedFlatList = styled(Animated.FlatList as any)``;
-
-const Slide = styled(ImageBackground)`
-  flex: 1;
-  align-items: center;
-`;
-
-const Overlay = styled.View`
-  position: absolute;
-  bottom: -25px;
-  padding: 16px 24px;
-  border-radius: 12px;
-  align-items: center;
-  width: 100%;
-`;
-
-const OnBoardingText = styled.Text`
-  color: #ffffff;
-  font-size: 24px;
-  font-family: PlusJakartaSans_600SemiBold;
-`;
-
-const OnBoardingSubText = styled.Text`
-  color: #949899;
-  font-size: 13px;
-  text-align: center;
-  font-family: PlusJakartaSans_400Regular;
-  margin-top: 10px;
-  flex-wrap: wrap;
-`;
-
-const PageIndicatorWrapper = styled.View`
-  position: absolute;
-  bottom: ${Platform.OS === 'ios' ? '-30px' : '0px'};
-  left: 0;
-  right: 0;
-  align-items: center;
 `;
 
 const ButtonContainer = styled.View`
