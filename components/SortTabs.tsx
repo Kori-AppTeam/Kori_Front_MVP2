@@ -1,23 +1,22 @@
+import { SortParam } from '@/src/features/community/types/postsListType';
 import React from 'react';
 import styled from 'styled-components/native';
 
-export type SortKey = 'new' | 'hot';
-
 type Props = {
-  value: SortKey;
-  onChange: (v: SortKey) => void;
+  value: SortParam;
+  onChange: (sort: SortParam) => void;
 };
 
 export default function SortTabs({ value, onChange }: Props) {
   return (
     <Bar>
       <SortBy>Sort by</SortBy>
-      <Tab $active={value === 'new'} onPress={() => onChange('new')}>
-        <TabText $active={value === 'new'}>New</TabText>
+      <Tab $active={value === 'LATEST'} onPress={() => value != 'LATEST' && onChange('LATEST')}>
+        <TabText $active={value === 'LATEST'}>New</TabText>
       </Tab>
       <Divider>❘</Divider>
-      <Tab $active={value === 'hot'} onPress={() => onChange('hot')}>
-        <TabText $active={value === 'hot'}>Hot</TabText>
+      <Tab $active={value === 'POPULAR'} onPress={() => value != 'POPULAR' && onChange('POPULAR')}>
+        <TabText $active={value === 'POPULAR'}>Hot</TabText>
       </Tab>
     </Bar>
   );
