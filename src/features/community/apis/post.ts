@@ -20,8 +20,8 @@ export async function getPosts(boardId: BoardId, params: RequestPageParams): Pro
 
 // 게시글 상세조회
 export async function getPostDetail(postId: number): Promise<PostDetailServerResp> {
-  const { data } = await api.get<PostDetailServerResp>(`/api/v1/posts/${postId}`);
-  return data;
+  const response = await api.get<PostDetailServerResp>(`/api/v1/posts/${postId}`);
+  return response.data;
 }
 
 // 게시글 작성
