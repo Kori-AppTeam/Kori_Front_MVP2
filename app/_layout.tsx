@@ -25,6 +25,8 @@ import { ProfileProvider } from './contexts/ProfileContext';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
@@ -115,22 +117,26 @@ export default function RootLayout() {
   if (!loaded || checkingToken) return null;
 
   return (
-    <ThemeProvider theme={theme}>
-      <SafeAreaProvider>
-        <AppLayout>
-          <ProfileProvider>
-            <QueryClientProvider client={queryClient}>
-              {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="(auth)" />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-              <Toast />
-            </QueryClientProvider>
-          </ProfileProvider>
-        </AppLayout>
-      </SafeAreaProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider theme={theme}>
+        <SafeAreaProvider>
+          <BottomSheetModalProvider>
+            <AppLayout>
+              <ProfileProvider>
+                <QueryClientProvider client={queryClient}>
+                  {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                  <Toast />
+                </QueryClientProvider>
+              </ProfileProvider>
+            </AppLayout>
+          </BottomSheetModalProvider>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

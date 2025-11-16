@@ -1,33 +1,42 @@
-import React, { ReactElement } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import styled from 'styled-components/native';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import React, { ReactElement, useCallback } from 'react';
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { theme } from '@/src/styles/theme';
 
 interface CustomBottomSheetProps {
   children: ReactElement;
-  ref: React.RefObject<BottomSheet | null>;
+  ref: React.RefObject<BottomSheetModal | null>;
   onChange?: (index: number) => void;
 }
 
 const CustomBottomSheet = ({ children, ref, onChange }: CustomBottomSheetProps) => {
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.6} pressBehavior="close" />
+    ),
+    [],
+  );
+
   return (
-    <CustomGestureHandlerRootView>
-      <BottomSheet ref={ref} onChange={onChange}>
-        <CustomBottomSheetView>{children}</CustomBottomSheetView>
-      </BottomSheet>
-    </CustomGestureHandlerRootView>
+    <BottomSheetModal
+      ref={ref}
+      onChange={onChange}
+      backgroundStyle={bottomSheetModalStyle}
+      handleIndicatorStyle={bottomSheetHandleStyle}
+      backdropComponent={renderBackdrop}
+    >
+      <BottomSheetView style={bottomSheetViewStyle}>{children}</BottomSheetView>
+    </BottomSheetModal>
   );
 };
 
-const CustomGestureHandlerRootView = styled(GestureHandlerRootView)`
-  flex: 1;
-  background-color: ${({ theme }) => theme.colors.primary.white};
-`;
+const bottomSheetModalStyle = {
+  backgroundColor: theme.colors.gray.darkGray_1,
+} as const;
 
-const CustomBottomSheetView = styled(BottomSheetView)`
-  flex: 1;
-  padding: 36;
-  align-items: center;
-`;
+const bottomSheetHandleStyle = {
+  backgroundColor: theme.colors.gray.gray_1,
+} as const;
+
+const bottomSheetViewStyle = { flex: 1, backgroundColor: theme.colors.gray.darkGray_1 } as const;
 
 export default CustomBottomSheet;
