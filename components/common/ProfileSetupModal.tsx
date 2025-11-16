@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import CustomButton from '../CustomButton';
+import CustomButton from '@/src/shared/components/CustomButton';
 import { Text, Modal } from 'react-native';
 import Icon from './Icon';
 import { router } from 'expo-router';

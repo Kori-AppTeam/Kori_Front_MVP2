@@ -1,6 +1,6 @@
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/src/shared/components/CustomButton';
 import Tag from '@/components/Tag';
 import { Config } from '@/src/lib/config';
 import { getEmojiFor } from '@/src/lib/interests';
