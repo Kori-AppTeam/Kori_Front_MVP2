@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
 import { PostsListItem } from '../types/postsListType';
+import { timeToAgo } from '../utils/indexUtils';
 import UserProfileImg from './UserProfileImg';
 
 type Props = {
@@ -48,7 +49,7 @@ export default function PostListCard(props: Props) {
         <Meta>
           <Author>{authorName}</Author>
           <SubRow>
-            <TimeText>{createdAt}</TimeText>
+            <TimeText>{timeToAgo(createdAt)}</TimeText>
             <CategoryBadge>
               <CategoryText>{CLIENT_CATEGORY_NAME[boardCategory]}</CategoryText>
             </CategoryBadge>

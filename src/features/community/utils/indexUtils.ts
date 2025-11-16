@@ -34,7 +34,7 @@ export function toDateLabel(raw?: unknown, fallbackIso?: string): string {
   if ((!d || isNaN(d.getTime())) && fallbackIso) d = parseDateFlexible(fallbackIso);
   if (!d) return '';
   try {
-    const fmt = new Intl.DateTimeFormat('en-CA', {
+    const fmt = new Intl.DateTimeFormat('en-US', {
       timeZone: 'Asia/Seoul',
       year: 'numeric',
       month: '2-digit',
@@ -42,6 +42,22 @@ export function toDateLabel(raw?: unknown, fallbackIso?: string): string {
     });
     return fmt.format(d).replace(/-/g, '/');
   } catch {
-    return `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}`;
+    return `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}/${d.getFullYear()}`;
   }
 }
+
+export const timeToAgo = (time: string) => {
+  const now = new Date();
+  const created = new Date(time);
+
+  const seconds = Math.floor((now.getTime() - created.getTime()) / 1000);
+  if (seconds < 60) return 'Just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return hours === 1 ? `1 hour ago` : `${hours} hours ago`;
+  }
+
+  return toDateLabel(time);
+};
