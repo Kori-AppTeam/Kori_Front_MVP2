@@ -17,7 +17,7 @@ export function useToggleLike() {
         const prev = Number(old.likeCount ?? 0);
         return {
           ...old,
-          likeCount: Math.max(0, prev + delta),
+          likeCount: prev + delta < 999 ? Math.max(0, prev + delta) : 999,
           likedByMe: !liked,
           isLike: !liked,
           isLiked: !liked,
