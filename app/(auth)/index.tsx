@@ -1,17 +1,14 @@
 import api from '@/api/axiosInstance';
 import { patchLocation } from '@/api/member/location';
 import AppleSignInButton from '@/components/AppleSignInButton';
-import Icon from '@/components/common/Icon';
 import EmailSignButton from '@/components/EmailSignButton';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
+import ConfirmTermsBottomSheet from '@/src/features/auth/components/ConfirmTermsBottomSheet';
 import OnboardingCarousel from '@/src/features/auth/components/OnboardingCarousel';
+import { useConfirmTermsBottomSheet } from '@/src/features/auth/hooks/useConfirmTermsBottomSheet';
 import { Config } from '@/src/lib/config';
-import {
-  LOGIN_ROUTE,
-  SIGNUP_PRIVACY_POLICY_ROUTE,
-  SIGNUP_TERMS_AND_CONDITIONS_ROUTE,
-} from '@/src/shared/constants/route';
+import { LOGIN_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import {
   GoogleSignin,
@@ -27,7 +24,7 @@ import { randomUUID } from 'expo-crypto';
 import { useNavigation, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Platform, StatusBar, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Alert, Platform, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 
 GoogleSignin.configure({
@@ -46,20 +43,18 @@ type AppLoginResponse = {
   message: string;
   timestamp: string;
 };
+
 const onboardingImages = [
   require('@/assets/images/onboarding1.png'),
   require('@/assets/images/onboarding2.png'),
   require('@/assets/images/onboarding3.png'),
 ];
+
 const LoginScreen = () => {
+  const { bottomSheetRef, handleBottomSheetOpen, handleBottomSheetClose } = useConfirmTermsBottomSheet();
   const router = useRouter();
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useState<any>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [allCheck, setAllCheck] = useState(false);
-  const [check1, setCheck1] = useState(false);
-  const [check2, setCheck2] = useState(false);
-  const [check3, setCheck3] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
   const [isAppleLogin, setIsAppleLogin] = useState(false);
@@ -88,7 +83,7 @@ const LoginScreen = () => {
     const { latitude, longitude } = await requestLocationPermission();
     await patchLocation(latitude, longitude);
 
-    setModalVisible(false);
+    handleBottomSheetClose();
     if (isAppleLogin) {
       setIsAppleLogin(false);
       router.push('/screens/makeprofile/GenderStepScreen');
@@ -114,7 +109,7 @@ const LoginScreen = () => {
       });
 
       if (isNewUser) {
-        showModal();
+        handleBottomSheetOpen();
       } else {
         navigation.dispatch(
           CommonActions.reset({
@@ -213,7 +208,7 @@ const LoginScreen = () => {
               [{ text: 'OK', onPress: () => console.log('ok') }],
             );
           } else {
-            showModal();
+            handleBottomSheetOpen();
             setIsAppleLogin(true);
           }
         } catch (error) {
@@ -241,18 +236,6 @@ const LoginScreen = () => {
     router.push(LOGIN_ROUTE);
   };
 
-  const showModal = () => {
-    setModalVisible(true);
-  };
-
-  const showTermsAndConditions = () => {
-    router.push(SIGNUP_TERMS_AND_CONDITIONS_ROUTE);
-  };
-
-  const showPrivacyPolicy = () => {
-    router.push(SIGNUP_PRIVACY_POLICY_ROUTE);
-  };
-
   // ✅ 프리로드가 끝나기 전에는 로딩 UI
   if (!assetsReady) {
     return (
@@ -265,79 +248,34 @@ const LoginScreen = () => {
   }
 
   return (
-    <SafeArea>
-      <StatusBar barStyle="light-content" />
-      <Container>
-        <OnboardingCarousel onboardingImages={onboardingImages} />
+    <>
+      <SafeArea>
+        <StatusBar barStyle="light-content" />
+        <Container>
+          <OnboardingCarousel onboardingImages={onboardingImages} />
 
-        {/* 로그인 버튼 영역 */}
-        <ButtonContainer>
-          {Platform.OS === 'ios' ? (
-            <AppleSignInButton onPress={appleSignIn} loading={appleLoading} />
-          ) : (
-            <GoogleSignInButton onPress={googleSignIn} loading={googleLoading} />
-          )}
-          <EmailSignButton onPress={goEmailLoginScreen} />
-          <SmallText>
-            By singing up, you agree to our Terms.{'\n'}
-            See how we use your data in our <HighlightText> Privacy Policy.</HighlightText>
-          </SmallText>
-        </ButtonContainer>
+          {/* 로그인 버튼 영역 */}
+          <ButtonContainer>
+            {Platform.OS === 'ios' ? (
+              <AppleSignInButton onPress={appleSignIn} loading={appleLoading} />
+            ) : (
+              <GoogleSignInButton onPress={googleSignIn} loading={googleLoading} />
+            )}
+            <EmailSignButton onPress={goEmailLoginScreen} />
+            <SmallText>
+              By singing up, you agree to our Terms.{'\n'}
+              See how we use your data in our <HighlightText> Privacy Policy.</HighlightText>
+            </SmallText>
+          </ButtonContainer>
+        </Container>
 
-        <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
-          <ModalOverlay activeOpacity={1}>
-            <BottomSheetContent>
-              <BottomSheetHeader>
-                <BottomSheetHandle />
-              </BottomSheetHeader>
-              <BottomSheetTitle>Please agree to the terms to continue.</BottomSheetTitle>
-              <AllCheckBoxContainer>
-                <CheckBox
-                  onPress={() => {
-                    const newValue = !allCheck;
-                    setAllCheck(newValue);
-                    setCheck1(newValue);
-                    setCheck2(newValue);
-                    setCheck3(newValue);
-                  }}
-                >
-                  <Icon type={allCheck ? 'checkMintBox' : 'box'} size={20} />
-                </CheckBox>
-                <AllCheckText>I agree to all.</AllCheckText>
-              </AllCheckBoxContainer>
-              <Divider />
-              <CheckBoxContainer>
-                <CheckBox onPress={() => setCheck1(!check1)}>
-                  <Icon type={check1 ? 'checkMintBox' : 'box'} size={20} />
-                </CheckBox>
-                <CheckText>(Required) I am over 14 years old.</CheckText>
-              </CheckBoxContainer>
-              <CheckBoxContainer>
-                <CheckBox onPress={() => setCheck2(!check2)}>
-                  <Icon type={check2 ? 'checkMintBox' : 'box'} size={20} />
-                </CheckBox>
-                <CheckText>(Required) Terms & Conditions</CheckText>
-                <TouchableOpacity onPress={showTermsAndConditions}>
-                  <Icon type="next" size={20} color={theme.colors.gray.gray_1} />
-                </TouchableOpacity>
-              </CheckBoxContainer>
-              <CheckBoxContainer>
-                <CheckBox onPress={() => setCheck3(!check3)}>
-                  <Icon type={check3 ? 'checkMintBox' : 'box'} size={20} />
-                </CheckBox>
-                <CheckText>(Required) Privacy Policy</CheckText>
-                <TouchableOpacity onPress={showPrivacyPolicy}>
-                  <Icon type="next" size={20} color={theme.colors.gray.gray_1} />
-                </TouchableOpacity>
-              </CheckBoxContainer>
-              <ConfirmButton disabled={!allCheck} allCheck={allCheck} onPress={confirmAndGoSetProfilePage}>
-                <ConfirmText>Confirm</ConfirmText>
-              </ConfirmButton>
-            </BottomSheetContent>
-          </ModalOverlay>
-        </Modal>
-      </Container>
-    </SafeArea>
+        <ConfirmTermsBottomSheet
+          ref={bottomSheetRef}
+          onConfirmPress={() => confirmAndGoSetProfilePage()}
+          bottomSheetClose={handleBottomSheetClose}
+        />
+      </SafeArea>
+    </>
   );
 };
 
@@ -345,7 +283,7 @@ export default LoginScreen;
 
 const SafeArea = styled.SafeAreaView`
   flex: 1;
-  background-color: #1d1e1f;
+  height: 100%;
 `;
 
 const Container = styled.View`
@@ -372,101 +310,4 @@ const HighlightText = styled.Text`
   color: ${theme.colors.primary.white};
   font-size: 12px;
   font-family: PlusJakartaSans_600SemiBold;
-`;
-
-const ModalOverlay = styled.TouchableOpacity`
-  flex: 1;
-  background-color: rgba(0, 0, 0, 0.5);
-  justify-content: flex-end;
-`;
-
-const BottomSheetContent = styled.View`
-  background-color: #353637;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  max-height: 60%;
-  padding-bottom: 40px;
-`;
-
-const BottomSheetHeader = styled.View`
-  align-items: center;
-  padding: 15px 20px 10px 20px;
-`;
-
-const BottomSheetHandle = styled.View`
-  width: 45px;
-  height: 6px;
-  background-color: #949899;
-  border-radius: 2px;
-  margin-bottom: 16px;
-`;
-
-const BottomSheetTitle = styled.Text`
-  color: #ffffff;
-  font-size: 15px;
-  font-family: PlusJakartaSans_600SemiBold;
-  margin-left: 30px;
-`;
-
-const AllCheckBoxContainer = styled.View`
-  height: 60px;
-  margin: 20px 5px 10px 5px;
-  flex-direction: row;
-  padding-left: 20px;
-  align-items: center;
-`;
-const AllCheckText = styled.Text`
-  color: #ffffff;
-  font-size: 15px;
-  font-family: PlusJakartaSans_600SemiBold;
-  margin-left: 15px;
-`;
-
-const Divider = styled.View`
-  width: 90%;
-  align-self: center;
-  height: 2px;
-  background-color: #616262;
-  margin-bottom: 10px;
-`;
-
-const CheckBoxContainer = styled.View`
-  height: 50px;
-  margin: 5px;
-  flex-direction: row;
-  align-items: center;
-  padding-left: 20px;
-  padding-right: 15px;
-`;
-
-const CheckBox = styled.TouchableOpacity`
-  width: 20px;
-  height: 20px;
-  align-items: center;
-  justify-content: center;
-`;
-const CheckText = styled.Text`
-  color: #ffffff;
-  font-size: 13px;
-  font-family: PlusJakartaSans_500Medium;
-  margin-left: 15px;
-  flex: 1;
-`;
-
-const ConfirmButton = styled.TouchableOpacity<{ allCheck: boolean }>`
-  opacity: ${(props) => (props.allCheck ? 1 : 0.5)};
-  background-color: #02f59b;
-  height: 50px;
-  width: 90%;
-  align-self: center;
-  border-radius: 8px;
-  align-items: center;
-  justify-content: center;
-  margin: 20px 0px;
-`;
-
-const ConfirmText = styled.Text`
-  color: #1d1e1f;
-  font-size: 15px;
-  font-family: PlusJakartaSans_500Medium;
 `;
