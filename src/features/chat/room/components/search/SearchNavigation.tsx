@@ -1,13 +1,16 @@
+// src/features/chat/room/components/search/SearchNavigation.tsx
 import React from 'react';
 import styled from 'styled-components/native';
+import { useSearchStore } from '../../stores/useSearchStore';
 import { SearchNavigationProps } from '../../types/chat-ui.types';
 
 const SearchNavigation: React.FC<SearchNavigationProps> = ({
-  isSearching,
   onNavigateUp,
   onNavigateDown,
   searchResultText,
 }) => {
+  const { isSearching } = useSearchStore();
+
   return (
     <NavigationContainer>
       <NavigationButton disabled={!isSearching} onPress={onNavigateUp}>

@@ -1,19 +1,28 @@
+// src/features/chat/room/components/header/SearchHeader.tsx
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
+import { useSearchStore } from '../../stores/useSearchStore';
 import { SearchHeaderProps } from '../../types/chat-ui.types';
 
-const SearchHeader: React.FC<SearchHeaderProps> = ({
-  searchText,
-  onSearchTextChange,
-  onSearchSubmit,
-  onSearchCancel,
-}) => {
+const SearchHeader: React.FC<SearchHeaderProps> = ({ onSearchSubmit }) => {
+  const {
+    searchText,
+    setSearchText,
+    toggleSearch,
+    clearSearch
+  } = useSearchStore();
+
+  const handleCancel = () => {
+    clearSearch();
+    toggleSearch();
+  };
+
   return (
     <>
-      <TouchableOpacity onPress={onSearchCancel}>
+      <TouchableOpacity onPress={handleCancel}>
         <Icon
           type="previous"
           size={SEARCH_HEADER_CONFIG.ICON_SIZE}
@@ -29,7 +38,7 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({
         />
         <SearchInput
           value={searchText}
-          onChangeText={onSearchTextChange}
+          onChangeText={setSearchText}
           placeholder={SEARCH_HEADER_CONFIG.PLACEHOLDER}
           placeholderTextColor={SEARCH_HEADER_CONFIG.PLACEHOLDER_COLOR}
           onSubmitEditing={onSearchSubmit}
@@ -37,7 +46,7 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({
           returnKeyType="search"
         />
         {searchText && (
-          <TouchableOpacity onPress={onSearchCancel}>
+          <TouchableOpacity onPress={() => setSearchText('')}>
             <Icon
               type="close"
               size={SEARCH_HEADER_CONFIG.ICON_SIZE}

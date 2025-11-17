@@ -56,27 +56,18 @@ export interface MessageListProps {
 // ============= Header Components =============
 export interface HeaderProps {
   roomName: string;
-  isSearchMode: boolean;
-  searchText: string;
-  onBack: () => void;
-  onSearchToggle: () => void;
-  onSearchTextChange: (text: string) => void;
-  onSearchSubmit: (messages: ChatMessage[]) => Promise<void>;
+  onSearchSubmit: () => void;
   onShowMembers: () => void;
 }
 
 export interface ChatHeaderProps {
   roomName: string;
-  onBack: () => void;
   onShowMembers: () => void;
   onSearchToggle: () => void;
 }
 
 export interface SearchHeaderProps {
-  searchText: string;
-  onSearchTextChange: (text: string) => void;
-  onSearchSubmit: (messages: ChatMessage[]) => Promise<void>;
-  onSearchCancel: () => void;
+  onSearchSubmit: () => void;
 }
 
 // ============= Input Components =============
@@ -95,10 +86,9 @@ export interface TranslateButtonProps {
 
 // ============= Search Components =============
 export interface SearchNavigationProps {
-  isSearching: boolean;
   onNavigateUp: () => void;
   onNavigateDown: () => void;
-  searchResultText?: string;
+  searchResultText: string;
 }
 
 // ============= Highlight Text =============

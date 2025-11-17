@@ -1,35 +1,27 @@
-// ChatHeader & SearchHeader 조합
+// src/features/chat/room/components/header/Header.tsx
 import React from 'react';
 import styled from 'styled-components/native';
+import { useSearchStore } from '../../stores/useSearchStore';
 import { HeaderProps } from '../../types/chat-ui.types';
 import ChatHeader from './ChatHeader';
 import SearchHeader from './SearchHeader';
 
 const Header: React.FC<HeaderProps> = ({
   roomName,
-  isSearchMode,
-  searchText,
-  onBack,
-  onSearchToggle,
-  onSearchTextChange,
   onSearchSubmit,
   onShowMembers,
 }) => {
+  const { isActive, toggleSearch } = useSearchStore();
+
   return (
     <HeaderContainer>
-      {isSearchMode ? (
-        <SearchHeader
-          searchText={searchText}
-          onSearchTextChange={onSearchTextChange}
-          onSearchSubmit={onSearchSubmit}
-          onSearchCancel={onSearchToggle}
-        />
+      {isActive ? (
+        <SearchHeader onSearchSubmit={onSearchSubmit} />
       ) : (
         <ChatHeader
           roomName={roomName}
-          onBack={onBack}
           onShowMembers={onShowMembers}
-          onSearchToggle={onSearchToggle}
+          onSearchToggle={toggleSearch}
         />
       )}
     </HeaderContainer>

@@ -62,11 +62,6 @@ const ChattingRoomScreen = () => {
         {/* 헤더 */}
         <Header
           roomName={roomName}
-          isSearchMode={messageSearch.state.isActive}
-          searchText={messageSearch.state.searchText}
-          onBack={() => router.replace('/(tabs)/chat')}
-          onSearchToggle={messageSearch.toggleSearch}
-          onSearchTextChange={messageSearch.setSearchText}
           onSearchSubmit={messageSearch.performSearch}
           onShowMembers={() => router.push({
             pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
@@ -95,7 +90,6 @@ const ChattingRoomScreen = () => {
             {/* 하단 입력창 또는 검색 내비게이션 */}
             {messageSearch.state.isActive ? (
               <SearchNavigation
-                isSearching={messageSearch.state.isSearching}
                 onNavigateUp={() => messageSearch.navigateToUp()}
                 onNavigateDown={() => messageSearch.navigateToDown()}
                 searchResultText={messageSearch.getSearchResultText()}
