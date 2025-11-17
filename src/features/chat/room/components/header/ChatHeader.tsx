@@ -1,6 +1,7 @@
 // 채팅방 상단 헤더 컴포넌트
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
@@ -8,14 +9,15 @@ import { ChatHeaderProps } from '../../types/chat-ui.types';
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   roomName,
-  onBack,
   onShowMembers,
   onSearchToggle,
 }) => {
+  const router = useRouter();
+
   return (
     <>
       <LeftSection>
-        <TouchableOpacity onPress={onBack}>
+        <TouchableOpacity onPress={() => router.replace('/(tabs)/chat')}>
           <Icon
             type="previous"
             size={HEADER_CONFIG.ICON_SIZE}
