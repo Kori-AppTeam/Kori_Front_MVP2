@@ -9,7 +9,7 @@ import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
 import { AllowedCategory, PostsListItem, SortParam } from '@/src/features/community/types/postsListType';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, ListRenderItem, View } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -63,6 +63,7 @@ export default function CommunityScreen() {
     useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
   const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
   const bookmarkMutation = useToggleBookmark(CATEGORY_TO_BOARD_ID[category], sort);
+  const scrollRef = useRef<FlatList>(null);
 
   const handlePostPress = (postId: number) => {
     router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } });
@@ -74,6 +75,12 @@ export default function CommunityScreen() {
 
   const handleToggleBookmark = (postId: number, isBookmark: boolean) => {
     bookmarkMutation.mutate({ postId: postId, isBookmarked: isBookmark });
+  };
+
+  const scrollToTop = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollToOffset({ offset: 0, animated: true });
+    }
   };
 
   const renderPost: ListRenderItem<PostsListItem> = ({ item }) => (
@@ -94,7 +101,7 @@ export default function CommunityScreen() {
     <Safe>
       <Header>
         <Left>
-          <Title>Community</Title>
+          <Title onPress={scrollToTop}>Community</Title>
           <IconImage source={ICON} />
         </Left>
 
@@ -136,6 +143,7 @@ export default function CommunityScreen() {
 
       <FlatList
         data={posts}
+        ref={scrollRef}
         keyExtractor={(item: PostsListItem) => String(item.postId)}
         renderItem={renderPost}
         showsVerticalScrollIndicator={false}
