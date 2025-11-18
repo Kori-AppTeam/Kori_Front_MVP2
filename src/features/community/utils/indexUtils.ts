@@ -22,8 +22,17 @@ export function pad2(n: number) {
 export function parseDateFlexible(v?: unknown): Date | null {
   if (v == null) return null;
   let s = String(v).trim();
-  if (/^\d+(\.\d+)?$/.test(s)) return new Date(parseFloat(s) * 1000);
-  if (!s.includes('T') && s.includes(' ')) s = s.replace(' ', 'T');
+
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const num = parseFloat(s);
+    return new Date(num < 10000000000 ? num * 1000 : num);
+  }
+  if (!s.includes('T') && s.includes(' ')) {
+    s = s.replace(' ', 'T');
+  }
+  if (s.includes('T') && !s.endsWith('Z') && !/[+-]\d{2}:?\d{2}$/.test(s)) {
+    s += 'Z';
+  }
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
 }
@@ -48,7 +57,9 @@ export function toDateLabel(raw?: unknown, fallbackIso?: string): string {
 
 export const timeToAgo = (time: string) => {
   const now = new Date();
-  const created = new Date(time);
+  const created: Date | null = parseDateFlexible(time);
+
+  if (!created) return time;
 
   const seconds = Math.floor((now.getTime() - created.getTime()) / 1000);
   if (seconds < 60) return 'Just now';
@@ -58,7 +69,6 @@ export const timeToAgo = (time: string) => {
   if (hours < 24) {
     return hours === 1 ? `1 hour ago` : `${hours} hours ago`;
   }
-
   return toDateLabel(time);
 };
 
