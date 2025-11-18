@@ -4,18 +4,18 @@ import styled from 'styled-components/native';
 
 type Props = {
   value: SortParam;
-  onChange: (sort: SortParam) => void;
+  onPress: (sort: SortParam) => void;
 };
 
-export default function SortTabs({ value, onChange }: Props) {
+export default function SortTabs({ value, onPress }: Props) {
   return (
     <Bar>
       <SortBy>Sort by</SortBy>
-      <Tab $active={value === 'LATEST'} onPress={() => value != 'LATEST' && onChange('LATEST')}>
+      <Tab $active={value === 'LATEST'} onPress={() => onPress('LATEST')}>
         <TabText $active={value === 'LATEST'}>New</TabText>
       </Tab>
       <Divider>❘</Divider>
-      <Tab $active={value === 'POPULAR'} onPress={() => value != 'POPULAR' && onChange('POPULAR')}>
+      <Tab $active={value === 'POPULAR'} onPress={() => onPress('POPULAR')}>
         <TabText $active={value === 'POPULAR'}>Hot</TabText>
       </Tab>
     </Bar>

@@ -7,16 +7,16 @@ const CATS: AllowedCategory[] = ['ALL', 'NEWS', 'TIP', 'QNA', 'EVENT', 'FREE_TAL
 
 type Props = {
   value: AllowedCategory;
-  onChange: (c: AllowedCategory) => void;
+  onPress: (c: AllowedCategory) => void;
 };
 
-export default function CategoryChips({ value, onChange }: Props) {
+export default function CategoryChips({ value, onPress }: Props) {
   return (
     <Row horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12 }}>
       {CATS.map((c) => {
         const active = c === value;
         return (
-          <Chip key={c} $active={active} onPress={() => onChange(c)}>
+          <Chip key={c} $active={active} onPress={() => onPress(c)}>
             <ChipText $active={active}>{CLIENT_CATEGORY_NAME[c]}</ChipText>
           </Chip>
         );
