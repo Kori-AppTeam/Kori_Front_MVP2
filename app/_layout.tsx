@@ -27,12 +27,15 @@ import { useBackgroundNotification } from '@/src/features/notification/hooks/use
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   initialRouteName: 'index',
 };
+
+initGoogleAuth(); // 앱 시작 시 구글 인증 초기화
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
