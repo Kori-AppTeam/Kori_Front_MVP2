@@ -61,8 +61,8 @@ export default function CommunityScreen() {
 
   const { data, posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
     useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
-  const likeMutation = useToggleLike();
-  const bookmarkMutation = useToggleBookmark();
+  const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
+  const bookmarkMutation = useToggleBookmark(CATEGORY_TO_BOARD_ID[category], sort);
 
   const handlePostPress = (postId: number) => {
     router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } });
@@ -117,7 +117,7 @@ export default function CommunityScreen() {
               router.push('/community/bookmarks');
             }}
           >
-            <Icon type="bookmarkSelected" size={24} color={theme.colors.gray.lightGray_1} />
+            <Icon type="bookmarkNonSelected" size={24} color={theme.colors.gray.lightGray_1} />
           </IconBtn>
 
           <IconBtn onPress={() => router.push('/community/my-history')}>
@@ -148,7 +148,7 @@ export default function CommunityScreen() {
         refreshing={isRefetching}
         onRefresh={refetch}
         ListFooterComponent={
-          isFetchingNextPage ? (
+          isLoading || isFetchingNextPage ? (
             <FooterLoading>
               <ActivityIndicator />
             </FooterLoading>
