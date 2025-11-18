@@ -61,3 +61,7 @@ export const timeToAgo = (time: string) => {
 
   return toDateLabel(time);
 };
+
+export const limitCount = (count: number) => {
+  return count < 999 ? count : 999;
+};
