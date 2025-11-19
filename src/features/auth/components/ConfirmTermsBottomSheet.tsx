@@ -13,12 +13,16 @@ import CustomButton from '@/src/shared/components/CustomButton';
 import Checkbox, { CheckboxProps } from '@/src/shared/components/Checkbox';
 
 interface ConfirmTermsBottomSheetProps {
-  ref: React.RefObject<BottomSheetModal | null>;
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   onConfirmPress: () => void;
   bottomSheetClose: () => void;
 }
 
-const ConfirmTermsBottomSheet = ({ ref, onConfirmPress, bottomSheetClose }: ConfirmTermsBottomSheetProps) => {
+const ConfirmTermsBottomSheet = ({
+  bottomSheetRef,
+  onConfirmPress,
+  bottomSheetClose,
+}: ConfirmTermsBottomSheetProps) => {
   const { confirms, isConfirmedAll, toggleConfirmed, toggleConfirmedAll } = useConfirmTerms();
 
   const showTermsAndConditions = () => {
@@ -59,7 +63,7 @@ const ConfirmTermsBottomSheet = ({ ref, onConfirmPress, bottomSheetClose }: Conf
   };
 
   return (
-    <CustomBottomSheet ref={ref}>
+    <CustomBottomSheet ref={bottomSheetRef}>
       <BottomSheetContent>
         <BottomSheetTitle>Please agree to the terms to continue.</BottomSheetTitle>
         <CheckboxWrapper>
