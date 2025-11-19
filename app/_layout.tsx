@@ -28,6 +28,7 @@ import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
+import { toastConfig } from '@/src/shared/constants/toast';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
@@ -133,7 +134,7 @@ export default function RootLayout() {
                     <Stack.Screen name="(auth)" />
                     <Stack.Screen name="+not-found" />
                   </Stack>
-                  <Toast />
+                  <Toast config={toastConfig} topOffset={80} />
                 </QueryClientProvider>
               </ProfileProvider>
             </AppLayout>
