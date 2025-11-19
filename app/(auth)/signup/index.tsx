@@ -2,7 +2,7 @@ import { patchLocation } from '@/api/member/location';
 import Icon from '@/components/common/Icon';
 import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
 import { ACCESS_KEY, REFRESH_KEY } from '@/src/lib/auth/session';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import { theme } from '@/src/styles/theme';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';

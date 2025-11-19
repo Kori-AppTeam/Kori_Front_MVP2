@@ -6,7 +6,7 @@ import { useDeleteAccount } from '@/hooks/mutations/useDeleteAccount';
 import { useUpdateProfile } from '@/hooks/mutations/useUpdateProfile';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { uploadLocalImageAndGetKey } from '@/lib/mypage/uploadImage';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useQueryClient } from '@tanstack/react-query';

@@ -1,6 +1,6 @@
 import api from '@/api/axiosInstance';
 import ProfileImage from '@/components/common/ProfileImage';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { useRouter } from 'expo-router';
 import React from 'react';

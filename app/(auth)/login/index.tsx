@@ -1,6 +1,6 @@
 import DetailHeader from '@/components/common/DetailHeader';
 import Icon from '@/components/common/Icon';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import Ionicons from '@expo/vector-icons/Ionicons';

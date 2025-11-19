@@ -1,5 +1,5 @@
 import Icon from '@/components/common/Icon';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import { VERIFY_PASSWORD_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import Entypo from '@expo/vector-icons/Entypo';

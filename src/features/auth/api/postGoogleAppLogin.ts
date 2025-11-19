@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import { AppLoginResponse } from '@/src/features/auth/types/api.types';
 
 // 서버로 구글 로그인 토큰 전송
