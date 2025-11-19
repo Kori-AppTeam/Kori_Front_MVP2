@@ -1,55 +1,48 @@
-import DetailHeader from '@/components/common/DetailHeader';
-import Icon from '@/components/common/Icon';
-import { Config } from '@/src/shared/constants/config';
-import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
-import { theme } from '@/src/styles/theme';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import axios from 'axios';
-import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import React, { useState } from 'react';
-import { Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import React from 'react';
 import styled from 'styled-components/native';
+import Toast from 'react-native-toast-message';
+import { useNavigation, useRouter } from 'expo-router';
 
-type AppLoginResponse = {
-  accessToken: string;
-  refreshToken: string;
-  userId: number;
-  message: string;
-  timestamp: string;
-  isNewUser: boolean;
-};
+import DetailHeader from '@/components/common/DetailHeader';
+import { getAuthErrorMessage } from '@/src/features/auth/constants/error';
+import { useEmailLogin } from '@/src/features/auth/hooks/useEmailLogin';
+import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
+import CustomButton from '@/src/shared/components/CustomButton';
+import Input from '@/src/shared/components/Input';
+import TextButton from '@/src/shared/components/TextButton';
+import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
+import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
-const GeneralLoginScreen = () => {
+const index = () => {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
-  const [lookPassword, setLookPassword] = useState(true);
+  const navigation = useNavigation();
+  const { email, setEmail, password, setPassword, emailLogin } = useEmailLogin();
   const isFull = email && password;
 
-  const goLogin = async () => {
+  const handleLoginPress = async () => {
     try {
-      const res = await axios.post<AppLoginResponse>(`${Config.SERVER_URL}/api/v1/member/doLogin`, {
-        email: email.trim(),
-        password: password.trim(),
-      });
+      const isNewUser = await emailLogin();
 
-      const { accessToken, refreshToken, userId, isNewUser } = res.data;
-      await SecureStore.setItemAsync('jwt', accessToken);
-      await SecureStore.setItemAsync('refresh', refreshToken);
-      await SecureStore.setItemAsync('MyuserId', userId.toString());
       if (isNewUser) {
         router.push('/screens/makeprofile/NameStepScreen');
       } else {
-        router.replace('/(tabs)');
+        resetToTabsScreen(navigation);
       }
-    } catch (error) {
-      setError(true);
+    } catch (error: unknown) {
+      const errorCode = getAxiosErrorCode(error);
+      const message = getAuthErrorMessage(errorCode);
+      Toast.show({
+        type: 'error',
+        text1: message,
+        text2: `Please check again.`,
+        position: 'bottom',
+        bottomOffset: 180,
+      });
     }
   };
 
-  const createAccount = () => {
+  const goSignUpPage = () => {
     router.push(SIGNUP_ROUTE);
   };
 
@@ -62,195 +55,53 @@ const GeneralLoginScreen = () => {
       <DetailHeader title={'Continue with email'} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Container>
-          <GeneralLoginContainer>
-            <TitleContainer>
-              <TitleText>Email</TitleText>
-            </TitleContainer>
-            <InputBox
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter email address"
-              placeholderTextColor={'#616262'}
+          <LoginInputWrapper>
+            <Input placeholder="Enter email address" value={email} onChangeText={setEmail} label="Email" />
+            <Input
+              placeholder="Enter password"
+              value={password}
+              onChangeText={setPassword}
+              label="Password"
+              secureTextEntry
             />
-            <TitleContainer>
-              <TitleText>Password</TitleText>
-            </TitleContainer>
-            <PasswordContainer>
-              <PasswordInputBox
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Enter Password"
-                placeholderTextColor={'#616262'}
-                secureTextEntry={lookPassword}
-              />
-              <EyeIconBox>
-                <TouchableOpacity onPress={() => setLookPassword(!lookPassword)}>
-                  <Ionicons name={lookPassword ? 'eye-off-outline' : 'eye-outline'} size={25} color="#616262" />
-                </TouchableOpacity>
-              </EyeIconBox>
-            </PasswordContainer>
-            <ForgotContainer>
-              <TouchableOpacity onPress={goResetScreen}>
-                <ForgotText>Forgot Password?</ForgotText>
-              </TouchableOpacity>
-            </ForgotContainer>
-          </GeneralLoginContainer>
-          {error && (
-            <ErrorContainer>
-              <ErrorBox>
-                <Icon type="info" size={24} color={theme.colors.secondary.red} />
-                <ErrorText>Your ID or password is incorrect.{'\n'}Please check again.</ErrorText>
-              </ErrorBox>
-            </ErrorContainer>
-          )}
-          <LoginButtonContainer isFull={isFull} disabled={!isFull} onPress={goLogin}>
-            <LoginText>Login</LoginText>
-          </LoginButtonContainer>
-          <CNAContainter>
-            <TouchableOpacity onPress={createAccount}>
-              <CNAText>Create new account</CNAText>
-            </TouchableOpacity>
-          </CNAContainter>
+            <TextButton label="Forgot Password?" onPress={goResetScreen} />
+          </LoginInputWrapper>
+          <BottomButtonWrapper>
+            <CustomButton label="Login" onPress={handleLoginPress} disabled={!isFull} />
+            <TextButton label="Create new account" onPress={goSignUpPage} />
+          </BottomButtonWrapper>
         </Container>
       </TouchableWithoutFeedback>
     </SafeArea>
   );
 };
 
-export default GeneralLoginScreen;
+export default index;
 
 const SafeArea = styled.SafeAreaView`
   flex: 1;
 `;
+
 const Container = styled.View`
+  display: flex;
   flex: 1;
-  background-color: #1d1e1f;
-  padding: 0px 15px;
-`;
-const HeaderContainer = styled.View`
-  flex-direction: row;
-  height: 10%;
-  align-items: center;
-`;
-
-const HeaderBox = styled.View`
-  flex-direction: row;
-  width: 72%;
-  height: 50px;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const HeaderTitleText = styled.Text`
-  color: #ffffff;
-  font-family: PlusJakartaSans_500Medium;
-  font-size: 16px;
-`;
-
-const GeneralLoginContainer = styled.View`
-  flex: 1;
-`;
-
-const TitleContainer = styled.View`
-  justify-content: flex-end;
-  height: 50px;
-`;
-const TitleText = styled.Text`
-  color: #848687;
-  font-family: PlusJakartaSans_600SemiBold;
-  font-size: 13px;
-  margin-bottom: 5px;
-`;
-
-const InputBox = styled.TextInput`
-  color: #ffffff;
-  background-color: #353637;
-  height: 50px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-family: PlusJakartaSans_400Regular;
-  margin-top: 5px;
-  padding-left: 10px;
-`;
-
-const ForgotContainer = styled.View`
-  align-items: center;
-  justify-content: center;
-  height: 80px;
-`;
-const ForgotText = styled.Text`
-  color: #cccfd0;
-  font-size: 13px;
-  font-family: PlusJakartaSans_500Medium;
-  text-decoration-line: underline;
-`;
-
-const ErrorContainer = styled.View`
-  height: 50px;
-  margin-bottom: 50px;
-  align-items: center;
-  justify-content: center;
-`;
-const ErrorBox = styled.View`
-  flex-direction: row;
-  background-color: #414142;
-  width: 75%;
+  width: 100%;
   height: 100%;
-  border-radius: 4px;
-  align-items: center;
-  justify-content: center;
-`;
-const ErrorText = styled.Text`
-  margin-left: 7px;
-  color: #ffffff;
-  font-size: 13px;
-  font-family: PlusJakartaSans_400Regular;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: ${({ theme }) => theme.colors.primary.black};
+  padding: 0px 20px;
 `;
 
-const LoginButtonContainer = styled.TouchableOpacity`
-  background-color: #02f59b;
-  border-radius: 8px;
-  height: 50px;
-  opacity: ${(props) => (props.isFull ? 1 : 0.5)};
-  align-items: center;
-  justify-content: center;
-`;
-const LoginText = styled.Text`
-  color: #1d1e1f;
-  font-size: 15px;
-  font-family: PlusJakartaSans_500Medium;
-`;
-const CNAContainter = styled(ForgotContainer)`
-  margin-bottom: 30px;
-  height: 80px;
-`;
-const CNAText = styled(ForgotText)`
-  color: #ffffff;
+const LoginInputWrapper = styled.View`
+  flex: 1;
+  justify-content: start;
+  margin: 24px 0;
+  gap: 30px;
 `;
 
-const PasswordContainer = styled.View`
-  background-color: #353637;
-  height: 50px;
-  border-radius: 4px;
-  flex-direction: row;
-  margin-top: 5px;
-`;
-
-const PasswordInputBox = styled.TextInput`
-  color: #ffffff;
-  width: 85%;
-  height: 50px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-family: PlusJakartaSans_400Regular;
-  padding-left: 10px;
-`;
-
-const EyeIconBox = styled.View`
-  background-color: #353637;
-  border-radius: 4px;
-  height: 50px;
-  width: 15%;
-  align-items: center;
-  justify-content: center;
+const BottomButtonWrapper = styled.View`
+  width: 100%;
+  gap: 24px;
+  margin-bottom: 80px;
 `;
