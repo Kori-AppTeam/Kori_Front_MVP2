@@ -2,15 +2,12 @@ import Icon from '@/components/common/Icon';
 import SortTabs from '@/components/SortTabs';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
 import CategoryChips from '@/src/features/community/components/CategoryChips';
-import PostListCard from '@/src/features/community/components/PostListCard';
-import { useGetPosts } from '@/src/features/community/hooks/useGetPosts';
-import { useToggleBookmark } from '@/src/features/community/hooks/useToggleBookmark';
-import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
-import { AllowedCategory, PostsListItem, SortParam } from '@/src/features/community/types/postsListType';
+import PostList from '@/src/features/community/components/PostList';
+import useScrollToTop from '@/src/features/community/hooks/useScrollToTop';
+import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, ListRenderItem, View } from 'react-native';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
 const ICON = require('@/assets/images/IsolationMode.png');
@@ -59,49 +56,25 @@ export default function CommunityScreen() {
   const [sort, setSort] = useState<SortParam>('LATEST');
   const [category, setCategory] = useState<AllowedCategory>('ALL');
 
-  const { data, posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
-    useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
-  const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
-  const bookmarkMutation = useToggleBookmark(CATEGORY_TO_BOARD_ID[category], sort);
-  const scrollRef = useRef<FlatList>(null);
+  const { scrollRef, scrollToTop } = useScrollToTop();
 
-  const handlePostPress = (postId: number) => {
-    router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } });
+  const handleSortChange = (sortButton: SortParam) => {
+    if (sort === sortButton) return;
+    scrollToTop(false);
+    setSort(sortButton);
   };
 
-  const handleToggleLike = (postId: number, isLike: boolean) => {
-    likeMutation.mutate({ postId: postId, liked: isLike });
+  const handleCategoryChange = (cat: AllowedCategory) => {
+    if (category === cat) return;
+    scrollToTop(false);
+    setCategory(cat);
   };
-
-  const handleToggleBookmark = (postId: number, isBookmark: boolean) => {
-    bookmarkMutation.mutate({ postId: postId, isBookmarked: isBookmark });
-  };
-
-  const scrollToTop = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollToOffset({ offset: 0, animated: true });
-    }
-  };
-
-  const renderPost: ListRenderItem<PostsListItem> = ({ item }) => (
-    <PostListCard
-      data={item}
-      onPress={() => handlePostPress(item.postId)}
-      onToggleLike={() => handleToggleLike(item.postId, item.isLiked)}
-      onToggleBookmark={() => handleToggleBookmark(item.postId, item.isBookmarked)}
-    />
-  );
-
-  // 임시설정
-  if (isError) {
-    return <View>데이터를 불러올 수 없습니다.</View>;
-  }
 
   return (
     <Safe>
       <Header>
         <Left>
-          <Title onPress={scrollToTop}>Community</Title>
+          <Title onPress={() => scrollToTop(true)}>Community</Title>
           <IconImage source={ICON} />
         </Left>
 
@@ -134,36 +107,14 @@ export default function CommunityScreen() {
       </Header>
 
       <ChipsWrap>
-        <CategoryChips value={category} onChange={setCategory} />
+        <CategoryChips value={category} onPress={handleCategoryChange} />
       </ChipsWrap>
 
       <SortWrap>
-        <SortTabs value={sort} onChange={setSort} />
+        <SortTabs value={sort} onPress={handleSortChange} />
       </SortWrap>
 
-      <FlatList
-        data={posts}
-        ref={scrollRef}
-        keyExtractor={(item: PostsListItem) => String(item.postId)}
-        renderItem={renderPost}
-        showsVerticalScrollIndicator={false}
-        onEndReachedThreshold={0.4}
-        onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-          }
-        }}
-        refreshing={isRefetching}
-        onRefresh={refetch}
-        ListFooterComponent={
-          isLoading || isFetchingNextPage ? (
-            <FooterLoading>
-              <ActivityIndicator />
-            </FooterLoading>
-          ) : null
-        }
-        contentContainerStyle={{ paddingBottom: 80 }}
-      />
+      <PostList sort={sort} category={category} scrollRef={scrollRef} />
 
       {/* <WriteFab onPress={handleWritePress} />
       <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} /> */}
@@ -214,7 +165,4 @@ const SortWrap = styled.View`
   margin-top: 20px;
   margin-left: 10px;
   margin-bottom: 10px;
-`;
-const FooterLoading = styled.View`
-  padding: 16px 0;
 `;
