@@ -1,4 +1,5 @@
 import { SortParam } from '@/src/features/community/types/postsListType';
+import { textStyle } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 
@@ -25,20 +26,20 @@ export default function SortTabs({ value, onPress }: Props) {
 const Bar = styled.View`
   flex-direction: row;
   align-items: center;
-  padding: 4px 12px 0 12px;
+  padding: 4px 12px 12px 12px;
 
   gap: 8px;
 `;
 const SortBy = styled.Text`
+  ${({ theme }) => textStyle(theme.fonts.body.B5_R)}
   color: #848687;
   font-size: 13px;
-  font-family: 'PlusJakartaSans_Regular';
 `;
 const Tab = styled.Pressable<{ $active?: boolean }>``;
 const TabText = styled.Text<{ $active?: boolean }>`
   color: ${({ $active }) => ($active ? '#E9E9E9' : '#848687')};
   font-size: 13px;
-  font-family: 'PlusJakartaSans_Regular';
+  ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
 `;
 
 const Divider = styled.Text`
