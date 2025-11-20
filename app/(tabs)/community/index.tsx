@@ -1,5 +1,7 @@
 import Icon from '@/components/common/Icon';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import SortTabs from '@/components/SortTabs';
+import WriteFab from '@/components/WriteFab';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
 import CategoryChips from '@/src/features/community/components/CategoryChips';
 import PostList from '@/src/features/community/components/PostList';
@@ -11,47 +13,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
 const ICON = require('@/assets/images/IsolationMode.png');
-const VisitorImage = require('@/assets/images/character_05.svg');
-const AnonymityImage = require('@/assets/images/character_04.svg');
-
-const MAX_IMAGES = 5;
 
 export default function CommunityScreen() {
-  // const {
-  //   bookmarked,
-  //   toggleBookmarked,
-  //   setBookmarked,
-  //   liked,
-  //   likeCount,
-  //   setLiked,
-  //   toggleLiked,
-  //   setLikeCount,
-  //   bumpLike,
-  //   hydrateLikeFromServer,
-  // } = usePostUI();
-
-  // useEffect(() => {
-  //   refresh();
-  // }, [boardId, sort]);
-
-  // const handleWritePress = async () => {
-  //   if (writeLoading) return;
-  //   try {
-  //     const response = await api.get(`/api/v1/member/is-completed`);
-  //     const isProfileCompleted = response.data?.profileCompleted;
-  //     if (isProfileCompleted === false) {
-  //       setProfileModalVisible(true); // alert를 modal로 수정
-  //       return;
-  //     } else {
-  //       router.push('/community/write');
-  //     }
-  //   } catch (e: any) {
-  //     console.error('[write:check] error', e);
-  //     Alert.alert('Error', 'Failed to check profile status. Please try again.');
-  //   } finally {
-  //     setWriteLoading(false);
-  //   }
-  // };
+  const [profileModalVisible, setProfileModalVisible] = useState<boolean>(false);
 
   const [sort, setSort] = useState<SortParam>('LATEST');
   const [category, setCategory] = useState<AllowedCategory>('ALL');
@@ -75,7 +39,7 @@ export default function CommunityScreen() {
       <Header>
         <Left>
           <Title onPress={() => scrollToTop(true)}>Community</Title>
-          <IconImage source={ICON} />
+          <IconImage source={ICON} resizeMode="contain" />
         </Left>
 
         <Right>
@@ -116,8 +80,8 @@ export default function CommunityScreen() {
 
       <PostList sort={sort} category={category} scrollRef={scrollRef} />
 
-      {/* <WriteFab onPress={handleWritePress} />
-      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} /> */}
+      <WriteFab onSetProfileModal={setProfileModalVisible} />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
@@ -148,7 +112,6 @@ const IconImage = styled.Image`
   margin-left: 4px;
   width: 20px;
   height: 20px;
-  resize-mode: contain;
 `;
 const Right = styled.View`
   flex-direction: row;
@@ -164,5 +127,4 @@ const ChipsWrap = styled.View`
 const SortWrap = styled.View`
   margin-top: 20px;
   margin-left: 10px;
-  margin-bottom: 10px;
 `;
