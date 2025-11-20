@@ -1,5 +1,6 @@
 import { getPostComments, RawComment } from '@/api/community/comments';
 import { Comment } from '@/components/CommentItem';
+import { SortParam } from '@/src/features/community/types/postsListType';
 import { useQuery } from '@tanstack/react-query';
 
 function pad2(n: number) {
@@ -72,7 +73,7 @@ function mapRow(r: RawComment): Comment & {
   };
 }
 
-export function usePostComments(postId?: number, sort: 'new' | 'hot' = 'new') {
+export function usePostComments(postId?: number, sort: SortParam = 'LATEST') {
   return useQuery({
     queryKey: ['postComments', postId, sort],
     enabled: Number.isFinite(postId),
