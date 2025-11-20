@@ -29,3 +29,17 @@ export async function createPost(boardId: number, body: CreatePostBody) {
   const { data } = await api.post(`/api/v1/boards/${boardId}/posts`, body);
   return data as string;
 }
+
+// 게시글 수정
+// export async function putEditPost(postId: string, edited: {
+//   content: string;
+//   images: string | string[] | null;
+//   removedImages: string | string[] | null;
+// }) {
+//   const response = await api.put(`/api/v1/posts/${postId}`, edited)
+// }
+
+//게시글 삭제
+// export async function deletePost(postId: string) {
+//   return await api.delete(`/api/v1/posts/${postId}`)
+// }
