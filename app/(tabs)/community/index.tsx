@@ -5,17 +5,27 @@ import WriteFab from '@/components/WriteFab';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
 import CategoryChips from '@/src/features/community/components/CategoryChips';
 import PostList from '@/src/features/community/components/PostList';
+import useGetVisitor from '@/src/features/community/hooks/useGetVisitor';
 import useScrollToTop from '@/src/features/community/hooks/useScrollToTop';
 import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
 import { theme } from '@/src/styles/theme';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { Alert } from 'react-native';
 import styled from 'styled-components/native';
 
 const ICON = require('@/assets/images/IsolationMode.png');
 
 export default function CommunityScreen() {
   const [profileModalVisible, setProfileModalVisible] = useState<boolean>(false);
+  const { data: profileCompleted, isLoading, isError, refetch } = useGetVisitor();
+
+  // community 화면 보일 때마다 visitor 검사
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, []),
+  );
 
   const [sort, setSort] = useState<SortParam>('LATEST');
   const [category, setCategory] = useState<AllowedCategory>('ALL');
@@ -32,6 +42,24 @@ export default function CommunityScreen() {
     if (category === cat) return;
     scrollToTop(false);
     setCategory(cat);
+  };
+
+  const handleWritePress = () => {
+    if (isLoading) {
+      return;
+    }
+
+    if (isError) {
+      console.error('[write:check] error');
+      Alert.alert('Error', 'Failed to check profile status. Please try again.');
+      return;
+    }
+
+    if (profileCompleted === false) {
+      setProfileModalVisible(true);
+      return;
+    }
+    router.push('/community/write');
   };
 
   return (
@@ -80,7 +108,7 @@ export default function CommunityScreen() {
 
       <PostList sort={sort} category={category} scrollRef={scrollRef} />
 
-      <WriteFab onSetProfileModal={setProfileModalVisible} />
+      <WriteFab onHandleWritePress={handleWritePress} />
       <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );

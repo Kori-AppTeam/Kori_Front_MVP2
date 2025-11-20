@@ -1,38 +1,15 @@
-import useGetVisitor from '@/src/features/community/hooks/useGetVisitor';
-import { router } from 'expo-router';
-import React, { Dispatch, SetStateAction } from 'react';
-import { Alert } from 'react-native';
+import React from 'react';
 import styled from 'styled-components/native';
 import Icon from './common/Icon';
 
 type Props = {
-  onSetProfileModal: Dispatch<SetStateAction<boolean>>;
+  onHandleWritePress: () => void;
   disabled?: boolean;
 };
 
-export default function WriteFab({ onSetProfileModal, disabled }: Props) {
-  const { data: profileCompleted, isLoading, isError } = useGetVisitor();
-
-  const handleWritePress = () => {
-    if (isLoading) {
-      return;
-    }
-
-    if (isError) {
-      console.error('[write:check] error');
-      Alert.alert('Error', 'Failed to check profile status. Please try again.');
-      return;
-    }
-
-    if (profileCompleted === false) {
-      onSetProfileModal(true);
-      return;
-    }
-    router.push('/community/write');
-  };
-
+export default function WriteFab({ onHandleWritePress, disabled }: Props) {
   return (
-    <Fab onPress={handleWritePress} disabled={disabled}>
+    <Fab onPress={onHandleWritePress} disabled={disabled}>
       <Icon type="write" size={16} />
     </Fab>
   );

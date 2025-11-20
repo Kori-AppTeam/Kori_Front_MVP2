@@ -504,7 +504,7 @@ export default function CommunityScreen() {
         viewabilityConfig={viewConfig}
       />
 
-      <WriteFab onSetProfileModal={handleWritePress} disabled={checkingProfile} />
+      <WriteFab onHandleWritePress={handleWritePress} disabled={checkingProfile} />
       {/* [수정] checking -> checkingProfile */}
       <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
