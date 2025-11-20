@@ -1,15 +1,16 @@
 import api from '@/api/axiosInstance';
-import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
-import CategoryChips, { Category } from '@/components/CategoryChips';
 import Icon from '@/components/common/Icon';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-import SortTabs, { SortKey } from '@/components/SortTabs';
+import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { useSearchPosts, type PostExFromSearch } from '@/hooks/queries/useSearchPosts';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
+import CategoryChips from '@/src/features/community/components/CategoryChips';
 import PostCard from '@/src/features/community/components/PostCard';
 import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
+import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
 import { SearchedPostEx, SearchedPosts, SearchedPostsResp } from '@/src/features/community/types/searchedPostsType';
 import { usePostUI } from '@/src/store/usePostUI';
 import { formatCreatedYMD } from '@/src/utils/dateUtils';
@@ -79,8 +80,8 @@ const mapItem = (row: SearchedPosts, respTimestamp?: string): SearchedPostEx => 
 };
 
 export default function CommunityScreen() {
-  const [cat, setCat] = useState<Category>('All');
-  const [sort, setSort] = useState<SortKey>('new');
+  const [cat, setCat] = useState<AllowedCategory>('ALL');
+  const [sort, setSort] = useState<SortParam>('LATEST');
   const isFirstRender = useRef(true);
   const callCountRef = useRef(0);
   const isFirstMount = useRef(true);
@@ -95,10 +96,10 @@ export default function CommunityScreen() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const params = useLocalSearchParams();
 
-  const sortParam = sort === 'new' ? 'LATEST' : 'POPULAR';
+  const sortParam = sort === 'LATEST' ? 'LATEST' : 'POPULAR';
   const boardId = CATEGORY_TO_BOARD_ID[cat];
 
-  const likeMutation = useToggleLike();
+  const likeMutation = useToggleLike(boardId, sort);
   const { data: me } = useMyProfile();
   const { bookmarked, toggleBookmarked, setBookmarked, liked, setLiked, toggleLiked, likeCount, setLikeCount } =
     usePostUI();
@@ -397,7 +398,7 @@ export default function CommunityScreen() {
     <PostCard
       data={{
         ...item,
-        category: cat === 'All' ? item.category : cat,
+        category: cat === 'ALL' ? item.category : cat,
         bookmarked: bookmarked[item.postId] ?? item.bookmarked,
         likedByMe: liked[item.postId] ?? item.likedByMe,
         likes: likeCount[item.postId] ?? item.likes,
@@ -439,7 +440,12 @@ export default function CommunityScreen() {
                   <AntDesign name="close" size={14} color="#cfd4da" />
                 </ClearBtn>
               )}
-              <CancelBtn onPress={closeSearch}>
+              <CancelBtn
+                onPress={() => {
+                  closeSearch();
+                  router.push('/community');
+                }}
+              >
                 <CancelText>Cancel</CancelText>
               </CancelBtn>
             </SearchBox>
@@ -462,11 +468,11 @@ export default function CommunityScreen() {
       </Header>
 
       <ChipsWrap>
-        <CategoryChips value={cat} onChange={setCat} />
+        <CategoryChips value={cat} onPress={setCat} />
       </ChipsWrap>
 
       <SortWrap>
-        <SortTabs value={sort} onChange={setSort} />
+        <SortTabs value={sort} onPress={setSort} />
       </SortWrap>
 
       <List
@@ -498,7 +504,7 @@ export default function CommunityScreen() {
         viewabilityConfig={viewConfig}
       />
 
-      <WriteFab onPress={handleWritePress} disabled={checkingProfile} />
+      <WriteFab onSetProfileModal={handleWritePress} disabled={checkingProfile} />
       {/* [수정] checking -> checkingProfile */}
       <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>

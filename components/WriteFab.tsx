@@ -5,7 +5,12 @@ import { Alert } from 'react-native';
 import styled from 'styled-components/native';
 import Icon from './common/Icon';
 
-export default function WriteFab({ onSetProfileModal }: { onSetProfileModal: Dispatch<SetStateAction<boolean>> }) {
+type Props = {
+  onSetProfileModal: Dispatch<SetStateAction<boolean>>;
+  disabled?: boolean;
+};
+
+export default function WriteFab({ onSetProfileModal, disabled }: Props) {
   const { data: profileCompleted, isLoading, isError } = useGetVisitor();
 
   const handleWritePress = () => {
@@ -27,7 +32,7 @@ export default function WriteFab({ onSetProfileModal }: { onSetProfileModal: Dis
   };
 
   return (
-    <Fab onPress={handleWritePress}>
+    <Fab onPress={handleWritePress} disabled={disabled}>
       <Icon type="write" size={16} />
     </Fab>
   );
