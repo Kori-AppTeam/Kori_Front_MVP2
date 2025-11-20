@@ -1,3 +1,4 @@
+import ProfileImage from '@/components/common/ProfileImage';
 import React, { memo } from 'react';
 import { SvgProps, SvgUri } from 'react-native-svg';
 import styled from 'styled-components/native';
@@ -17,7 +18,7 @@ function UserProfileImg({ source }: { source: string | React.FC<SvgProps> }) {
   return <SvgUri uri={source} width="100%" height="100%" />;
 }
 
-const ImageString = styled.Image`
+const ImageString = styled(ProfileImage)`
   width: 100%;
   height: 100%;
   border-radius: 50px;

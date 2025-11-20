@@ -199,7 +199,7 @@ const SmallCount = styled.Text`
 const BookmarkBtn = styled.TouchableOpacity``;
 const ContentBox = styled.View`
   width: 100%;
-  padding: 20px 0 24px 0;
+  padding: 20px 0;
   flex-direction: column;
   justify-content: center;
   gap: 16px;
