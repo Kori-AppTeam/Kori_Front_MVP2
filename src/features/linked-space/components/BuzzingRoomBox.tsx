@@ -5,8 +5,9 @@ import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
+import { GroupChatRoom } from '../types';
 
-const BuzzingRoomBox = ({ data }) => {
+const BuzzingRoomBox = ({ data }: { data: GroupChatRoom }) => {
   const router = useRouter();
   const onhandleNext = () => {
     router.push({
