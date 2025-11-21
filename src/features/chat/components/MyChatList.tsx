@@ -19,7 +19,7 @@ const toUrl = (u?: string) => {
   return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
 };
 
-const MyChatRoomBox = ({ data }) => {
+export const MyChatList = ({ data }) => {
   const router = useRouter();
 
   //채팅방 진입
@@ -93,8 +93,6 @@ const MyChatRoomBox = ({ data }) => {
     </ChatRoom>
   );
 };
-
-export default MyChatRoomBox;
 
 // 스타일 정의
 const ChatRoom = styled.View`

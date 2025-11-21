@@ -1,7 +1,7 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import GroupChatRoomBox from '@/src/features/chat/components/GroupChatRoomBox';
-import MyChatRoomBox from '@/src/features/chat/components/MyChatRoomBox';
+import { MyChatList } from '@/src/features/chat/components/MyChatList';
+import { GroupChatList } from '@/src/features/linked-space/components/GroupChatList';
 import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/constants/route';
 import { useStompStore } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
@@ -112,12 +112,12 @@ export default function ChatScreen() {
         {!isGroupChat ? (
           <FlatList
             data={chatrooms}
-            renderItem={({ item }) => <MyChatRoomBox data={item} />}
+            renderItem={({ item }) => <MyChatList data={item} />}
             keyExtractor={(item) => item.roomId}
             showsVerticalScrollIndicator={false}
           />
         ) : (
-          <GroupChatRoomBox />
+          <GroupChatList />
         )}
 
         {isGroupChat && (

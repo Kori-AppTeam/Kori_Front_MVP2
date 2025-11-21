@@ -1,7 +1,6 @@
 import api from '@/api/axiosInstance';
 import AllSpaceRoomBox from '@/src/features/chat/components/AllSpaceRoomBox';
 import BuzzingRoomBox from '@/src/features/chat/components/BuzzingRoomBox';
-import { useRouter } from 'expo-router';
 import React, { memo, useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import styled from 'styled-components/native';
@@ -15,17 +14,14 @@ type BuzzingData = {
   userCount: string;
 };
 
-type AllSpaceData = BuzzingData;
-
 // 🔹 memo 적용
 const MemoizedBuzzingRoomBox = memo(({ data }: { data: BuzzingData }) => <BuzzingRoomBox data={data} />);
 
-const MemoizedAllSpaceRoomBox = memo(({ data }: { data: AllSpaceData }) => <AllSpaceRoomBox data={data} />);
+const MemoizedAllSpaceRoomBox = memo(({ data }: { data: BuzzingData }) => <AllSpaceRoomBox data={data} />);
 
-const GroupChatRoomBox = () => {
+export const GroupChatList = () => {
   const [buzzingSpaces, setBuzzingSpaces] = useState<BuzzingData[]>([]);
-  const [allSpaces, setAllSpaces] = useState<AllSpaceData[]>([]);
-  const router = useRouter();
+  const [allSpaces, setAllSpaces] = useState<BuzzingData[]>([]);
 
   const getBuzzingData = async () => {
     const res = await api.get('/api/v1/chat/group/popular');
@@ -93,8 +89,6 @@ const GroupChatRoomBox = () => {
     </Container>
   );
 };
-
-export default GroupChatRoomBox;
 
 // 🔹 스타일
 const Container = styled.View`
