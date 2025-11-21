@@ -29,11 +29,7 @@ const BuzzingRoomBox = ({ data }: { data: GroupChatRoom }) => {
       <BuzzingTitleContainer>
         <BuzzingTitle>{data.roomName}</BuzzingTitle>
         <BuzzingTitleContent>
-          {data.description
-            ? data.description.length > 25
-              ? data.description.slice(0, 25) + '...'
-              : data.description
-            : ''}
+          {data.description}
         </BuzzingTitleContent>
       </BuzzingTitleContainer>
       <BuzzingMemberContainer>
