@@ -1,7 +1,7 @@
 //채팅방 검색 화면
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import { MyChatList } from '@/src/features/chat/components/MyChatList';
+import { MyChatList } from '@/src/features/chat/list/components/MyChatList';
 import AllSpaceRoomBox from '@/src/features/linked-space/components/AllSpaceItem';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';

@@ -1,6 +1,6 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import { MyChatList } from '@/src/features/chat/components/MyChatList';
+import { MyChatList } from '@/src/features/chat/list/components/MyChatList';
 import { GroupChatList } from '@/src/features/linked-space/components/GroupChatList';
 import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/constants/route';
 import { useStompStore } from '@/src/store/useStompStore';
