@@ -96,9 +96,9 @@ const ChattingRoomScreen = () => {
               />
             ) : (
               <MessageInput
-                message={messageState.state.message}
+                message={messageState.state.currentMessage}
                 onMessageChange={messageState.handleMessageChange}
-                onSendMessage={() => messageActions.sendMessage(roomId, messageState.state)}
+                onSendMessage={() => messageActions.sendMessage(roomId)}
                 paddingBottom={insets.bottom}
               />
             )}

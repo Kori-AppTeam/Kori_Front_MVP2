@@ -1,10 +1,12 @@
+// src/features/chat/room/hooks/useChatMessages.ts
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { loadMessagesAPI } from '../api/messages';
-import { ChatMessage, ChatMessagesState } from '../types/chat.types';
+import { useChatStore } from '../stores/useChatStore';
+import { ChatMessage, RoomMessagesState } from '../types/chat.types';
 
 interface ChatMessagesHook {
-  state: ChatMessagesState;
+  state: RoomMessagesState;
   handleMessageChange: (text: string) => void;
   addMessage: (message: ChatMessage) => void;
   removeMessage: (messageId: number) => void;
@@ -17,82 +19,86 @@ export const useChatMessages = (
   roomId: string,
   stompConnection: any
 ): ChatMessagesHook => {
-  const [state, setState] = useState<ChatMessagesState>({
-    message: '',
+  const myUserIdRef = useRef<string>('');
+
+  // Zustand Store에서 필요한 상태와 액션 가져오기
+  const roomState = useChatStore((state) => state.rooms[roomId]);
+  const initializeRoom = useChatStore((state) => state.initializeRoom);
+  const addMessageToStore = useChatStore((state) => state.addMessage);
+  const removeMessageFromStore = useChatStore((state) => state.removeMessage);
+  const loadMoreMessagesToStore = useChatStore((state) => state.loadMoreMessages);
+  const setCurrentMessage = useChatStore((state) => state.setCurrentMessage);
+  const setFetchingMore = useChatStore((state) => state.setFetchingMore);
+  const setHasMore = useChatStore((state) => state.setHasMore);
+  const setError = useChatStore((state) => state.setError);
+  const clearMessagesInStore = useChatStore((state) => state.clearMessages);
+
+  // Room 초기화 (컴포넌트 마운트 시)
+  useEffect(() => {
+    initializeRoom(roomId);
+  }, [roomId, initializeRoom]);
+
+  // 기본값 설정 (room이 아직 초기화되지 않은 경우)
+  const state: RoomMessagesState = roomState || {
+    currentMessage: '',
     messages: [],
     isLoading: false,
     isFetchingMore: false,
     hasMore: true,
     error: null,
-  });
+  };
 
-  const myUserIdRef = useRef<string>('');
 
   /** 메시지 로드(+무한 스크롤) */
   const loadMessages = useCallback(async () => {
     if (!state.hasMore || state.isFetchingMore) return;
 
-    setState(prev => ({ ...prev, isFetchingMore: true }));
+    setFetchingMore(roomId, true);
 
     try {
-      const lastMessageId = state.messages.length > 0 ? state.messages[state.messages.length - 1].id : '';
+      const lastMessageId = state.messages.length > 0
+        ? state.messages[state.messages.length - 1].id
+        : '';
 
       const olderMessages: ChatMessage[] = await loadMessagesAPI(roomId, lastMessageId);
 
       if (olderMessages.length === 0) {
-        setState(prev => ({
-          ...prev,
-          hasMore: false,
-          isFetchingMore: false,
-        }));
+        setHasMore(roomId, false);
       } else {
-        setState(prev => ({
-          ...prev,
-          messages: [...prev.messages, ...olderMessages],
-          isFetchingMore: false,
-        }));
+        loadMoreMessagesToStore(roomId, olderMessages);
       }
+
+      setFetchingMore(roomId, false);
     } catch (error) {
       console.error('이전 메시지 불러오기 실패', error);
-      setState(prev => ({
-        ...prev,
-        error: error as Error,
-        isFetchingMore: false,
-      }));
+      setError(roomId, error as Error);
+      setFetchingMore(roomId, false);
     }
-  }, [roomId, state.messages, state.hasMore, state.isFetchingMore]);
+  }, [roomId, state.messages, state.hasMore, state.isFetchingMore, setFetchingMore, setHasMore, loadMoreMessagesToStore, setError]);
 
-  /** 메시지 입력 후 상태 업데이트 
+  /** 
+   * 메시지 입력 후 상태 업데이트 
    * @param text 입력된 메시지 텍스트
-  */
+   */
   const handleMessageChange = useCallback((text: string) => {
-    setState(prev => ({
-      ...prev,
-      message: text,
-    }));
-  }, []);
+    setCurrentMessage(roomId, text);
+  }, [roomId, setCurrentMessage]);
 
   /** 
    * 메시지 추가(실시간) 
    * @param message 추가할 메시지
    */
   const addMessage = useCallback((message: ChatMessage) => {
-    setState(prev => ({
-      ...prev,
-      messages: [message, ...prev.messages],
-    }));
-  }, []);
+    addMessageToStore(roomId, message);
+  }, [roomId, addMessageToStore]);
 
   /** 
    * 메시지 제거(실시간) 
    * @param messageId 제거할 메시지 ID
    */
   const removeMessage = useCallback((messageId: number) => {
-    setState(prev => ({
-      ...prev,
-      messages: prev.messages.filter(m => m.id !== messageId),
-    }));
-  }, []);
+    removeMessageFromStore(roomId, messageId);
+  }, [roomId, removeMessageFromStore]);
 
   /**
    * 메시지 목록 업데이트 (초기화 후 재로딩)
@@ -100,16 +106,12 @@ export const useChatMessages = (
   const updateMessageList = useCallback(() => {
     clearMessages();
     loadMessages();
-  }, []);
+  }, [loadMessages]);
 
   /** 메시지 목록 초기화 */
   const clearMessages = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      messages: [],
-      hasMore: true,
-    }));
-  }, []);
+    clearMessagesInStore(roomId);
+  }, [roomId, clearMessagesInStore]);
 
   // STOMP 연결 시 실시간 메시지 구독
   useEffect(() => {

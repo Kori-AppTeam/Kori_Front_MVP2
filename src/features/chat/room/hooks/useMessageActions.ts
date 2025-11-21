@@ -1,8 +1,8 @@
-import api from '@/api/axiosInstance';
+// src/features/chat/room/hooks/useMessageActions.ts
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
-import { ChatMessagesState } from '../types/chat.types';
+import { useChatStore } from '../stores/useChatStore';
 
 interface MessageActionsState {
   isSending: boolean;
@@ -12,7 +12,7 @@ interface MessageActionsState {
 
 interface MessageActionsHook {
   state: MessageActionsState;
-  sendMessage: (roomId: string, messages: ChatMessagesState) => Promise<void>;
+  sendMessage: (roomId: string) => Promise<void>;
   deleteMessage: (messageId: number) => Promise<void>;
   deleteMessageWithConfirm: (messageId: number) => void;
   markAsRead: (roomId: string) => Promise<void>;
@@ -25,9 +25,16 @@ export const useMessageActions = (stompConnection: any): MessageActionsHook => {
     error: null,
   });
 
+  // Store에서 필요한 액션 가져오기
+  const clearCurrentMessage = useChatStore((state) => state.clearCurrentMessage);
+  const getCurrentMessage = (roomId: string) =>
+    useChatStore.getState().rooms[roomId]?.currentMessage || '';
+
   /** 메시지 전송 */
-  const sendMessage = useCallback(async (roomId: string, messages: ChatMessagesState) => {
-    if (!messages.message.trim()) return;
+  const sendMessage = useCallback(async (roomId: string) => {
+    const currentMessage = getCurrentMessage(roomId);
+
+    if (!currentMessage.trim()) return;
     if (!stompConnection.state.connected) {
       throw new Error('STOMP 연결이 되어있지 않습니다');
     }
@@ -43,11 +50,14 @@ export const useMessageActions = (stompConnection: any): MessageActionsHook => {
       const body = {
         roomId,
         senderId: myUserId,
-        content: messages.message.trim(),
+        content: currentMessage.trim(),
       };
 
       await stompConnection.publish('/app/chat.sendMessage', body);
-      messages.message = '';
+
+      // 메시지 전송 성공 후 입력창 초기화
+      clearCurrentMessage(roomId);
+
       setState(prev => ({ ...prev, isSending: false }));
     } catch (error) {
       console.error('메시지 전송 실패', error);
@@ -58,7 +68,7 @@ export const useMessageActions = (stompConnection: any): MessageActionsHook => {
       }));
       throw error;
     }
-  }, [stompConnection]);
+  }, [stompConnection, clearCurrentMessage, getCurrentMessage]);
 
   /** 메시지 삭제 */
   const deleteMessage = useCallback(async (messageId: number) => {
@@ -112,6 +122,7 @@ export const useMessageActions = (stompConnection: any): MessageActionsHook => {
   /** 채팅방 읽음 처리 */
   const markAsRead = useCallback(async (roomId: string) => {
     try {
+      const api = (await import('@/api/axiosInstance')).default;
       await api.post(`/api/v1/chat/rooms/${roomId}/read-all`);
     } catch (error) {
       console.error('읽음 처리 실패', error);

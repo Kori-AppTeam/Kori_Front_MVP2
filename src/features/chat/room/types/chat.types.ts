@@ -19,3 +19,13 @@ export interface ChatMessagesState {
   hasMore: boolean;
   error: Error | null;
 }
+
+// Room별 메시지 상태
+export interface RoomMessagesState {
+  messages: ChatMessage[];
+  currentMessage: string;
+  isLoading: boolean;
+  isFetchingMore: boolean;
+  hasMore: boolean;
+  error: Error | null;
+}
