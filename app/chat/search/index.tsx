@@ -2,7 +2,7 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import { MyChatList } from '@/src/features/chat/components/MyChatList';
-import AllSpaceRoomBox from '@/src/features/linked-space/components/AllSpaceRoomBox';
+import AllSpaceRoomBox from '@/src/features/linked-space/components/AllSpaceItem';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams, useRouter } from 'expo-router';

@@ -1,7 +1,7 @@
 import { FlatList, View } from 'react-native';
 import styled from 'styled-components/native';
 import { GroupChatListHeaderProps } from '../types';
-import BuzzingRoomBox from './BuzzingRoomBox';
+import { BuzzingSpaceItem } from './BuzzingSpaceItem';
 
 export const GroupChatListHeader = ({ buzzingSpaces }: GroupChatListHeaderProps) => (
   <View>
@@ -12,7 +12,7 @@ export const GroupChatListHeader = ({ buzzingSpaces }: GroupChatListHeaderProps)
     <BuzzingContainer>
       <FlatList
         data={buzzingSpaces}
-        renderItem={({ item }) => <BuzzingRoomBox data={item} />}
+        renderItem={({ item }) => <BuzzingSpaceItem data={item} />}
         keyExtractor={(item) => item.roomId.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}

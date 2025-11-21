@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import styled from 'styled-components/native';
 import { GroupChatRoom } from '../types';
 
-const AllSpaceRoomBox = ({ data }: { data: GroupChatRoom }) => {
+export const AllSpaceItem = ({ data }: { data: GroupChatRoom }) => {
   const router = useRouter();
   const onhandleNext = () => {
     const roomId = data.roomId ?? data.roomId;
@@ -38,8 +38,6 @@ const AllSpaceRoomBox = ({ data }: { data: GroupChatRoom }) => {
     </AllSpacesBox>
   );
 };
-
-export default AllSpaceRoomBox;
 
 const AllSpacesBox = styled.TouchableOpacity.attrs({
   activeOpacity: 0.3, // 눌렀을 때 살짝만 투명

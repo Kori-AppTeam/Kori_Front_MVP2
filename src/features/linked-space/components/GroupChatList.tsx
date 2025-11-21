@@ -1,7 +1,7 @@
-import AllSpaceRoomBox from '@/src/features/linked-space/components/AllSpaceRoomBox';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { useGroupChatRooms } from '../hooks/useGroupChatRooms';
+import { AllSpaceItem } from './AllSpaceItem';
 import { GroupChatListFooter } from './GroupChatListFooter';
 import { GroupChatListHeader } from './GroupChatListHeader';
 
@@ -14,7 +14,7 @@ export const GroupChatList = () => {
     <Container>
       <FlatList
         data={allSpaces}
-        renderItem={({ item }) => <AllSpaceRoomBox data={item} />}
+        renderItem={({ item }) => <AllSpaceItem data={item} />}
         keyExtractor={(item) => item.roomId.toString()}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={<GroupChatListHeader buzzingSpaces={buzzingSpaces} />}

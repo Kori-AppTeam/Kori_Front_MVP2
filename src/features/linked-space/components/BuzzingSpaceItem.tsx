@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import styled from 'styled-components/native';
 import { GroupChatRoom } from '../types';
 
-const BuzzingRoomBox = ({ data }: { data: GroupChatRoom }) => {
+export const BuzzingSpaceItem = ({ data }: { data: GroupChatRoom }) => {
   const router = useRouter();
   const onhandleNext = () => {
     router.push({
@@ -38,8 +38,6 @@ const BuzzingRoomBox = ({ data }: { data: GroupChatRoom }) => {
     </BuzzingBox>
   );
 };
-
-export default BuzzingRoomBox;
 
 const BuzzingBox = styled.TouchableOpacity.attrs({
   activeOpacity: 0.5, // 눌렀을 때 살짝만 투명하게
