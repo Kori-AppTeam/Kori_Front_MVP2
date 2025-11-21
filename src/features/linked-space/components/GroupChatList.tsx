@@ -1,4 +1,4 @@
-import AllSpaceRoomBox from '@/src/features/chat/components/AllSpaceRoomBox';
+import AllSpaceRoomBox from '@/src/features/linked-space/components/AllSpaceRoomBox';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { useGroupChatRooms } from '../hooks/useGroupChatRooms';

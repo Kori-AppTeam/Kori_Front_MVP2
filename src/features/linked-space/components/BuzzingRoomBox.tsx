@@ -3,7 +3,6 @@ import ProfileImage from '@/components/common/ProfileImage';
 import { LINKED_SPACE_DETAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
-import React from 'react';
 import styled from 'styled-components/native';
 import { GroupChatRoom } from '../types';
 
