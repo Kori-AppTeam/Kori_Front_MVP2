@@ -4,7 +4,6 @@ import Toast from 'react-native-toast-message';
 import { useNavigation, useRouter } from 'expo-router';
 
 import DetailHeader from '@/components/common/DetailHeader';
-import { getAuthErrorMessage } from '@/src/features/auth/constants/error';
 import { useEmailLogin } from '@/src/features/auth/hooks/useEmailLogin';
 import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
 import CustomButton from '@/src/shared/components/CustomButton';
@@ -13,6 +12,7 @@ import TextButton from '@/src/shared/components/TextButton';
 import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { EMAIL_LOGIN_ERROR } from '@/src/features/auth/constants/error';
 
 const index = () => {
   const router = useRouter();
@@ -31,10 +31,11 @@ const index = () => {
       }
     } catch (error: unknown) {
       const errorCode = getAxiosErrorCode(error);
-      const message = getAuthErrorMessage(errorCode);
+      const errorConfig = EMAIL_LOGIN_ERROR[errorCode];
+
       Toast.show({
         type: 'error',
-        text1: message,
+        text1: errorConfig.message,
         text2: `Please check again.`,
         position: 'bottom',
         bottomOffset: 180,

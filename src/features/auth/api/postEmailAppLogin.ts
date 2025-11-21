@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { Config } from '@/src/shared/constants/config';
-import { AppLoginResponse } from '@/src/features/auth/types/api.types';
+import { EmailLoginResponse } from '@/src/features/auth/types/api.types';
 
 export async function postEmailAppLogin(email: string, password: string) {
   try {
-    const response = await axios.post<AppLoginResponse>(`${Config.SERVER_URL}/api/v1/member/doLogin`, {
+    const response = await axios.post<EmailLoginResponse>(`${Config.SERVER_URL}/api/v1/member/doLogin`, {
       email: email.trim(),
       password: password.trim(),
     });
-    return response.data.data;
+
+    return response.data;
   } catch (error) {
     throw error;
   }

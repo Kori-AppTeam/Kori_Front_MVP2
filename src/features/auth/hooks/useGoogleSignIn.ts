@@ -10,7 +10,7 @@ export function useGoogleSignIn() {
     setIsLoading(true);
     try {
       const code = await getGoogleAuthCode();
-      if (!code) throw new Error('Auth Code is Missing');
+      if (!code) throw new Error('GOOGLE_NO_AUTH_CODE');
 
       const { accessToken, refreshToken, userId, isNewUser } = await postGoogleAppLogin(code);
       await saveAuthToken(accessToken, refreshToken, userId);

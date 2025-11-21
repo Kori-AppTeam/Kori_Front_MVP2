@@ -8,3 +8,13 @@ export type AppLoginResponse = {
   message: string;
   timestamp: string;
 };
+
+export type EmailLoginResponse = {
+  tokenType: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresInMillis: number;
+  userId: number;
+  email: string;
+  isNewUser: boolean;
+};

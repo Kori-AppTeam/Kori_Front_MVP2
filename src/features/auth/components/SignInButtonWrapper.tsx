@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
+import Toast from 'react-native-toast-message';
 
 import { useAppleSignIn } from '@/src/features/auth/hooks/useAppleSignIn';
 import { useGoogleSignIn } from '@/src/features/auth/hooks/useGoogleSignIn';
@@ -10,6 +11,9 @@ import { textStyle } from '@/src/styles/theme';
 import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
 import { alertAppleRejoinUser } from '@/src/features/auth/lib/alertRejoinAppleUser';
 import SignInButton from '@/src/features/auth/components/SignInButton';
+import { APPLE_AUTH_ERROR, GOOGLE_AUTH_ERROR } from '@/src/features/auth/constants/error';
+import { getAuthErrorCode } from '@/src/features/auth/utils/error';
+import { statusCodes } from '@react-native-google-signin/google-signin';
 
 interface SignInButtonWrapperProps {
   onSuccessSocialSignIn: (provider: 'apple' | 'google') => void;
@@ -21,6 +25,7 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
   const { isLoading: isGoogleLoading, googleSignIn } = useGoogleSignIn();
   const { isLoading: isAppleLoading, appleSignIn } = useAppleSignIn();
 
+  /* ---------- 애플 로그인 버튼 핸들러 --------- */
   async function handleAppleSignInPress() {
     try {
       const appleUserLoginCase = await appleSignIn();
@@ -38,10 +43,21 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
           return;
       }
     } catch (error) {
-      console.error('error', error);
+      const errorCode = getAuthErrorCode(error, 'apple');
+      const errorConfig = APPLE_AUTH_ERROR[errorCode];
+
+      // 사용자가 로그인을 취소한 경우를 제외하고 error toast 표시
+      if (errorConfig !== APPLE_AUTH_ERROR.ERR_REQUEST_CANCELED) {
+        Toast.show({
+          type: 'error',
+          text1: errorConfig.message,
+          text2: 'Please try again later.',
+        });
+      }
     }
   }
 
+  /* ---------- 구글 로그인 버튼 핸들러 --------- */
   async function handleGoogleSignInPress() {
     try {
       const { isNewUser } = await googleSignIn();
@@ -54,7 +70,20 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
         resetToTabsScreen(navigation);
       }
     } catch (error) {
-      console.error('error', error);
+      const errorCode = getAuthErrorCode(error, 'google');
+      const errorConfig = GOOGLE_AUTH_ERROR[errorCode];
+
+      // 사용자가 로그인을 취소하거나 이미 로그인 진행중인 경우를 제외하고 error toast 표시
+      if (
+        errorConfig !== GOOGLE_AUTH_ERROR[statusCodes.SIGN_IN_CANCELLED] &&
+        errorConfig !== GOOGLE_AUTH_ERROR[statusCodes.IN_PROGRESS]
+      ) {
+        Toast.show({
+          type: 'error',
+          text1: errorConfig.message,
+          text2: 'Please try again later.',
+        });
+      }
     }
   }
 
