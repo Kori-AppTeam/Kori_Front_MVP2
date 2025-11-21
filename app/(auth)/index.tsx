@@ -12,7 +12,7 @@ import SignInButtonWrapper from '@/src/features/auth/components/SignInButtonWrap
 import { usePreloadAssets } from '@/src/shared/hooks/usePreloadAssets';
 import { onboardingImageAssets } from '@/src/features/auth/constants/assets';
 
-const LoginScreen = () => {
+const index = () => {
   const router = useRouter();
   const { bottomSheetRef, handleBottomSheetOpen, handleBottomSheetClose } = useConfirmTermsBottomSheet();
   const [loginProvider, setLoginProvider] = useState<'apple' | 'google' | null>(null);
@@ -68,7 +68,7 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default index;
 
 const SafeArea = styled.SafeAreaView`
   flex: 1;
