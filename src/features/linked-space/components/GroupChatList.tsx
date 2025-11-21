@@ -1,6 +1,6 @@
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
-import { useGroupChatRooms } from '../hooks/useGroupChatRooms';
+import { useAllSpaces, useBuzzingSpaces } from '../hooks/useGroupChatRooms';
 import { AllSpaceItem } from './AllSpaceItem';
 import { GroupChatListFooter } from './GroupChatListFooter';
 import { GroupChatListHeader } from './GroupChatListHeader';
@@ -8,7 +8,10 @@ import { GroupChatListHeader } from './GroupChatListHeader';
 // 🔹 memo 적용
 
 export const GroupChatList = () => {
-  const { buzzingSpaces, allSpaces, isLoading, loadMoreSpaces } = useGroupChatRooms();
+  const { data: buzzingSpaces } = useBuzzingSpaces();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useAllSpaces();
+
+  const allSpaces = data?.pages.flat() ?? [];
 
   return (
     <Container>
@@ -17,9 +20,13 @@ export const GroupChatList = () => {
         renderItem={({ item }) => <AllSpaceItem data={item} />}
         keyExtractor={(item) => item.roomId.toString()}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={<GroupChatListHeader buzzingSpaces={buzzingSpaces} />}
-        ListFooterComponent={<GroupChatListFooter isLoading={isLoading} />}
-        onEndReached={loadMoreSpaces}
+        ListHeaderComponent={<GroupChatListHeader buzzingSpaces={buzzingSpaces ?? []} />}
+        ListFooterComponent={<GroupChatListFooter isLoading={isFetchingNextPage} />}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
         onEndReachedThreshold={0.5}
         initialNumToRender={5}
         maxToRenderPerBatch={5}
