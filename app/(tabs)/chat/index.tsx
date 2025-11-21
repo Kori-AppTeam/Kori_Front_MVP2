@@ -172,7 +172,7 @@ const ChatBox = styled.View`
   align-items: center;
   justify-content: center;
 `;
-const MyChatBox = styled.TouchableOpacity`
+const MyChatBox = styled.TouchableOpacity<{ isGroupChat: boolean }>`
   width: 70%;
   height: 50px;
   margin: 0px 100px;
@@ -181,7 +181,7 @@ const MyChatBox = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
 `;
-const GroupChatBox = styled.TouchableOpacity`
+const GroupChatBox = styled.TouchableOpacity<{ isGroupChat: boolean }>`
   width: 70%;
   height: 50px;
   border-bottom-color: ${(props) => (props.isGroupChat ? '#02F59B' : '#616262')};
@@ -189,12 +189,12 @@ const GroupChatBox = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
 `;
-const MyChatText = styled.Text`
+const MyChatText = styled.Text<{ isGroupChat: boolean }>`
   color: ${(props) => (props.isGroupChat ? '#616262' : '#02F59B')};
   font-family: 'PlusJakartaSans_500Medium';
   font-size: 16px;
 `;
-const GroupChatText = styled.Text`
+const GroupChatText = styled.Text<{ isGroupChat: boolean }>`
   color: ${(props) => (props.isGroupChat ? '#02F59B' : '#616262')};
   font-family: 'PlusJakartaSans_500Medium';
   font-size: 16px;
