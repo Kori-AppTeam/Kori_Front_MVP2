@@ -4,8 +4,8 @@ export type ChatRoom = {
   lastMessageContent: string;
   lastMessageTime: string;
   unreadCount: number;
-  roomImageUrl?: string;
-  participantCount?: number;
+  roomImageUrl: string;
+  participantCount: number;
 };
 
 export type UseChatRoomSubscriptionProps = {
