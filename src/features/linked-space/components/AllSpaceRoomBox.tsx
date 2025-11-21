@@ -4,11 +4,12 @@ import { LINKED_SPACE_DETAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import styled from 'styled-components/native';
+import { GroupChatRoom } from '../types';
 
-const AllSpaceRoomBox = ({ data }) => {
+const AllSpaceRoomBox = ({ data }: { data: GroupChatRoom }) => {
   const router = useRouter();
   const onhandleNext = () => {
-    const roomId = data.roomId ?? data.chatRoomId;
+    const roomId = data.roomId ?? data.roomId;
     router.push({
       pathname: LINKED_SPACE_DETAIL_ROUTE(roomId),
     });
@@ -26,7 +27,7 @@ const AllSpaceRoomBox = ({ data }) => {
         </AllSpaceTitleContent>
         <AllSpaceMemberContainer>
           <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
-          <AllSpaceMemberCount>{data.userCount ?? data.participantCount} members</AllSpaceMemberCount>
+          <AllSpaceMemberCount>{data.userCount ?? data.userCount} members</AllSpaceMemberCount>
         </AllSpaceMemberContainer>
       </AllSpaceTitleContainer>
       <AllSpaceImageContainer>
