@@ -1,8 +1,8 @@
 import api from '@/api/axiosInstance';
-import { removeBookmark as apiRemoveBookmark } from '@/api/community/bookmarks';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import { removeBookmark as apiRemoveBookmark } from '@/src/features/community/apis/bookmarks';
 import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';

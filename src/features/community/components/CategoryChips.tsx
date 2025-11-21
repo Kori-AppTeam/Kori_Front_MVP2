@@ -1,20 +1,23 @@
+import { CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
+import { AllowedCategory } from '@/src/features/community/types/postsListType';
 import React from 'react';
 import styled from 'styled-components/native';
 
-export type Category = 'All' | 'News' | 'Tip' | 'Q&A' | 'Event' | 'Free talk' | 'Activity';
+const CATS: AllowedCategory[] = ['ALL', 'NEWS', 'TIP', 'QNA', 'EVENT', 'FREE_TALK', 'ACTIVITY'];
 
-const CATS: Category[] = ['All', 'News', 'Tip', 'Q&A', 'Event', 'Free talk', 'Activity'];
+type Props = {
+  value: AllowedCategory;
+  onPress: (c: AllowedCategory) => void;
+};
 
-type Props = { value: Category; onChange: (c: Category) => void };
-
-export default function CategoryChips({ value, onChange }: Props) {
+export default function CategoryChips({ value, onPress }: Props) {
   return (
     <Row horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12 }}>
       {CATS.map((c) => {
         const active = c === value;
         return (
-          <Chip key={c} $active={active} onPress={() => onChange(c)}>
-            <ChipText $active={active}>{c}</ChipText>
+          <Chip key={c} $active={active} onPress={() => onPress(c)}>
+            <ChipText $active={active}>{CLIENT_CATEGORY_NAME[c]}</ChipText>
           </Chip>
         );
       })}

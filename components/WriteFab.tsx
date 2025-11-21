@@ -1,10 +1,15 @@
-import Icon from './common/Icon';
 import React from 'react';
 import styled from 'styled-components/native';
+import Icon from './common/Icon';
 
-export default function WriteFab({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) {
+type Props = {
+  onHandleWritePress: () => void;
+  disabled?: boolean;
+};
+
+export default function WriteFab({ onHandleWritePress, disabled }: Props) {
   return (
-    <Fab onPress={onPress} disabled={disabled}>
+    <Fab onPress={onHandleWritePress} disabled={disabled}>
       <Icon type="write" size={16} />
     </Fab>
   );
