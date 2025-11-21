@@ -5,6 +5,7 @@ import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
+import { ChatRoom } from '../types';
 const SWIPE_THRESHOLD = 80; // 드래그해야 열림/닫힘이 되는 기준
 
 const toUrl = (u?: string) => {
@@ -19,7 +20,7 @@ const toUrl = (u?: string) => {
   return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
 };
 
-export const MyChatList = ({ data }) => {
+export const MyChatList = ({ data }: { data: ChatRoom }) => {
   const router = useRouter();
 
   //채팅방 진입
@@ -52,7 +53,7 @@ export const MyChatList = ({ data }) => {
   };
 
   return (
-    <ChatRoom>
+    <ChatRoomWrapper>
       <RoomBox activeOpacity={0.8} onPress={enterChattingRoom}>
         <RoomImageContainer>
           <RoomImage
@@ -90,12 +91,12 @@ export const MyChatList = ({ data }) => {
           </RoomBottom>
         </RoomWrapper>
       </RoomBox>
-    </ChatRoom>
+    </ChatRoomWrapper>
   );
 };
 
 // 스타일 정의
-const ChatRoom = styled.View`
+const ChatRoomWrapper = styled.View`
   background-color: #1d1e1f;
   height: 80px;
   justify-content: center;
