@@ -6,10 +6,9 @@ import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/const
 import { useStompStore } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
-import { Client } from '@stomp/stompjs';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -26,9 +25,9 @@ type ChatRoom = {
 export default function ChatScreen() {
   const router = useRouter();
   const [chatrooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const stompClient = useRef<Client | null>(null);
   const [isGroupChat, setisGroupChat] = useState(true);
 
+  // ----------- STOMP 구독 설정 ----------- //
   const subscribe = useStompStore((state) => state.subscribe);
   const connected = useStompStore((state) => state.connected);
 
@@ -52,6 +51,7 @@ export default function ChatScreen() {
     }, []),
   );
 
+  // 🔹 STOMP 구독 설정
   useEffect(() => {
     if (!connected) return;
 
