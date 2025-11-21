@@ -1,9 +1,9 @@
-import api from '@/api/axiosInstance';
 import AllSpaceRoomBox from '@/src/features/chat/components/AllSpaceRoomBox';
 import BuzzingRoomBox from '@/src/features/chat/components/BuzzingRoomBox';
-import React, { memo, useEffect, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, View } from 'react-native';
 import styled from 'styled-components/native';
+import { fetchAllSpaces, fetchBuzzingSpaces } from '../api/groupChatRooms';
 
 // 🔹 데이터 타입
 type BuzzingData = {
@@ -22,30 +22,43 @@ const MemoizedAllSpaceRoomBox = memo(({ data }: { data: BuzzingData }) => <AllSp
 export const GroupChatList = () => {
   const [buzzingSpaces, setBuzzingSpaces] = useState<BuzzingData[]>([]);
   const [allSpaces, setAllSpaces] = useState<BuzzingData[]>([]);
-
-  const getBuzzingData = async () => {
-    const res = await api.get('/api/v1/chat/group/popular');
-    return res.data.data;
-  };
-
-  const getAllSpaceData = async () => {
-    const res = await api.get('/api/v1/chat/group/latest');
-
-    return res.data.data;
-  };
+  const [lastChatRoomId, setLastChatRoomId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const [Buzzing_Data, AllSpace_Data] = await Promise.all([getBuzzingData(), getAllSpaceData()]);
+        const Buzzing_Data = await fetchBuzzingSpaces();
         setBuzzingSpaces(Buzzing_Data);
-        setAllSpaces(AllSpace_Data);
       } catch (err) {
         console.error('Linked Space 불러오기 실패:', err);
       }
     };
     fetchRooms();
   }, []);
+
+  // 🔹 무한 스크롤 - 추가 데이터 로드
+  const loadMoreSpaces = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    try {
+      const moreData = await fetchAllSpaces(lastChatRoomId);
+
+      if (moreData && moreData.length > 0) {
+        setAllSpaces((prev) => [...prev, ...moreData]);
+        setLastChatRoomId(moreData[moreData.length - 1].roomId);
+        setHasMore(moreData.length > 0);
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error('추가 데이터 로드 실패:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, hasMore, lastChatRoomId]);
 
   // 🔹 ListHeaderComponent를 분리
   const ListHeader = () => (
@@ -61,9 +74,9 @@ export const GroupChatList = () => {
           keyExtractor={(item) => item.roomId.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
-          initialNumToRender={5} // 초기 렌더링 아이템 수
-          maxToRenderPerBatch={5} // 배치당 렌더링 아이템 수
-          windowSize={5} // 렌더링 범위
+          initialNumToRender={5}
+          maxToRenderPerBatch={5}
+          windowSize={5}
         />
       </BuzzingContainer>
 
@@ -73,6 +86,16 @@ export const GroupChatList = () => {
     </View>
   );
 
+  // 🔹 Footer - 로딩 인디케이터
+  const ListFooter = () => {
+    if (!isLoading) return null;
+    return (
+      <FooterContainer>
+        <ActivityIndicator size="small" color="#ffffff" />
+      </FooterContainer>
+    );
+  };
+
   return (
     <Container>
       <FlatList
@@ -81,10 +104,13 @@ export const GroupChatList = () => {
         keyExtractor={(item) => item.roomId.toString()}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={<ListHeader />}
+        ListFooterComponent={<ListFooter />}
+        onEndReached={loadMoreSpaces}
+        onEndReachedThreshold={0.5}
         initialNumToRender={5}
         maxToRenderPerBatch={5}
         windowSize={5}
-        removeClippedSubviews={true} // 화면 밖 요소 메모리 해제
+        removeClippedSubviews={true}
       />
     </Container>
   );
@@ -108,4 +134,9 @@ const GroupTitleText = styled.Text`
 
 const BuzzingContainer = styled.View`
   height: 236px;
+`;
+
+const FooterContainer = styled.View`
+  padding: 20px;
+  align-items: center;
 `;
