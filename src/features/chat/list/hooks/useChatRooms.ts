@@ -8,9 +8,11 @@ export const CHAT_ROOMS_QUERY_KEY = ['chatRooms'];
 export function useChatRooms() {
   const queryClient = useQueryClient();
 
-  const { data: chatrooms = [], isLoading, error, refetch } = useQuery<ChatRoom[]>({
+  const { data: chatrooms = [], isLoading, error } = useQuery<ChatRoom[]>({
     queryKey: CHAT_ROOMS_QUERY_KEY,
     queryFn: fetchChatRooms,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const updateRoom = useCallback((updatedRoom: ChatRoom) => {
@@ -25,7 +27,6 @@ export function useChatRooms() {
     chatrooms,
     isLoading,
     error,
-    fetchRooms: refetch,
     updateRoom,
   };
 }

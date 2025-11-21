@@ -5,9 +5,8 @@ import { useChatRooms } from '@/src/features/chat/list/hooks/useChatRooms';
 import { GroupChatList } from '@/src/features/linked-space/components/GroupChatList';
 import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
-import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -16,20 +15,13 @@ export default function ChatScreen() {
   const [isGroupChat, setisGroupChat] = useState(true);
 
   // 🔹 채팅방 목록 관리
-  const { chatrooms, fetchRooms, updateRoom } = useChatRooms();
+  const { chatrooms, updateRoom } = useChatRooms();
 
   // 🔹 실시간 채팅방 업데이트 구독
   useChatRoomSubscription({
     onRoomUpdate: updateRoom,
     enabled: !isGroupChat,
   });
-
-  // 🔹 화면 focus 될 때마다 채팅방 갱신
-  useFocusEffect(
-    useCallback(() => {
-      fetchRooms();
-    }, [fetchRooms]),
-  );
 
   const createNewSpace = () => router.push(CREATE_LINKED_SPACE_ROUTE);
 
