@@ -26,7 +26,7 @@ export default function ChatScreen() {
   const router = useRouter();
   const [chatrooms, setChatRooms] = useState<ChatRoom[]>([]);
   const stompClient = useRef<Client | null>(null);
-  const [isGroupChat, setisGroupChat] = useState(false);
+  const [isGroupChat, setisGroupChat] = useState(true);
 
   const changeTomyChat = () => setisGroupChat(false);
   const changeToGroupChat = () => setisGroupChat(true);
@@ -147,14 +147,14 @@ export default function ChatScreen() {
 
         <ChatWrapper>
           <ChatBox>
-            <MyChatBox isGroupChat={isGroupChat} onPress={changeTomyChat}>
-              <MyChatText isGroupChat={isGroupChat}>My chat</MyChatText>
-            </MyChatBox>
-          </ChatBox>
-          <ChatBox>
             <GroupChatBox isGroupChat={isGroupChat} onPress={changeToGroupChat}>
               <GroupChatText isGroupChat={isGroupChat}>Linked Space</GroupChatText>
             </GroupChatBox>
+          </ChatBox>
+          <ChatBox>
+            <MyChatBox isGroupChat={isGroupChat} onPress={changeTomyChat}>
+              <MyChatText isGroupChat={isGroupChat}>My chat</MyChatText>
+            </MyChatBox>
           </ChatBox>
         </ChatWrapper>
 
