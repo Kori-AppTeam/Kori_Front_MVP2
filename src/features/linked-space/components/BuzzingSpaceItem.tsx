@@ -8,14 +8,14 @@ import { GroupChatRoom } from '../types';
 
 export const BuzzingSpaceItem = ({ data }: { data: GroupChatRoom }) => {
   const router = useRouter();
-  const onhandleNext = () => {
+  const checkDetail = () => {
     router.push({
       pathname: LINKED_SPACE_DETAIL_ROUTE(data.roomId),
     });
   };
 
   return (
-    <BuzzingBox onPress={onhandleNext}>
+    <BuzzingBox onPress={checkDetail}>
       <BuzzingImageContainer>
         <BuzzingImage
           source={

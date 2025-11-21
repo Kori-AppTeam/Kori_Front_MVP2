@@ -8,14 +8,15 @@ import { GroupChatRoom } from '../types';
 
 export const AllSpaceItem = ({ data }: { data: GroupChatRoom }) => {
   const router = useRouter();
-  const onhandleNext = () => {
-    const roomId = data.roomId ?? data.roomId;
+
+  // 방 상세로 이동
+  const checkDetail = () => {
     router.push({
-      pathname: LINKED_SPACE_DETAIL_ROUTE(roomId),
+      pathname: LINKED_SPACE_DETAIL_ROUTE(data.roomId),
     });
   };
   return (
-    <AllSpacesBox onPress={onhandleNext}>
+    <AllSpacesBox onPress={checkDetail}>
       <AllSpaceTitleContainer>
         <AllSpaceTitle>{data.roomName}</AllSpaceTitle>
         <AllSpaceTitleContent>
