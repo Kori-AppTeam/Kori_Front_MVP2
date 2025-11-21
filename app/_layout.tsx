@@ -2,6 +2,7 @@
 import queryClient from '@/api/queryClient';
 import { getNotificationDeeplink } from '@/src/features/notification/lib/getNotificationDeeplink';
 import { handleNotificationPress, messageHandler } from '@/src/features/notification/lib/messageHandler';
+import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
 import {
@@ -143,6 +144,8 @@ export default function RootLayout() {
   }, [loaded, checkingToken, isLoggedIn, router]); // 이 상태들이 바뀔 때마다 실행
 
   if (!loaded || checkingToken) return null;
+
+  initializeStomp(); // STOMP 초기화 함수 호출
 
   return (
     <ThemeProvider theme={theme}>
