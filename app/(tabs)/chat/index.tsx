@@ -1,80 +1,37 @@
-import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import { MyChatList } from '@/src/features/chat/list/components/MyChatList';
+import { useChatRoomSubscription } from '@/src/features/chat/list/hooks/useChatRoomSubscription';
+import { useChatRooms } from '@/src/features/chat/list/hooks/useChatRooms';
 import { GroupChatList } from '@/src/features/linked-space/components/GroupChatList';
 import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/constants/route';
-import { useStompStore } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 
-type ChatRoom = {
-  roomId: string; // 채팅방 아이디
-  roomName: string; // 채팅방 이름
-  lastMessageContent: string;
-  lastMessageTime: string;
-  unreadCount: number;
-  roomImageUrl?: string;
-  participantCount?: number;
-};
-
 export default function ChatScreen() {
   const router = useRouter();
-  const [chatrooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [isGroupChat, setisGroupChat] = useState(true);
 
-  // ----------- STOMP 구독 설정 ----------- //
-  const subscribe = useStompStore((state) => state.subscribe);
-  const connected = useStompStore((state) => state.connected);
+  // 🔹 채팅방 목록 관리
+  const { chatrooms, fetchRooms, updateRoom } = useChatRooms();
 
-  const createNewSpace = () => router.push(CREATE_LINKED_SPACE_ROUTE);
-
-  // 🔹 채팅방 목록 가져오기
-  const fetchRooms = async () => {
-    try {
-      const res = await api.get('/api/v1/chat/rooms');
-
-      setChatRooms(res.data.data);
-    } catch (err) {
-      console.error('채팅방 불러오기 실패:', err);
-    }
-  };
+  // 🔹 실시간 채팅방 업데이트 구독
+  useChatRoomSubscription({
+    onRoomUpdate: updateRoom,
+    enabled: !isGroupChat,
+  });
 
   // 🔹 화면 focus 될 때마다 채팅방 갱신
   useFocusEffect(
     useCallback(() => {
       fetchRooms();
-    }, []),
+    }, [fetchRooms]),
   );
 
-  // 🔹 STOMP 구독 설정
-  useEffect(() => {
-    if (!connected) return;
-
-    let unsubscribe: (() => void) | undefined;
-
-    const setupSubscription = async () => {
-      const MyuserId = await SecureStore.getItemAsync('MyuserId');
-      const unsubscribe = subscribe(`/topic/user/${MyuserId}/rooms`, (updatedRoom) => {
-        setChatRooms((prev) => {
-          const filtered = prev.filter((room) => room.roomId !== updatedRoom.roomId);
-          return [updatedRoom, ...filtered];
-        });
-      });
-
-      return unsubscribe;
-    };
-
-    setupSubscription()
-
-    return () => {
-      unsubscribe?.();
-    };
-  }, [connected, subscribe]);
+  const createNewSpace = () => router.push(CREATE_LINKED_SPACE_ROUTE);
 
   const goSearch = () => {
     router.push({
