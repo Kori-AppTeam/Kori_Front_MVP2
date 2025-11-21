@@ -1,7 +1,7 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import { formatShortDate } from '@/src/features/chat/utils/dateUtils';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import { formatShortDate } from '@/src/shared/utils/dateUtils';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';

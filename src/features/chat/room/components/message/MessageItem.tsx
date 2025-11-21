@@ -1,7 +1,7 @@
 //MyMessageBubble과 OtherMessageBubble을 조합한 형태의 메시지 아이템 컴포넌트
+import { formatDate, formatTime } from '@/src/shared/utils/dateUtils';
 import React from 'react';
 import styled from 'styled-components/native';
-import { formatDate, formatTime } from '../../../utils/dateUtils';
 import { MessageItemProps } from '../../types/chat-ui.types';
 import { displayMessageItem } from '../../utils/displayMessageItem';
 import MyMessageBubble from './MyMessageBubble';

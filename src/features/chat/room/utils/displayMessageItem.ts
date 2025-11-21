@@ -1,4 +1,4 @@
-import { formatDate, formatTime } from '../../utils/dateUtils';
+import { formatDate, formatTime } from '@/src/shared/utils/dateUtils';
 
 export const displayMessageItem = (
   currentMessage: any,
