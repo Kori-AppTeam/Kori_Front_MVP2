@@ -54,6 +54,9 @@ export default function ChatScreen() {
 
   useEffect(() => {
     if (!connected) return;
+
+    let unsubscribe: (() => void) | undefined;
+
     const setupSubscription = async () => {
       const MyuserId = await SecureStore.getItemAsync('MyuserId');
       const unsubscribe = subscribe(`/topic/user/${MyuserId}/rooms`, (updatedRoom) => {
@@ -66,13 +69,10 @@ export default function ChatScreen() {
       return unsubscribe;
     };
 
-    let unsubscribe: (() => void) | undefined;
-    setupSubscription().then((unsub) => {
-      unsubscribe = unsub;
-    });
+    setupSubscription()
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      unsubscribe?.();
     };
   }, [connected, subscribe]);
 

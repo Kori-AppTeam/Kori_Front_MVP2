@@ -111,13 +111,16 @@ export const useChatMessages = (
   useEffect(() => {
     if (!stompConnection.connected) return;
 
+    let unsubscribeMessages: (() => void) | undefined;
+    let unsubscribeDeletes: (() => void) | undefined;
+
     const getUserId = async () => {
       const myId = await SecureStore.getItemAsync('MyuserId');
       if (myId) {
         myUserIdRef.current = myId;
 
         // 실시간 메시지 구독
-        stompConnection.subscribe(
+        unsubscribeMessages = stompConnection.subscribe(
           `/topic/user/${myId}/${roomId}/messages`,
           (message) => {
             addMessageToStore(roomId, message);
@@ -125,7 +128,7 @@ export const useChatMessages = (
         );
 
         // 메시지 삭제 구독
-        stompConnection.subscribe(
+        unsubscribeDeletes = stompConnection.subscribe(
           `/topic/rooms/${roomId}`,
           (data: any) => {
             if (data.type === 'delete') {
@@ -137,6 +140,11 @@ export const useChatMessages = (
     };
 
     getUserId();
+
+    return () => {
+      unsubscribeMessages?.();
+      unsubscribeDeletes?.();
+    };
   }, [stompConnection.connected, roomId, removeMessage]);
 
   return {
