@@ -67,21 +67,16 @@ export const MyChatList = ({ data }: { data: ChatRoom }) => {
         <RoomWrapper>
           <RoomTop>
             <ChatPeopleContainer>
-              <ChatPerson>
-                {data.roomName ? (data.roomName.length > 22 ? data.roomName.slice(0, 22) + '...' : data.roomName) : ''}
+              <ChatPerson numberOfLines={1} ellipsizeMode="tail">
+                {data.roomName || ''}
               </ChatPerson>
               {data.participantCount > 2 && <ChatPeople>{data.participantCount}</ChatPeople>}
             </ChatPeopleContainer>
             <ChatTime>{formatTime(data.lastMessageTime)}</ChatTime>
           </RoomTop>
           <RoomBottom>
-            <ChatContent textColor={data.unreadCount > 0}>
-              {' '}
-              {data.lastMessageContent
-                ? data.lastMessageContent.length > 33
-                  ? data.lastMessageContent.slice(0, 33) + '...'
-                  : data.lastMessageContent
-                : ''}
+            <ChatContent textColor={data.unreadCount > 0} numberOfLines={1} ellipsizeMode="tail">
+              {data.lastMessageContent || ''}
             </ChatContent>
             {data.unreadCount > 0 && (
               <ChatCountBox>
@@ -150,6 +145,8 @@ const ChatPeopleContainer = styled.View`
   margin-top: 5px;
   flex-direction: row;
   align-items: center;
+  flex: 1;
+  margin-right: 8px;
 `;
 
 const ChatPerson = styled.Text`
@@ -157,6 +154,7 @@ const ChatPerson = styled.Text`
   margin-left: 5px;
   font-family: 'PlusJakartaSans_500Medium';
   color: #ffffff;
+  flex-shrink: 1;
 `;
 
 const ChatPeople = styled.Text`
@@ -178,6 +176,7 @@ const ChatContent = styled.Text<{ textColor?: boolean }>`
   margin-left: 1px;
   color: ${(props) => (props.textColor ? '#ffffff' : '#848687')};
   font-family: 'PlusJakartaSans_300Light';
+  flex: 1;
 `;
 
 const ChatCountBox = styled.View`
