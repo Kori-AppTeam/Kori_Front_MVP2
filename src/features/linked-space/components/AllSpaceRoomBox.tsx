@@ -19,11 +19,7 @@ const AllSpaceRoomBox = ({ data }: { data: GroupChatRoom }) => {
       <AllSpaceTitleContainer>
         <AllSpaceTitle>{data.roomName}</AllSpaceTitle>
         <AllSpaceTitleContent>
-          {data.description
-            ? data.description.length > 25
-              ? data.description.slice(0, 25) + '...'
-              : data.description
-            : ''}
+          {data.description}
         </AllSpaceTitleContent>
         <AllSpaceMemberContainer>
           <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
@@ -66,7 +62,10 @@ const AllSpaceTitle = styled.Text`
   font-family: PlusJakartaSans_500Medium;
   font-size: 16px;
 `;
-const AllSpaceTitleContent = styled.Text`
+const AllSpaceTitleContent = styled.Text.attrs({
+  numberOfLines: 2,
+  ellipsizeMode: 'tail',
+})`
   color: #cccfd0;
   font-size: 13px;
   font-family: PlusJakartaSans_300Light;
