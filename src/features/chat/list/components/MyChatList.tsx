@@ -1,6 +1,4 @@
-import api from '@/api/axiosInstance';
 import RawProfileImage from '@/components/common/ProfileImage';
-import { Config } from '@/src/lib/config';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { formatTime } from '@/src/shared/utils/dateUtils';
 import { useRouter } from 'expo-router';
@@ -13,23 +11,12 @@ export const MyChatList = ({ data }: { data: ChatRoom }) => {
 
   //채팅방 진입
   const enterChattingRoom = async () => {
-    try {
-      //TODO: 채팅방 진입 전 읽음 처리 API 호출 x -> 채팅방 내에서 읽음 처리로 변경 필요
-      const res = await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${data.roomId}/read-all`);
-      if (res.status === 200) {
-        router.push({
-          pathname: `${CHAT_ROUTE(data.roomId)}`,
-          params: {
-            roomId: data.roomId, // props에서 바로 가져옴
-            roomName: data.roomName, // props에서 바로 가져옴
-          },
-        });
-      } else {
-        console.error('채팅방 리스트 읽음 표시 오류');
-      }
-    } catch (error) {
-      console.error('채팅방 리스트 읽음 처리 실패', error);
-    }
+    router.push({
+      pathname: `${CHAT_ROUTE(data.roomId)}`,
+      params: {
+        roomName: data.roomName
+      },
+    });
   };
 
   return (
