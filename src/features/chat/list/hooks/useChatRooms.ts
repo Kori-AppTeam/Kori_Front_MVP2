@@ -1,40 +1,31 @@
-import api from '@/api/axiosInstance';
-import { useCallback, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { fetchChatRooms } from '../api/chatRooms';
 import { ChatRoom } from '../types';
 
+export const CHAT_ROOMS_QUERY_KEY = ['chatRooms'];
+
 export function useChatRooms() {
-  const [chatrooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchRooms = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await api.get('/api/v1/chat/rooms');
-      setChatRooms(res.data.data);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('채팅방 불러오기 실패');
-      setError(error);
-      console.error('채팅방 불러오기 실패:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const { data: chatrooms = [], isLoading, error, refetch } = useQuery<ChatRoom[]>({
+    queryKey: CHAT_ROOMS_QUERY_KEY,
+    queryFn: fetchChatRooms,
+  });
 
   const updateRoom = useCallback((updatedRoom: ChatRoom) => {
-    setChatRooms((prev) => {
+    queryClient.setQueryData<ChatRoom[]>(CHAT_ROOMS_QUERY_KEY, (prev) => {
+      if (!prev) return [updatedRoom];
       const filtered = prev.filter((room) => room.roomId !== updatedRoom.roomId);
       return [updatedRoom, ...filtered];
     });
-  }, []);
+  }, [queryClient]);
 
   return {
     chatrooms,
     isLoading,
     error,
-    fetchRooms,
+    fetchRooms: refetch,
     updateRoom,
   };
 }
