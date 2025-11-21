@@ -1,14 +1,11 @@
 import AllSpaceRoomBox from '@/src/features/chat/components/AllSpaceRoomBox';
-import React, { memo } from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { useGroupChatRooms } from '../hooks/useGroupChatRooms';
-import { GroupChatRoom } from '../types';
 import { GroupChatListFooter } from './GroupChatListFooter';
 import { GroupChatListHeader } from './GroupChatListHeader';
 
 // 🔹 memo 적용
-const MemoizedAllSpaceRoomBox = memo(({ data }: { data: GroupChatRoom }) => <AllSpaceRoomBox data={data} />);
 
 export const GroupChatList = () => {
   const { buzzingSpaces, allSpaces, isLoading, loadMoreSpaces } = useGroupChatRooms();
@@ -17,7 +14,7 @@ export const GroupChatList = () => {
     <Container>
       <FlatList
         data={allSpaces}
-        renderItem={({ item }) => <MemoizedAllSpaceRoomBox data={item} />}
+        renderItem={({ item }) => <AllSpaceRoomBox data={item} />}
         keyExtractor={(item) => item.roomId.toString()}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={<GroupChatListHeader buzzingSpaces={buzzingSpaces} />}

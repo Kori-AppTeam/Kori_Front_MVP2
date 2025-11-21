@@ -1,10 +1,7 @@
 import BuzzingRoomBox from '@/src/features/chat/components/BuzzingRoomBox';
-import React, { memo } from 'react';
 import { FlatList, View } from 'react-native';
 import styled from 'styled-components/native';
 import { GroupChatRoom } from '../types';
-
-const MemoizedBuzzingRoomBox = memo(({ data }: { data: GroupChatRoom }) => <BuzzingRoomBox data={data} />);
 
 interface GroupChatListHeaderProps {
   buzzingSpaces: GroupChatRoom[];
@@ -19,7 +16,7 @@ export const GroupChatListHeader = ({ buzzingSpaces }: GroupChatListHeaderProps)
     <BuzzingContainer>
       <FlatList
         data={buzzingSpaces}
-        renderItem={({ item }) => <MemoizedBuzzingRoomBox data={item} />}
+        renderItem={({ item }) => <BuzzingRoomBox data={item} />}
         keyExtractor={(item) => item.roomId.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
