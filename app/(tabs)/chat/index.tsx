@@ -3,6 +3,7 @@ import Icon from '@/components/common/Icon';
 import GroupChatRoomBox from '@/src/features/chat/components/GroupChatRoomBox';
 import MyChatRoomBox from '@/src/features/chat/components/MyChatRoomBox';
 import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/constants/route';
+import { useStompStore } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import { Client } from '@stomp/stompjs';
@@ -28,30 +29,10 @@ export default function ChatScreen() {
   const stompClient = useRef<Client | null>(null);
   const [isGroupChat, setisGroupChat] = useState(true);
 
-  const changeTomyChat = () => setisGroupChat(false);
-  const changeToGroupChat = () => setisGroupChat(true);
+  const subscribe = useStompStore((state) => state.subscribe);
+  const connected = useStompStore((state) => state.connected);
+
   const createNewSpace = () => router.push(CREATE_LINKED_SPACE_ROUTE);
-
-  // 🔹 accessToken 재발급 함수
-  const refreshTokenIfNeeded = async (): Promise<string | null> => {
-    try {
-      const refresh = await SecureStore.getItemAsync('refresh');
-      if (!refresh) return null;
-      const res = await api.post('/api/v1/member/refresh', { refreshToken: refresh });
-      const newToken = res.data.data.accessToken;
-      const newRefreshToken = res.data.data.refreshToken;
-      if (newToken) {
-        await SecureStore.setItemAsync('jwt', newToken);
-        await SecureStore.setItemAsync('refresh', newRefreshToken);
-
-        return newToken;
-      }
-      return null;
-    } catch (err) {
-      console.error('[AUTH] 토큰 재발급 실패', err);
-      return null;
-    }
-  };
 
   // 🔹 채팅방 목록 가져오기
   const fetchRooms = async () => {
@@ -72,58 +53,28 @@ export default function ChatScreen() {
   );
 
   useEffect(() => {
-    const connectStomp = async () => {
-      let token = await SecureStore.getItemAsync('jwt');
+    if (!connected) return;
+    const setupSubscription = async () => {
       const MyuserId = await SecureStore.getItemAsync('MyuserId');
-
-      if (!token) {
-        token = await refreshTokenIfNeeded();
-        if (!token) return console.error('[AUTH] 토큰 없음, STOMP 연결 불가');
-      }
-
-      stompClient.current = new Client({
-        webSocketFactory: () => new WebSocket('wss://dev.ko-ri.cloud/ws'),
-        forceBinaryWSFrames: true,
-        connectHeaders: { Authorization: `Bearer ${token}` },
-        reconnectDelay: 30000,
-        heartbeatIncoming: 60000,
-        heartbeatOutgoing: 60000,
-        debug: (str) => console.log('[STOMP]', str),
+      const unsubscribe = subscribe(`/topic/user/${MyuserId}/rooms`, (updatedRoom) => {
+        setChatRooms((prev) => {
+          const filtered = prev.filter((room) => room.roomId !== updatedRoom.roomId);
+          return [updatedRoom, ...filtered];
+        });
       });
 
-      stompClient.current.onConnect = () => {
-        stompClient.current?.subscribe(`/topic/user/${MyuserId}/rooms`, (msg) => {
-          const updatedRoom: ChatRoom = JSON.parse(msg.body);
-          setChatRooms((prev) => {
-            const filtered = prev.filter((room) => room.roomId !== updatedRoom.roomId);
-            return [updatedRoom, ...filtered];
-          });
-        });
-      };
-
-      // 🔹 STOMP Error → 토큰 만료 시 refresh 후 재연결
-      stompClient.current.onStompError = async (frame) => {
-        const newToken = await refreshTokenIfNeeded();
-        if (!newToken) return console.log('[AUTH] 토큰 재발급 실패');
-        stompClient.current?.deactivate();
-        connectStomp();
-      };
-      stompClient.current.onWebSocketClose = () => {
-        console.warn('웹소켓 끊김');
-      };
-
-      stompClient.current.onWebSocketError = (evt) => console.error('WebSocket ERROR', evt);
-      stompClient.current.onWebSocketClose = (evt) => console.log('WebSocket CLOSE', evt);
-
-      stompClient.current.activate();
+      return unsubscribe;
     };
 
-    connectStomp();
+    let unsubscribe: (() => void) | undefined;
+    setupSubscription().then((unsub) => {
+      unsubscribe = unsub;
+    });
 
     return () => {
-      stompClient.current?.deactivate();
+      if (unsubscribe) unsubscribe();
     };
-  }, []);
+  }, [connected, subscribe]);
 
   const goSearch = () => {
     router.push({
@@ -147,12 +98,12 @@ export default function ChatScreen() {
 
         <ChatWrapper>
           <ChatBox>
-            <GroupChatBox isGroupChat={isGroupChat} onPress={changeToGroupChat}>
+            <GroupChatBox isGroupChat={isGroupChat} onPress={() => setisGroupChat(true)}>
               <GroupChatText isGroupChat={isGroupChat}>Linked Space</GroupChatText>
             </GroupChatBox>
           </ChatBox>
           <ChatBox>
-            <MyChatBox isGroupChat={isGroupChat} onPress={changeTomyChat}>
+            <MyChatBox isGroupChat={isGroupChat} onPress={() => setisGroupChat(false)}>
               <MyChatText isGroupChat={isGroupChat}>My chat</MyChatText>
             </MyChatBox>
           </ChatBox>

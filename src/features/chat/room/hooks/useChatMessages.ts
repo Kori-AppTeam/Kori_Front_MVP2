@@ -1,4 +1,5 @@
 // src/features/chat/room/hooks/useChatMessages.ts
+import { useStompStore } from '@/src/store/useStompStore';
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useRef } from 'react';
 import { loadMessagesAPI } from '../api/messages';
@@ -8,7 +9,6 @@ import { ChatMessage, RoomMessagesState } from '../types/chat.types';
 interface ChatMessagesHook {
   state: RoomMessagesState;
   handleMessageChange: (text: string) => void;
-  addMessage: (message: ChatMessage) => void;
   removeMessage: (messageId: number) => void;
   updateMessageList: () => void;
   loadMessages: () => Promise<void>;
@@ -17,11 +17,12 @@ interface ChatMessagesHook {
 
 export const useChatMessages = (
   roomId: string,
-  stompConnection: any
 ): ChatMessagesHook => {
   const myUserIdRef = useRef<string>('');
 
-  // Zustand Store에서 필요한 상태와 액션 가져오기
+  const stompConnection = useStompStore((state) => state);
+
+  // Chat Store에서 필요한 상태와 액션 가져오기
   const roomState = useChatStore((state) => state.rooms[roomId]);
   const initializeRoom = useChatStore((state) => state.initializeRoom);
   const addMessageToStore = useChatStore((state) => state.addMessage);
@@ -84,13 +85,6 @@ export const useChatMessages = (
     setCurrentMessage(roomId, text);
   }, [roomId, setCurrentMessage]);
 
-  /** 
-   * 메시지 추가(실시간) 
-   * @param message 추가할 메시지
-   */
-  const addMessage = useCallback((message: ChatMessage) => {
-    addMessageToStore(roomId, message);
-  }, [roomId, addMessageToStore]);
 
   /** 
    * 메시지 제거(실시간) 
@@ -115,7 +109,7 @@ export const useChatMessages = (
 
   // STOMP 연결 시 실시간 메시지 구독
   useEffect(() => {
-    if (!stompConnection.state.connected) return;
+    if (!stompConnection.connected) return;
 
     const getUserId = async () => {
       const myId = await SecureStore.getItemAsync('MyuserId');
@@ -125,8 +119,8 @@ export const useChatMessages = (
         // 실시간 메시지 구독
         stompConnection.subscribe(
           `/topic/user/${myId}/${roomId}/messages`,
-          (message: ChatMessage) => {
-            addMessage(message);
+          (message) => {
+            addMessageToStore(roomId, message);
           }
         );
 
@@ -143,12 +137,11 @@ export const useChatMessages = (
     };
 
     getUserId();
-  }, [stompConnection.state.connected, roomId, addMessage, removeMessage]);
+  }, [stompConnection.connected, roomId, removeMessage]);
 
   return {
     state,
     handleMessageChange,
-    addMessage,
     removeMessage,
     updateMessageList,
     loadMessages,

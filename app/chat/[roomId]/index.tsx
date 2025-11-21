@@ -9,7 +9,6 @@ import TranslateButton from '@/src/features/chat/room/components/TranslateButton
 import { useChatMessages } from '@/src/features/chat/room/hooks/useChatMessages';
 import { useMessageActions } from '@/src/features/chat/room/hooks/useMessageActions';
 import { useMessageSearch } from '@/src/features/chat/room/hooks/useMessageSearch';
-import { useStompConnection } from '@/src/features/chat/room/hooks/useStompConnection';
 import { useTranslation } from '@/src/features/chat/room/hooks/useTranslation';
 import { useUserProfile } from '@/src/features/chat/room/hooks/useUserProfile';
 import { Config } from '@/src/lib/config';
@@ -33,13 +32,12 @@ const ChattingRoomScreen = () => {
   const [myUserId, setMyUserId] = useState<string>('');
 
   // ----------- hooks ----------- //
-  const stompClient = useStompConnection();
-  stompClient.connect(); // 컴포넌트 렌더링 시점에 연결 시도
-  const messageState = useChatMessages(roomId, stompClient);
-  const messageActions = useMessageActions(stompClient);
+  const messageState = useChatMessages(roomId);
+  const messageActions = useMessageActions();
   const messageSearch = useMessageSearch(roomId, messageState.state.messages);
   const { isTranslate, toggleTranslate } = useTranslation(roomId, messageState.updateMessageList);
   const userProfile = useUserProfile();
+
 
   // ----------- effects & handlers ----------- //
   useEffect(() => {

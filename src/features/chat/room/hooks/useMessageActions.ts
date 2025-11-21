@@ -1,4 +1,5 @@
 // src/features/chat/room/hooks/useMessageActions.ts
+import { useStompStore } from '@/src/store/useStompStore';
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
@@ -18,7 +19,7 @@ interface MessageActionsHook {
   markAsRead: (roomId: string) => Promise<void>;
 }
 
-export const useMessageActions = (stompConnection: any): MessageActionsHook => {
+export const useMessageActions = (): MessageActionsHook => {
   const [state, setState] = useState<MessageActionsState>({
     isSending: false,
     isDeleting: false,
@@ -26,6 +27,7 @@ export const useMessageActions = (stompConnection: any): MessageActionsHook => {
   });
 
   // Store에서 필요한 액션 가져오기
+  const stompConnection = useStompStore((state) => state);
   const clearCurrentMessage = useChatStore((state) => state.clearCurrentMessage);
   const getCurrentMessage = (roomId: string) =>
     useChatStore.getState().rooms[roomId]?.currentMessage || '';
@@ -35,7 +37,7 @@ export const useMessageActions = (stompConnection: any): MessageActionsHook => {
     const currentMessage = getCurrentMessage(roomId);
 
     if (!currentMessage.trim()) return;
-    if (!stompConnection.state.connected) {
+    if (!stompConnection.connected) {
       throw new Error('STOMP 연결이 되어있지 않습니다');
     }
 
@@ -72,7 +74,7 @@ export const useMessageActions = (stompConnection: any): MessageActionsHook => {
 
   /** 메시지 삭제 */
   const deleteMessage = useCallback(async (messageId: number) => {
-    if (!stompConnection.state.connected) {
+    if (!stompConnection.connected) {
       throw new Error('STOMP 연결이 되어있지 않습니다');
     }
 
