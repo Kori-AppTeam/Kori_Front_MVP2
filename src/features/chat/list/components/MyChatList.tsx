@@ -2,23 +2,11 @@ import api from '@/api/axiosInstance';
 import RawProfileImage from '@/components/common/ProfileImage';
 import { Config } from '@/src/lib/config';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import { formatTime } from '@/src/shared/utils/dateUtils';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
 import { ChatRoom } from '../types';
-const SWIPE_THRESHOLD = 80; // 드래그해야 열림/닫힘이 되는 기준
-
-const toUrl = (u?: string) => {
-  if (!u) return undefined;
-  if (/^https?:\/\//i.test(u)) return u;
-  const base =
-    (Config as any).EXPO_PUBLIC_NCP_PUBLIC_BASE_URL ||
-    (Config as any).NCP_PUBLIC_BASE_URL ||
-    (Config as any).EXPO_PUBLIC_IMAGE_BASE_URL ||
-    (Config as any).IMAGE_BASE_URL ||
-    '';
-  return base ? `${String(base).replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}` : undefined;
-};
 
 export const MyChatList = ({ data }: { data: ChatRoom }) => {
   const router = useRouter();
@@ -42,14 +30,6 @@ export const MyChatList = ({ data }: { data: ChatRoom }) => {
     } catch (error) {
       console.error('채팅방 리스트 읽음 처리 실패', error);
     }
-  };
-
-  const formatTime = (sentAt: string | number) => {
-    const ts = typeof sentAt === 'string' ? Date.parse(sentAt) : sentAt * 1000;
-    const date = new Date(ts);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
   };
 
   return (
