@@ -1,11 +1,7 @@
-import BuzzingRoomBox from '@/src/features/chat/components/BuzzingRoomBox';
 import { FlatList, View } from 'react-native';
 import styled from 'styled-components/native';
-import { GroupChatRoom } from '../types';
-
-interface GroupChatListHeaderProps {
-  buzzingSpaces: GroupChatRoom[];
-}
+import { GroupChatListHeaderProps } from '../types';
+import BuzzingRoomBox from './BuzzingRoomBox';
 
 export const GroupChatListHeader = ({ buzzingSpaces }: GroupChatListHeaderProps) => (
   <View>

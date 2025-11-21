@@ -2,11 +2,7 @@ import React from 'react';
 import { ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 
-interface GroupChatListFooterProps {
-  isLoading: boolean;
-}
-
-export const GroupChatListFooter = ({ isLoading }: GroupChatListFooterProps) => {
+export const GroupChatListFooter = ({ isLoading }: { isLoading: boolean }) => {
   if (!isLoading) return null;
 
   return (
