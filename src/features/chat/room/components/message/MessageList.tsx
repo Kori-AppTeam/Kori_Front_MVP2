@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
-import { MessageListProps } from '../../types/chat-ui.types';
+import { MessageListProps } from '../../types';
 import MessageItem from './MessageItem';
 
 const MessageList: React.FC<MessageListProps> = ({

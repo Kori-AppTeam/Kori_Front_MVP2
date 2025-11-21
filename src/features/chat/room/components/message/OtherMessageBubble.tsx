@@ -2,7 +2,7 @@
 import RawProfileImage from '@/components/common/ProfileImage';
 import React from 'react';
 import styled from 'styled-components/native';
-import { OtherMessageBubbleProps } from '../../types/chat-ui.types';
+import { OtherMessageBubbleProps } from '../../types';
 import HighlightText from './HighlightText';
 
 const OtherMessageBubble: React.FC<OtherMessageBubbleProps> = ({

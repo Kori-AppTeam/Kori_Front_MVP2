@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { ChatMessage, RoomMessagesState } from '../types/chat.types';
+import { ChatMessage, RoomMessagesState } from '../types/index';
 
 // 전체 Store 상태
 interface ChatStoreState {

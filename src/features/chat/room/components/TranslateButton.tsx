@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
-import { TranslateButtonProps } from '../types/chat-ui.types';
+import { TranslateButtonProps } from '../types';
 
 const { height } = Dimensions.get('window');
 

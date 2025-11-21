@@ -1,7 +1,7 @@
 // 텍스트 내 키워드 하이라이트 컴포넌트
 import React from 'react';
 import styled from 'styled-components/native';
-import { HighlightTextProps } from '../../types/chat-ui.types';
+import { HighlightTextProps } from '../../types';
 
 const HIGHLIGHT_COLORS = {
   MY_MESSAGE: 'rgba(255,255,0,0.8)',

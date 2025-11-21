@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
-import { ChatHeaderProps } from '../../types/chat-ui.types';
+import { ChatHeaderProps } from '../../types';
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   roomName,

@@ -1,6 +1,6 @@
 // src/features/chat/room/stores/useSearchStore.ts
 import { create } from 'zustand';
-import { ChatMessage } from '../types/chat.types';
+import { ChatMessage } from '../types/index';
 
 interface SearchState {
   // 상태

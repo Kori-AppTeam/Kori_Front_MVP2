@@ -1,7 +1,7 @@
 // 나의 메시지 버블 컴포넌트(단일 메시지)
 import React from 'react';
 import styled from 'styled-components/native';
-import { MyMessageBubbleProps } from '../../types/chat-ui.types';
+import { MyMessageBubbleProps } from '../../types';
 import HighlightText from './HighlightText';
 
 const MyMessageBubble: React.FC<MyMessageBubbleProps> = ({

@@ -2,7 +2,7 @@
 import { formatDate, formatTime } from '@/src/shared/utils/dateUtils';
 import React from 'react';
 import styled from 'styled-components/native';
-import { MessageItemProps } from '../../types/chat-ui.types';
+import { MessageItemProps } from '../../types';
 import { displayMessageItem } from '../../utils/displayMessageItem';
 import MyMessageBubble from './MyMessageBubble';
 import OtherMessageBubble from './OtherMessageBubble';

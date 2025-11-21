@@ -1,6 +1,3 @@
-// 컴포넌트 props 타입 정의
-import { ChatMessage } from './chat.types';
-
 // ============= Base Types =============
 export interface BaseMessageProps {
   content: string;
@@ -99,4 +96,36 @@ export interface HighlightTextProps {
   highlightStyle?: {
     backgroundColor?: string;
   };
+}
+
+export interface ChatMessage {
+  id: number;
+  roomId: number;
+  senderId: number;
+  senderFirstName: string;
+  senderLastName: string;
+  senderImageUrl: string;
+  originContent: string;
+  targetContent: string;
+  sentAt: string;
+  messageType: string;
+}
+
+export interface ChatMessagesState {
+  message: string;
+  messages: ChatMessage[];
+  isLoading: boolean;
+  isFetchingMore: boolean;
+  hasMore: boolean;
+  error: Error | null;
+}
+
+// Room별 메시지 상태
+export interface RoomMessagesState {
+  messages: ChatMessage[];
+  currentMessage: string;
+  isLoading: boolean;
+  isFetchingMore: boolean;
+  hasMore: boolean;
+  error: Error | null;
 }

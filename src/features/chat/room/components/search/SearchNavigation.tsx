@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { useSearchStore } from '../../stores/useSearchStore';
-import { SearchNavigationProps } from '../../types/chat-ui.types';
+import { SearchNavigationProps } from '../../types';
 
 const SearchNavigation: React.FC<SearchNavigationProps> = ({
   onNavigateUp,

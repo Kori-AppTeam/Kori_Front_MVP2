@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { MessageInputProps } from '../../types/chat-ui.types';
+import { MessageInputProps } from '../../types';
 
 const MessageInput: React.FC<MessageInputProps> = ({
   message,

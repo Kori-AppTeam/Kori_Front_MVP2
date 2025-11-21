@@ -3,7 +3,7 @@ import { useCallback, useRef } from 'react';
 import { FlatList } from 'react-native';
 import { searchMessagesAPI } from '../api/messages';
 import { useSearchStore } from '../stores/useSearchStore';
-import { ChatMessage } from '../types/chat.types';
+import { ChatMessage } from '../types/index';
 
 interface MessageSearchHook {
   state: {

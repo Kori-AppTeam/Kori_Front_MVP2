@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useRef } from 'react';
 import { loadMessagesAPI } from '../api/messages';
 import { useChatStore } from '../stores/useChatStore';
-import { ChatMessage, RoomMessagesState } from '../types/chat.types';
+import { ChatMessage, RoomMessagesState } from '../types/index';
 
 interface ChatMessagesHook {
   state: RoomMessagesState;

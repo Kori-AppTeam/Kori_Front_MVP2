@@ -1,5 +1,5 @@
 import api from '@/api/axiosInstance';
-import { ChatMessage } from '../types/chat.types';
+import { ChatMessage } from '../types/index';
 
 //TODO: 에러 처리 필요
 export const loadMessagesAPI = async (roomId: string, lastMessageId: string | number): Promise<ChatMessage[]> => {

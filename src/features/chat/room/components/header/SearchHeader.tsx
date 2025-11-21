@@ -5,7 +5,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { useSearchStore } from '../../stores/useSearchStore';
-import { SearchHeaderProps } from '../../types/chat-ui.types';
+import { SearchHeaderProps } from '../../types';
 
 const SearchHeader: React.FC<SearchHeaderProps> = ({ onSearchSubmit }) => {
   const {

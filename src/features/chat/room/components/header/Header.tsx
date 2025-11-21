@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { useSearchStore } from '../../stores/useSearchStore';
-import { HeaderProps } from '../../types/chat-ui.types';
+import { HeaderProps } from '../../types';
 import ChatHeader from './ChatHeader';
 import SearchHeader from './SearchHeader';
 
