@@ -1,9 +1,9 @@
 import { FlatList, View } from 'react-native';
 import styled from 'styled-components/native';
-import { GroupChatRoom } from '../types';
+import { LinkedSpace } from '../types';
 import { BuzzingSpaceItem } from './BuzzingSpaceItem';
 
-export const LinkedSpaceHeader = ({ buzzingSpaces }: { buzzingSpaces: GroupChatRoom[] }) => (
+export const LinkedSpaceHeader = ({ buzzingSpaces }: { buzzingSpaces: LinkedSpace[] }) => (
   <View>
     <GroupTitleContainer>
       <GroupTitleText>Buzzing Spaces</GroupTitleText>

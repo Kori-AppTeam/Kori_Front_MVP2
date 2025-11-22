@@ -2,7 +2,9 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import { MyChatList } from '@/src/features/chat/list/components/MyChatList';
+import { MyChatRoom } from '@/src/features/chat/list/types';
 import { AllSpaceItem } from '@/src/features/linked-space/list/components/AllSpaceItem';
+import { LinkedSpace } from '@/src/features/linked-space/list/types';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -10,36 +12,18 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, StatusBar, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
-type MyChatRoom = {
-  roomId: number;
-  roomName: string;
-  lastMessageContent: string;
-  lastMessageTime: string;
-  roomImageUrl: string;
-  unreadCount: number;
-  participantCount: number;
-};
-
-type GroupChatRoom = {
-  chatRoomId: number;
-  roomName: string;
-  description: string;
-  roomImageUrl: string;
-  participantCount: number;
-};
-
 const SearchChatRoom = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState('');
   const [myChatRooms, setMyChatRooms] = useState<MyChatRoom[]>([]);
-  const [groupChatRooms, setGroupChatRooms] = useState<GroupChatRoom[]>([]);
+  const [groupChatRooms, setGroupChatRooms] = useState<LinkedSpace[]>([]);
   const { isGroupChat } = useLocalSearchParams<{ isGroupChat?: string }>();
   // 문자열 → boolean 변환
   const isGroupChatBool = isGroupChat === 'true';
 
   const getGroupChatRoom = async () => {
     const res = await api.get(`/api/v1/chat/rooms/group/search?keyword=${encodeURIComponent(searchText)}`);
-    const data: GroupChatRoom[] = res.data.data;
+    const data: LinkedSpace[] = res.data.data;
 
     return data;
   };
@@ -98,7 +82,7 @@ const SearchChatRoom = () => {
             (isGroupChatBool ? (
               <FlatList
                 data={groupChatRooms}
-                keyExtractor={(item) => item.chatRoomId.toString()}
+                keyExtractor={(item) => item.roomId.toString()}
                 renderItem={({ item }) => <AllSpaceItem data={item} />}
                 showsVerticalScrollIndicator={false}
               />

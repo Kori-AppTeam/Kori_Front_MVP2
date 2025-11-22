@@ -1,4 +1,4 @@
-export type GroupChatRoom = {
+export type LinkedSpace = {
   roomId: number;
   roomImageUrl: string;
   roomName: string;

@@ -4,9 +4,9 @@ import { LINKED_SPACE_DETAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import styled from 'styled-components/native';
-import { GroupChatRoom } from '../types';
+import { LinkedSpace } from '../types';
 
-export const BuzzingSpaceItem = ({ data }: { data: GroupChatRoom }) => {
+export const BuzzingSpaceItem = ({ data }: { data: LinkedSpace }) => {
   const router = useRouter();
   const checkDetail = () => {
     router.push({

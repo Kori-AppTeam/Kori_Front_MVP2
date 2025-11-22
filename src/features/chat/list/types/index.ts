@@ -1,14 +1,14 @@
-export type ChatRoom = {
-  roomId: string;
+export type MyChatRoom = {
+  roomId: number;
   roomName: string;
   lastMessageContent: string;
   lastMessageTime: string;
-  unreadCount: number;
   roomImageUrl: string;
+  unreadCount: number;
   participantCount: number;
 };
 
 export type UseChatRoomSubscriptionProps = {
-  onRoomUpdate: (room: ChatRoom) => void;
+  onRoomUpdate: (room: MyChatRoom) => void;
   enabled?: boolean;
 };

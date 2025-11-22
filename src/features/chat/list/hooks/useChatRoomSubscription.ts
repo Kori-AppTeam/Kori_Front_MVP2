@@ -1,7 +1,7 @@
 import { useStompStore } from '@/src/store/useStompStore';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect } from 'react';
-import { ChatRoom, UseChatRoomSubscriptionProps } from '../types';
+import { MyChatRoom, UseChatRoomSubscriptionProps } from '../types';
 
 export function useChatRoomSubscription({ onRoomUpdate, enabled = true }: UseChatRoomSubscriptionProps) {
   const subscribe = useStompStore((state) => state.subscribe);
@@ -20,7 +20,7 @@ export function useChatRoomSubscription({ onRoomUpdate, enabled = true }: UseCha
         return;
       }
 
-      unsubscribe = subscribe(`/topic/user/${MyuserId}/rooms`, (updatedRoom: ChatRoom) => {
+      unsubscribe = subscribe(`/topic/user/${MyuserId}/rooms`, (updatedRoom: MyChatRoom) => {
         onRoomUpdate(updatedRoom);
       });
     };

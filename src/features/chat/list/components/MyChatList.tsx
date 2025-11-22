@@ -4,9 +4,9 @@ import { formatTime } from '@/src/shared/utils/dateUtils';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
-import { ChatRoom } from '../types';
+import { MyChatRoom } from '../types';
 
-export const MyChatList = ({ data }: { data: ChatRoom }) => {
+export const MyChatList = ({ data }: { data: MyChatRoom }) => {
   const router = useRouter();
 
   //채팅방 진입

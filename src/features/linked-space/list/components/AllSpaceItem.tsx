@@ -4,9 +4,9 @@ import { LINKED_SPACE_DETAIL_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import styled from 'styled-components/native';
-import { GroupChatRoom } from '../types';
+import { LinkedSpace } from '../types';
 
-export const AllSpaceItem = ({ data }: { data: GroupChatRoom }) => {
+export const AllSpaceItem = ({ data }: { data: LinkedSpace }) => {
   const router = useRouter();
 
   // 방 상세로 이동

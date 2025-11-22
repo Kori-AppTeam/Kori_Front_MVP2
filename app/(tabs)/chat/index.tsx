@@ -62,7 +62,7 @@ export default function ChatScreen() {
           <FlatList
             data={chatrooms}
             renderItem={({ item }) => <MyChatList data={item} />}
-            keyExtractor={(item) => item.roomId}
+            keyExtractor={(item) => item.roomId.toString()}
             showsVerticalScrollIndicator={false}
           />
         ) : (
