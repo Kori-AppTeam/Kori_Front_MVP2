@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { fetchAllSpaces, fetchBuzzingSpaces } from '../api/groupChatRooms';
+import { fetchAllSpaces, fetchBuzzingSpaces } from '../api/linkedSpace';
 import { GroupChatRoom } from '../types';
 
 export const useBuzzingSpaces = () => {

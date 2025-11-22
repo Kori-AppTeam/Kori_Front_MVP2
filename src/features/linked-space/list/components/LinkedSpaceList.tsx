@@ -1,6 +1,6 @@
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
-import { useAllSpaces, useBuzzingSpaces } from '../hooks/useGroupChatRooms';
+import { useAllSpaces, useBuzzingSpaces } from '../hooks/useLinkedSpaceRooms';
 import { AllSpaceItem } from './AllSpaceItem';
 import { LinkedSpaceFooter } from './LinkedSpaceFooter';
 import { LinkedSpaceHeader } from './LinkedSpaceHeader';

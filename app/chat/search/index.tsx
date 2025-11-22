@@ -2,7 +2,7 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import { MyChatList } from '@/src/features/chat/list/components/MyChatList';
-import AllSpaceRoomBox from '@/src/features/linked-space/components/AllSpaceItem';
+import { AllSpaceItem } from '@/src/features/linked-space/list/components/AllSpaceItem';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -99,7 +99,7 @@ const SearchChatRoom = () => {
               <FlatList
                 data={groupChatRooms}
                 keyExtractor={(item) => item.chatRoomId.toString()}
-                renderItem={({ item }) => <AllSpaceRoomBox data={item} />}
+                renderItem={({ item }) => <AllSpaceItem data={item} />}
                 showsVerticalScrollIndicator={false}
               />
             ) : (
