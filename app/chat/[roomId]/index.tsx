@@ -63,7 +63,7 @@ const ChattingRoomScreen = () => {
           onSearchSubmit={messageSearch.performSearch}
           onShowMembers={() => router.push({
             pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
-            params: { roomId, roomName },
+            params: { roomName },
           })}
         />
         <KeyboardAvoidingView
