@@ -1,18 +1,38 @@
 import api from '@/api/axiosInstance';
 import { ChatMessage } from '../types/index';
 
-//TODO: 에러 처리 필요
-export const loadMessagesAPI = async (roomId: string, lastMessageId: string | number): Promise<ChatMessage[]> => {
-  const res = await api.get(
-    `/api/v1/chat/rooms/${roomId}/messages?lastMessageId=${lastMessageId || ''}`
-  );
-  return res.data.data;
+export const loadMessagesAPI = async (
+  roomId: string,
+  lastMessageId: string | number
+): Promise<ChatMessage[]> => {
+  try {
+    const res = await api.get(
+      `/api/v1/chat/rooms/${roomId}/messages`,
+      {
+        params: { lastMessageId: lastMessageId || '' }
+      }
+    );
+    return res.data.data || [];
+  } catch (error) {
+    console.error('메시지 로드 실패:', error);
+    throw new Error('메시지를 불러오는데 실패했습니다');
+  }
 };
 
-//TODO: 에러 처리 필요
-export const searchMessagesAPI = async (roomId: string, searchText: string): Promise<ChatMessage[]> => {
-  const res = await api.get(
-    `/api/v1/chat/search?roomId=${roomId}&keyword=${encodeURIComponent(searchText)}`
-  );
-  return res.data.data;
+export const searchMessagesAPI = async (
+  roomId: string,
+  searchText: string
+): Promise<ChatMessage[]> => {
+  try {
+    const res = await api.get('/api/v1/chat/search', {
+      params: {
+        roomId,
+        keyword: searchText
+      }
+    });
+    return res.data.data || [];
+  } catch (error) {
+    console.error('메시지 검색 실패:', error);
+    throw new Error('메시지 검색에 실패했습니다');
+  }
 };
