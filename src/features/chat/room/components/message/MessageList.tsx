@@ -2,6 +2,7 @@ import React from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { MessageListProps } from '../../types';
+import { ChatMessage } from '../../types/index';
 import MessageItem from './MessageItem';
 
 const MessageList: React.FC<MessageListProps> = ({
@@ -15,7 +16,7 @@ const MessageList: React.FC<MessageListProps> = ({
   onProfilePress,
   flatListRef,
 }) => {
-  const renderMessage = ({ item, index }: { item: any; index: number }) => (
+  const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => (
     <MessageItem
       item={item}
       index={index}
