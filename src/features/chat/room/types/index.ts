@@ -1,3 +1,5 @@
+import type { UserProfileData } from '../../shared/type';
+
 // ============= Base Types =============
 export interface BaseMessageProps {
   content: string;
@@ -128,4 +130,24 @@ export interface RoomMessagesState {
   isFetchingMore: boolean;
   hasMore: boolean;
   error: Error | null;
+}
+
+export interface UserProfileState {
+  selectedUser: UserProfileData | null;
+  isVisible: boolean;
+  isLoading: boolean;
+  error: Error | null;
+}
+
+export interface UserProfileActions {
+  fetchProfile: (userId: number) => Promise<void>;
+  closeProfile: () => void;
+  followUser: () => Promise<void>;
+  unfollowUser: () => Promise<void>;
+  startChat: () => Promise<void>;
+}
+
+export interface UserProfileHook {
+  state: UserProfileState;
+  actions: UserProfileActions;
 }
