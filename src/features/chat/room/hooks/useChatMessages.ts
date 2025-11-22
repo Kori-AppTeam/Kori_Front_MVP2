@@ -37,6 +37,11 @@ export const useChatMessages = (
   // Room 초기화 (컴포넌트 마운트 시)
   useEffect(() => {
     initializeRoom(roomId);
+
+    return () => {
+      // 언마운트 시 Room 상태 초기화
+      useChatStore.getState().resetRoom(roomId);
+    }
   }, [roomId, initializeRoom]);
 
   // 기본값 설정 (room이 아직 초기화되지 않은 경우)
