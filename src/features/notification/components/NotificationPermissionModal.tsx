@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 
 import { Text, Modal } from 'react-native';
 import Icon from '@/components/common/Icon';
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/src/shared/components/CustomButton';
 
 interface NotificationPermissionModalProps {
   visible: boolean;

@@ -2,7 +2,7 @@ import { patchLocation } from '@/api/member/location';
 import Icon from '@/components/common/Icon';
 import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
 import { ACCESS_KEY, REFRESH_KEY } from '@/src/lib/auth/session';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import { theme } from '@/src/styles/theme';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -14,6 +14,12 @@ import { Alert, Modal, StatusBar, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styled from 'styled-components/native';
 import * as Location from 'expo-location';
+import {
+  SIGNUP_DONE_ROUTE,
+  SIGNUP_PRIVACY_POLICY_ROUTE,
+  SIGNUP_ROUTE,
+  SIGNUP_TERMS_AND_CONDITIONS_ROUTE,
+} from '@/src/shared/constants/route';
 
 enum isDuplicatedEmail {
   Init = 'Init',
@@ -159,7 +165,7 @@ const CreateAccountScreen = () => {
       await SecureStore.setItemAsync('MyuserId', userId.toString());
 
       await patchLocation(latitude, longitude);
-      router.replace('./SignUpDoneScreen');
+      router.replace(SIGNUP_DONE_ROUTE);
     } catch (err) {
       console.error('회원가입 중 에러 발생', err);
       Alert.alert('Error', '회원가입 중 문제가 발생했습니다.');
@@ -173,18 +179,18 @@ const CreateAccountScreen = () => {
 
   const showTermsAndConditions = () => {
     setModalVisible(false);
-    router.push('./TermsAndConditionsScreen');
+    router.push(SIGNUP_TERMS_AND_CONDITIONS_ROUTE);
   };
 
   const showPrivacyPolicy = () => {
     setModalVisible(false);
-    router.push('./PrivacyPolicyScreen');
+    router.push(SIGNUP_PRIVACY_POLICY_ROUTE);
   };
 
   // next 버튼 클릭 상태에 따라 모달 열기
   useEffect(() => {
     // 회원가입 페이지가 아닌 경우 모달 닫음
-    if (pathname !== '/screens/login/CreateAccountScreen') return;
+    if (pathname !== SIGNUP_ROUTE) return;
 
     if (isNextButtonClicked) setModalVisible(true);
   }, [pathname]);

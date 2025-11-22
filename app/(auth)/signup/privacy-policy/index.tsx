@@ -1,12 +1,23 @@
 import Icon from '@/components/common/Icon';
+import { useConfirmTermsBottomSheetStore } from '@/src/features/auth/store/useConfirmTermsBottomSheetStore';
 import { theme } from '@/src/styles/theme';
-import { useRouter } from 'expo-router';
-import React from 'react';
+import { useNavigation, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
 import { ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 const PrivacyPolicyScreen = () => {
+  const navigation = useNavigation();
   const router = useRouter();
+  const { setReopen } = useConfirmTermsBottomSheetStore();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      setReopen();
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <SafeArea>

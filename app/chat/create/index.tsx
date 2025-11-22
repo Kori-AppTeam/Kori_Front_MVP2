@@ -1,7 +1,7 @@
 //링크드 스페이스 생성 페이지
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/src/shared/components/CustomButton';
 import { CREATE_LINKED_SPACE_DONE_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import * as ImagePicker from 'expo-image-picker';

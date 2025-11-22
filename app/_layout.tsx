@@ -24,12 +24,19 @@ import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
+import { toastConfig } from '@/src/shared/constants/toast';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   initialRouteName: 'index',
 };
+
+initGoogleAuth(); // 앱 시작 시 구글 인증 초기화
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
@@ -104,7 +111,7 @@ export default function RootLayout() {
       router.replace('/(tabs)');
     } else {
       // 로그인이 안 되어있으면 login 화면으로 이동
-      router.replace('/login');
+      router.replace(AUTH_ROUTE);
     }
   }, [loaded, checkingToken, isLoggedIn, router]); // 이 상태들이 바뀔 때마다 실행
 
@@ -114,22 +121,26 @@ export default function RootLayout() {
   if (!loaded || checkingToken) return null;
 
   return (
-    <ThemeProvider theme={theme}>
-      <SafeAreaProvider>
-        <AppLayout>
-          <ProfileProvider>
-            <QueryClientProvider client={queryClient}>
-              {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="login" />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-              <Toast />
-            </QueryClientProvider>
-          </ProfileProvider>
-        </AppLayout>
-      </SafeAreaProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider theme={theme}>
+        <SafeAreaProvider>
+          <BottomSheetModalProvider>
+            <AppLayout>
+              <ProfileProvider>
+                <QueryClientProvider client={queryClient}>
+                  {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                  <Toast config={toastConfig} topOffset={80} />
+                </QueryClientProvider>
+              </ProfileProvider>
+            </AppLayout>
+          </BottomSheetModalProvider>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
