@@ -33,12 +33,6 @@ export const HeaderProfileBox = styled.View`
   overflow: hidden;
 `;
 
-export const HeaderProfileImage = styled.Image`
-  width: 100%;
-  height: 100%;
-  resize-mode: cover;
-`;
-
 // Detail Container
 export const DetailContainer = styled.View`
   flex: 2;
@@ -86,12 +80,6 @@ export const HostImageBox = styled.View`
   width: 50px;
   height: 50px;
   overflow: hidden;
-`;
-
-export const HostImage = styled.Image`
-  width: 100%;
-  height: 100%;
-  resize-mode: cover;
 `;
 
 export const HostNameText = styled.Text`
@@ -160,12 +148,6 @@ export const ParticipantsImageBox = styled.View`
   width: 30px;
   height: 30px;
   flex-direction: row;
-`;
-
-export const ParticipantsImage = styled.Image`
-  width: 100%;
-  height: 100%;
-  resize-mode: contain;
 `;
 
 export const ParticipantsTotalText = styled.Text`

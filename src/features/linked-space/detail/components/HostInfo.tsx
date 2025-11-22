@@ -1,9 +1,9 @@
+import ProfileImage from '@/components/common/ProfileImage';
 import React from 'react';
 import {
   HostBadgeBox,
   HostBadgeText,
   HostContainer,
-  HostImage,
   HostImageBox,
   HostNameText,
 } from '../styles';
@@ -17,12 +17,14 @@ export const HostInfo = ({ imageUrl, firstName }: HostInfoProps) => {
   return (
     <HostContainer>
       <HostImageBox>
-        <HostImage
+        <ProfileImage
           source={
             imageUrl
               ? { uri: imageUrl }
               : require('@/assets/images/character3.png')
           }
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
         />
       </HostImageBox>
       <HostNameText>{firstName}</HostNameText>

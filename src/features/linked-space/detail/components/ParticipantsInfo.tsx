@@ -1,4 +1,5 @@
 import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
 import { FlatList } from 'react-native';
@@ -7,7 +8,6 @@ import {
   ParticipantsCountContainer,
   ParticipantsCountText,
   ParticipantsDivider,
-  ParticipantsImage,
   ParticipantsImageBox,
   ParticipantsImageContainer,
   ParticipantsImagesBox,
@@ -36,7 +36,11 @@ export const ParticipantsInfo = ({ participantCount, participantsImageUrls }: Pa
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
               <ParticipantsImageBox>
-                <ParticipantsImage source={{ uri: item }} />
+                <ProfileImage
+                  source={{ uri: item }}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="contain"
+                />
               </ParticipantsImageBox>
             )}
           />
