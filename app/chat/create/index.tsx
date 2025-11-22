@@ -1,11 +1,11 @@
 //링크드 스페이스 생성 페이지
 import Icon from '@/components/common/Icon';
-import { CreateSpaceSuccess } from '@/src/features/chat/create/components/CreateSpaceSuccess';
-import { SpaceFormInputs } from '@/src/features/chat/create/components/SpaceFormInputs';
-import { SpaceImagePickerModal } from '@/src/features/chat/create/components/SpaceImagePickerModal';
-import { useCreateSpace } from '@/src/features/chat/create/hooks/useCreateSpace';
-import { useSpaceImagePicker } from '@/src/features/chat/create/hooks/useSpaceImagePicker';
-import { CreateSpaceFormData } from '@/src/features/chat/create/types';
+import { CreateSpaceSuccess } from '@/src/features/linked-space/create/components/CreateSpaceSuccess';
+import { SpaceFormInputs } from '@/src/features/linked-space/create/components/SpaceFormInputs';
+import { SpaceImagePickerModal } from '@/src/features/linked-space/create/components/SpaceImagePickerModal';
+import { useCreateSpace } from '@/src/features/linked-space/create/hooks/useCreateSpace';
+import { useSpaceImagePicker } from '@/src/features/linked-space/create/hooks/useSpaceImagePicker';
+import { CreateSpaceFormData } from '@/src/features/linked-space/create/types';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
