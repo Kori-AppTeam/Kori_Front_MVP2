@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Modal,
@@ -12,19 +13,28 @@ import {
   TextInput as RNTextInput,
   ScrollView,
   View,
-  FlatList,
 } from 'react-native';
 import styled from 'styled-components/native';
 
-import { Category } from '@/components/CategoryChips';
 import { usePresignedUpload } from '@/hooks/mutations/useImageUpload';
 import { useUpdatePost } from '@/hooks/mutations/useUpdatePost';
 import { useBoardWriteOptions } from '@/hooks/queries/useBoardWriteOptions';
-import useCreatePost from '@/hooks/queries/useCreatePost';
-import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import useCreatePost from '@/src/features/community/hooks/useCreatePost';
 import { theme } from '@/src/styles/theme';
 import { uploadImageToPresignedUrl } from '@/utils/uploadImageToPresignedUrl';
 import { router, useLocalSearchParams } from 'expo-router';
+
+type Category = 'All' | 'News' | 'Tip' | 'Q&A' | 'Event' | 'Free talk' | 'Activity';
+
+const CATEGORY_TO_BOARD_ID: Record<Category, number> = {
+  All: 1,
+  News: 2,
+  Tip: 3,
+  'Q&A': 4,
+  Event: 5,
+  'Free talk': 6,
+  Activity: 7,
+};
 
 const LOCAL_ALLOW_ANON = new Set<Category>(['Free talk', 'Q&A']);
 const CATS: Category[] = ['News', 'Tip', 'Q&A', 'Event', 'Free talk', 'Activity'];

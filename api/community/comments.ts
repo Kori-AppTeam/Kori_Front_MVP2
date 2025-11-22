@@ -1,4 +1,5 @@
 import api from '@/api/axiosInstance';
+import { SortParam } from '@/src/features/community/types/postsListType';
 
 export type RawComment = {
   commentId: number;
@@ -33,10 +34,9 @@ export type ListResp<T> = {
   timestamp?: string;
 };
 
-export async function getPostComments(postId: number, sort: 'new' | 'hot') {
-  const sortParam = sort === 'new' ? 'LATEST' : 'POPULAR';
+export async function getPostComments(postId: number, sort: SortParam) {
   const { data } = await api.get<ListResp<RawComment>>(`/api/v1/posts/${postId}/comments`, {
-    params: { sort: sortParam, size: 100 },
+    params: { sort: sort, size: 100 },
   });
   return data;
 }

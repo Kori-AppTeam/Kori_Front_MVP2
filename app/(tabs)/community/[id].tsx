@@ -1,19 +1,23 @@
 import api from '@/api/axiosInstance';
-import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
 import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import ProfileModal from '@/components/ProfileModal';
-import SortTabs, { SortKey } from '@/components/SortTabs';
+import SortTabs from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
 import { useLikeComment } from '@/hooks/mutations/useLikeComment';
-import { useToggleLike } from '@/hooks/mutations/useToggleLike';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
-import { usePostDetail } from '@/hooks/queries/usePostDetail';
+import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
+import { usePostDetail } from '@/src/features/community/hooks/usePostDetail';
+import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
+import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import { User } from '@/src/shared/types/user';
 import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
 import { formatCreatedYMD } from '@/src/utils/dateUtils';
@@ -23,8 +27,6 @@ import { keysToUrls } from '@/utils/image';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-import styled from 'styled-components/native';
 import {
   Alert,
   Animated,
@@ -42,7 +44,7 @@ import {
   View,
   ViewToken,
 } from 'react-native';
-import { User } from '@/src/shared/types/user';
+import styled from 'styled-components/native';
 
 const SCREEN_W = Dimensions.get('window').width;
 const H_PADDING = 32;
@@ -145,7 +147,7 @@ export default function PostDetailScreen() {
 
   const post = data as any;
 
-  const category = React.useMemo(() => resolvePostCategory(post), [post]);
+  const category: AllowedCategory = React.useMemo(() => resolvePostCategory(post), [post]);
 
   const { data: cmtOpts } = useCommentWriteOptions(Number.isFinite(postId) ? postId : undefined);
 
@@ -274,10 +276,9 @@ export default function PostDetailScreen() {
   type SheetCtx = { type: 'post' | 'comment' | null; commentId?: number };
   const [sheetCtx, setSheetCtx] = useState<SheetCtx>({ type: null });
 
-  const likeMutation = useToggleLike();
   const createCmt = useCreateComment(postId);
 
-  const [sort, setSort] = useState<SortKey>('new');
+  const [sort, setSort] = useState<SortParam>('LATEST');
   const likeComment = useLikeComment(postId, sort);
 
   const [value, setValue] = useState('');
@@ -286,6 +287,8 @@ export default function PostDetailScreen() {
 
   const inputRef = useRef<RNTextInput>(null);
   const listRef = useRef<RNFlatList<Comment>>(null);
+
+  const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
 
   const { data: commentsRaw } = usePostComments(Number.isFinite(postId) ? postId : undefined, sort);
   const commentList: Comment[] = Array.isArray(commentsRaw)
@@ -1018,7 +1021,7 @@ export default function PostDetailScreen() {
               </Card>
 
               <SortWrap>
-                <SortTabs value={sort} onChange={setSort} />
+                <SortTabs value={sort} onPress={setSort} />
               </SortWrap>
             </>
           }
