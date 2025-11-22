@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 
-export const GroupChatListFooter = ({ isLoading }: { isLoading: boolean }) => {
+export const LinkedSpaceFooter = ({ isLoading }: { isLoading: boolean }) => {
   if (!isLoading) return null;
 
   return (

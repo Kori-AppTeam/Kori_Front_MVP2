@@ -2,7 +2,7 @@ import Icon from '@/components/common/Icon';
 import { MyChatList } from '@/src/features/chat/list/components/MyChatList';
 import { useChatRoomSubscription } from '@/src/features/chat/list/hooks/useChatRoomSubscription';
 import { useChatRooms } from '@/src/features/chat/list/hooks/useChatRooms';
-import { GroupChatList } from '@/src/features/linked-space/components/GroupChatList';
+import { LinkedSpaceList } from '@/src/features/linked-space/list/components/LinkedSpaceList';
 import { CHAT_SEARCH_ROUTE, CREATE_LINKED_SPACE_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
@@ -66,7 +66,7 @@ export default function ChatScreen() {
             showsVerticalScrollIndicator={false}
           />
         ) : (
-          <GroupChatList />
+          <LinkedSpaceList />
         )}
 
         {isGroupChat && (

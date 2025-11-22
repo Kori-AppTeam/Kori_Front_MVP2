@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import { GroupChatRoom } from '../types';
 import { BuzzingSpaceItem } from './BuzzingSpaceItem';
 
-export const GroupChatListHeader = ({ buzzingSpaces }: { buzzingSpaces: GroupChatRoom[] }) => (
+export const LinkedSpaceHeader = ({ buzzingSpaces }: { buzzingSpaces: GroupChatRoom[] }) => (
   <View>
     <GroupTitleContainer>
       <GroupTitleText>Buzzing Spaces</GroupTitleText>

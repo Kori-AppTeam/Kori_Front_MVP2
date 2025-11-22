@@ -2,12 +2,12 @@ import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { useAllSpaces, useBuzzingSpaces } from '../hooks/useGroupChatRooms';
 import { AllSpaceItem } from './AllSpaceItem';
-import { GroupChatListFooter } from './GroupChatListFooter';
-import { GroupChatListHeader } from './GroupChatListHeader';
+import { LinkedSpaceFooter } from './LinkedSpaceFooter';
+import { LinkedSpaceHeader } from './LinkedSpaceHeader';
 
 // 🔹 memo 적용
 
-export const GroupChatList = () => {
+export const LinkedSpaceList = () => {
   const { data: buzzingSpaces } = useBuzzingSpaces();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useAllSpaces();
 
@@ -20,8 +20,8 @@ export const GroupChatList = () => {
         renderItem={({ item }) => <AllSpaceItem data={item} />}
         keyExtractor={(item) => item.roomId.toString()}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={<GroupChatListHeader buzzingSpaces={buzzingSpaces ?? []} />}
-        ListFooterComponent={<GroupChatListFooter isLoading={isFetchingNextPage} />}
+        ListHeaderComponent={<LinkedSpaceHeader buzzingSpaces={buzzingSpaces ?? []} />}
+        ListFooterComponent={<LinkedSpaceFooter isLoading={isFetchingNextPage} />}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
