@@ -47,7 +47,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
         <OtherMessageBubble
           content={messageContent}
           time={formatTime(item.sentAt)}
-          senderName={item.senderLastName}
+          senderName={item.senderFirstName + ' ' + item.senderLastName}
           senderImageUrl={item.senderImageUrl}
           showTime={displayLogic.showTime}
           showProfile={displayLogic.showTime}
