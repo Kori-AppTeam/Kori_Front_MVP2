@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { createGroupSpace } from '../api/spaceApi';
 import { getDefaultAvatarUrl } from '../constants';
@@ -9,6 +9,8 @@ import { uploadCustomSpaceImage } from '../utils/imageUpload';
  * 스페이스 생성 Mutation Hook
  */
 export const useCreateSpace = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (formData: CreateSpaceFormData) => {
       let finalImageUrl: string;
@@ -33,6 +35,12 @@ export const useCreateSpace = () => {
       });
 
       return { ...response, finalImageUrl };
+    },
+    onSuccess: () => {
+      // 채팅방 목록 쿼리들을 무효화하여 최신 데이터 refetch
+      queryClient.invalidateQueries({ queryKey: ['chatRooms'] });
+      queryClient.invalidateQueries({ queryKey: ['buzzingSpaces'] });
+      queryClient.invalidateQueries({ queryKey: ['allSpaces'] });
     },
     onError: (error: Error) => {
       Toast.show({

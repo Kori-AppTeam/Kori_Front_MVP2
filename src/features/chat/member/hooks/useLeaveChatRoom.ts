@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { leaveChatRoom } from '../api';
 
@@ -15,10 +16,17 @@ interface UseLeaveChatRoomReturn {
  */
 export const useLeaveChatRoom = ({ roomId }: UseLeaveChatRoomParams): UseLeaveChatRoomReturn => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleLeaveChat = async () => {
     try {
       await leaveChatRoom(roomId);
+
+      // 채팅방 목록 쿼리들을 무효화하여 최신 데이터 refetch
+      queryClient.invalidateQueries({ queryKey: ['chatRooms'] });
+      queryClient.invalidateQueries({ queryKey: ['buzzingSpaces'] });
+      queryClient.invalidateQueries({ queryKey: ['allSpaces'] });
+
       router.replace('/(tabs)/chat');
     } catch (err) {
       console.error('퇴장 실패', err);
