@@ -2,7 +2,7 @@ import Icon from '@/components/common/Icon';
 import { CATEGORY_TO_BOARD_ID, CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import { useToggleBookmark } from '../hooks/useToggleBookmark';
@@ -100,7 +100,7 @@ const PostListCard = ({ data, sort, category }: PostCardProps) => {
   );
 };
 
-export default PostListCard;
+export default memo(PostListCard);
 
 const Container = styled.View<{ width: number }>`
   flex-direction: column;
