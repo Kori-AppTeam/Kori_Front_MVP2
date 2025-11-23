@@ -41,7 +41,6 @@ export interface MessageItemProps {
 }
 
 export interface MessageListProps {
-  messages: ChatMessage[];
   myUserId: string;
   isTranslate: boolean;
   searchKeyword?: string;
@@ -111,15 +110,6 @@ export interface ChatMessage {
   targetContent: string;
   sentAt: string;
   messageType: string;
-}
-
-export interface ChatMessagesState {
-  message: string;
-  messages: ChatMessage[];
-  isLoading: boolean;
-  isFetchingMore: boolean;
-  hasMore: boolean;
-  error: Error | null;
 }
 
 // Room별 메시지 상태

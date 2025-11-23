@@ -9,7 +9,6 @@ import TranslateButton from '@/src/features/chat/room/components/TranslateButton
 import { useChatMessages } from '@/src/features/chat/room/hooks/useChatMessages';
 import { useMessageActions } from '@/src/features/chat/room/hooks/useMessageActions';
 import { useMessageSearch } from '@/src/features/chat/room/hooks/useMessageSearch';
-import { useTranslation } from '@/src/features/chat/room/hooks/useTranslation';
 import { useUserProfile } from '@/src/features/chat/room/hooks/useUserProfile';
 import { Config } from '@/src/lib/config';
 import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
@@ -35,9 +34,8 @@ const ChattingRoomScreen = () => {
   const messageState = useChatMessages(roomId);
   const messageActions = useMessageActions();
   const messageSearch = useMessageSearch(roomId, messageState.state.messages);
-  const { isTranslate, toggleTranslate } = useTranslation(roomId, messageState.updateMessageList);
+  const [isTranslate, setIsTranslate] = useState(false);
   const userProfile = useUserProfile();
-
 
   // ----------- effects & handlers ----------- //
   useEffect(() => {
@@ -74,7 +72,6 @@ const ChattingRoomScreen = () => {
           {/* 채팅 화면 */}
           <ChattingScreen>
             <MessageList
-              messages={messageState.state.messages}
               myUserId={myUserId}
               isTranslate={isTranslate}
               searchKeyword={messageSearch.state.isSearching ? messageSearch.state.searchText : undefined}
@@ -114,7 +111,7 @@ const ChattingRoomScreen = () => {
             {/* 번역 버튼 */}
             <TranslateButton
               isTranslating={isTranslate}
-              onToggle={toggleTranslate}
+              onToggle={() => setIsTranslate(!isTranslate)}
             />
           </ChattingScreen>
         </KeyboardAvoidingView>
