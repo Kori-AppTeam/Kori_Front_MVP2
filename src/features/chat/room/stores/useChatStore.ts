@@ -2,40 +2,38 @@
 
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+
 import { ChatMessage, RoomMessagesState } from '../types/index';
 
 // 전체 Store 상태
-interface ChatStoreState {
-  // roomId를 key로 하는 상태 관리
-  rooms: Record<string, RoomMessagesState>;
-
+interface ChatStoreState extends RoomMessagesState {
   // 액션들
   // 메시지 관련
-  addMessage: (roomId: string, message: ChatMessage) => void;
-  removeMessage: (roomId: string, messageId: number) => void;
-  setMessages: (roomId: string, messages: ChatMessage[]) => void;
-  loadMoreMessages: (roomId: string, messages: ChatMessage[]) => void;
+  addMessage: (message: ChatMessage) => void;
+  removeMessage: (messageId: number) => void;
+  setMessages: (messages: ChatMessage[]) => void;
+  loadMoreMessages: (messages: ChatMessage[]) => void;
 
   // 입력 상태
-  setCurrentMessage: (roomId: string, text: string) => void;
-  clearCurrentMessage: (roomId: string) => void;
+  setCurrentMessage: (text: string) => void;
+  clearCurrentMessage: () => void;
 
   // 로딩 상태
-  setLoading: (roomId: string, isLoading: boolean) => void;
-  setFetchingMore: (roomId: string, isFetchingMore: boolean) => void;
-  setHasMore: (roomId: string, hasMore: boolean) => void;
+  setLoading: (isLoading: boolean) => void;
+  setFetchingMore: (isFetchingMore: boolean) => void;
+  setHasMore: (hasMore: boolean) => void;
 
   // 유틸리티
-  clearMessages: (roomId: string) => void;
-  resetRoom: (roomId: string) => void;
-  setError: (roomId: string, error: Error | null) => void;
+  clearMessages: () => void;
+  reset: () => void;
+  setError: (error: Error | null) => void;
 
   // Room 초기화 헬퍼
-  initializeRoom: (roomId: string) => void;
+  initialize: () => void;
 }
 
-// Room 초기 상태
-const initialRoomState: RoomMessagesState = {
+// 초기 상태
+const initialState: RoomMessagesState = {
   messages: [],
   currentMessage: '',
   isLoading: false,
@@ -46,126 +44,97 @@ const initialRoomState: RoomMessagesState = {
 
 export const useChatStore = create<ChatStoreState>()(
   immer((set, get) => ({
-    rooms: {},
+    ...initialState,
 
-    // Room 초기화
-    initializeRoom: (roomId: string) => {
+    // 초기화
+    initialize: () => {
       set((state) => {
-        if (!state.rooms[roomId]) {
-          state.rooms[roomId] = { ...initialRoomState };
-        }
+        Object.assign(state, initialState);
       });
     },
 
     // 메시지 추가 (실시간)
-    addMessage: (roomId: string, message: ChatMessage) => {
+    addMessage: (message: ChatMessage) => {
       set((state) => {
-        if (!state.rooms[roomId]) {
-          state.rooms[roomId] = { ...initialRoomState };
-        }
-        state.rooms[roomId].messages.unshift(message);
+        state.messages.unshift(message);
       });
     },
 
     // 메시지 삭제
-    removeMessage: (roomId: string, messageId: number) => {
+    removeMessage: (messageId: number) => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].messages = state.rooms[roomId].messages.filter(
-            (m: ChatMessage) => m.id !== messageId
-          );
-        }
+        state.messages = state.messages.filter((m: ChatMessage) => m.id !== messageId);
       });
     },
 
     // 메시지 목록 설정
-    setMessages: (roomId: string, messages: ChatMessage[]) => {
+    setMessages: (messages: ChatMessage[]) => {
       set((state) => {
-        if (!state.rooms[roomId]) {
-          state.rooms[roomId] = { ...initialRoomState };
-        }
-        state.rooms[roomId].messages = messages;
+        state.messages = messages;
       });
     },
 
     // 이전 메시지 추가 로드 (무한 스크롤)
-    loadMoreMessages: (roomId: string, messages: ChatMessage[]) => {
+    loadMoreMessages: (messages: ChatMessage[]) => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].messages.push(...messages);
-        }
+        state.messages.push(...messages);
       });
     },
 
     // 현재 입력 중인 메시지 설정
-    setCurrentMessage: (roomId: string, text: string) => {
+    setCurrentMessage: (text: string) => {
       set((state) => {
-        if (!state.rooms[roomId]) {
-          state.rooms[roomId] = { ...initialRoomState };
-        }
-        state.rooms[roomId].currentMessage = text;
+        state.currentMessage = text;
       });
     },
 
     // 입력 메시지 초기화
-    clearCurrentMessage: (roomId: string) => {
+    clearCurrentMessage: () => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].currentMessage = '';
-        }
+        state.currentMessage = '';
       });
     },
 
     // 로딩 상태 설정
-    setLoading: (roomId: string, isLoading: boolean) => {
+    setLoading: (isLoading: boolean) => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].isLoading = isLoading;
-        }
+        state.isLoading = isLoading;
       });
     },
 
     // 추가 로딩 상태 설정
-    setFetchingMore: (roomId: string, isFetchingMore: boolean) => {
+    setFetchingMore: (isFetchingMore: boolean) => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].isFetchingMore = isFetchingMore;
-        }
+        state.isFetchingMore = isFetchingMore;
       });
     },
 
     // hasMore 상태 설정
-    setHasMore: (roomId: string, hasMore: boolean) => {
+    setHasMore: (hasMore: boolean) => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].hasMore = hasMore;
-        }
+        state.hasMore = hasMore;
       });
     },
 
     // 메시지 목록 초기화
-    clearMessages: (roomId: string) => {
+    clearMessages: () => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].messages = [];
-          state.rooms[roomId].hasMore = true;
-        }
+        state.messages = [];
+        state.hasMore = true;
       });
     },
 
-    // Room 전체 초기화
-    resetRoom: (roomId: string) => {
+    // 전체 초기화
+    reset: () => {
       set((state) => {
-        state.rooms[roomId] = { ...initialRoomState };
+        Object.assign(state, initialState);
       });
     },
 
     // 에러 설정
-    setError: (roomId: string, error: Error | null) => {
+    setError: (error: Error | null) => {
       set((state) => {
-        if (state.rooms[roomId]) {
-          state.rooms[roomId].error = error;
-        }
+        state.error = error;
       });
     },
   }))
