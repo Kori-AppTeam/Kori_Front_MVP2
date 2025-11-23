@@ -20,7 +20,7 @@ type Props = {
   name: string;
   country: string;
   birth?: number;
-  gender?: 'male' | 'female' | 'unspecified';
+  gender?: 'Male' | 'Female' | 'unspecified';
   purpose: string;
   languages: string[];
   personalities: string[];
@@ -67,8 +67,8 @@ const BTN_GAP = 14;
 const CARD_OUTER_GAP = 16;
 
 const genderIconType: Record<NonNullable<Props['gender']>, import('@/components/common/Icon').IconType> = {
-  male: 'maleColored',
-  female: 'femaleColored',
+  Male: 'maleColored',
+  Female: 'femaleColored',
   unspecified: 'nogender',
 };
 const toUrl = (u?: string) => {
@@ -112,15 +112,15 @@ export default function FriendCard(props: Props) {
     onChat,
     footerSlot,
     defaultExpanded = true,
-    
+
   } = props;
 
   const [expanded, setExpanded] = useState(Boolean(defaultExpanded));
   const finalAvatarUrl = imageUrl || toUrl(imageKey);
 
   const effectiveStatus: FollowStatus =
-     (followStatus as FollowStatus) ??
-     (mode === 'received' || mode === 'sent' ? 'PENDING' : 'NOT_FOLLOWING');
+    (followStatus as FollowStatus) ??
+    (mode === 'received' || mode === 'sent' ? 'PENDING' : 'NOT_FOLLOWING');
 
   const handlePrimaryPress = () => {
     if (mode === 'received') {
@@ -152,7 +152,7 @@ export default function FriendCard(props: Props) {
           <MetaLine>
             <MetaRow>
               <MetaDim>Birth </MetaDim>
-              <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>       
+              <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>
 
               <GenderIconSpacer>
                 <Icon
@@ -174,7 +174,7 @@ export default function FriendCard(props: Props) {
           <Divider />
           {collapsible && (
             <ChevronButton onPress={() => setExpanded(!expanded)}>
-              <Icon type={expanded ? 'arrowUp' : 'arrowDown'} size={24}  />
+              <Icon type={expanded ? 'arrowUp' : 'arrowDown'} size={24} />
             </ChevronButton>
           )}
         </DividerWrap>
@@ -195,7 +195,7 @@ export default function FriendCard(props: Props) {
               <ColRight>
                 <LabelRow>
                   <SmallIconWrap>
-                    <Icon type="global" size={16} color={theme.colors.gray.gray_1}/>
+                    <Icon type="global" size={16} color={theme.colors.gray.gray_1} />
                   </SmallIconWrap>
                   <Label>Language</Label>
                 </LabelRow>
@@ -215,7 +215,7 @@ export default function FriendCard(props: Props) {
             </RowTop>
 
             <InterestHeader>
-               <SmallIconWrap style={{ marginRight: 4 }}>
+              <SmallIconWrap style={{ marginRight: 4 }}>
                 <Icon type="heartNonSelected" size={16} color={theme.colors.gray.gray_1} />
               </SmallIconWrap>
               <Label>Interest</Label>
