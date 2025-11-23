@@ -29,12 +29,11 @@ export const useMessageActions = (): MessageActionsHook => {
   // Store에서 필요한 액션 가져오기
   const stompConnection = useStompStore((state) => state);
   const clearCurrentMessage = useChatStore((state) => state.clearCurrentMessage);
-  const getCurrentMessage = (roomId: string) =>
-    useChatStore.getState().rooms[roomId]?.currentMessage || '';
+  const getCurrentMessage = () => useChatStore.getState().currentMessage;
 
   /** 메시지 전송 */
   const sendMessage = useCallback(async (roomId: string) => {
-    const currentMessage = getCurrentMessage(roomId);
+    const currentMessage = getCurrentMessage();
 
     if (!currentMessage.trim()) return;
     if (!stompConnection.connected) {
@@ -58,7 +57,7 @@ export const useMessageActions = (): MessageActionsHook => {
       await stompConnection.publish('/app/chat.sendMessage', body);
 
       // 메시지 전송 성공 후 입력창 초기화
-      clearCurrentMessage(roomId);
+      clearCurrentMessage();
 
       setState(prev => ({ ...prev, isSending: false }));
     } catch (error) {
