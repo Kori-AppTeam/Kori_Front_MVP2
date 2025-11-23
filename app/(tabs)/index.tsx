@@ -1,7 +1,9 @@
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import FriendCard from '@/components/FriendCard';
 import { FindHeader } from '@/src/features/find/components/FindHeader';
+import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
 import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
+import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { Text } from '@react-navigation/elements';
 import { router } from 'expo-router';
@@ -14,6 +16,15 @@ export default function HomeScreen() {
   const flatListRef = useRef<FlatList>(null);
 
   const { friends, myId, loading, state, mutations, actions } = useFindFriends(20);
+
+  const {
+    visible: recommendVisible,
+    profileModalVisible: recommendProfileModal,
+    setProfileModalVisible: setRecommendProfileModal,
+    handleJoin,
+    handleDontShowToday,
+    handleClose: handleRecommendClose,
+  } = useLinkedSpaceRecommendModal();
 
   useEffect(() => {
     const listener = DeviceEventEmitter.addListener('FIND_TAB_PRESSED', () => {
@@ -138,7 +149,20 @@ export default function HomeScreen() {
         />
       )}
 
-      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
+      <LinkedSpaceRecommendModal
+        visible={recommendVisible}
+        onJoin={handleJoin}
+        onDontShowToday={handleDontShowToday}
+        onClose={handleRecommendClose}
+      />
+
+      <ProfileSetupModal
+        visible={profileModalVisible || recommendProfileModal}
+        onClose={() => {
+          setProfileModalVisible(false);
+          setRecommendProfileModal(false);
+        }}
+      />
     </Safe>
   );
 }
