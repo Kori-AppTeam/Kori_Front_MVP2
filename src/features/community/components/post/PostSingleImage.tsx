@@ -1,13 +1,13 @@
 import React, { memo } from 'react';
 import styled from 'styled-components/native';
 
-type Props = {
+type PostSingleImageProps = {
   imageUrl: string;
   imageCount: number;
   pageWidth: number;
 };
 
-function SingleImage({ imageUrl, imageCount, pageWidth }: Props) {
+function PostSingleImage({ imageUrl, imageCount, pageWidth }: PostSingleImageProps) {
   const count = imageCount - 1;
 
   // 단일 이미지
@@ -22,6 +22,8 @@ function SingleImage({ imageUrl, imageCount, pageWidth }: Props) {
     </Container>
   );
 }
+
+export default memo(PostSingleImage);
 
 const Container = styled.View<{ width: number }>`
   width: ${({ width }) => (width ? width : 335)}px;
@@ -52,5 +54,3 @@ const ImageCount = styled.Text`
   ${({ theme }) => theme.fonts.small.small_M}
   line-height: 20px;
 `;
-
-export default memo(SingleImage);
