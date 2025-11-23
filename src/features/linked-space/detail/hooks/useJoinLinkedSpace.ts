@@ -1,5 +1,6 @@
+import { CHAT_ROOMS_QUERY_KEY } from '@/src/features/chat/list/hooks/useChatRooms';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import Toast from 'react-native-toast-message';
@@ -8,10 +9,12 @@ import { joinLinkedSpace } from '../api/linkedSpaceDetail';
 export const useJoinLinkedSpace = (linkedSpaceId: string, linkedSpaceName?: string) => {
   const router = useRouter();
   const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: () => joinLinkedSpace(linkedSpaceId),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_QUERY_KEY });
       router.push({
         pathname: CHAT_ROUTE(linkedSpaceId),
         params: {
