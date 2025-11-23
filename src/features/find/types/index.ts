@@ -7,7 +7,7 @@ export type RecommendedFriendDto = {
   userId: number;
   firstname: string;
   lastname: string;
-  gender: 'Male' | 'Female' | 'unspecified';
+  gender: 'Male' | 'Female' | 'unspecified' | 'NoGender';
   birthday: number; // YYYY 형식
   country: string;
   introduction: string;
@@ -24,7 +24,7 @@ export type FriendItem = {
   userId: number;
   firstname: string;
   lastname: string;
-  gender: 'Male' | 'Female' | 'unspecified';
+  gender: 'Male' | 'Female' | 'unspecified' | 'NoGender';
   birthday: number; // YYYY 형식
   country: string;
   introduction: string;
@@ -50,4 +50,13 @@ export type FollowingUser = {
   id?: number;
   userId?: number;
   [key: string]: any;
+};
+
+/**
+ * 링크드 스페이스 추천 응답
+ */
+export type LinkedSpaceRecommendation = {
+  roomId: number;
+  roomName: string;
+  roomImageUrl: string;
 };

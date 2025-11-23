@@ -20,7 +20,7 @@ type Props = {
   name: string;
   country: string;
   birth?: number;
-  gender?: 'Male' | 'Female' | 'unspecified';
+  gender?: 'Male' | 'Female' | 'unspecified' | 'NoGender';
   purpose: string;
   languages: string[];
   personalities: string[];
@@ -70,6 +70,7 @@ const genderIconType: Record<NonNullable<Props['gender']>, import('@/components/
   Male: 'maleColored',
   Female: 'femaleColored',
   unspecified: 'nogender',
+  NoGender: 'nogender',
 };
 const toUrl = (u?: string) => {
   if (!u) return undefined;
