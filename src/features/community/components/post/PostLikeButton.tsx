@@ -4,13 +4,13 @@ import React from 'react';
 import styled from 'styled-components/native';
 import { limitCount } from '../../utils/indexUtils';
 
-type LikeButtonProps = {
+type PostLikeButtonProps = {
   isLiked: boolean;
   likeCount: number;
   onToggleLike: () => void;
 };
 
-const LikeButton = ({ isLiked, likeCount, onToggleLike }: LikeButtonProps) => {
+const PostLikeButton = ({ isLiked, likeCount, onToggleLike }: PostLikeButtonProps) => {
   return (
     <IconBtn onPress={() => onToggleLike()} hitSlop={8}>
       {isLiked ? <Icon size={20} type="thumbsUpSelected" /> : <Icon size={20} type="thumbsUpNonSelected" />}
@@ -31,4 +31,4 @@ const Count = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
 `;
 
-export default LikeButton;
+export default PostLikeButton;

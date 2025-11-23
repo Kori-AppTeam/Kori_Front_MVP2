@@ -11,7 +11,7 @@ type CommentProps = {
   commentCount: number;
 };
 
-const Comment = ({ showComment, postId, commentCount }: CommentProps) => {
+const PostComment = ({ showComment, postId, commentCount }: CommentProps) => {
   return (
     <IconBtn
       hitSlop={8}
@@ -37,4 +37,4 @@ const Count = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
 `;
 
-export default Comment;
+export default PostComment;
