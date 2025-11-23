@@ -9,9 +9,10 @@ import styled from 'styled-components/native';
 import { useToggleBookmark } from '../hooks/useToggleBookmark';
 import { useToggleLike } from '../hooks/useToggleLike';
 import { AllowedCategory, PostsListItem, SortParam } from '../types/postsListType';
-import { limitCount, timeToAgo } from '../utils/indexUtils';
+import { timeToAgo } from '../utils/indexUtils';
 import UserProfileImg from './UserProfileImg';
 import BookmarkButton from './post/BookmarkButton';
+import Comment from './post/Comment';
 import LikeButton from './post/LikeButton';
 import SingleImage from './post/SingleImage';
 
@@ -46,14 +47,12 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
     bookmarkMutation.mutate({ postId: postId, isBookmarked: isBookmark });
   };
 
-  const handlePostPress = (postId: number) => {
-    router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } });
-  };
-
   return (
     <Container width={SCREEN_WIDTH}>
-      <Wrap width={SCREEN_WIDTH} onPress={() => handlePostPress(data.postId)}>
-        <PostHeader />
+      <Wrap
+        width={SCREEN_WIDTH}
+        onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: data.postId } })}
+      >
         <PostHeader>
           <AuthorImageContainer>
             {!data.isAnonymous && data.userImageUrl ? (
@@ -116,13 +115,7 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
               onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
             />
 
-            <IconBtn
-              hitSlop={8}
-              onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: data.postId } })}
-            >
-              <Icon size={20} type="comment" />
-              <Count>{limitCount(data.commentCount)}</Count>
-            </IconBtn>
+            <Comment showComment={false} postId={data.postId} commentCount={data.commentCount} />
           </LeftFooter>
 
           <More>···</More>
@@ -252,11 +245,6 @@ const IconBtn = styled.Pressable`
   align-items: center;
   justify-content: center;
   margin-right: 16px;
-`;
-const Count = styled.Text`
-  color: #cfd4da;
-  margin-left: 6px;
-  ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
 `;
 const More = styled.Text`
   margin-left: auto;
