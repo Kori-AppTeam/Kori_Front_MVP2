@@ -12,6 +12,7 @@ import { AllowedCategory, PostsListItem, SortParam } from '../types/postsListTyp
 import { limitCount, timeToAgo } from '../utils/indexUtils';
 import UserProfileImg from './UserProfileImg';
 import BookmarkButton from './post/BookmarkButton';
+import LikeButton from './post/LikeButton';
 import SingleImage from './post/SingleImage';
 
 type PostCardProps = {
@@ -109,14 +110,11 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
 
         <FooterRow>
           <LeftFooter>
-            <IconBtn onPress={() => handleToggleLike(data.postId, data.isLiked)} hitSlop={8}>
-              {data.isLiked ? (
-                <Icon size={20} type="thumbsUpSelected" />
-              ) : (
-                <Icon size={20} type="thumbsUpNonSelected" />
-              )}
-              <Count>{limitCount(data.likeCount)}</Count>
-            </IconBtn>
+            <LikeButton
+              isLiked={data.isLiked}
+              likeCount={data.likeCount}
+              onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
+            />
 
             <IconBtn
               hitSlop={8}
