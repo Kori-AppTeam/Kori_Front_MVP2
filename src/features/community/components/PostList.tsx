@@ -47,8 +47,8 @@ const PostList = ({ category, sort, scrollRef }: Props) => {
   );
 };
 
+export default PostList;
+
 const FooterLoading = styled.View`
   padding: 16px 0;
 `;
-
-export default PostList;

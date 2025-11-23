@@ -19,6 +19,8 @@ const PostLikeButton = ({ isLiked, likeCount, onToggleLike }: PostLikeButtonProp
   );
 };
 
+export default PostLikeButton;
+
 const IconBtn = styled.Pressable`
   flex-direction: row;
   align-items: center;
@@ -30,5 +32,3 @@ const Count = styled.Text`
   margin-left: 6px;
   ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
 `;
-
-export default PostLikeButton;

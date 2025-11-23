@@ -3,14 +3,14 @@ import { ListRenderItem } from 'react-native';
 import { FlatList } from 'react-native-reanimated/lib/typescript/Animated';
 import styled from 'styled-components/native';
 
-type Props = {
+type PostCarouselProps = {
   images: string[];
   gap: number;
   offset: number;
   pageWidth: number;
 };
 
-function Carousel({ images, gap, offset, pageWidth }: Props) {
+const PostCarousel = ({ images, gap, offset, pageWidth }: PostCarouselProps) => {
   // 이미지 슬라이드
   const renderItem: ListRenderItem<string> = ({ item }) => {
     return <ImageString source={{ uri: item }} resizeMode="cover" />;
@@ -30,7 +30,9 @@ function Carousel({ images, gap, offset, pageWidth }: Props) {
       />
     </Container>
   );
-}
+};
+
+export default memo(PostCarousel);
 
 const Container = styled.View`
   width: 335;
@@ -60,5 +62,3 @@ const ImageCount = styled.Text`
   align-items: center;
   justify-content: center;
 `;
-
-export default memo(Carousel);

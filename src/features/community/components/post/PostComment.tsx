@@ -25,6 +25,8 @@ const PostComment = ({ showComment, postId, commentCount }: CommentProps) => {
   );
 };
 
+export default PostComment;
+
 const IconBtn = styled.Pressable`
   flex-direction: row;
   align-items: center;
@@ -36,5 +38,3 @@ const Count = styled.Text`
   margin-left: 6px;
   ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
 `;
-
-export default PostComment;

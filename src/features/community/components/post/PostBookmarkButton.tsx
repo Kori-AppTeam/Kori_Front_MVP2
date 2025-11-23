@@ -15,6 +15,6 @@ const PostBookmarkButton = ({ isBookmarked, onToggleBookmark }: PostBookmarkButt
   );
 };
 
-const BookmarkBtn = styled.TouchableOpacity``;
-
 export default PostBookmarkButton;
+
+const BookmarkBtn = styled.TouchableOpacity``;

@@ -15,10 +15,10 @@ const PostMoreButton = ({ postId, authorId }: PostMoreButtonProps) => {
   );
 };
 
+export default PostMoreButton;
+
 const IconBtn = styled.Pressable`
   flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
-
-export default PostMoreButton;

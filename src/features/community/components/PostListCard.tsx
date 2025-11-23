@@ -13,9 +13,9 @@ import PostBookmarkButton from './post/PostBookmarkButton';
 import PostComment from './post/PostComment';
 import PostLikeButton from './post/PostLikeButton';
 import PostMoreButton from './post/PostMoreButton';
+import PostSingleImage from './post/PostSingleImage';
 import PostTextContent from './post/PostTextContent';
 import PostUserProfileImg from './post/PostUserProfileImg';
-import SingleImage from './post/SingleImage';
 
 type PostCardProps = {
   data: PostsListItem;
@@ -23,7 +23,7 @@ type PostCardProps = {
   category: AllowedCategory;
 };
 
-export default function PostListCard({ data, sort, category }: PostCardProps) {
+const PostListCard = ({ data, sort, category }: PostCardProps) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
@@ -71,7 +71,7 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
 
         <ContentBox>
           {data.contentImageUrl && (
-            <SingleImage
+            <PostSingleImage
               imageUrl={data.contentImageUrl}
               imageCount={data.imageCount}
               pageWidth={SCREEN_WIDTH - 20 * 2}
@@ -98,7 +98,9 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
       <BorderLine width={SCREEN_WIDTH} />
     </Container>
   );
-}
+};
+
+export default PostListCard;
 
 const Container = styled.View<{ width: number }>`
   flex-direction: column;
