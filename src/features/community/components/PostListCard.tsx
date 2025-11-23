@@ -11,17 +11,16 @@ import { useToggleLike } from '../hooks/useToggleLike';
 import { AllowedCategory, PostsListItem, SortParam } from '../types/postsListType';
 import { timeToAgo } from '../utils/indexUtils';
 import UserProfileImg from './UserProfileImg';
-import BookmarkButton from './post/BookmarkButton';
-import Comment from './post/Comment';
-import LikeButton from './post/LikeButton';
+import PostBookmarkButton from './post/PostBookmarkButton';
+import PostComment from './post/PostComment';
+import PostLikeButton from './post/PostLikeButton';
+import PostTextContent from './post/PostTextContent';
 import SingleImage from './post/SingleImage';
 
 type PostCardProps = {
   data: PostsListItem;
   sort: SortParam;
   category: AllowedCategory;
-  // onToggleBookmark: () => void;
-  // onToggleLike: () => void;
 };
 
 export default function PostListCard({ data, sort, category }: PostCardProps) {
@@ -77,7 +76,7 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
             </SubRow>
           </Meta>
 
-          <BookmarkButton
+          <PostBookmarkButton
             isBookmarked={data.isBookmarked}
             onToggleBookmark={() => handleToggleBookmark(data.postId, data.isBookmarked)}
           />
@@ -92,30 +91,18 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
             />
           )}
 
-          <ContentText>
-            <HiddenText onTextLayout={onGetLines}>{data.contentPreview}</HiddenText>
-            <Body numberOfLines={2} ellipsizeMode="tail">
-              {data.contentPreview}
-            </Body>
-            {truncate.numberOfLines > 2 ? (
-              <MoreContent
-                onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: data.postId } })}
-              >
-                <MoreContentText>more</MoreContentText>
-              </MoreContent>
-            ) : null}
-          </ContentText>
+          <PostTextContent isTruncate={true} postId={data.postId} content={data.contentPreview} />
         </ContentBox>
 
         <FooterRow>
           <LeftFooter>
-            <LikeButton
+            <PostLikeButton
               isLiked={data.isLiked}
               likeCount={data.likeCount}
               onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
             />
 
-            <Comment showComment={false} postId={data.postId} commentCount={data.commentCount} />
+            <PostComment showComment={false} postId={data.postId} commentCount={data.commentCount} />
           </LeftFooter>
 
           <More>···</More>
@@ -202,33 +189,6 @@ const ContentBox = styled.View`
   flex-direction: column;
   justify-content: center;
   gap: 16px;
-`;
-const ContentText = styled.View`
-  flex-direction: column;
-  width: 100%;
-  align-items: flex-start;
-  gap: 4px;
-`;
-const Body = styled.Text`
-  color: ${({ theme }) => theme.colors.primary.white};
-  width: 100%;
-  text-align: left;
-  font-size: 15px;
-  ${({ theme }) => textStyle(theme.fonts.body.B3_L)}/* line-height: 18px; */
-`;
-const MoreContent = styled.Pressable``;
-const MoreContentText = styled.Text`
-  color: #cccfd0;
-  text-decoration-line: underline;
-  ${({ theme }) => textStyle(theme.fonts.body.B4_R)}
-`;
-const HiddenText = styled.Text`
-  position: absolute;
-  opacity: 0;
-  z-index: -100;
-  pointer-events: none;
-  font-size: 15px;
-  /* line-height: 18px; */
 `;
 const FooterRow = styled.View`
   width: 100%;
