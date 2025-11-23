@@ -10,7 +10,7 @@ import messaging from '@react-native-firebase/messaging';
 import * as Notifications from 'expo-notifications';
 import { Tabs, usePathname } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, AppState, AppStateStatus, Dimensions, Image, Text } from 'react-native';
+import { Alert, AppState, AppStateStatus, DeviceEventEmitter, Dimensions, Image, Text } from 'react-native';
 
 const { height: screenHeight } = Dimensions.get('window');
 const TAB_BAR_HEIGHT = screenHeight * 0.117; // 화면 높이의 15%
@@ -143,6 +143,13 @@ export default function TabLayout() {
                 resizeMode="contain"
               />
             ),
+          }}
+          listeners={{
+            tabPress: () => {
+              if (pathname === '/') {
+                DeviceEventEmitter.emit('FIND_TAB_PRESSED');
+              }
+            },
           }}
         />
         <Tabs.Screen

@@ -5,14 +5,23 @@ import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { Text } from '@react-navigation/elements';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
 
 export default function HomeScreen() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
 
   const { friends, myId, loading, state, mutations, actions } = useFindFriends(20);
+
+  useEffect(() => {
+    const listener = DeviceEventEmitter.addListener('FIND_TAB_PRESSED', () => {
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    });
+
+    return () => listener.remove();
+  }, []);
 
   const onRefresh = () => {
     actions.refetch();
@@ -28,6 +37,7 @@ export default function HomeScreen() {
         </LoaderWrap>
       ) : (
         <FlatList
+          ref={flatListRef}
           data={friends}
           keyExtractor={(item) => String(item.userId)}
           refreshControl={<RefreshControl refreshing={Boolean(loading.isFetching && !loading.isLoading)} onRefresh={onRefresh} />}
