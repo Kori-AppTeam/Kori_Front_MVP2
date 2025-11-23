@@ -2,6 +2,7 @@
 import { formatDate, formatTime } from '@/src/shared/utils/dateUtils';
 import React from 'react';
 import styled from 'styled-components/native';
+import { useChatStore } from '../../stores/useChatStore';
 import { useSearchStore } from '../../stores/useSearchStore';
 import { MessageItemProps } from '../../types';
 import { displayMessageItem } from '../../utils/displayMessageItem';
@@ -13,12 +14,12 @@ const MessageItem: React.FC<MessageItemProps> = ({
   index,
   messages,
   isMyMessage,
-  isTranslate,
   onDeleteMessage,
   onProfilePress,
 }) => {
   // Store에서 직접 가져오기
   const { isActive, searchResults, currentIndex, searchText } = useSearchStore();
+  const isTranslating = useChatStore((state) => state.isTranslating);
 
   // 메시지 표시 로직
   const displayLogic = displayMessageItem(item, index, messages);
@@ -27,7 +28,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
   const shouldShowDateSeparator = displayLogic.showDate;
 
   // 메시지 콘텐츠 (번역 여부에 따라)
-  const messageContent = isTranslate ? item.targetContent : item.originContent;
+  const messageContent = isTranslating ? item.targetContent : item.originContent;
 
   // 메시지 강조 표시 여부
   const shouldHighlight = isActive &&

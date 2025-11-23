@@ -1,15 +1,18 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
-import { TranslateButtonProps } from '../types';
+import { useChatStore } from '../stores/useChatStore';
 
 const { height } = Dimensions.get('window');
 
-const TranslateButton: React.FC<TranslateButtonProps> = ({
-  isTranslating,
-  onToggle,
-  position = 'fixed'
-}) => {
+const TranslateButton = () => {
+  const isTranslating = useChatStore((state) => state.isTranslating);
+  const setIsTranslating = useChatStore((state) => state.setIsTranslating);
+
+  const onToggle = () => {
+    setIsTranslating(!isTranslating);
+  };
+
   if (isTranslating) {
     return (
       <TranslatingButtonBox onPress={onToggle}>
@@ -19,7 +22,7 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
   }
 
   return (
-    <TranslateButtonBox onPress={onToggle} position={position}>
+    <TranslateButtonBox onPress={onToggle} position="fixed">
       <TranslateImage source={require('@/assets/images/translate.png')} />
     </TranslateButtonBox>
   );

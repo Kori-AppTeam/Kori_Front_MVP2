@@ -34,7 +34,6 @@ const ChattingRoomScreen = () => {
   const messageState = useChatMessages(roomId);
   const messageActions = useMessageActions();
   const messageSearch = useMessageSearch(roomId, messageState.state.messages);
-  const [isTranslate, setIsTranslate] = useState(false);
   const userProfile = useUserProfile();
 
   // ----------- effects & handlers ----------- //
@@ -73,7 +72,6 @@ const ChattingRoomScreen = () => {
           <ChattingScreen>
             <MessageList
               myUserId={myUserId}
-              isTranslate={isTranslate}
               onLoadMore={messageState.loadMessages}
               onDeleteMessage={messageActions.deleteMessageWithConfirm}
               onProfilePress={userProfile.actions.fetchProfile}
@@ -108,8 +106,6 @@ const ChattingRoomScreen = () => {
 
             {/* 번역 버튼 */}
             <TranslateButton
-              isTranslating={isTranslate}
-              onToggle={() => setIsTranslate(!isTranslate)}
             />
           </ChattingScreen>
         </KeyboardAvoidingView>

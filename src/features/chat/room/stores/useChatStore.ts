@@ -13,6 +13,7 @@ interface ChatStoreState extends RoomMessagesState {
   removeMessage: (messageId: number) => void;
   setMessages: (messages: ChatMessage[]) => void;
   loadMoreMessages: (messages: ChatMessage[]) => void;
+  setIsTranslating: (isTranslating: boolean) => void;
 
   // 입력 상태
   setCurrentMessage: (text: string) => void;
@@ -40,6 +41,7 @@ const initialState: RoomMessagesState = {
   isFetchingMore: false,
   hasMore: true,
   error: null,
+  isTranslating: false,
 };
 
 export const useChatStore = create<ChatStoreState>()(
@@ -78,6 +80,13 @@ export const useChatStore = create<ChatStoreState>()(
     loadMoreMessages: (messages: ChatMessage[]) => {
       set((state) => {
         state.messages.push(...messages);
+      });
+    },
+
+    // 번역 상태 설정
+    setIsTranslating: (isTranslating: boolean) => {
+      set((state) => {
+        state.isTranslating = isTranslating;
       });
     },
 

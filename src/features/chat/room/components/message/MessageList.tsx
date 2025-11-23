@@ -8,7 +8,6 @@ import MessageItem from './MessageItem';
 
 const MessageList: React.FC<MessageListProps> = ({
   myUserId,
-  isTranslate,
   onLoadMore,
   onDeleteMessage,
   onProfilePress,
@@ -21,7 +20,6 @@ const MessageList: React.FC<MessageListProps> = ({
       index={index}
       messages={messages}
       isMyMessage={myUserId === item.senderId.toString()}
-      isTranslate={isTranslate}
       onDeleteMessage={onDeleteMessage}
       onProfilePress={onProfilePress}
     />

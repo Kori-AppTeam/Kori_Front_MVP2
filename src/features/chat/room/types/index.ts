@@ -33,14 +33,12 @@ export interface MessageItemProps {
   index: number;
   messages: ChatMessage[];
   isMyMessage: boolean;
-  isTranslate: boolean;
   onDeleteMessage: (id: number) => void;
   onProfilePress: (senderId: number) => void;
 }
 
 export interface MessageListProps {
   myUserId: string;
-  isTranslate: boolean;
   onLoadMore: () => void;
   onDeleteMessage: (id: number) => void;
   onProfilePress: (senderId: number) => void;
@@ -70,12 +68,6 @@ export interface MessageInputProps {
   onMessageChange: (text: string) => void;
   onSendMessage: () => void;
   paddingBottom?: number;
-}
-
-export interface TranslateButtonProps {
-  isTranslating: boolean;
-  onToggle: () => void;
-  position?: 'fixed' | 'center';
 }
 
 // ============= Search Components =============
@@ -108,7 +100,7 @@ export interface ChatMessage {
   messageType: string;
 }
 
-// Room별 메시지 상태
+// Room 메시지 상태
 export interface RoomMessagesState {
   messages: ChatMessage[];
   currentMessage: string;
@@ -116,6 +108,7 @@ export interface RoomMessagesState {
   isFetchingMore: boolean;
   hasMore: boolean;
   error: Error | null;
+  isTranslating: boolean;
 }
 
 export interface UserProfileState {
