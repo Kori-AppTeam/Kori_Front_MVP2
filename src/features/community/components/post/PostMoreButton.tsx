@@ -1,3 +1,4 @@
+import Icon from '@/components/common/Icon';
 import React from 'react';
 import styled from 'styled-components/native';
 
@@ -7,12 +8,17 @@ type PostMoreButtonProps = {
 };
 
 const PostMoreButton = ({ postId, authorId }: PostMoreButtonProps) => {
-  return <More>···</More>;
+  return (
+    <IconBtn>
+      <Icon type="eclipsisGaro" size={20} />
+    </IconBtn>
+  );
 };
-const More = styled.Text`
-  margin-left: auto;
-  color: #9aa0a6;
-  font-size: 18px;
+
+const IconBtn = styled.Pressable`
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 export default PostMoreButton;
