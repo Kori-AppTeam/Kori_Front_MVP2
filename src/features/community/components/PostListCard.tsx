@@ -1,20 +1,20 @@
-import AnonymityImage from '@/assets/images/character_04.svg';
 import Icon from '@/components/common/Icon';
 import { CATEGORY_TO_BOARD_ID, CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { Dimensions, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
+import React from 'react';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import { useToggleBookmark } from '../hooks/useToggleBookmark';
 import { useToggleLike } from '../hooks/useToggleLike';
 import { AllowedCategory, PostsListItem, SortParam } from '../types/postsListType';
 import { timeToAgo } from '../utils/indexUtils';
-import UserProfileImg from './UserProfileImg';
 import PostBookmarkButton from './post/PostBookmarkButton';
 import PostComment from './post/PostComment';
 import PostLikeButton from './post/PostLikeButton';
+import PostMoreButton from './post/PostMoreButton';
 import PostTextContent from './post/PostTextContent';
+import PostUserProfileImg from './post/PostUserProfileImg';
 import SingleImage from './post/SingleImage';
 
 type PostCardProps = {
@@ -25,15 +25,6 @@ type PostCardProps = {
 
 export default function PostListCard({ data, sort, category }: PostCardProps) {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
-  const [truncate, setTruncate] = useState({ numberOfLines: 0 });
-
-  const onGetLines = useCallback(
-    (e: NativeSyntheticEvent<TextLayoutEventData>) => {
-      const lines = e.nativeEvent.lines.length;
-      setTruncate({ numberOfLines: lines });
-    },
-    [data.contentPreview],
-  );
 
   const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
   const bookmarkMutation = useToggleBookmark(CATEGORY_TO_BOARD_ID[category], sort);
@@ -54,11 +45,7 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
       >
         <PostHeader>
           <AuthorImageContainer>
-            {!data.isAnonymous && data.userImageUrl ? (
-              <UserProfileImg source={data.userImageUrl} />
-            ) : (
-              <UserProfileImg source={AnonymityImage} />
-            )}
+            <PostUserProfileImg isAnonymous={data.isAnonymous} userImageUrl={data.userImageUrl} />
           </AuthorImageContainer>
 
           <Meta>
@@ -105,7 +92,7 @@ export default function PostListCard({ data, sort, category }: PostCardProps) {
             <PostComment showComment={false} postId={data.postId} commentCount={data.commentCount} />
           </LeftFooter>
 
-          <More>···</More>
+          <PostMoreButton postId={data.postId} authorId={data.authorId} />
         </FooterRow>
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />
@@ -205,9 +192,4 @@ const IconBtn = styled.Pressable`
   align-items: center;
   justify-content: center;
   margin-right: 16px;
-`;
-const More = styled.Text`
-  margin-left: auto;
-  color: #9aa0a6;
-  font-size: 18px;
 `;
