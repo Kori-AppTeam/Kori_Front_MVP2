@@ -20,7 +20,7 @@ type Props = {
   name: string;
   country: string;
   birth?: number;
-  gender?: 'Male' | 'Female' | 'unspecified' | 'NoGender';
+  gender?: 'Male' | 'Female' | string;
   purpose: string;
   languages: string[];
   personalities: string[];
@@ -70,7 +70,6 @@ const genderIconType: Record<NonNullable<Props['gender']>, import('@/components/
   Male: 'maleColored',
   Female: 'femaleColored',
   unspecified: 'nogender',
-  NoGender: 'nogender',
 };
 const toUrl = (u?: string) => {
   if (!u) return undefined;
@@ -90,7 +89,7 @@ export default function FriendCard(props: Props) {
     name,
     country,
     birth,
-    gender = 'unspecified',
+    gender,
     purpose,
     languages = [],
     personalities = [],
@@ -115,6 +114,9 @@ export default function FriendCard(props: Props) {
     defaultExpanded = true,
 
   } = props;
+
+  //gender가 Male 또는 Female이 아닌 경우 'unspecified'로 처리
+  const effectiveGender = gender === 'Male' || gender === 'Female' ? gender : 'unspecified';
 
   const [expanded, setExpanded] = useState(Boolean(defaultExpanded));
   const finalAvatarUrl = imageUrl || toUrl(imageKey);
@@ -157,7 +159,7 @@ export default function FriendCard(props: Props) {
 
               <GenderIconSpacer>
                 <Icon
-                  type={genderIconType[gender]}
+                  type={genderIconType[effectiveGender]}
                   size={16}
                   color={theme.colors.gray.gray_1}
                 />

@@ -7,7 +7,7 @@ export type RecommendedFriendDto = {
   userId: number;
   firstname: string;
   lastname: string;
-  gender: 'Male' | 'Female' | 'unspecified' | 'NoGender';
+  gender: 'Male' | 'Female';
   birthday: number; // YYYY 형식
   country: string;
   introduction: string;
@@ -24,7 +24,7 @@ export type FriendItem = {
   userId: number;
   firstname: string;
   lastname: string;
-  gender: 'Male' | 'Female' | 'unspecified' | 'NoGender';
+  gender: 'Male' | 'Female';
   birthday: number; // YYYY 형식
   country: string;
   introduction: string;
