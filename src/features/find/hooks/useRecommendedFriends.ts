@@ -1,7 +1,7 @@
 // src/features/find/hooks/useRecommendedFriends.ts
 
 import { useQuery } from '@tanstack/react-query';
-import { getRecommendedFriends } from '../api/recommend';
+import { getRecommendedFriends } from '../api/friendRecommend';
 import type { FriendItem } from '../types';
 import { toFriendItem } from '../utils/helpers';
 
