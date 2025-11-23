@@ -1,42 +1,28 @@
 import AnonymityImage from '@/assets/images/character_04.svg';
 import Icon from '@/components/common/Icon';
-import { CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
+import { CATEGORY_TO_BOARD_ID, CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { Dimensions, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import styled from 'styled-components/native';
-import { PostsListItem } from '../types/postsListType';
+import { useToggleBookmark } from '../hooks/useToggleBookmark';
+import { useToggleLike } from '../hooks/useToggleLike';
+import { AllowedCategory, PostsListItem, SortParam } from '../types/postsListType';
 import { limitCount, timeToAgo } from '../utils/indexUtils';
 import UserProfileImg from './UserProfileImg';
+import BookmarkButton from './post/BookmarkButton';
 import SingleImage from './post/SingleImage';
 
-type Props = {
+type PostCardProps = {
   data: PostsListItem;
-  onToggleBookmark: () => void;
-  onToggleLike: () => void;
+  sort: SortParam;
+  category: AllowedCategory;
+  // onToggleBookmark: () => void;
+  // onToggleLike: () => void;
 };
 
-export default function PostListCard(props: Props) {
-  const {
-    postId,
-    contentPreview,
-    authorId,
-    authorName,
-    boardCategory,
-    createdAt,
-    isAnonymous,
-    isBookmarked,
-    isLiked,
-    likeCount,
-    commentCount,
-    viewCount,
-    userImageUrl,
-    contentImageUrl,
-    imageCount,
-    score,
-  } = props.data;
-
+export default function PostListCard({ data, sort, category }: PostCardProps) {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
   const [truncate, setTruncate] = useState({ numberOfLines: 0 });
 
@@ -45,8 +31,19 @@ export default function PostListCard(props: Props) {
       const lines = e.nativeEvent.lines.length;
       setTruncate({ numberOfLines: lines });
     },
-    [contentPreview],
+    [data.contentPreview],
   );
+
+  const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
+  const bookmarkMutation = useToggleBookmark(CATEGORY_TO_BOARD_ID[category], sort);
+
+  const handleToggleLike = (postId: number, isLike: boolean) => {
+    likeMutation.mutate({ postId: postId, liked: isLike });
+  };
+
+  const handleToggleBookmark = (postId: number, isBookmark: boolean) => {
+    bookmarkMutation.mutate({ postId: postId, isBookmarked: isBookmark });
+  };
 
   const handlePostPress = (postId: number) => {
     router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } });
@@ -54,48 +51,56 @@ export default function PostListCard(props: Props) {
 
   return (
     <Container width={SCREEN_WIDTH}>
-      <Wrap width={SCREEN_WIDTH} onPress={() => handlePostPress(postId)}>
+      <Wrap width={SCREEN_WIDTH} onPress={() => handlePostPress(data.postId)}>
+        <PostHeader />
         <PostHeader>
           <AuthorImageContainer>
-            {!isAnonymous && userImageUrl ? (
-              <UserProfileImg source={userImageUrl} />
+            {!data.isAnonymous && data.userImageUrl ? (
+              <UserProfileImg source={data.userImageUrl} />
             ) : (
               <UserProfileImg source={AnonymityImage} />
             )}
           </AuthorImageContainer>
 
           <Meta>
-            <Author>{authorName}</Author>
+            <Author>{data.authorName}</Author>
             <SubRow>
-              <TimeText>{timeToAgo(createdAt)}</TimeText>
+              <TimeText>{timeToAgo(data.createdAt)}</TimeText>
               <CategoryBadge>
-                <CategoryText>{CLIENT_CATEGORY_NAME[boardCategory]}</CategoryText>
+                <CategoryText>{CLIENT_CATEGORY_NAME[data.boardCategory]}</CategoryText>
               </CategoryBadge>
               <Dot>•</Dot>
               <IconBtn>
                 <Icon size={16} type="eye" color="#848687" />
-                <SmallCount>{viewCount}</SmallCount>
+                <SmallCount>{data.viewCount}</SmallCount>
               </IconBtn>
             </SubRow>
           </Meta>
 
-          <BookmarkBtn onPress={() => props.onToggleBookmark()} hitSlop={8}>
-            {isBookmarked ? <Icon size={20} type="bookmarkSelected" /> : <Icon size={20} type="bookmarkNonSelected" />}
-          </BookmarkBtn>
+          <BookmarkButton
+            isBookmarked={data.isBookmarked}
+            onToggleBookmark={() => handleToggleBookmark(data.postId, data.isBookmarked)}
+          />
         </PostHeader>
 
         <ContentBox>
-          {contentImageUrl && (
-            <SingleImage imageUrl={contentImageUrl} imageCount={imageCount} pageWidth={SCREEN_WIDTH - 20 * 2} />
+          {data.contentImageUrl && (
+            <SingleImage
+              imageUrl={data.contentImageUrl}
+              imageCount={data.imageCount}
+              pageWidth={SCREEN_WIDTH - 20 * 2}
+            />
           )}
 
           <ContentText>
-            <HiddenText onTextLayout={onGetLines}>{contentPreview}</HiddenText>
+            <HiddenText onTextLayout={onGetLines}>{data.contentPreview}</HiddenText>
             <Body numberOfLines={2} ellipsizeMode="tail">
-              {contentPreview}
+              {data.contentPreview}
             </Body>
             {truncate.numberOfLines > 2 ? (
-              <MoreContent onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } })}>
+              <MoreContent
+                onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: data.postId } })}
+              >
                 <MoreContentText>more</MoreContentText>
               </MoreContent>
             ) : null}
@@ -104,17 +109,21 @@ export default function PostListCard(props: Props) {
 
         <FooterRow>
           <LeftFooter>
-            <IconBtn onPress={() => props.onToggleLike()} hitSlop={8}>
-              {isLiked ? <Icon size={20} type="thumbsUpSelected" /> : <Icon size={20} type="thumbsUpNonSelected" />}
-              <Count>{limitCount(likeCount)}</Count>
+            <IconBtn onPress={() => handleToggleLike(data.postId, data.isLiked)} hitSlop={8}>
+              {data.isLiked ? (
+                <Icon size={20} type="thumbsUpSelected" />
+              ) : (
+                <Icon size={20} type="thumbsUpNonSelected" />
+              )}
+              <Count>{limitCount(data.likeCount)}</Count>
             </IconBtn>
 
             <IconBtn
               hitSlop={8}
-              onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } })}
+              onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: data.postId } })}
             >
               <Icon size={20} type="comment" />
-              <Count>{limitCount(commentCount)}</Count>
+              <Count>{limitCount(data.commentCount)}</Count>
             </IconBtn>
           </LeftFooter>
 
@@ -196,7 +205,6 @@ const SmallCount = styled.Text`
   font-size: 11px;
   margin-left: 4px;
 `;
-const BookmarkBtn = styled.TouchableOpacity``;
 const ContentBox = styled.View`
   width: 100%;
   padding: 20px 0;
