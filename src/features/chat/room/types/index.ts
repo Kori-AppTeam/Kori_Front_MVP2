@@ -35,7 +35,6 @@ export interface MessageItemProps {
   isMyMessage: boolean;
   isTranslate: boolean;
   searchKeyword?: string;
-  isCurrentMessage?: (messageId: number) => boolean;
   onDeleteMessage: (id: number) => void;
   onProfilePress: (senderId: number) => void;
 }
@@ -44,7 +43,6 @@ export interface MessageListProps {
   myUserId: string;
   isTranslate: boolean;
   searchKeyword?: string;
-  isCurrentMessage?: (messageId: number) => boolean;
   onLoadMore: () => void;
   onDeleteMessage: (id: number) => void;
   onProfilePress: (senderId: number) => void;

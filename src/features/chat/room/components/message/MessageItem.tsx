@@ -2,6 +2,7 @@
 import { formatDate, formatTime } from '@/src/shared/utils/dateUtils';
 import React from 'react';
 import styled from 'styled-components/native';
+import { useSearchStore } from '../../stores/useSearchStore';
 import { MessageItemProps } from '../../types';
 import { displayMessageItem } from '../../utils/displayMessageItem';
 import MyMessageBubble from './MyMessageBubble';
@@ -14,10 +15,11 @@ const MessageItem: React.FC<MessageItemProps> = ({
   isMyMessage,
   isTranslate,
   searchKeyword,
-  isCurrentMessage,
   onDeleteMessage,
   onProfilePress,
 }) => {
+  // Store에서 직접 가져오기
+  const { isActive, searchResults, currentIndex } = useSearchStore();
 
   // 메시지 표시 로직
   const displayLogic = displayMessageItem(item, index, messages);
@@ -29,7 +31,9 @@ const MessageItem: React.FC<MessageItemProps> = ({
   const messageContent = isTranslate ? item.targetContent : item.originContent;
 
   // 메시지 강조 표시 여부
-  const shouldHighlight = isCurrentMessage ? isCurrentMessage(item.id) : false;
+  const shouldHighlight = isActive &&
+    searchResults.length > 0 &&
+    searchResults[currentIndex]?.id === item.id;
 
   return (
     <>

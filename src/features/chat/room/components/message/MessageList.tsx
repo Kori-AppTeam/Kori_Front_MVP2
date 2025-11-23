@@ -10,7 +10,6 @@ const MessageList: React.FC<MessageListProps> = ({
   myUserId,
   isTranslate,
   searchKeyword,
-  isCurrentMessage,
   onLoadMore,
   onDeleteMessage,
   onProfilePress,
@@ -25,7 +24,6 @@ const MessageList: React.FC<MessageListProps> = ({
       isMyMessage={myUserId === item.senderId.toString()}
       isTranslate={isTranslate}
       searchKeyword={searchKeyword}
-      isCurrentMessage={isCurrentMessage}
       onDeleteMessage={onDeleteMessage}
       onProfilePress={onProfilePress}
     />
