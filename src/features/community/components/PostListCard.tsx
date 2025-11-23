@@ -127,16 +127,14 @@ const AuthorImageContainer = styled.View`
   height: 44px;
 `;
 const Meta = styled.View`
-  margin-left: 10px;
+  margin-left: 8px;
   flex: 1;
 `;
 const Author = styled.Text`
-  color: #fff;
-  font-size: 13px;
-  font-family: 'PlusJakartaSans_700Bold';
+  color: ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => textStyle(theme.fonts.body.B4_SB)}
 `;
 const SubRow = styled.View`
-  margin-top: 5px;
   flex-direction: row;
   align-items: center;
   gap: 5px;
@@ -147,22 +145,18 @@ const TimeText = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.small.small_M)}
 `;
 const CategoryBadge = styled.View`
-  padding: 3px 8px;
+  padding: 4px 6px;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   background: #184b3f;
-  opacity: 0.8;
-  color: ${({ theme }) => theme.colors.gray.lightGray_1};
 `;
 const CategoryText = styled.Text`
-  color: #e9e9e9;
-  font-size: 11px;
-  font-family: 'PlusJakartaSans_600SemiBold';
+  color: ${({ theme }) => theme.colors.gray.lightGray_1};
+  ${({ theme }) => textStyle(theme.fonts.small.small_M)}
 `;
 const Dot = styled.Text`
   color: ${({ theme }) => theme.colors.gray.gray_1};
-  font-size: 16;
 `;
 const SmallCount = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.small.small_M)}
@@ -181,11 +175,12 @@ const FooterRow = styled.View`
   width: 100%;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
 `;
 const LeftFooter = styled.View`
   flex-direction: row;
   align-items: center;
-  row-gap: 16;
+  row-gap: 16px;
 `;
 const IconBtn = styled.Pressable`
   flex-direction: row;
