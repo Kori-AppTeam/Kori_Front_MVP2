@@ -52,7 +52,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
           showTime={displayLogic.showTime}
           showProfile={displayLogic.showTime}
           isFirst={!displayLogic.isSameUser}
-          searchKeyword={searchKeyword}
+          searchKeyword={shouldHighlight ? searchKeyword : undefined}
           onProfilePress={() => onProfilePress(item.senderId)}
         />
       )}
