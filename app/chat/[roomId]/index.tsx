@@ -74,7 +74,6 @@ const ChattingRoomScreen = () => {
             <MessageList
               myUserId={myUserId}
               isTranslate={isTranslate}
-              searchKeyword={messageSearch.state.isActive ? messageSearch.state.searchText : undefined}
               onLoadMore={messageState.loadMessages}
               onDeleteMessage={messageActions.deleteMessageWithConfirm}
               onProfilePress={userProfile.actions.fetchProfile}

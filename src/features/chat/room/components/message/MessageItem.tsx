@@ -14,12 +14,11 @@ const MessageItem: React.FC<MessageItemProps> = ({
   messages,
   isMyMessage,
   isTranslate,
-  searchKeyword,
   onDeleteMessage,
   onProfilePress,
 }) => {
   // Store에서 직접 가져오기
-  const { isActive, searchResults, currentIndex } = useSearchStore();
+  const { isActive, searchResults, currentIndex, searchText } = useSearchStore();
 
   // 메시지 표시 로직
   const displayLogic = displayMessageItem(item, index, messages);
@@ -44,7 +43,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
           time={formatTime(item.sentAt)}
           showTime={displayLogic.showTime}
           isFirst={!displayLogic.isSameUser}
-          searchKeyword={shouldHighlight ? searchKeyword : undefined}
+          searchKeyword={shouldHighlight ? searchText : undefined}
           onLongPress={() => onDeleteMessage(item.id)}
         />
       ) : (
@@ -56,7 +55,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
           showTime={displayLogic.showTime}
           showProfile={displayLogic.showTime}
           isFirst={!displayLogic.isSameUser}
-          searchKeyword={shouldHighlight ? searchKeyword : undefined}
+          searchKeyword={shouldHighlight ? searchText : undefined}
           onProfilePress={() => onProfilePress(item.senderId)}
         />
       )}

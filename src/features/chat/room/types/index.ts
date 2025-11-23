@@ -34,7 +34,6 @@ export interface MessageItemProps {
   messages: ChatMessage[];
   isMyMessage: boolean;
   isTranslate: boolean;
-  searchKeyword?: string;
   onDeleteMessage: (id: number) => void;
   onProfilePress: (senderId: number) => void;
 }
@@ -42,7 +41,6 @@ export interface MessageItemProps {
 export interface MessageListProps {
   myUserId: string;
   isTranslate: boolean;
-  searchKeyword?: string;
   onLoadMore: () => void;
   onDeleteMessage: (id: number) => void;
   onProfilePress: (senderId: number) => void;
