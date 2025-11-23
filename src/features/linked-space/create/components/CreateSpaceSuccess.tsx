@@ -49,7 +49,6 @@ const ProfileBox = styled.View`
 const ProfileImage = styled.Image`
   width: 100%;
   height: 100%;
-  resize-mode: contain;
   border-radius: 100px;
 `;
 
