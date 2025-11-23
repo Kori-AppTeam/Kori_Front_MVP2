@@ -1,12 +1,12 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
+import { useChatStore } from '../../stores/useChatStore';
 import { MessageListProps } from '../../types';
 import { ChatMessage } from '../../types/index';
 import MessageItem from './MessageItem';
 
 const MessageList: React.FC<MessageListProps> = ({
-  messages,
   myUserId,
   isTranslate,
   searchKeyword,
@@ -16,6 +16,7 @@ const MessageList: React.FC<MessageListProps> = ({
   onProfilePress,
   flatListRef,
 }) => {
+  const messages = useChatStore((state) => state.messages);
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => (
     <MessageItem
       item={item}
