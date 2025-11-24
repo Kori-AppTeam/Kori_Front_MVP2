@@ -11,19 +11,31 @@ import { textStyle, theme } from '@/src/styles/theme';
 import { SIGNUP_PRIVACY_POLICY_ROUTE, SIGNUP_TERMS_AND_CONDITIONS_ROUTE } from '@/src/shared/constants/route';
 import CustomButton from '@/src/shared/components/CustomButton';
 import Checkbox, { CheckboxProps } from '@/src/shared/components/Checkbox';
+import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
+import { patchLocation } from '@/api/member/location';
 
 interface ConfirmTermsBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
-  onConfirmPress: () => void;
   bottomSheetClose: () => void;
+  loginProvider?: 'apple' | 'google' | 'email';
 }
 
-const ConfirmTermsBottomSheet = ({
-  bottomSheetRef,
-  onConfirmPress,
-  bottomSheetClose,
-}: ConfirmTermsBottomSheetProps) => {
+const ConfirmTermsBottomSheet = ({ bottomSheetRef, bottomSheetClose, loginProvider }: ConfirmTermsBottomSheetProps) => {
   const { confirms, isConfirmedAll, toggleConfirmed, toggleConfirmedAll } = useConfirmTerms();
+
+  const handleButtonPress = async () => {
+    try {
+      const { latitude, longitude } = await requestLocationPermission();
+      await patchLocation(latitude, longitude);
+
+      bottomSheetClose();
+      if (loginProvider === 'apple') {
+        router.push('/screens/makeprofile/GenderStepScreen');
+      } else {
+        router.push('/screens/makeprofile/NameStepScreen');
+      }
+    } catch (error) {}
+  };
 
   const showTermsAndConditions = () => {
     bottomSheetClose();
@@ -62,6 +74,11 @@ const ConfirmTermsBottomSheet = ({
     );
   };
 
+  // loginProvider가 없는 경우 바텀시트를 렌더링하지 않음
+  if (!loginProvider) {
+    return null;
+  }
+
   return (
     <CustomBottomSheet ref={bottomSheetRef}>
       <BottomSheetContent>
@@ -92,7 +109,7 @@ const ConfirmTermsBottomSheet = ({
             onNextPress={showPrivacyPolicy}
           />
         </CheckboxWrapper>
-        <CustomButton label="Confirm" disabled={!isConfirmedAll} onPress={onConfirmPress} />
+        <CustomButton label="Confirm" disabled={!isConfirmedAll} onPress={handleButtonPress} />
       </BottomSheetContent>
     </CustomBottomSheet>
   );

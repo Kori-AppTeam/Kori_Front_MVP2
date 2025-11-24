@@ -104,5 +104,5 @@ const LoginInputWrapper = styled.View`
 const BottomButtonWrapper = styled.View`
   width: 100%;
   gap: 24px;
-  margin-bottom: 80px;
+  margin-bottom: 48px;
 `;
