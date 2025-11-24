@@ -24,7 +24,6 @@ interface MessageSearchHook {
   navigateToDown: () => void;
   clearSearch: () => void;
   isCurrentMessage: (messageId: number) => boolean;
-  getSearchResultText: () => string;
 }
 
 export const useMessageSearch = (roomId: string): MessageSearchHook => {
@@ -144,14 +143,6 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
     return searchResults[currentIndex]?.id === messageId;
   }, [searchResults, currentIndex]);
 
-  /** 검색 결과 텍스트 반환
-   * @return 검색 결과 텍스트 (예: "2/5")
-   */
-  const getSearchResultText = useCallback(() => {
-    if (totalCount === 0) return '';
-    return `${currentIndex + 1}/${totalCount}`;
-  }, [totalCount, currentIndex]);
-
   return {
     state: {
       isActive,
@@ -170,6 +161,5 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
     navigateToDown,
     clearSearch,
     isCurrentMessage,
-    getSearchResultText,
   };
 };

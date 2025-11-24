@@ -24,6 +24,7 @@ interface SearchState {
   clearSearch: () => void;
   incrementIndex: () => void;
   decrementIndex: () => void;
+  getSearchResultText: () => string;
 }
 
 export const useSearchStore = create<SearchState>((set, get) => ({
@@ -108,5 +109,11 @@ export const useSearchStore = create<SearchState>((set, get) => ({
     if (currentIndex - 1 >= 0) {
       set({ currentIndex: currentIndex - 1 });
     }
+  },
+
+  getSearchResultText: () => {
+    const { currentIndex, totalCount } = get();
+    if (totalCount === 0) return '';
+    return `${currentIndex + 1}/${totalCount}`;
   },
 }));

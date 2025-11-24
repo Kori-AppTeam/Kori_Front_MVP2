@@ -83,7 +83,6 @@ const ChattingRoomScreen = () => {
               <SearchNavigation
                 onNavigateUp={() => messageSearch.navigateToUp()}
                 onNavigateDown={() => messageSearch.navigateToDown()}
-                searchResultText={messageSearch.getSearchResultText()}
               />
             ) : (
               <MessageInput

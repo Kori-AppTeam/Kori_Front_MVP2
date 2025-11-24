@@ -74,7 +74,6 @@ export interface MessageInputProps {
 export interface SearchNavigationProps {
   onNavigateUp: () => void;
   onNavigateDown: () => void;
-  searchResultText: string;
 }
 
 // ============= Highlight Text =============

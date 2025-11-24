@@ -7,9 +7,9 @@ import { SearchNavigationProps } from '../../types';
 const SearchNavigation: React.FC<SearchNavigationProps> = ({
   onNavigateUp,
   onNavigateDown,
-  searchResultText,
 }) => {
-  const { isSearching } = useSearchStore();
+  const { isSearching, getSearchResultText } = useSearchStore();
+  const searchResultText = getSearchResultText();
 
   return (
     <NavigationContainer>
