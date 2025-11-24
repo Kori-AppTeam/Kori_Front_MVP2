@@ -14,6 +14,7 @@ interface ChatStoreState extends RoomMessagesState {
   setMessages: (messages: ChatMessage[]) => void;
   loadMoreMessages: (messages: ChatMessage[]) => void;
   setIsTranslating: (isTranslating: boolean) => void;
+  mergeMessages: (newMessages: ChatMessage[]) => void;
 
   // 입력 상태
   setCurrentMessage: (text: string) => void;
@@ -146,5 +147,17 @@ export const useChatStore = create<ChatStoreState>()(
         state.error = error;
       });
     },
+
+    // 메시지 병합
+    mergeMessages: (newMessages: ChatMessage[]) =>
+      set((state) => {
+        const existingIds = new Set(state.messages.map(m => m.id));
+        const uniqueNew = newMessages.filter(m => !existingIds.has(m.id));
+
+        // id 기준으로 정렬된 상태 유지하며 병합
+        const merged = [...state.messages, ...uniqueNew].sort((a, b) => b.id - a.id);
+
+        return { messages: merged };
+      }),
   }))
 );

@@ -36,3 +36,19 @@ export const searchMessagesAPI = async (
     throw new Error('메시지 검색에 실패했습니다');
   }
 };
+
+export const loadMessagesAroundAPI = async (
+  roomId: string,
+  messageId: number
+): Promise<ChatMessage[]> => {
+  try {
+    const res = await api.get(
+      `/api/v1/chat/rooms/${roomId}/messages/around`,
+      { params: { messageId } }
+    );
+    return res.data.data || [];
+  } catch (error) {
+    console.error('주변 메시지 로드 실패:', error);
+    throw error;
+  }
+};

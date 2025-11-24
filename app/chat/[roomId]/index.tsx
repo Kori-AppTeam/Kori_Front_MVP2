@@ -33,7 +33,7 @@ const ChattingRoomScreen = () => {
   // ----------- hooks ----------- //
   const messageState = useChatMessages(roomId);
   const messageActions = useMessageActions();
-  const messageSearch = useMessageSearch(roomId, messageState.state.messages);
+  const messageSearch = useMessageSearch(roomId);
   const userProfile = useUserProfile();
 
   // ----------- effects & handlers ----------- //
