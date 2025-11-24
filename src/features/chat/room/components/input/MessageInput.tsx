@@ -91,5 +91,4 @@ const SendButton = styled(BaseButton) <{ disabled: boolean }>`
 const SendIcon = styled.Image`
   width: 100%;
   height: 100%;
-  resize-mode: contain;
 `;
