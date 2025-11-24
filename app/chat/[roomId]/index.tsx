@@ -1,6 +1,6 @@
 //채팅방 화면
-import api from '@/api/axiosInstance';
 import ProfileModal from '@/components/ProfileModal';
+import { readMessageAllAPI } from '@/src/features/chat/room/api/messages';
 import Header from '@/src/features/chat/room/components/header/Header';
 import MessageInput from '@/src/features/chat/room/components/input/MessageInput';
 import MessageList from '@/src/features/chat/room/components/message/MessageList';
@@ -10,7 +10,6 @@ import { useChatMessages } from '@/src/features/chat/room/hooks/useChatMessages'
 import { useMessageActions } from '@/src/features/chat/room/hooks/useMessageActions';
 import { useMessageSearch } from '@/src/features/chat/room/hooks/useMessageSearch';
 import { useUserProfile } from '@/src/features/chat/room/hooks/useUserProfile';
-import { Config } from '@/src/lib/config';
 import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -31,7 +30,7 @@ const ChattingRoomScreen = () => {
   const [myUserId, setMyUserId] = useState<string>('');
 
   // ----------- hooks ----------- //
-  const messageState = useChatMessages(roomId);
+  const { loadMessages } = useChatMessages(roomId);
   const messageActions = useMessageActions();
   const messageSearch = useMessageSearch(roomId);
   const userProfile = useUserProfile();
@@ -44,7 +43,7 @@ const ChattingRoomScreen = () => {
       setMyUserId(userId || '');
 
       // 채팅방 메시지 모두 읽음 처리
-      await api.post(`${Config.SERVER_URL}/api/v1/chat/rooms/${roomId}/read-all`);
+      await readMessageAllAPI(roomId);
     };
 
     fetchData();
@@ -72,7 +71,7 @@ const ChattingRoomScreen = () => {
           <ChattingScreen>
             <MessageList
               myUserId={myUserId}
-              onLoadMore={messageState.loadMessages}
+              onLoadMore={loadMessages}
               onDeleteMessage={messageActions.deleteMessageWithConfirm}
               onProfilePress={userProfile.actions.fetchProfile}
               flatListRef={messageSearch.flatListRef}
@@ -86,8 +85,6 @@ const ChattingRoomScreen = () => {
               />
             ) : (
               <MessageInput
-                message={messageState.state.currentMessage}
-                onMessageChange={messageState.handleMessageChange}
                 onSendMessage={() => messageActions.sendMessage(roomId)}
                 paddingBottom={insets.bottom}
               />

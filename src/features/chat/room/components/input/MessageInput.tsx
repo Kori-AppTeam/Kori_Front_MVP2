@@ -1,20 +1,20 @@
 import React from 'react';
 import styled from 'styled-components/native';
+import { useChatStore } from '../../stores/useChatStore';
 import { MessageInputProps } from '../../types';
 
 const MessageInput: React.FC<MessageInputProps> = ({
-  message,
-  onMessageChange,
   onSendMessage,
   paddingBottom = 0,
 }) => {
-  const isSendEnabled = message.trim().length > 0;
+  const { currentMessage, setCurrentMessage } = useChatStore();
+  const isSendEnabled = currentMessage.trim().length > 0;
 
   return (
     <InputContainer style={{ paddingBottom }}>
       <InputBox
-        value={message}
-        onChangeText={onMessageChange}
+        value={currentMessage}
+        onChangeText={setCurrentMessage}
         placeholder="Enter a message"
         placeholderTextColor={INPUT_CONFIG.PLACEHOLDER_COLOR}
         multiline={false}

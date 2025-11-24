@@ -1,30 +1,16 @@
 // src/features/chat/room/hooks/useMessageActions.ts
 import { useStompStore } from '@/src/store/useStompStore';
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useChatStore } from '../stores/useChatStore';
 
-interface MessageActionsState {
-  isSending: boolean;
-  isDeleting: boolean;
-  error: Error | null;
-}
-
 interface MessageActionsHook {
-  state: MessageActionsState;
   sendMessage: (roomId: string) => Promise<void>;
-  deleteMessage: (messageId: number) => Promise<void>;
   deleteMessageWithConfirm: (messageId: number) => void;
-  markAsRead: (roomId: string) => Promise<void>;
 }
 
 export const useMessageActions = (): MessageActionsHook => {
-  const [state, setState] = useState<MessageActionsState>({
-    isSending: false,
-    isDeleting: false,
-    error: null,
-  });
 
   // Store에서 필요한 액션 가져오기
   const stompConnection = useStompStore((state) => state);
@@ -40,7 +26,6 @@ export const useMessageActions = (): MessageActionsHook => {
       throw new Error('STOMP 연결이 되어있지 않습니다');
     }
 
-    setState(prev => ({ ...prev, isSending: true, error: null }));
 
     try {
       const myUserId = await SecureStore.getItemAsync('MyuserId');
@@ -59,14 +44,8 @@ export const useMessageActions = (): MessageActionsHook => {
       // 메시지 전송 성공 후 입력창 초기화
       clearCurrentMessage();
 
-      setState(prev => ({ ...prev, isSending: false }));
     } catch (error) {
       console.error('메시지 전송 실패', error);
-      setState(prev => ({
-        ...prev,
-        error: error as Error,
-        isSending: false,
-      }));
       throw error;
     }
   }, [stompConnection, clearCurrentMessage, getCurrentMessage]);
@@ -77,7 +56,6 @@ export const useMessageActions = (): MessageActionsHook => {
       throw new Error('STOMP 연결이 되어있지 않습니다');
     }
 
-    setState(prev => ({ ...prev, isDeleting: true, error: null }));
 
     try {
       const myUserId = await SecureStore.getItemAsync('MyuserId');
@@ -92,15 +70,8 @@ export const useMessageActions = (): MessageActionsHook => {
 
       await stompConnection.publish('/app/chat.deleteMessage', deleteData);
 
-      setState(prev => ({ ...prev, isDeleting: false }));
     } catch (error) {
       console.error('메시지 삭제 실패', error);
-      setState(prev => ({
-        ...prev,
-        error: error as Error,
-        isDeleting: false,
-      }));
-      throw error;
     }
   }, [stompConnection]);
 
@@ -120,22 +91,9 @@ export const useMessageActions = (): MessageActionsHook => {
     );
   }, [deleteMessage]);
 
-  /** 채팅방 읽음 처리 */
-  const markAsRead = useCallback(async (roomId: string) => {
-    try {
-      const api = (await import('@/api/axiosInstance')).default;
-      await api.post(`/api/v1/chat/rooms/${roomId}/read-all`);
-    } catch (error) {
-      console.error('읽음 처리 실패', error);
-      // 읽음 처리 실패는 사용자에게 보여주지 않음
-    }
-  }, []);
 
   return {
-    state,
     sendMessage,
-    deleteMessage,
     deleteMessageWithConfirm,
-    markAsRead,
   };
 };

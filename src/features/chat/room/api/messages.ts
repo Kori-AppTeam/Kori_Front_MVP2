@@ -1,6 +1,15 @@
 import api from '@/api/axiosInstance';
 import { ChatMessage } from '../types/index';
 
+export const readMessageAllAPI = async (roomId: string): Promise<void> => {
+  try {
+    await api.post(`/api/v1/chat/rooms/${roomId}/read-all`);
+  } catch (error) {
+    console.error('모든 메시지 읽음 처리 실패:', error);
+    throw new Error('모든 메시지 읽음 처리에 실패했습니다');
+  }
+};
+
 export const loadMessagesAPI = async (
   roomId: string,
   lastMessageId: string | number

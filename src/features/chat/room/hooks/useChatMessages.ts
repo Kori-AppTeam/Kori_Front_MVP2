@@ -5,14 +5,10 @@ import { useCallback, useEffect, useRef } from 'react';
 import { loadMessagesAPI } from '../api/messages';
 import { updateTranslateStateAPI } from '../api/translation';
 import { useChatStore } from '../stores/useChatStore';
-import { ChatMessage, RoomMessagesState } from '../types/index';
+import { ChatMessage } from '../types/index';
 
 interface ChatMessagesHook {
-  state: RoomMessagesState;
-  handleMessageChange: (text: string) => void;
-  removeMessage: (messageId: number) => void;
   loadMessages: () => Promise<void>;
-  clearMessages: () => void;
 }
 
 export const useChatMessages = (
@@ -140,10 +136,6 @@ export const useChatMessages = (
   }, [stompConnection.connected, roomId, removeMessage]);
 
   return {
-    state,
-    handleMessageChange,
-    removeMessage,
     loadMessages,
-    clearMessages,
   };
 };
