@@ -42,6 +42,7 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
     toggleSearch,
     setSearchText,
     setSearchResults,
+    setIsSearching,
     incrementIndex,
     decrementIndex,
     setError,
@@ -82,6 +83,7 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
       return;
     }
     try {
+      setIsSearching(true);
       const aroundMessages = await loadMessagesAroundAPI(roomId, messageId);
       mergeMessages(aroundMessages);
 
@@ -89,8 +91,10 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
       setTimeout(() => scrollToMessage(messageId), 1000);
     } catch (error) {
       console.error('주변 메시지 로드 실패:', error);
+    } finally {
+      setIsSearching(false);
     }
-  }, [roomId, mergeMessages]);
+  }, [roomId, mergeMessages, setIsSearching, scrollToMessage]);
 
 
 
@@ -114,39 +118,39 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
 
   /** 다음 검색 결과(상단) 이동 */
   const navigateToUp = useCallback(() => {
-    if (!isSearching || searchResults.length === 0) return;
+    if (searchResults.length === 0) return;
     if (currentIndex + 1 >= searchResults.length) return;
 
     incrementIndex(); // Store 액션 호출
     const messageId = searchResults[currentIndex + 1].id;
     checkMessageIsLoaded(messageId);
-  }, [isSearching, searchResults, currentIndex, incrementIndex, checkMessageIsLoaded]);
+  }, [searchResults, currentIndex, incrementIndex, checkMessageIsLoaded]);
 
   /** 이전 검색 결과(하단) 이동 */
   const navigateToDown = useCallback(() => {
-    if (!isSearching || searchResults.length === 0) return;
+    if (searchResults.length === 0) return;
     if (currentIndex - 1 < 0) return;
 
     decrementIndex(); // Store 액션 호출
     const messageId = searchResults[currentIndex - 1].id;
     checkMessageIsLoaded(messageId);
-  }, [isSearching, searchResults, currentIndex, decrementIndex, checkMessageIsLoaded]);
+  }, [searchResults, currentIndex, decrementIndex, checkMessageIsLoaded]);
 
   /** 현재 메시지가 검색 결과인지 확인
    * @param messageId 메시지 ID
    */
   const isCurrentMessage = useCallback((messageId: number) => {
-    if (!isSearching || searchResults.length === 0) return false;
+    if (searchResults.length === 0) return false;
     return searchResults[currentIndex]?.id === messageId;
-  }, [isSearching, searchResults, currentIndex]);
+  }, [searchResults, currentIndex]);
 
   /** 검색 결과 텍스트 반환
    * @return 검색 결과 텍스트 (예: "2/5")
    */
   const getSearchResultText = useCallback(() => {
-    if (!isSearching || totalCount === 0) return '';
+    if (totalCount === 0) return '';
     return `${currentIndex + 1}/${totalCount}`;
-  }, [isSearching, totalCount, currentIndex]);
+  }, [totalCount, currentIndex]);
 
   return {
     state: {

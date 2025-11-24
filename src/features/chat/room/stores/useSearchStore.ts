@@ -75,7 +75,6 @@ export const useSearchStore = create<SearchState>((set, get) => ({
     searchResults: results,
     totalCount: results.length,
     currentIndex: 0,
-    isSearching: true,
     error: null,
   }),
 

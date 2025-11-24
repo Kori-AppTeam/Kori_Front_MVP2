@@ -13,7 +13,7 @@ const SearchNavigation: React.FC<SearchNavigationProps> = ({
 
   return (
     <NavigationContainer>
-      <NavigationButton disabled={!isSearching} onPress={onNavigateUp}>
+      <NavigationButton disabled={isSearching} onPress={onNavigateUp}>
         <ArrowImage
           source={require('@/assets/images/UpArrow.png')}
           style={NAVIGATION_CONFIG.UP_ARROW_STYLE}
@@ -21,7 +21,7 @@ const SearchNavigation: React.FC<SearchNavigationProps> = ({
         />
       </NavigationButton>
 
-      <NavigationButton disabled={!isSearching} onPress={onNavigateDown}>
+      <NavigationButton disabled={isSearching} onPress={onNavigateDown}>
         <ArrowImage
           source={require('@/assets/images/DownArrow.png')}
           style={NAVIGATION_CONFIG.DOWN_ARROW_STYLE}
@@ -29,7 +29,7 @@ const SearchNavigation: React.FC<SearchNavigationProps> = ({
         />
       </NavigationButton>
 
-      {isSearching && searchResultText && (
+      {!isSearching && searchResultText && (
         <ResultText>{searchResultText}</ResultText>
       )}
     </NavigationContainer>

@@ -2,13 +2,14 @@
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { useSearchStore } from '../../stores/useSearchStore';
 import { SearchHeaderProps } from '../../types';
 
 const SearchHeader: React.FC<SearchHeaderProps> = ({ onSearchSubmit }) => {
   const {
+    isSearching,
     searchText,
     setSearchText,
     toggleSearch,
@@ -31,11 +32,18 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({ onSearchSubmit }) => {
       </TouchableOpacity>
 
       <SearchInputContainer>
-        <Icon
-          type="search"
-          size={SEARCH_HEADER_CONFIG.ICON_SIZE}
-          color={theme.colors.gray.lightGray_1}
-        />
+        {isSearching ? (
+          <ActivityIndicator
+            size="small"
+            color={theme.colors.gray.lightGray_1}
+          />
+        ) : (
+          <Icon
+            type="search"
+            size={SEARCH_HEADER_CONFIG.ICON_SIZE}
+            color={theme.colors.gray.lightGray_1}
+          />
+        )}
         <SearchInput
           value={searchText}
           onChangeText={setSearchText}
