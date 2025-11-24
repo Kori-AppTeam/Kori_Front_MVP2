@@ -60,7 +60,6 @@ const CreateSpaceScreen = () => {
         <HeaderContainer>
           <TouchableOpacity onPress={() => router.back()}>
             <Icon type="previous" size={24} color={theme.colors.primary.white} />
-            <Icon type="previous" size={24} color={theme.colors.primary.white} />
           </TouchableOpacity>
           <HeaderTitleText>Create Space</HeaderTitleText>
           <TouchableOpacity onPress={handleSave} disabled={createSpaceMutation.isPending}>
