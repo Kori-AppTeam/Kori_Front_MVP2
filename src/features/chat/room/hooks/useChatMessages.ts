@@ -11,9 +11,7 @@ interface ChatMessagesHook {
   loadMessages: () => Promise<void>;
 }
 
-export const useChatMessages = (
-  roomId: string,
-): ChatMessagesHook => {
+export const useChatMessages = (roomId: string): ChatMessagesHook => {
   const myUserIdRef = useRef<string>('');
 
   const stompConnection = useStompStore((state) => state);
@@ -46,8 +44,6 @@ export const useChatMessages = (
     };
   }, [roomId, initialize]);
 
-
-
   /** 메시지 로드(+무한 스크롤) */
   const loadMessages = useCallback(async () => {
     if (!state.hasMore || state.isFetchingMore) return;
@@ -55,9 +51,7 @@ export const useChatMessages = (
     setFetchingMore(true);
 
     try {
-      const lastMessageId = state.messages.length > 0
-        ? state.messages[state.messages.length - 1].id
-        : '';
+      const lastMessageId = state.messages.length > 0 ? state.messages[state.messages.length - 1].id : '';
       const olderMessages: ChatMessage[] = await loadMessagesAPI(roomId, lastMessageId);
       if (olderMessages.length === 0) {
         setHasMore(false);
@@ -71,29 +65,27 @@ export const useChatMessages = (
       setError(error as Error);
       setFetchingMore(false);
     }
-  }, [roomId, state.messages, state.hasMore, state.isFetchingMore, setFetchingMore, setHasMore, loadMoreMessagesToStore, setError]);
+  }, [
+    roomId,
+    state.messages,
+    state.hasMore,
+    state.isFetchingMore,
+    setFetchingMore,
+    setHasMore,
+    loadMoreMessagesToStore,
+    setError,
+  ]);
 
-  /** 
-   * 메시지 입력 후 상태 업데이트 
-   * @param text 입력된 메시지 텍스트
-   */
-  const handleMessageChange = useCallback((text: string) => {
-    setCurrentMessage(text);
-  }, [setCurrentMessage]);
-
-
-  /** 
-   * 메시지 제거(실시간) 
+  /**
+   * 메시지 제거(실시간)
    * @param messageId 제거할 메시지 ID
    */
-  const removeMessage = useCallback((messageId: number) => {
-    removeMessageFromStore(messageId);
-  }, [removeMessageFromStore]);
-
-  /** 메시지 목록 초기화 */
-  const clearMessages = useCallback(() => {
-    clearMessagesInStore();
-  }, [clearMessagesInStore]);
+  const removeMessage = useCallback(
+    (messageId: number) => {
+      removeMessageFromStore(messageId);
+    },
+    [removeMessageFromStore],
+  );
 
   // STOMP 연결 시 실시간 메시지 구독
   useEffect(() => {
@@ -108,22 +100,16 @@ export const useChatMessages = (
         myUserIdRef.current = myId;
 
         // 실시간 메시지 구독
-        unsubscribeMessages = stompConnection.subscribe(
-          `/topic/user/${myId}/${roomId}/messages`,
-          (message) => {
-            addMessageToStore(message);
-          }
-        );
+        unsubscribeMessages = stompConnection.subscribe(`/topic/user/${myId}/${roomId}/messages`, (message) => {
+          addMessageToStore(message);
+        });
 
         // 메시지 삭제 구독
-        unsubscribeDeletes = stompConnection.subscribe(
-          `/topic/rooms/${roomId}`,
-          (data: any) => {
-            if (data.type === 'delete') {
-              removeMessage(Number(data.id));
-            }
+        unsubscribeDeletes = stompConnection.subscribe(`/topic/rooms/${roomId}`, (data: any) => {
+          if (data.type === 'delete') {
+            removeMessage(Number(data.id));
           }
-        );
+        });
       }
     };
 

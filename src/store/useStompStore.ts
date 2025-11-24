@@ -27,7 +27,7 @@ export const useStompStore = create<StompStore>((set, get) => ({
   error: null,
 
   connect: async () => {
-    const { connecting, connected, client } = get();
+    const { connecting, connected } = get();
     if (connecting || connected) return;
 
     set({ connecting: true, error: null });
@@ -80,7 +80,6 @@ export const useStompStore = create<StompStore>((set, get) => ({
 
       newClient.activate();
       set({ client: newClient });
-
     } catch (error) {
       console.error('STOMP 연결 실패:', error);
       set({ error: error as Error, connecting: false });
@@ -102,7 +101,7 @@ export const useStompStore = create<StompStore>((set, get) => ({
 
     if (!client?.connected || !connected) {
       console.warn('[STOMP] 연결되지 않음');
-      return () => { };
+      return () => {};
     }
 
     // 이미 구독 중이면 해제
