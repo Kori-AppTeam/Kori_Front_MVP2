@@ -3,61 +3,17 @@ import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, StatusBar } from 'react-native';
+import { SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import SkipHeader from './components/SkipHeader';
+import BirthPicker from '@/src/shared/components/BirthPicker';
 
 export default function BirthdaySelectionScreen() {
   const router = useRouter();
-  const [text, setText] = useState('');
+  const [birth, setBirth] = useState(''); // (MM/DD/YYYY 포맷의 최종 날짜)
   const [validbirth, setValidBirth] = useState(false);
   const { profileData, updateProfile } = useProfile();
-
-  const handleChange = (value) => {
-    // 1. 입력값에서 숫자만 추출합니다. (백스페이스 등 처리)
-    const digits = value.replace(/\D/g, '');
-
-    // 2. 길이에 따라 MM/DD/YYYY 형식으로 포맷팅합니다.
-    let formattedValue = digits;
-    if (digits.length > 2 && digits.length <= 4) {
-      // "1234" -> "12/34"
-      formattedValue = `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    } else if (digits.length > 4) {
-      // "12345678" -> "12/34/5678"
-      formattedValue = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
-    }
-
-    // 3. 포맷팅된 값으로 상태를 업데이트합니다.
-    setText(formattedValue);
-
-    // 4. 포맷팅된 값을 기준으로 유효성을 검사합니다. (기존 로직)
-    if (formattedValue.length === 10) {
-      if (validateDate(formattedValue)) {
-        setValidBirth(true);
-      } else {
-        setValidBirth(false);
-      }
-    } else {
-      setValidBirth(false);
-    }
-  };
-
-  const validateDate = (input) => {
-    // 1. MM/DD/YYYY 형식 체크
-    const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-    if (!regex.test(input)) return false;
-
-    // 2. 실제 날짜 존재 여부
-    const [month, day, year] = input.split('/').map(Number);
-    const date = new Date(year, month - 1, day);
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return false;
-
-    // 3. 미래 날짜 방지
-    const today = new Date();
-    if (date > today) return false;
-
-    return true;
-  };
+  const [showPicker, setShowPicker] = useState(false);
 
   const handleSkip = () => {
     updateProfile('birthday', '');
@@ -65,7 +21,7 @@ export default function BirthdaySelectionScreen() {
   };
 
   const moveNextScreen = () => {
-    updateProfile('birthday', text);
+    updateProfile('birthday', birth);
     router.push('./PurposeStepScreen');
   };
 
@@ -86,42 +42,26 @@ export default function BirthdaySelectionScreen() {
           on your profile.
         </Subtitle>
 
-        <BirthBox>
-          <BirthInput
-            value={text}
-            onChangeText={handleChange}
-            placeholder="MM/DD/YYYY"
-            placeholderTextColor="#616262"
-            maxLength={10}
-            isValid={validbirth}
-            isText={text}
-            returnKeyType="done"
-            keyboardType="number-pad"
-          />
-          {validbirth && text.length === 10 ? (
-            <Icon type="check" size={24} color={theme.colors.primary.mint} />
-          ) : !validbirth && text.length === 10 ? (
-            <Icon type="close" size={24} color={theme.colors.secondary.red} />
-          ) : null}
-        </BirthBox>
-
-        {!validbirth && text.length === 10 && (
-          <ErrorWrapper>
-            <ErrorBox>
-              <Icon type="close" size={24} color={theme.colors.secondary.red}/>
-              <ErrorText>Please insert a valid date</ErrorText>
-            </ErrorBox>
-          </ErrorWrapper>
-        )}
+        {/* [수정] BirthInput -> TouchableOpacity + BirthBox + BirthText */}
+        <TouchableOpacity onPress={() => setShowPicker(true)}>
+          <BirthBox>
+            <BirthText isSet={birth !== ''} isText={birth}>
+              {birth || 'MM/DD/YYYY'}
+            </BirthText>
+            {birth !== '' ? <Icon type="check" size={24} color={theme.colors.primary.mint} /> : null}
+          </BirthBox>
+        </TouchableOpacity>
 
         <Spacer />
 
-        <NextButton onPress={moveNextScreen} disabled={!validbirth} isDone={validbirth}>
+        <NextButton onPress={moveNextScreen} disabled={birth === ''} isDone={birth !== ''}>
           <ButtonText>Next</ButtonText>
         </NextButton>
 
         <BottomSpacer />
       </Container>
+
+      <BirthPicker isShow={showPicker} onClose={() => setShowPicker(false)} setDate={(date) => setBirth(date)} />
     </SafeArea>
   );
 }
@@ -129,7 +69,7 @@ export default function BirthdaySelectionScreen() {
 // ------------------------
 // Styled Components
 // ------------------------
-const SafeArea = styled(SafeAreaView)`
+const SafeArea = styled(SafeAreaView)<{ bgColor?: string }>`
   flex: 1;
   background-color: ${(props) => props.bgColor || '#000'};
 `;
@@ -138,7 +78,7 @@ const Container = styled.View`
   flex: 1;
   padding: 0px 20px;
 `;
-
+// ... (StepText, TitleWrapper, Title, Subtitle 동일)
 const StepText = styled.Text`
   color: #5bd08d;
   font-size: 13px;
@@ -166,6 +106,7 @@ const Subtitle = styled.Text`
   font-family: 'PlusJakartaSans-Light';
   line-height: 22px;
 `;
+// ---
 
 const BirthBox = styled.View`
   background-color: #353637;
@@ -176,15 +117,19 @@ const BirthBox = styled.View`
   justify-content: center;
   flex-direction: row;
   align-items: center;
-  padding: 0px 12px 0px 0px;
+  padding: 0px 12px 0px 16px; /* [수정] 왼쪽 패딩 추가 */
 `;
 
-const BirthInput = styled.TextInput`
+// [수정] BirthInput -> BirthText
+const BirthText = styled.Text<{ isSet: boolean; isText: string }>`
   flex: 1;
-  padding-left: 16px;
-  color: ${(props) => (props.isText?.length === 10 ? (props.isValid ? '#ffffff' : '#FF4F4F') : '#ffffff')};
+  font-size: 16px; /* (Input과 맞춤) */
+  font-family: 'PlusJakartaSans-Regular'; /* (Input과 맞춤) */
+  /* [수정] placeholder 및 유효성 검사 색상 */
+  color: ${(props) => (!props.isSet ? '#616262' : '#ffffff')};
 `;
 
+// ... (ErrorWrapper, ErrorBox, ErrorText, Spacer, NextButton, ButtonText, BottomSpacer 동일)
 const ErrorWrapper = styled.View`
   width: 100%;
   margin-top: 210px;
@@ -211,7 +156,7 @@ const Spacer = styled.View`
   flex: 1;
 `;
 
-const NextButton = styled.TouchableOpacity`
+const NextButton = styled.TouchableOpacity<{ isDone: boolean }>`
   height: 50px;
   border-radius: 8px;
   align-items: center;
@@ -230,4 +175,37 @@ const ButtonText = styled.Text`
 
 const BottomSpacer = styled.View`
   height: 25px;
+`;
+// ---
+
+const ModalOverlay = styled.TouchableOpacity.attrs({
+  activeOpacity: 1,
+})`
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: flex-end;
+`;
+
+const ModalContent = styled.View`
+  background-color: #2a2b2d; /* (어두운 테마) */
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  padding-bottom: 30px; /* (Safe Area 하단 여백) */
+`;
+const ModalButtonContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px 20px 0px 20px;
+  border-top-width: 1px;
+  border-color: #4a4b4c; /* (이전 응답에서 이 부분이 잘렸습니다) */
+`;
+
+const ModalButton = styled.TouchableOpacity<{ primary?: boolean }>`
+  padding: 10px 20px;
+`;
+
+const ModalButtonText = styled.Text<{ primary?: boolean }>`
+  font-size: 16px;
+  font-family: 'PlusJakartaSans-SemiBold';
+  color: ${(props) => (props.primary ? theme.colors.primary.mint : theme.colors.gray.gray_1)};
 `;

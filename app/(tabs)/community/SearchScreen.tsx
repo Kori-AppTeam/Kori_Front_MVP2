@@ -1,19 +1,22 @@
-// 수정될 코드 (기획과 다름)
 import api from '@/api/axiosInstance';
-import { addBookmark, removeBookmark } from '@/api/community/bookmarks'; // [추가]
-import CategoryChips, { Category } from '@/components/CategoryChips';
 import Icon from '@/components/common/Icon';
-import PostCard, { Post } from '@/components/PostCard';
-import SortTabs, { SortKey } from '@/components/SortTabs';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
-import { useToggleLike } from '@/hooks/mutations/useToggleLike';
-import useMyProfile from '@/hooks/queries/useMyProfile'; // [추가]
+import useMyProfile from '@/hooks/queries/useMyProfile';
 import { useSearchPosts, type PostExFromSearch } from '@/hooks/queries/useSearchPosts';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
+import CategoryChips from '@/src/features/community/components/CategoryChips';
+import PostCard from '@/src/features/community/components/PostCard';
+import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
+import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
+import { SearchedPostEx, SearchedPosts, SearchedPostsResp } from '@/src/features/community/types/searchedPostsType';
+import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
 import { usePostUI } from '@/src/store/usePostUI';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -25,84 +28,14 @@ import {
   type FlatListProps,
 } from 'react-native';
 import styled from 'styled-components/native';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-
-// ... (ICON, AV, MAX_IMAGES, 타입 정의, 헬퍼 함수들은 변경 없음) ...
 const ICON = require('@/assets/images/IsolationMode.png');
 const AV = require('@/assets/images/character1.png');
 
 const MAX_IMAGES = 5;
 
-type PostsListItem = {
-  postId: number;
-  title?: string;
-  contentPreview?: string;
-  content?: string;
-  authorName?: string;
-  createdAt?: string | number;
-  createdTime?: string | number;
-  likeCount?: number;
-  commentCount?: number;
-  viewCount?: number;
-  score?: number;
-  likedByMe?: boolean;
-  isLike?: boolean;
-  isLiked?: boolean;
-
-  contentImageUrls?: string[];
-  imageUrls?: string[];
-  contentImageUrl?: string;
-  imageUrl?: string;
-
-  userImageUrl?: string;
-};
-
-type PostsListResp = {
-  success: boolean;
-  data: {
-    items: PostsListItem[];
-    hasNext: boolean;
-    nextCursor?: string;
-  };
-  timestamp?: string;
-};
-
-function pad2(n: number) {
-  return n < 10 ? `0${n}` : String(n);
-}
-function parseDateFlexible(v?: unknown): Date | null {
-  if (v == null) return null;
-  let s = String(v).trim();
-  if (/^\d+(\.\d+)?$/.test(s)) return new Date(parseFloat(s) * 1000);
-  if (!s.includes('T') && s.includes(' ')) s = s.replace(' ', 'T');
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? null : d;
-}
 function toDateLabel(raw?: unknown, fallbackIso?: string): string {
-  let d = parseDateFlexible(raw);
-  if ((!d || isNaN(d.getTime())) && fallbackIso) d = parseDateFlexible(fallbackIso);
-  if (!d) return '';
-  try {
-    const fmt = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Seoul',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-    return fmt.format(d).replace(/-/g, '/');
-  } catch {
-    return `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}`;
-  }
+  return formatCreatedYMD(raw, fallbackIso);
 }
-
-type PostEx = Post & {
-  postId: number;
-  hotScore?: number;
-  minutesAgo?: number;
-  bookmarked?: boolean;
-  likedByMe?: boolean;
-  userImageUrl?: string;
-};
 
 function resolveAuthor(row: any): string {
   const isAnon = row?.isAnonymous ?? row?.anonymous ?? false;
@@ -117,10 +50,10 @@ function resolveAuthor(row: any): string {
   ]
     .map((v) => (v == null ? undefined : String(v).trim()))
     .filter(Boolean) as string[];
-  return (isAnon ? cands[0] || '익명' : cands[0]) || '익명';
+  return (isAnon ? cands[0] || 'Anonymity' : cands[0]) || 'Anonymity';
 }
 
-const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
+const mapItem = (row: SearchedPosts, respTimestamp?: string): SearchedPostEx => {
   const createdRaw = row.createdAt ?? row.createdTime;
   const liked = (row as any).likedByMe ?? (row as any).isLike ?? (row as any).isLiked ?? false;
 
@@ -134,7 +67,7 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
     postId: row.postId,
     author: resolveAuthor(row),
     avatar: row.userImageUrl ? { uri: row.userImageUrl } : AV,
-    category: 'Free talk', // [참고] 카테고리는 'All'이 아니면 고정되어야 할 수 있습니다.
+    category: 'Free talk',
     createdAt: toDateLabel(createdRaw, respTimestamp),
     body: row.contentPreview ?? row.content ?? '',
     likes: Number(row.likeCount ?? 0),
@@ -147,10 +80,12 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
 };
 
 export default function CommunityScreen() {
-  const [cat, setCat] = useState<Category>('All');
-  const [sort, setSort] = useState<SortKey>('new');
-  const [profileModalVisible, setProfileModalVisible] = useState(false);
-  const [items, setItems] = useState<PostEx[]>([]);
+  const [cat, setCat] = useState<AllowedCategory>('ALL');
+  const [sort, setSort] = useState<SortParam>('LATEST');
+  const isFirstRender = useRef(true);
+  const callCountRef = useRef(0);
+  const isFirstMount = useRef(true);
+  const [items, setItems] = useState<SearchedPostEx[]>([]);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -158,18 +93,17 @@ export default function CommunityScreen() {
   const [checkingProfile, setCheckingProfile] = useState(false);
   const [imagesById, setImagesById] = useState<Record<number, string[]>>({});
   const fetchedRef = useRef<Set<number>>(new Set());
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const params = useLocalSearchParams();
 
-  const sortParam = sort === 'new' ? 'LATEST' : 'POPULAR';
+  const sortParam = sort === 'LATEST' ? 'LATEST' : 'POPULAR';
   const boardId = CATEGORY_TO_BOARD_ID[cat];
 
-  const likeMutation = useToggleLike();
-  const { data: me } = useMyProfile(); // [추가]
-
-  // [추가] Post UI 상태 (좋아요, 북마크 동기화)
+  const likeMutation = useToggleLike(boardId, sort);
+  const { data: me } = useMyProfile();
   const { bookmarked, toggleBookmarked, setBookmarked, liked, setLiked, toggleLiked, likeCount, setLikeCount } =
     usePostUI();
 
-  // [추가] myId 가져오기
   const myId = useMemo(() => {
     const raw = (me as any)?.memberId ?? (me as any)?.id ?? (me as any)?.userId;
     const n = typeof raw === 'number' ? raw : Number(raw);
@@ -193,18 +127,18 @@ export default function CommunityScreen() {
     });
   }, [items, canQuery, effectiveQ]);
 
-  const resultsOnly: PostEx[] = useMemo(() => {
+  const resultsOnly: SearchedPostEx[] = useMemo(() => {
     if (!canQuery) return [];
-    const normalize = (x: PostEx | PostExFromSearch): PostEx => ({
+    const normalize = (x: SearchedPostEx | PostExFromSearch): SearchedPostEx => ({
       ...x,
       postId: Number(x.postId),
       id: String(x.postId),
     });
 
     const seen = new Set<number>();
-    const out: PostEx[] = [];
+    const out: SearchedPostEx[] = [];
 
-    const pushUnique = (arr: (PostEx | PostExFromSearch)[]) => {
+    const pushUnique = (arr: (SearchedPostEx | PostExFromSearch)[]) => {
       for (const raw of arr) {
         const p = normalize(raw as any);
         if (!seen.has(p.postId)) {
@@ -219,9 +153,8 @@ export default function CommunityScreen() {
     return out;
   }, [canQuery, remoteHits, localMatches]);
 
-  const [visible, setVisible] = useState<PostEx[]>([]);
+  const [visible, setVisible] = useState<SearchedPostEx[]>([]);
   useEffect(() => {
-    // [수정] items가 변경될 때, 로컬의 좋아요/북마크 상태를 반영합니다.
     setVisible(
       items.map((it) => ({
         ...it,
@@ -233,11 +166,10 @@ export default function CommunityScreen() {
     );
   }, [items, imagesById, bookmarked, liked, likeCount]);
 
-  // ... (composed 로직은 변경 없음) ...
-  const composed: PostEx[] = useMemo(() => {
+  const composed: SearchedPostEx[] = useMemo(() => {
     if (!canQuery) return visible;
 
-    const normalize = (x: PostEx | PostExFromSearch): PostEx => ({
+    const normalize = (x: SearchedPostEx | PostExFromSearch): SearchedPostEx => ({
       ...x,
       postId: Number(x.postId),
       id: String(x.postId),
@@ -246,8 +178,8 @@ export default function CommunityScreen() {
     const primary = [...remoteHits.map(normalize), ...localMatches.map(normalize)];
 
     const seen = new Set<number>();
-    const out: PostEx[] = [];
-    const pushUnique = (arr: PostEx[]) => {
+    const out: SearchedPostEx[] = [];
+    const pushUnique = (arr: SearchedPostEx[]) => {
       for (const p of arr) {
         if (!seen.has(p.postId)) {
           seen.add(p.postId);
@@ -261,70 +193,27 @@ export default function CommunityScreen() {
     return out;
   }, [canQuery, remoteHits, localMatches, visible]);
 
-  // --- 👇 [수정] handleWritePress ---
   const handleWritePress = async () => {
-    if (checkingProfile) return; // checkingProfile state 사용
+    if (checkingProfile) return;
     if (!myId) {
       Alert.alert('Error', 'Could not verify user profile. Please try again.');
       return;
     }
 
-    setCheckingProfile(true); // state 사용
+    setCheckingProfile(true);
     try {
-      const { data } = await api.get<{ userId: number; profileCompleted: boolean }>(
-        `/api/v1/member/is-completed/${myId}`, // [수정] myId 사용
-      );
+      const { data } = await api.get<{ userId: number; profileCompleted: boolean }>(`/api/v1/member/is-completed`);
 
       if (data?.profileCompleted) {
-        // [수정] data.data -> data
         router.push('/community/write');
       } else {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to write a post.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true); // alert를 모달로 변경
       }
     } catch (error: any) {
       console.error('프로필 확인 실패:', error);
       Alert.alert('Error', error?.response?.data?.message ?? 'Failed to check profile.');
     } finally {
-      setCheckingProfile(false); // state 사용
-    }
-  };
-  // --- 👆 [수정] ---
-
-  const openSearch = () => {
-    setSearchOpen(true);
-    requestAnimationFrame(() => inputRef.current?.focus());
-  };
-  const closeSearch = () => {
-    setQ('');
-    setSearchOpen(false);
-  };
-
-  useEffect(() => {
-    refresh();
-  }, [boardId, sortParam]);
-
-  const fetchPage = async (after?: string) => {
-    if (loading) return;
-    setLoading(true);
-    try {
-      const { data } = await api.get<PostsListResp>(`/api/v1/boards/${boardId}/posts`, {
-        params: { sort: sortParam, size: 20, ...(after ? { cursor: after } : null) },
-      });
-      const respTimestamp = data?.timestamp;
-      const list = (data?.data?.items ?? []).map((item) => mapItem(item, respTimestamp));
-      setItems((prev) => (after ? [...prev, ...list] : list));
-      setHasNext(Boolean(data?.data?.hasNext));
-      setCursor(data?.data?.nextCursor);
-      setImagesById({});
-      fetchedRef.current.clear();
-    } catch (e) {
-      console.error('[community:list] error', e);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+      setCheckingProfile(false);
     }
   };
 
@@ -335,12 +224,56 @@ export default function CommunityScreen() {
     fetchPage(undefined);
   };
 
+  const openSearch = () => {
+    setSearchOpen(true);
+  };
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+  };
+
+  useEffect(() => {
+    setSearchOpen(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }, []);
+
+  useEffect(() => {
+    callCountRef.current++;
+    refresh();
+  }, [boardId, sortParam]);
+
+  const fetchPage = async (after?: string) => {
+    if (loading) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data } = await api.get<SearchedPostsResp>(`/api/v1/boards/${boardId}/posts`, {
+        params: { sort: sortParam, size: 20, ...(after ? { cursor: after } : null) },
+      });
+
+      const respTimestamp = data?.timestamp;
+      const list = (data?.data?.items ?? []).map((item) => mapItem(item, respTimestamp));
+      setItems((prev) => (after ? [...prev, ...list] : list));
+      setHasNext(Boolean(data?.data?.hasNext));
+      setCursor(data?.data?.nextCursor);
+      setImagesById({});
+      fetchedRef.current.clear();
+    } catch (e) {
+      console.error('[fetchPage] 에러:', e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
   const loadMore = () => {
     if (!hasNext || !cursor || loading) return;
     fetchPage(cursor);
   };
 
-  // --- 👇 [수정] handlePostPress ---
   const handlePostPress = async (postId: number) => {
     if (checkingProfile) return;
     if (!myId) {
@@ -350,18 +283,12 @@ export default function CommunityScreen() {
 
     setCheckingProfile(true);
     try {
-      const { data } = await api.get<{ userId: number; profileCompleted: boolean }>(
-        `/api/v1/member/is-completed/${myId}`, // [수정] myId 사용
-      );
+      const { data } = await api.get<{ userId: number; profileCompleted: boolean }>(`/api/v1/member/is-completed`);
 
       if (data?.profileCompleted) {
-        // [수정] data.data -> data
         router.push({ pathname: '/community/[id]', params: { id: String(postId) } });
       } else {
-        Alert.alert('Profile Setup Required', 'Please complete your profile setup to view posts.', [
-          { text: 'Go to Setup', onPress: () => router.push('/(tabs)/mypage/edit' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]);
+        setProfileModalVisible(true); // alert를 modal로 변경
       }
     } catch (error: any) {
       console.error('프로필 확인 실패:', error);
@@ -370,9 +297,7 @@ export default function CommunityScreen() {
       setCheckingProfile(false);
     }
   };
-  // --- 👆 [수정] ---
 
-  // ... (hydrateImages, onViewableItemsChanged, viewConfig는 변경 없음) ...
   const hydrateImages = useCallback(async (postId: number) => {
     if (fetchedRef.current.has(postId)) return;
     fetchedRef.current.add(postId);
@@ -388,17 +313,26 @@ export default function CommunityScreen() {
     } catch (e) {}
   }, []);
 
-  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    for (const v of viewableItems) {
-      const it = v.item as PostEx | undefined;
-      if (!it) continue;
-      const hasEnough = Array.isArray(it.images) && it.images.length >= 2;
-      if (!hasEnough) hydrateImages(it.postId);
-    }
-  }).current;
+  useEffect(() => {
+    isFirstMount.current = false;
+  }, []);
+
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (isFirstMount.current || searchOpen || canQuery) return;
+
+      for (const v of viewableItems) {
+        const it = v.item as SearchedPostEx | undefined;
+        if (!it) continue;
+        const hasEnough = Array.isArray(it.images) && it.images.length >= 2;
+        if (!hasEnough) hydrateImages(it.postId);
+      }
+    },
+    [searchOpen, canQuery, hydrateImages],
+  );
+
   const viewConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
-  // --- 👇 [수정] handleToggleLike ---
   const handleToggleLike = async (postId: number) => {
     const target = items.find((p) => p.postId === postId);
     const prevLiked = Boolean(liked[postId] ?? target?.likedByMe);
@@ -407,7 +341,6 @@ export default function CommunityScreen() {
     const delta = prevLiked ? -1 : +1;
     const nextCount = Math.max(0, prevCount + delta);
 
-    // 1. 로컬 UI 상태 즉시 업데이트 (usePostUI store + local items)
     toggleLiked(postId);
     setLikeCount(postId, nextCount);
     setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: nextLiked, likes: nextCount } : p)));
@@ -415,12 +348,10 @@ export default function CommunityScreen() {
     try {
       await likeMutation.mutateAsync({ postId, liked: prevLiked });
     } catch (e: any) {
-      // 2. 롤백
       setLiked(postId, prevLiked);
       setLikeCount(postId, prevCount);
       setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, likedByMe: prevLiked, likes: prevCount } : p)));
 
-      // 3. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
         setProfileModalVisible(true);
@@ -429,9 +360,7 @@ export default function CommunityScreen() {
       console.error('[like:list] error', e);
     }
   };
-  // --- 👆 [수정] ---
 
-  // --- 👇 [수정] handleToggleBookmark ---
   const bmBusyRef = useRef<Record<number, boolean>>({});
   const handleToggleBookmark = async (postId: number) => {
     if (bmBusyRef.current[postId]) return;
@@ -441,27 +370,22 @@ export default function CommunityScreen() {
     const before = Boolean(bookmarked[postId] ?? target?.bookmarked);
     const next = !before;
 
-    // 1. 로컬 UI 상태 즉시 업데이트
     toggleBookmarked(postId);
     setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, bookmarked: next } : p)));
 
     try {
-      // 2. API 호출
       if (next) {
         await addBookmark(postId);
       } else {
         await removeBookmark(postId);
       }
     } catch (e: any) {
-      // 3. 롤백
       setBookmarked(postId, before);
       setItems((prev) => prev.map((p) => (p.postId === postId ? { ...p, bookmarked: before } : p)));
 
-      // 4. [추가] 428 에러 체크
       const status = e?.response?.status;
       if (status === 428) {
         setProfileModalVisible(true);
-        return;
       } else {
         console.error('[bookmark:list] error', e);
       }
@@ -469,21 +393,19 @@ export default function CommunityScreen() {
       bmBusyRef.current[postId] = false;
     }
   };
-  // --- 👆 [수정] ---
 
-  const renderPost: ListRenderItem<PostEx> = ({ item }) => (
+  const renderPost: ListRenderItem<SearchedPostEx> = ({ item }) => (
     <PostCard
       data={{
         ...item,
-        category: cat === 'All' ? item.category : cat,
-        // [수정] store의 최신 상태를 PostCard에 주입
+        category: cat === 'ALL' ? item.category : cat,
         bookmarked: bookmarked[item.postId] ?? item.bookmarked,
         likedByMe: liked[item.postId] ?? item.likedByMe,
         likes: likeCount[item.postId] ?? item.likes,
       }}
       onPress={() => handlePostPress(item.postId)}
       onToggleLike={() => handleToggleLike(item.postId)}
-      onToggleBookmark={() => handleToggleBookmark(item.postId)} // [수정]
+      onToggleBookmark={() => handleToggleBookmark(item.postId)}
     />
   );
 
@@ -518,7 +440,12 @@ export default function CommunityScreen() {
                   <AntDesign name="close" size={14} color="#cfd4da" />
                 </ClearBtn>
               )}
-              <CancelBtn onPress={closeSearch}>
+              <CancelBtn
+                onPress={() => {
+                  closeSearch();
+                  router.push('/community');
+                }}
+              >
                 <CancelText>Cancel</CancelText>
               </CancelBtn>
             </SearchBox>
@@ -541,16 +468,16 @@ export default function CommunityScreen() {
       </Header>
 
       <ChipsWrap>
-        <CategoryChips value={cat} onChange={setCat} />
+        <CategoryChips value={cat} onPress={setCat} />
       </ChipsWrap>
 
       <SortWrap>
-        <SortTabs value={sort} onChange={setSort} />
+        <SortTabs value={sort} onPress={setSort} />
       </SortWrap>
 
       <List
-        data={canQuery ? resultsOnly : visible} // [수정] visible이 좋아요/북마크를 반영
-        keyExtractor={(it: PostEx) => String(it.postId)}
+        data={canQuery ? resultsOnly : visible}
+        keyExtractor={(it: SearchedPostEx) => String(it.postId)}
         renderItem={renderPost}
         showsVerticalScrollIndicator={false}
         onEndReachedThreshold={0.4}
@@ -558,7 +485,7 @@ export default function CommunityScreen() {
         refreshing={refreshing}
         onRefresh={refresh}
         ListFooterComponent={
-          loading && !refreshing ? ( // [수정]
+          loading && !refreshing ? (
             <FooterLoading>
               <ActivityIndicator />
             </FooterLoading>
@@ -577,7 +504,7 @@ export default function CommunityScreen() {
         viewabilityConfig={viewConfig}
       />
 
-      <WriteFab onPress={handleWritePress} disabled={checkingProfile} />
+      <WriteFab onHandleWritePress={handleWritePress} disabled={checkingProfile} />
       {/* [수정] checking -> checkingProfile */}
       <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
@@ -627,7 +554,7 @@ const SortWrap = styled.View`
   margin-top: 20px;
   margin-bottom: 14px;
 `;
-const List = styled(FlatList as React.ComponentType<FlatListProps<PostEx>>)``;
+const List = styled(FlatList as React.ComponentType<FlatListProps<SearchedPostEx>>)``;
 const FooterLoading = styled.View`
   padding: 16px 0;
 `;

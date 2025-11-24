@@ -71,7 +71,7 @@ export default function ChatScreen() {
 
         {isGroupChat && (
           <CreateSpaceButton onPress={createNewSpace}>
-            <Icon type="plus" size={24} color="black" />
+            <Icon type="plus" size={20} color="black" />
           </CreateSpaceButton>
         )}
       </Container>
@@ -152,16 +152,11 @@ const CreateSpaceButton = styled.TouchableOpacity`
   position: absolute;
   bottom: 20px;
   right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 30px;
+  width: 54px;
+  height: 54px;
+  border-radius: 100px;
   background-color: #02f59b;
   justify-content: center;
   align-items: center;
   z-index: 999;
-  elevation: 5;
-  shadow-color: #000;
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.3;
-  shadow-radius: 3.84px;
 `;

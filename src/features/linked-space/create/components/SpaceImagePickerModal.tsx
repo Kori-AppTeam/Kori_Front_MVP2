@@ -1,5 +1,5 @@
 import Icon from '@/components/common/Icon';
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/src/shared/components/CustomButton';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
 import { Modal } from 'react-native';
@@ -40,10 +40,7 @@ export const SpaceImagePickerModal: React.FC<SpaceImagePickerModalProps> = ({
             {DEFAULT_AVATARS.map((avatar, idx) => {
               const selected = idx === selectedAvatarIdx && !customPhotoUri;
               return (
-                <AvatarItem
-                  key={idx}
-                  onPress={() => onSelectDefaultAvatar(idx)}
-                >
+                <AvatarItem key={idx} onPress={() => onSelectDefaultAvatar(idx)}>
                   <AvatarCircle selected={selected}>
                     <AvatarImg source={avatar.source} />
                     {selected && (

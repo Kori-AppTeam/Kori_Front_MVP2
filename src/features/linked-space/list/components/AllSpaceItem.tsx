@@ -19,22 +19,14 @@ export const AllSpaceItem = ({ data }: { data: LinkedSpace }) => {
     <AllSpacesBox onPress={checkDetail}>
       <AllSpaceTitleContainer>
         <AllSpaceTitle>{data.roomName}</AllSpaceTitle>
-        <AllSpaceTitleContent>
-          {data.description}
-        </AllSpaceTitleContent>
+        <AllSpaceTitleContent>{data.description}</AllSpaceTitleContent>
         <AllSpaceMemberContainer>
           <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
           <AllSpaceMemberCount>{data.userCount ?? data.userCount} members</AllSpaceMemberCount>
         </AllSpaceMemberContainer>
       </AllSpaceTitleContainer>
       <AllSpaceImageContainer>
-        <AllSpaceImage
-          source={
-            data.roomImageUrl
-              ? { uri: data.roomImageUrl } // URL이 있으면 원격 이미지
-              : require('@/assets/images/character1.png') // 없으면 로컬 디폴트 이미지
-          }
-        />
+        <AllSpaceImage imageUrl={data.roomImageUrl} isVisitor={!data.roomImageUrl} />
       </AllSpaceImageContainer>
     </AllSpacesBox>
   );

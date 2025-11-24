@@ -45,10 +45,9 @@ export const formatDate = (utcSeconds: string | number): string => {
 };
 
 /**
- * 자유게시판 상세조회
+ * 유연한 날짜 파싱
  */
-
-export function parseDateFlexible(v?: string | number | Date | null): Date | null {
+export function parseDateFlexible(v?: unknown): Date | null {
   if (v == null) return null;
 
   let s = String(v).trim();
@@ -66,17 +65,18 @@ export function parseDateFlexible(v?: string | number | Date | null): Date | nul
 }
 
 /**
- * 한 자리 숫자를 2자리 문자열로 포맷 s
+ * 한 자리 숫자를 2자리 문자열로 포맷
  */
 export function pad2(n: number): string {
   return n < 10 ? `0${n}` : String(n);
 }
 
 /**
- * 날짜를 YYYY/MM/DD 형식으로 포맷
+ * 날짜를 YYYY/MM/DD 형식으로 포맷 (Asia/Seoul 타임존)
  */
-export function formatCreatedYMD(v?: string | number | Date | null): string {
-  const d = parseDateFlexible(v);
+export function formatCreatedYMD(v?: unknown, fallbackIso?: string): string {
+  let d = parseDateFlexible(v);
+  if ((!d || isNaN(d.getTime())) && fallbackIso) d = parseDateFlexible(fallbackIso);
   if (!d) return '';
 
   try {

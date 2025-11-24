@@ -9,12 +9,7 @@ import { CreateSpaceFormData } from '@/src/features/linked-space/create/types';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StatusBar,
-  TouchableOpacity,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StatusBar, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 const CreateSpaceScreen = () => {
@@ -54,12 +49,7 @@ const CreateSpaceScreen = () => {
 
   // 성공 화면 렌더링
   if (showSuccess) {
-    return (
-      <CreateSpaceSuccess
-        spaceImageUrl={finalImageUrl}
-        onDone={handleDone}
-      />
-    );
+    return <CreateSpaceSuccess spaceImageUrl={finalImageUrl} onDone={handleDone} />;
   }
 
   // 폼 화면 렌더링
@@ -69,6 +59,7 @@ const CreateSpaceScreen = () => {
       <Container>
         <HeaderContainer>
           <TouchableOpacity onPress={() => router.back()}>
+            <Icon type="previous" size={24} color={theme.colors.primary.white} />
             <Icon type="previous" size={24} color={theme.colors.primary.white} />
           </TouchableOpacity>
           <HeaderTitleText>Create Space</HeaderTitleText>

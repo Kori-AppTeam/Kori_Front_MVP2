@@ -3,6 +3,7 @@ import { StatusBar, Animated } from 'react-native';
 import styled from 'styled-components/native';
 import { useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
 
 SplashScreen.preventAutoHideAsync();
 // SafeArea, Container styled-components
@@ -33,7 +34,7 @@ const CustomSplashScreen = () => {
         duration: 500,
         useNativeDriver: true,
       }).start(() => {
-        router.replace('../../login');
+        router.replace(AUTH_ROUTE);
       });
     }, 1000);
 

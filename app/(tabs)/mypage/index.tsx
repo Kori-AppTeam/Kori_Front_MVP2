@@ -1,12 +1,13 @@
 import api from '@/api/axiosInstance';
-import Avatar from '@/components/Avatar';
 import Icon from '@/components/common/Icon';
-import CustomButton from '@/components/CustomButton';
+import ProfileImage from '@/components/common/ProfileImage';
+import CustomButton from '@/src/shared/components/CustomButton';
 import { useDeleteAccount } from '@/hooks/mutations/useDeleteAccount';
 import { useUpdateProfile } from '@/hooks/mutations/useUpdateProfile';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { uploadLocalImageAndGetKey } from '@/lib/mypage/uploadImage';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
@@ -140,11 +141,11 @@ export default function MyPageScreen() {
                       'If the linkage isn’t removed, then when re-registering with the same Apple ID later',
                       'providing your email and name may be restricted.',
                     ].join('\n'),
-                    [{ text: 'OK', onPress: () => router.replace('/login') }],
+                    [{ text: 'OK', onPress: () => router.replace(AUTH_ROUTE) }],
                   );
                 } else {
                   Alert.alert('Account deleted', 'Your account has been removed.', [
-                    { text: 'OK', onPress: () => router.replace('/login') },
+                    { text: 'OK', onPress: () => router.replace(AUTH_ROUTE) },
                   ]);
                 }
               },
@@ -261,7 +262,7 @@ export default function MyPageScreen() {
             await api.post(`${Config.SERVER_URL}/api/v1/member/logout`);
             await SecureStore.deleteItemAsync('jwt');
             await SecureStore.deleteItemAsync('refresh');
-            router.replace('/login');
+            router.replace(AUTH_ROUTE);
           } catch (error) {
             console.error('로그아웃 실패', error);
           }
@@ -282,7 +283,10 @@ export default function MyPageScreen() {
 
         <ProfileView>
           <AvatarPress onPress={openAvatarSheet}>
-            <Avatar uri={toUrl(avatarKeyOrUrl)} />
+            <AvatarMain
+              imageUrl={displayAvatarUrl}
+              isVisitor={!displayAvatarUrl} // URL 없을 때 방문자 기본 이미지
+            />
           </AvatarPress>
 
           <Name numberOfLines={1} ellipsizeMode="tail">
@@ -305,7 +309,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Friends List</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -340,7 +344,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Chat Translation Language</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -355,7 +359,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Notification</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -370,7 +374,7 @@ export default function MyPageScreen() {
           <RowLeft>
             <Text>Account Logout</Text>
           </RowLeft>
-          <Icon type="next" size={20} color={theme.colors.primary.white}/>
+          <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
 
@@ -446,31 +450,13 @@ const SectionTitleRow = styled.View`
   gap: 4px;
 `;
 function SectionTitleIcon() {
-  return (
-    <Icon
-      type="person"
-      size={16}
-      color={theme.colors.gray.gray_1}
-    />
-  );
+  return <Icon type="person" size={16} color={theme.colors.gray.gray_1} />;
 }
 function SectionTitleIconGlobe() {
-  return (
-    <Icon
-      type="global"
-      size={16}
-      color={theme.colors.gray.gray_1}
-    />
-  );
+  return <Icon type="global" size={16} color={theme.colors.gray.gray_1} />;
 }
 function SectionTitleIconAccount() {
-  return (
-    <Icon
-      type="setting"
-      size={16}
-      color={theme.colors.gray.gray_1}
-    />
-  );
+  return <Icon type="setting" size={16} color={theme.colors.gray.gray_1} />;
 }
 
 const RowLink = styled.Pressable`
@@ -538,4 +524,9 @@ const DeleteText = styled.Text`
   color: #ff5a5a;
   font-size: 14px;
   font-family: 'PlusJakartaSans_600SemiBold';
+`;
+const AvatarMain = styled(ProfileImage)`
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
 `;

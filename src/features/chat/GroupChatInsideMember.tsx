@@ -1,3 +1,5 @@
+// NOTE 사용되지 않는 페이지
+
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';

@@ -1,5 +1,5 @@
 import { ACCESS_KEY, isRefreshBlocked, REFRESH_KEY } from '@/src/lib/auth/session';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
@@ -51,7 +51,7 @@ api.interceptors.request.use(
         const s = JSON.stringify(config.data);
         if (s.length <= 400) console.log('[axios:req] body', JSON.parse(s));
         else console.log('[axios:req] body(len)', s.length);
-      } catch { }
+      } catch {}
     }
 
     return config;
@@ -133,7 +133,6 @@ api.interceptors.response.use(
       // 👇 [로그 3] 새 토큰으로 원래 요청을 재시도함
       console.log('[axios:refresh] 새 토큰으로 원래 요청을 재시도합니다:', cfg.url);
       return api(cfg); // 원래 요청 재시도
-
     } catch (e) {
       // 👇 [로그 4] 'doRefresh' 함수 자체가 실패(throw error)한 경우
       console.error('[axios:refresh] 토큰 갱신(doRefresh) 함수 실행 중 예외 발생:', e);

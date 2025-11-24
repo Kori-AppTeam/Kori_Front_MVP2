@@ -7,6 +7,7 @@ import Bookmark from '@/assets/icons/bookmark-non-selected.svg';
 import SelectedBookmark from '@/assets/icons/bookmark-selected.svg';
 import Box from '@/assets/icons/box.svg';
 import Business from '@/assets/icons/business.svg';
+import Cancel from '@/assets/icons/cancel.svg';
 import CameraColored from '@/assets/icons/camera-colored.svg';
 import CameraDefault from '@/assets/icons/camera-default.svg';
 import Chat from '@/assets/icons/chat.svg';
@@ -53,6 +54,7 @@ import ThumbsUpNonSelected from '@/assets/icons/thumbs-up-non-selected.svg';
 import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
 import Translate from '@/assets/icons/translate.svg';
 import TrashCan from '@/assets/icons/trash can.svg';
+import Write from '@/assets/icons/write.svg';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
 
@@ -65,6 +67,7 @@ const iconMap = {
   business: Business,
   bookmarkNonSelected: Bookmark,
   bookmarkSelected: SelectedBookmark,
+  cancel: Cancel,
   cameraColored: CameraColored,
   cameraDefault: CameraDefault,
   check: Check,
@@ -113,6 +116,7 @@ const iconMap = {
   checkMintBox: CheckMintBox,
   checkGrayBox: CheckGrayBox,
   closeBox: CloseBox,
+  write: Write,
 };
 
 /**
@@ -126,7 +130,7 @@ const iconMap = {
 export type IconType = keyof typeof iconMap;
 
 interface IconProps {
-  size: 16 | 20 | 24 | 32;
+  size: 16 | 20 | 24 | 32 | 40;
   type: IconType;
   color?: string;
 }

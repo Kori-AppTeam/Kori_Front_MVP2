@@ -1,11 +1,9 @@
-import cancelIconImg from '@/assets/images/cancel.png';
-import searchIconImg from '@/assets/images/search.png';
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { LANGUAGES } from '@/src/utils/languages';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Modal, TouchableOpacity } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Modal, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 export const MAX_LANGUAGES = 5;
@@ -40,6 +38,7 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
 
   const renderItem = ({ item }: { item: string }) => {
     const selected = value.includes(item);
+
     return (
       <LanguageItem selected={selected} onPress={() => toggle(item)}>
         <LanguageText>{item}</LanguageText>
@@ -59,44 +58,52 @@ export default function LanguagePicker({ visible, value, onClose, onChange, lang
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <ModalOverlay onPress={onClose} activeOpacity={1}>
-        <BottomSheet onStartShouldSetResponder={() => true}>
-          <BottomSheetHeader>
-            <BottomSheetHandle />
-            <SearchContainer>
-              <SearchInput
-                placeholder="Search your language"
-                placeholderTextColor="#949899"
-                value={search}
-                onChangeText={setSearch}
+        <KeyboardAvoidingView
+          behavior={'padding'}
+          keyboardVerticalOffset={0} // 헤더 높이에 따라 조정
+          style={{ flex: 1, justifyContent: 'flex-end' }}
+        >
+          <BottomSheet onStartShouldSetResponder={() => true}>
+            <BottomSheetHeader>
+              <BottomSheetHandle />
+              <SearchContainer>
+                <SearchInput
+                  placeholder="Search your language"
+                  placeholderTextColor="#949899"
+                  value={search}
+                  onChangeText={setSearch}
+                />
+                <SearchButtonsWrapper>
+                  <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
+                    <Icon size={20} type="cancel" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSearchPress}>
+                    <Icon size={24} type="search" />
+                  </TouchableOpacity>
+                </SearchButtonsWrapper>
+              </SearchContainer>
+            </BottomSheetHeader>
+
+            {OPTIONS.length > 0 ? (
+              <FlatList
+                data={OPTIONS}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => `${item}-${index}`}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
               />
-              <TouchableOpacity onPress={handleClearSearch} disabled={!search}>
-                <CancelIcon source={cancelIconImg} resizeMode="contain" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleSearchPress}>
-                <SearchIcon source={searchIconImg} resizeMode="contain" />
-              </TouchableOpacity>
-            </SearchContainer>
-          </BottomSheetHeader>
+            ) : (
+              <NoResultText>No languages found</NoResultText>
+            )}
 
-          {OPTIONS.length > 0 ? (
-            <FlatList
-              data={OPTIONS}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => `${item}-${index}`}
-              showsVerticalScrollIndicator={false}
-              style={{ maxHeight: 400 }}
-            />
-          ) : (
-            <NoResultText>No languages found</NoResultText>
-          )}
-
-          {value.length >= MAX_LANGUAGES && (
-            <Warn>
-              <AntDesign name="closecircle" size={16} color="#FF6B6B" />
-              <WarnText>You can select up to {MAX_LANGUAGES} languages!</WarnText>
-            </Warn>
-          )}
-        </BottomSheet>
+            {value.length >= MAX_LANGUAGES && (
+              <Warn>
+                <AntDesign name="closecircle" size={16} color="#FF6B6B" />
+                <WarnText>You can select up to {MAX_LANGUAGES} languages!</WarnText>
+              </Warn>
+            )}
+          </BottomSheet>
+        </KeyboardAvoidingView>
       </ModalOverlay>
     </Modal>
   );
@@ -114,7 +121,7 @@ const BottomSheet = styled.View`
   background-color: #353637;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  max-height: 70%;
+  height: 70%;
   padding-bottom: 20px;
 `;
 
@@ -124,7 +131,7 @@ const BottomSheetHeader = styled.View`
 `;
 
 const BottomSheetHandle = styled.View`
-  width: 50px;
+  width: 20px;
   height: 4px;
   background-color: #949899;
   border-radius: 2px;
@@ -149,11 +156,10 @@ const SearchInput = styled.TextInput`
   font-family: 'PlusJakartaSans-Regular';
 `;
 
-const CancelIcon = styled.Image`
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
-  tint-color: #949899;
+const SearchButtonsWrapper = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 `;
 
 const LanguageItem = styled.TouchableOpacity<{ selected?: boolean }>`
@@ -199,10 +205,8 @@ const WarnText = styled.Text`
   margin-left: 8px;
 `;
 
-const SearchIcon = styled.Image`
-  width: 20px;
-  height: 20px;
-  tint-color: #949899;
+const IconWrapper = styled.View`
+  margin-right: 8px;
 `;
 
 export const LanguageDropdownButton = styled.TouchableOpacity<{ selected?: boolean; error?: boolean }>`

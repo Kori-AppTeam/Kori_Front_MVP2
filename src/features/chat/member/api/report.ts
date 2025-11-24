@@ -1,5 +1,4 @@
 import api from '@/api/axiosInstance';
-import { Config } from '@/src/lib/config';
 import type { ChatRoomGroupStatus } from '../types';
 
 /**
@@ -8,9 +7,7 @@ import type { ChatRoomGroupStatus } from '../types';
  * @returns 그룹 채팅 여부
  */
 export const checkIsGroupChat = async (roomId: string | number): Promise<boolean> => {
-  const response = await api.get<{ data: ChatRoomGroupStatus }>(
-    `${Config.SERVER_URL}/api/v1/chat/isGroup?roomId=${roomId}`
-  );
+  const response = await api.get<{ data: ChatRoomGroupStatus }>(`/api/v1/chat/isGroup?roomId=${roomId}`);
   return response.data.data.isGroup;
 };
 
@@ -19,7 +16,7 @@ export const checkIsGroupChat = async (roomId: string | number): Promise<boolean
  * @param userId 차단할 사용자 ID
  */
 export const blockUser = async (userId: string | number): Promise<void> => {
-  await api.post(`${Config.SERVER_URL}/api/v1/chat/block/${userId}`);
+  await api.post(`/api/v1/chat/block/${userId}`);
 };
 
 /**

@@ -10,10 +10,22 @@ import {
 } from 'react-native';
 import { SvgUri } from 'react-native-svg';
 
-export type ProfileImageProps = RNImageProps & {
-  /** 투명 SVG 대비용 배경색 */
-  bg?: string;
+type ProfileImageProps = Omit<RNImageProps, 'source'> & {
+  /** (선택) 직접 source를 넘길 때 사용. 보통은 imageUrl/isAnonymous/isVisitor로 판단 */
+  source?: ImageSourcePropType;
+  imageUrl?: string | null;
+  isAnonymous?: boolean;
+  isVisitor?: boolean;
 };
+
+const IMG_ANON = require('@/assets/images/character_04.svg'); // 익명 (SVG)
+const IMG_VISITOR = require('@/assets/images/character_05.svg'); // 방문자 (SVG)
+
+function getLocalSvgComponent(source: any) {
+  if (source && typeof source === 'object' && typeof source.default === 'function') return source.default;
+  if (typeof source === 'function') return source;
+  return null;
+}
 
 function resolveSvg(source?: ImageSourcePropType): { uri?: string; isSvg: boolean } {
   if (!source) return { isSvg: false };
@@ -32,63 +44,80 @@ function resolveSvg(source?: ImageSourcePropType): { uri?: string; isSvg: boolea
   return { isSvg: false };
 }
 
-/** 디폴트 아바타 SVG URL인지 판별 */
-function isDefaultAvatarSvg(uri?: string) {
-  if (!uri) return false;
-  // 예: https://cdn.ko-ri.cloud/default/character_01.svg
-  return /\/default\/character_\d+\.svg(\?|#|$)/i.test(uri);
+function isUsableUrl(u?: string | null): u is string {
+  if (typeof u !== 'string') return false;
+  const s = u.trim();
+  if (!s) return false;
+  const low = s.toLowerCase();
+  if (low === 'null' || low === 'undefined') return false;
+  return /^https?:\/\//.test(s);
 }
 
-/** 디폴트 아바타 SVG → 로컬 PNG 매핑 */
-function mapDefaultAvatarToLocal(uri?: string) {
-  if (!uri) return null;
-  const m = uri.match(/\/default\/character_(\d+)\.svg/i);
-  if (!m) return null;
-
-  const num = m[1]; // "01", "03" 등
-  // ✅ 프로젝트에 존재하는 PNG로 매핑하세요.
-  //   필요에 따라 케이스 추가/수정
-  const MAP: Record<string, any> = {
-    '01': require('@/assets/images/character1.png'),
-    '02': require('@/assets/images/character2.png'),
-    '03': require('@/assets/images/character3.png'),
-  };
-
-  return MAP[num] ?? null;
-}
-
-/** ProfileImage
- * - 디폴트 아바타 SVG: 로컬 PNG로 대체 (네트워크 실패/404 무관, 깔끔)
- * - 그 외 SVG: SvgUri + preserveAspectRatio="xMinYMin slice"
- * - 비-SVG: RN <Image>
- */
-const ProfileImage = forwardRef<RNImage, ProfileImageProps>(function ProfileImage(
-  { source, style, resizeMode = 'cover', bg = 'transparent', ...rest },
-  ref
+const ProfileImage = forwardRef<any, ProfileImageProps>(function ProfileImage(
+  { source, imageUrl, isAnonymous, isVisitor, style, resizeMode = 'cover', onError, ...rest },
+  ref,
 ) {
-  const { uri, isSvg } = resolveSvg(source);
+  const [failed, setFailed] = React.useState(false);
 
-  // 1) 디폴트 아바타 SVG면 → 로컬 PNG로 대체
-  if (isSvg && uri && isDefaultAvatarSvg(uri)) {
-    const localFallback = mapDefaultAvatarToLocal(uri);
-    if (localFallback) {
-      return <RNImage ref={ref} source={localFallback} style={style} resizeMode={resizeMode} {...rest} />;
-    }
-    // 매핑이 없으면 그냥 SvgUri로 처리 (안전망)
+  // ✅ 우선순위: 익명 → 이미지 URL → 방문자 → 명시적 source → 없음
+  let policySource: ImageSourcePropType | undefined;
+
+  if (isAnonymous) {
+    policySource = IMG_ANON; // 1) 무조건 익명 우선
+  } else if (!failed && isUsableUrl(imageUrl)) {
+    policySource = { uri: imageUrl! }; // 2) 유효한 절대 URL이면 그 이미지
+  } else if (isVisitor) {
+    policySource = IMG_VISITOR; // 3) 방문자(이미지 없음 등)
+  } else if (source) {
+    policySource = source; // 4) 명시적 source
+  } else {
+    policySource = undefined; // 5) 아무 것도 없으면 빈 뷰(공간 유지)
   }
 
-  // 2) 일반 SVG면 SvgUri 사용
-  if (isSvg && uri) {
+  // 로컬 SVG(컴포넌트)면 직접 렌더
+  const LocalSvgComp = getLocalSvgComponent(policySource);
+  if (LocalSvgComp) {
     const containerStyle = style as StyleProp<ViewStyle | ImageStyle>;
     return (
-      <View style={[{ overflow: 'hidden', backgroundColor: bg }, containerStyle]}>
-        <SvgUri uri={uri} width="100%" height="100%" preserveAspectRatio="xMinYMin slice" {...rest as any} />
+      <View style={[{ overflow: 'hidden' }, containerStyle]}>
+        <LocalSvgComp width="100%" height="100%" preserveAspectRatio="xMidYMid slice" />
       </View>
     );
   }
 
-  // 3) 나머지는 RN Image
-  return <RNImage ref={ref} source={source} style={style} resizeMode={resizeMode} {...rest} />;
+  // URL/숫자 에셋 → SVG 여부 판별
+  const { uri, isSvg } = resolveSvg(policySource);
+
+  // 원격 SVG면 SvgUri로 렌더
+  if (isSvg && uri) {
+    const containerStyle = style as StyleProp<ViewStyle | ImageStyle>;
+    return (
+      <View style={[{ overflow: 'hidden' }, containerStyle]}>
+        <SvgUri uri={uri} width="100%" height="100%" preserveAspectRatio="xMidYMid slice" />
+      </View>
+    );
+  }
+
+  // 비-SVG는 RN Image
+  if (policySource) {
+    return (
+      <RNImage
+        ref={ref}
+        source={policySource as ImageSourcePropType}
+        style={style}
+        resizeMode={resizeMode}
+        onError={(e) => {
+          if (!isAnonymous && !isVisitor && isUsableUrl(imageUrl)) setFailed(true);
+          onError?.(e);
+        }}
+        {...rest}
+      />
+    );
+  }
+
+  // 소스가 없으면 공간만 유지
+  const containerStyle = style as StyleProp<ViewStyle | ImageStyle>;
+  return <View style={[{ overflow: 'hidden' }, containerStyle]} />;
 });
 
 export default memo(ProfileImage);

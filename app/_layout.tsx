@@ -1,7 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import queryClient from '@/api/queryClient';
-import { getNotificationDeeplink } from '@/src/features/notification/lib/getNotificationDeeplink';
-import { handleNotificationPress, messageHandler } from '@/src/features/notification/lib/messageHandler';
+import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
+import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
+import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { toastConfig } from '@/src/shared/constants/toast';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
@@ -12,27 +15,29 @@ import {
   PlusJakartaSans_600SemiBold,
   PlusJakartaSans_700Bold,
 } from '@expo-google-fonts/plus-jakarta-sans';
-import messaging from '@react-native-firebase/messaging';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
-import * as Linking from 'expo-linking';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-SplashScreen.preventAutoHideAsync().catch(() => { });
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   initialRouteName: 'index',
 };
+
+initGoogleAuth(); // 앱 시작 시 구글 인증 초기화
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
@@ -86,7 +91,7 @@ export default function RootLayout() {
       setIsLoggedIn(false);
     } finally {
       setCheckingToken(false);
-      SplashScreen.hideAsync().catch(() => { });
+      SplashScreen.hideAsync().catch(() => {});
     }
   }, []);
 
@@ -95,38 +100,6 @@ export default function RootLayout() {
     if (loaded) checkAndRefreshToken();
   }, [loaded, checkAndRefreshToken]);
 
-  /* ------------ foreground 메시지 수신 메서드 초기화 ------------ */
-  useEffect(() => {
-    // if (!isLoggedIn) return;
-
-    const unsubscribeOnMessage = messaging().onMessage(messageHandler);
-    const unsubscribeNotifee = handleNotificationPress(pathname);
-    return () => {
-      unsubscribeOnMessage();
-      unsubscribeNotifee();
-    };
-  }, []);
-
-  /* 백그라운드, quit 상태에서 알림 클릭 시 관련 라우터로 이동 */
-  useEffect(() => {
-    if (!isLoggedIn || checkingToken) return;
-
-    messaging()
-      .getInitialNotification()
-      .then((message) => message && Linking.openURL(getNotificationDeeplink(message?.data!) ?? '/'))
-      .catch((error) => console.error('[ERROR] 앱 종료 시점에 알림 클릭 시 이동 실패:', error));
-
-    const unsubscribe = messaging().onNotificationOpenedApp(
-      (message) => message && Linking.openURL(getNotificationDeeplink(message?.data!) ?? '/'),
-    );
-    return unsubscribe;
-  }, [isLoggedIn, checkingToken]);
-
-  // 🚨🚨🚨 [삭제됨] 🚨🚨🚨
-  // 여기에 있던 중복된 useEffect 블록을 삭제했습니다.
-  // 🚨🚨🚨
-
-  // 이 useEffect가 실제 화면 이동을 담당합니다.
   useEffect(() => {
     // 폰트가 로드 안 됐거나, 토큰 확인 중이면 아무것도 안 함 (스플래시 스크린 계속 표시)
     if (!loaded || checkingToken) {
@@ -139,31 +112,38 @@ export default function RootLayout() {
       router.replace('/(tabs)');
     } else {
       // 로그인이 안 되어있으면 login 화면으로 이동
-      router.replace('/login');
+      router.replace(AUTH_ROUTE);
     }
   }, [loaded, checkingToken, isLoggedIn, router]); // 이 상태들이 바뀔 때마다 실행
+
+  useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
+  useBackgroundNotification(isLoggedIn, checkingToken); // 백그라운드 알림 수신
 
   if (!loaded || checkingToken) return null;
 
   initializeStomp(); // STOMP 초기화 함수 호출
 
   return (
-    <ThemeProvider theme={theme}>
-      <SafeAreaProvider>
-        <AppLayout>
-          <ProfileProvider>
-            <QueryClientProvider client={queryClient}>
-              {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="login" />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-              <Toast />
-            </QueryClientProvider>
-          </ProfileProvider>
-        </AppLayout>
-      </SafeAreaProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider theme={theme}>
+        <SafeAreaProvider>
+          <BottomSheetModalProvider>
+            <AppLayout>
+              <ProfileProvider>
+                <QueryClientProvider client={queryClient}>
+                  {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                  <Toast config={toastConfig} topOffset={80} />
+                </QueryClientProvider>
+              </ProfileProvider>
+            </AppLayout>
+          </BottomSheetModalProvider>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

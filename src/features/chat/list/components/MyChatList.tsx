@@ -1,4 +1,4 @@
-import RawProfileImage from '@/components/common/ProfileImage';
+import ProfileImage from '@/components/common/ProfileImage';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { formatTime } from '@/src/shared/utils/dateUtils';
 import { useRouter } from 'expo-router';
@@ -8,13 +8,14 @@ import { MyChatRoom } from '../types';
 
 export const MyChatList = ({ data }: { data: MyChatRoom }) => {
   const router = useRouter();
+  console.info(data);
 
   //채팅방 진입
   const enterChattingRoom = async () => {
     router.push({
       pathname: `${CHAT_ROUTE(data.roomId)}`,
       params: {
-        roomName: data.roomName
+        roomName: data.roomName,
       },
     });
   };
@@ -23,13 +24,7 @@ export const MyChatList = ({ data }: { data: MyChatRoom }) => {
     <ChatRoomWrapper>
       <RoomBox activeOpacity={0.8} onPress={enterChattingRoom}>
         <RoomImageContainer>
-          <RoomImage
-            source={
-              data.roomImageUrl
-                ? { uri: data.roomImageUrl } // URL이 있으면 원격 이미지
-                : require('@/assets/images/character1.png') // 없으면 로컬 디폴트 이미지
-            }
-          />
+          <RoomImage imageUrl={data.roomImageUrl} isVisitor={!data.roomImageUrl} />
         </RoomImageContainer>
         <RoomWrapper>
           <RoomTop>
@@ -81,7 +76,7 @@ const RoomImageContainer = styled.View`
   justify-content: center;
 `;
 
-const RoomImage = styled(RawProfileImage)`
+const RoomImage = styled(ProfileImage)`
   width: 80%;
   height: 80%;
   border-radius: 30px;

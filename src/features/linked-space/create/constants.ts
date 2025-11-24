@@ -6,15 +6,15 @@ import { DefaultAvatar } from './types';
 export const DEFAULT_AVATARS: DefaultAvatar[] = [
   {
     source: require('@/assets/images/character1.png'),
-    url: 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_01.png',
+    url: 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_01.svg',
   },
   {
     source: require('@/assets/images/character2.png'),
-    url: 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_02.png',
+    url: 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_02.svg',
   },
   {
     source: require('@/assets/images/character3.png'),
-    url: 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_03.png',
+    url: 'https://kr.object.ncloudstorage.com/foreigner-bucket/default/character_03.svg',
   },
 ];
 

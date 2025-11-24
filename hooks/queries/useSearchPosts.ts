@@ -1,5 +1,5 @@
 import api from '@/api/axiosInstance';
-import type { Post } from '@/components/PostCard';
+import type { Post } from '@/src/features/community/components/PostCard';
 import { useQuery } from '@tanstack/react-query';
 
 export type SearchPostItem = {
@@ -83,8 +83,8 @@ function resolveAuthorName(row: any): string {
   ]
     .map((v) => (v == null ? undefined : String(v).trim()))
     .filter(Boolean) as string[];
-  const name = cands[0] || '익명';
-  return isAnon ? '익명' : name;
+  const name = cands[0] || 'Anonymity';
+  return isAnon ? 'Anonymity' : name;
 }
 
 function mapHit(hit: SearchPostHit): PostExFromSearch {
