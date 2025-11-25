@@ -9,7 +9,6 @@ import React, { useEffect, useState } from 'react';
 import { Alert, StatusBar } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styled from 'styled-components/native';
-import * as Location from 'expo-location';
 import {
   SIGNUP_DONE_ROUTE,
   SIGNUP_PRIVACY_POLICY_ROUTE,
