@@ -7,7 +7,7 @@ const SignUpDoneScreen = () => {
   const router = useRouter();
   const goMakeProfile = () => {
     router.dismissAll(); // 네비게이션 스택 다 비움
-    router.replace('../makeprofile/NameStepScreen');
+    router.replace('/screens/makeprofile/NameStepScreen');
   };
 
   return (
