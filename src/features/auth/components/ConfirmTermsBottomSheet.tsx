@@ -34,7 +34,9 @@ const ConfirmTermsBottomSheet = ({ bottomSheetRef, bottomSheetClose, loginProvid
       } else {
         router.push('/screens/makeprofile/NameStepScreen');
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error('Error obtaining location or patching location:', error);
+    }
   };
 
   const showTermsAndConditions = () => {

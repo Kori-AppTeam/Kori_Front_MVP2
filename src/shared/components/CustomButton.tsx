@@ -17,6 +17,7 @@ type ButtonProps = {
   borderColor?: string;
   labelColor?: string;
   backgroundColor?: string;
+  width?: number;
 };
 
 const PALETTE = {
@@ -40,6 +41,7 @@ export default function CustomButton({
   borderColor,
   labelColor,
   backgroundColor,
+  width,
 }: ButtonProps) {
   const defaultText = filled ? (tone === 'mint' ? '#000000' : PALETTE.white) : PALETTE[tone];
   const contentColor = labelColor ?? defaultText;
@@ -54,6 +56,7 @@ export default function CustomButton({
         borderColor: borderColor ?? PALETTE[tone],
         backgroundColor: filled ? (backgroundColor ?? PALETTE[tone]) : 'transparent',
       }}
+      width={width}
     >
       {isLoading ? (
         <Spinner color={contentColor} />
@@ -70,17 +73,18 @@ export default function CustomButton({
   );
 }
 
-const Btn = styled.Pressable<{ tone: Tone; filled: boolean; disabled?: boolean }>`
-  flex: 1;
-  height: 50px;
+const Btn = styled.Pressable<{ tone: Tone; filled: boolean; disabled?: boolean; width?: number }>`
+  width: ${({ width }) => (width ? `${width}px` : '100%')};
+  height: 48px;
   min-height: 50px;
-  border-radius: 8px;
+  border-radius: ${({ width }) => (width && width < 100 ? `4px` : '8px')};
   justify-content: center;
   align-items: center;
   border-width: 1px;
   background-color: ${({ filled, tone }) => (filled ? PALETTE[tone] : 'transparent')};
   border-color: ${({ tone }) => PALETTE[tone]};
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+  border: 1px solid gray;
 `;
 
 const Content = styled.View`
@@ -89,9 +93,8 @@ const Content = styled.View`
   gap: 6px;
 `;
 
-const BtnText = styled.Text<{ tone: Tone; filled: boolean }>`
-  font-size: 15px;
-  font-family: 'PlusJakartaSans_400Regular';
+const BtnText = styled.Text<{ tone: Tone; filled: boolean; width?: number }>`
+  ${({ theme, width }) => (width && width < 100 ? theme.fonts.body.B5_SB : theme.fonts.body.B3_M)};
   color: ${({ tone, filled }) => (filled ? (tone === 'mint' ? '#000000' : PALETTE.white) : PALETTE[tone])};
 `;
 

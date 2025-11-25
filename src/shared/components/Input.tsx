@@ -3,7 +3,7 @@ import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 
-interface InputProps {
+export interface InputProps {
   label?: string;
   placeholder: string;
   value: string;
@@ -68,7 +68,7 @@ const InputBox = styled.TextInput.attrs<{
 
 const InputWrapper = styled.View`
   width: 100%;
-  height: 44px;
+  height: 48px;
   border-radius: 4px;
 
   background-color: ${({ theme }) => theme.colors.gray.darkGray_1};
