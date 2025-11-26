@@ -1,14 +1,21 @@
-import ValidationMessage from '@/src/features/auth/components/ValidationMessage';
 import React from 'react';
 import styled from 'styled-components/native';
+import { useFormContext } from 'react-hook-form';
 
-// TODO 실제 유효성 검사 로직에 따라 validated 값 변경
+import ValidationMessage from '@/src/features/auth/components/ValidationMessage';
+import { PASSWORD_VALIDATIONS } from '@/src/features/auth/constants/validation';
+import { SignUpFormValues } from '@/src/features/auth/types';
+
 const ValidationChecklist = () => {
+  const { watch } = useFormContext<SignUpFormValues>();
+  const passwordValue = watch('password');
+
   return (
     <ValidationChecklistContainer>
-      <ValidationMessage validated={true} message="Use all case letters" />
-      <ValidationMessage validated={false} message="Enter 8-12 letters" />
-      <ValidationMessage validated={undefined} message="Enter special letters (@/!/~)" />
+      {PASSWORD_VALIDATIONS.map((validation, index) => {
+        const validated = passwordValue ? validation.test(passwordValue) : passwordValue ? false : undefined;
+        return <ValidationMessage key={index} message={validation.message} validated={validated} />;
+      })}
     </ValidationChecklistContainer>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import styled from 'styled-components/native';
-import { textStyle, theme } from '@/src/styles/theme';
+import { theme } from '@/src/styles/theme';
 import Icon from '@/components/common/Icon';
 import CustomButton from '@/src/shared/components/CustomButton';
 import Input, { InputProps } from '@/src/shared/components/Input';
@@ -10,25 +10,27 @@ interface ActionInputProps extends InputProps {
   isActionSuccess?: boolean;
   onActionPress?: () => void;
   actionLabelText: string;
+  registerField?: string;
+  actionDisabled?: boolean;
 }
 
 const ActionInput = ({ ...props }: ActionInputProps) => {
   return (
     <RowWrapper>
       <InputWrapper>
-        <Input
-          {...props}
-          onChangeText={(text) => {
-            props.onChangeText?.(text);
-          }}
-        />
+        <Input {...props} />
       </InputWrapper>
       {props.isActionSuccess ? (
         <ActionSuccessBtn>
           <Icon type="check" size={24} color={theme.colors.gray.gray_2} />
         </ActionSuccessBtn>
       ) : (
-        <CustomButton label={props.actionLabelText} width={64} onPress={props.onActionPress} />
+        <CustomButton
+          label={props.actionLabelText}
+          width={64}
+          onPress={props.onActionPress}
+          disabled={props.actionDisabled}
+        />
       )}
     </RowWrapper>
   );

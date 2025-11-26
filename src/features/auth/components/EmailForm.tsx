@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
-import ActionInput from '@/src/features/auth/components/ActionInput';
 import styled from 'styled-components/native';
+import { useFormContext } from 'react-hook-form';
+
+import ActionInput from '@/src/features/auth/components/ActionInput';
 import ErrorMessage from '@/src/features/auth/components/ErrorMessage';
 
 const EmailForm = () => {
-  const [email, setEmail] = useState<string>(''); // TODO 이메일 상태 관리
   const [code, setCode] = useState<string>(''); // TODO 인증 코드 상태 관리
+
+  const emailSend = false; // TODO 인증 코드 발송 상태 관리
   const emailVerified = false; // TODO 이메일 인증 상태 관리
-  const emailErrorMessage = 'This email is already in use.'; // TODO 에러 메시지 상태 관리
-  const verificationErrorMessage = 'Invalid verification code.'; // TODO 인증 코드 에러 메시지 상태 관리
+
+  const {
+    formState: { errors },
+    getValues,
+  } = useFormContext();
+
+  const isEmailValid = !errors.email && !!getValues('email');
+  const isCodeValid = !errors.verificationCode && !!getValues('verificationCode');
 
   const handleSendCode = () => {
     try {
@@ -31,28 +40,27 @@ const EmailForm = () => {
       <EmailFormSection>
         <ActionInput
           placeholder="Enter email address"
-          value={email}
           label="Email"
-          onChangeText={(text) => setEmail(text)}
           onActionPress={handleSendCode}
-          isActionSuccess={emailVerified}
+          isActionSuccess={emailSend}
           actionLabelText="Send"
+          registerField="email"
+          actionDisabled={!isEmailValid || emailSend}
         />
-        <ErrorMessage message={emailErrorMessage} />
+        <ErrorMessage message={errors.email?.message as string} />
       </EmailFormSection>
-      {!emailVerified && (
-        <EmailFormSection>
-          <ActionInput
-            placeholder="Enter Code"
-            value={code}
-            label="Code Verification"
-            onChangeText={(text) => setCode(text)}
-            onActionPress={handleVerifyCode}
-            actionLabelText="Verify"
-          />
-          <ErrorMessage message={verificationErrorMessage} />
-        </EmailFormSection>
-      )}
+      <EmailFormSection>
+        <ActionInput
+          placeholder="Enter Code"
+          label="Code Verification"
+          onActionPress={handleVerifyCode}
+          isActionSuccess={emailVerified}
+          actionLabelText="Verify"
+          registerField="verificationCode"
+          actionDisabled={!isCodeValid || emailVerified}
+        />
+        <ErrorMessage message={errors.verificationCode?.message as string} />
+      </EmailFormSection>
     </EmailFormContainer>
   );
 };
@@ -63,10 +71,11 @@ const EmailFormContainer = styled.View`
   width: 100%;
   flex-direction: column;
   gap: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 `;
 
 const EmailFormSection = styled.View`
+  display: flex;
   width: 100%;
   flex-direction: column;
   gap: 8px;

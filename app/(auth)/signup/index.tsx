@@ -22,6 +22,8 @@ import { useConfirmTermsBottomSheet } from '@/src/features/auth/hooks/useConfirm
 import EmailForm from '@/src/features/auth/components/EmailForm';
 import PasswordForm from '@/src/features/auth/components/PasswordForm';
 import CustomButton from '@/src/shared/components/CustomButton';
+import { useEmailSignUpForm } from '@/src/features/auth/hooks/useEmailSignUpForm';
+import { FormProvider } from 'react-hook-form';
 
 enum isDuplicatedEmail {
   Init = 'Init',
@@ -48,6 +50,8 @@ const index = () => {
 
   const {} = useConfirmTerms();
   const { bottomSheetRef, handleBottomSheetClose, handleBottomSheetOpen } = useConfirmTermsBottomSheet();
+
+  const methods = useEmailSignUpForm();
 
   const [checks, setChecks] = useState({
     isnull: true,
@@ -203,8 +207,9 @@ const index = () => {
           enableOnAndroid={true}
         >
           <GeneralLoginContainer>
-            <EmailForm />
-            {/* 
+            <FormProvider {...methods}>
+              <EmailForm />
+              {/* 
             <TitleContainer>
               <TitleText>Email</TitleText>
             </TitleContainer>
@@ -293,8 +298,8 @@ const index = () => {
               </>
             )} */}
 
-            <PasswordForm />
-            {/* <TitleContainer>
+              <PasswordForm />
+              {/* <TitleContainer>
               <TitleText>Password</TitleText>
             </TitleContainer>
             <PasswordContainer>
@@ -419,12 +424,10 @@ const index = () => {
                 <ErrorText>Your password do not match.</ErrorText>
               </ErrorBox>
             )} */}
+            </FormProvider>
           </GeneralLoginContainer>
         </KeyboardAwareScrollView>
-        <CustomButton label="Next" disabled={!completeCondition} onPress={showModal} />
-        {/* <NextButtonContainer disabled={!completeCondition} completeCondition={completeCondition} onPress={showModal}>
-          <NextText>Next</NextText>
-        </NextButtonContainer> */}
+        <CustomButton label="Next" disabled={!methods.formState.isValid} onPress={() => handleBottomSheetOpen()} />
       </Container>
       {/* 약관 동의 바텀시트 */}
       <ConfirmTermsBottomSheet
