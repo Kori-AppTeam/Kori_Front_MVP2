@@ -33,23 +33,21 @@ export const LinkedSpaceRecommendModal = ({ visible, onJoin, onDontShowToday, on
     <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">
       <BottomSheetContent>
         <ModalCard source={require('@/assets/images/background2.png')}>
-          {data ? (
-            <ContentContainer>
-              <LeftSection>
-                <LeftTextSection>
-                  <BadgeText>Trending space</BadgeText>
-                  <SpaceName numberOfLines={2}>{data.roomName}</SpaceName>
-                </LeftTextSection>
-                <JoinButton onPress={() => onJoin(String(data.roomId), data.roomName)} activeOpacity={0.8}>
-                  <JoinButtonText>Join</JoinButtonText>
-                </JoinButton>
-              </LeftSection>
+          <ContentContainer>
+            <LeftSection>
+              <LeftTextSection>
+                <BadgeText>Trending space</BadgeText>
+                <SpaceName numberOfLines={2}>{data.roomName}</SpaceName>
+              </LeftTextSection>
+              <JoinButton onPress={() => onJoin(String(data.roomId), data.roomName)} activeOpacity={0.8}>
+                <JoinButtonText>Join</JoinButtonText>
+              </JoinButton>
+            </LeftSection>
 
-              <RightSection>
-                <SpaceImage source={{ uri: data.roomImageUrl }} />
-              </RightSection>
-            </ContentContainer>
-          ) : null}
+            <RightSection>
+              <SpaceImage source={{ uri: data.roomImageUrl }} />
+            </RightSection>
+          </ContentContainer>
         </ModalCard>
 
         <BottomActions>
