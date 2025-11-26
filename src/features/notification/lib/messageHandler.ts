@@ -1,7 +1,7 @@
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import { Href, router } from 'expo-router';
+import { Href, RelativePathString, router } from 'expo-router';
 import { Platform } from 'react-native';
 
 /* --------------- push를 notifee로 표시 --------------- */
@@ -94,8 +94,8 @@ export function notificationRouterReplace(data: { [key: string]: string | number
     case 'chat':
       if (!pathname.includes('chat')) router.replace('/chat');
       setTimeout(() => {
-        router.navigate({
-          pathname: CHAT_ROUTE(data.roomId),
+        router.push({
+          pathname: CHAT_ROUTE(String(data.roomId)) as RelativePathString,
           params: { myId: String(data.myId) },
         });
       }, 500);

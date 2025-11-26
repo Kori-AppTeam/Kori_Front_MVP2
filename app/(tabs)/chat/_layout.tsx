@@ -15,20 +15,6 @@ export default function ChatLayout() {
           title: '채팅',
         }}
       />
-      <Stack.Screen
-        name="CreateSpaceScreen"
-        options={{
-          headerShown: false,
-          title: '채팅',
-        }}
-      />
-      <Stack.Screen
-        name="ChattingRoomScreen"
-        options={{
-          headerShown: false,
-          title: '채팅',
-        }}
-      />
     </Stack>
   );
 }

@@ -1,12 +1,13 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/src/shared/components/CustomButton';
 import { useDeleteAccount } from '@/hooks/mutations/useDeleteAccount';
 import { useUpdateProfile } from '@/hooks/mutations/useUpdateProfile';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { uploadLocalImageAndGetKey } from '@/lib/mypage/uploadImage';
-import { Config } from '@/src/lib/config';
+import { Config } from '@/src/shared/constants/config';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
@@ -140,11 +141,11 @@ export default function MyPageScreen() {
                       'If the linkage isn’t removed, then when re-registering with the same Apple ID later',
                       'providing your email and name may be restricted.',
                     ].join('\n'),
-                    [{ text: 'OK', onPress: () => router.replace('/login') }],
+                    [{ text: 'OK', onPress: () => router.replace(AUTH_ROUTE) }],
                   );
                 } else {
                   Alert.alert('Account deleted', 'Your account has been removed.', [
-                    { text: 'OK', onPress: () => router.replace('/login') },
+                    { text: 'OK', onPress: () => router.replace(AUTH_ROUTE) },
                   ]);
                 }
               },
@@ -261,7 +262,7 @@ export default function MyPageScreen() {
             await api.post(`${Config.SERVER_URL}/api/v1/member/logout`);
             await SecureStore.deleteItemAsync('jwt');
             await SecureStore.deleteItemAsync('refresh');
-            router.replace('/login');
+            router.replace(AUTH_ROUTE);
           } catch (error) {
             console.error('로그아웃 실패', error);
           }

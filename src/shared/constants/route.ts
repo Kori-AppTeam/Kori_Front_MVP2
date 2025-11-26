@@ -1,7 +1,21 @@
 //채팅방 route 경로
-export const CHAT_ROUTE = (roomId: number | string) => `/chat/${roomId}`;
-export const CHAT_MEMBER_ROUTE = (roomId: number) => `/chat/${roomId}/members`;
-export const CREATE_LINKED_SPACE_ROUTE = '/chat/create';
-export const CREATE_LINKED_SPACE_DONE_ROUTE = '/chat/create/done';
-export const LINKED_SPACE_DETAIL_ROUTE = (roomId: number) => `/chat/detail/${roomId}`;
-export const CHAT_SEARCH_ROUTE = '/chat/search';
+import { RelativePathString } from 'expo-router';
+
+const toRoute = (path: string): RelativePathString => path as RelativePathString;
+
+export const CHAT_ROUTE = (roomId: number | string) => toRoute(`/chat/${roomId}`);
+export const CHAT_MEMBER_ROUTE = (roomId: number) => toRoute(`/chat/${roomId}/members`);
+export const CREATE_LINKED_SPACE_ROUTE = toRoute('/chat/create');
+export const CREATE_LINKED_SPACE_DONE_ROUTE = toRoute('/chat/create/done');
+export const LINKED_SPACE_DETAIL_ROUTE = (roomId: number) => toRoute(`/chat/detail/${roomId}`);
+export const CHAT_SEARCH_ROUTE = toRoute('/chat/search');
+
+// 로그인, 회원가입 route 경로
+export const AUTH_ROUTE = toRoute('/(auth)');
+export const LOGIN_ROUTE = toRoute('/(auth)/login');
+export const SIGNUP_ROUTE = toRoute('/(auth)/signup');
+export const SIGNUP_DONE_ROUTE = toRoute('/(auth)/signup/done');
+export const SIGNUP_TERMS_AND_CONDITIONS_ROUTE = toRoute('/(auth)/signup/terms-conditions');
+export const SIGNUP_PRIVACY_POLICY_ROUTE = toRoute('/(auth)/signup/privacy-policy');
+export const VERIFY_EMAIL_ROUTE = toRoute('/(auth)/login/verify/email');
+export const VERIFY_PASSWORD_ROUTE = toRoute('/(auth)/login/verify/password');

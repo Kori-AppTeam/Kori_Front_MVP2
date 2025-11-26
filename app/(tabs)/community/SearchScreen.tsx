@@ -1,19 +1,22 @@
 import api from '@/api/axiosInstance';
-import { addBookmark, removeBookmark } from '@/api/community/bookmarks';
-import CategoryChips, { Category } from '@/components/CategoryChips';
 import Icon from '@/components/common/Icon';
-import PostCard, { Post } from '@/components/PostCard';
-import SortTabs, { SortKey } from '@/components/SortTabs';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
-import { useToggleLike } from '@/hooks/mutations/useToggleLike';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { useSearchPosts, type PostExFromSearch } from '@/hooks/queries/useSearchPosts';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
+import CategoryChips from '@/src/features/community/components/CategoryChips';
+import PostCard from '@/src/features/community/components/PostCard';
+import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
+import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
+import { SearchedPostEx, SearchedPosts, SearchedPostsResp } from '@/src/features/community/types/searchedPostsType';
+import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
 import { usePostUI } from '@/src/store/usePostUI';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router } from 'expo-router';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -25,58 +28,14 @@ import {
   type FlatListProps,
 } from 'react-native';
 import styled from 'styled-components/native';
-import { useLocalSearchParams } from 'expo-router';
-import { formatCreatedYMD } from '@/src/utils/dateUtils';
 const ICON = require('@/assets/images/IsolationMode.png');
 const AV = require('@/assets/images/character1.png');
 
 const MAX_IMAGES = 5;
 
-type PostsListItem = {
-  postId: number;
-  title?: string;
-  contentPreview?: string;
-  content?: string;
-  authorName?: string;
-  createdAt?: string | number;
-  createdTime?: string | number;
-  likeCount?: number;
-  commentCount?: number;
-  viewCount?: number;
-  score?: number;
-  likedByMe?: boolean;
-  isLike?: boolean;
-  isLiked?: boolean;
-
-  contentImageUrls?: string[];
-  imageUrls?: string[];
-  contentImageUrl?: string;
-  imageUrl?: string;
-
-  userImageUrl?: string;
-};
-
-type PostsListResp = {
-  success: boolean;
-  data: {
-    items: PostsListItem[];
-    hasNext: boolean;
-    nextCursor?: string;
-  };
-  timestamp?: string;
-};
 function toDateLabel(raw?: unknown, fallbackIso?: string): string {
   return formatCreatedYMD(raw, fallbackIso);
 }
-
-type PostEx = Post & {
-  postId: number;
-  hotScore?: number;
-  minutesAgo?: number;
-  bookmarked?: boolean;
-  likedByMe?: boolean;
-  userImageUrl?: string;
-};
 
 function resolveAuthor(row: any): string {
   const isAnon = row?.isAnonymous ?? row?.anonymous ?? false;
@@ -94,7 +53,7 @@ function resolveAuthor(row: any): string {
   return (isAnon ? cands[0] || 'Anonymity' : cands[0]) || 'Anonymity';
 }
 
-const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
+const mapItem = (row: SearchedPosts, respTimestamp?: string): SearchedPostEx => {
   const createdRaw = row.createdAt ?? row.createdTime;
   const liked = (row as any).likedByMe ?? (row as any).isLike ?? (row as any).isLiked ?? false;
 
@@ -121,12 +80,12 @@ const mapItem = (row: PostsListItem, respTimestamp?: string): PostEx => {
 };
 
 export default function CommunityScreen() {
-  const [cat, setCat] = useState<Category>('All');
-  const [sort, setSort] = useState<SortKey>('new');
+  const [cat, setCat] = useState<AllowedCategory>('ALL');
+  const [sort, setSort] = useState<SortParam>('LATEST');
   const isFirstRender = useRef(true);
   const callCountRef = useRef(0);
   const isFirstMount = useRef(true);
-  const [items, setItems] = useState<PostEx[]>([]);
+  const [items, setItems] = useState<SearchedPostEx[]>([]);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -137,10 +96,10 @@ export default function CommunityScreen() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const params = useLocalSearchParams();
 
-  const sortParam = sort === 'new' ? 'LATEST' : 'POPULAR';
+  const sortParam = sort === 'LATEST' ? 'LATEST' : 'POPULAR';
   const boardId = CATEGORY_TO_BOARD_ID[cat];
 
-  const likeMutation = useToggleLike();
+  const likeMutation = useToggleLike(boardId, sort);
   const { data: me } = useMyProfile();
   const { bookmarked, toggleBookmarked, setBookmarked, liked, setLiked, toggleLiked, likeCount, setLikeCount } =
     usePostUI();
@@ -168,18 +127,18 @@ export default function CommunityScreen() {
     });
   }, [items, canQuery, effectiveQ]);
 
-  const resultsOnly: PostEx[] = useMemo(() => {
+  const resultsOnly: SearchedPostEx[] = useMemo(() => {
     if (!canQuery) return [];
-    const normalize = (x: PostEx | PostExFromSearch): PostEx => ({
+    const normalize = (x: SearchedPostEx | PostExFromSearch): SearchedPostEx => ({
       ...x,
       postId: Number(x.postId),
       id: String(x.postId),
     });
 
     const seen = new Set<number>();
-    const out: PostEx[] = [];
+    const out: SearchedPostEx[] = [];
 
-    const pushUnique = (arr: (PostEx | PostExFromSearch)[]) => {
+    const pushUnique = (arr: (SearchedPostEx | PostExFromSearch)[]) => {
       for (const raw of arr) {
         const p = normalize(raw as any);
         if (!seen.has(p.postId)) {
@@ -194,7 +153,7 @@ export default function CommunityScreen() {
     return out;
   }, [canQuery, remoteHits, localMatches]);
 
-  const [visible, setVisible] = useState<PostEx[]>([]);
+  const [visible, setVisible] = useState<SearchedPostEx[]>([]);
   useEffect(() => {
     setVisible(
       items.map((it) => ({
@@ -207,10 +166,10 @@ export default function CommunityScreen() {
     );
   }, [items, imagesById, bookmarked, liked, likeCount]);
 
-  const composed: PostEx[] = useMemo(() => {
+  const composed: SearchedPostEx[] = useMemo(() => {
     if (!canQuery) return visible;
 
-    const normalize = (x: PostEx | PostExFromSearch): PostEx => ({
+    const normalize = (x: SearchedPostEx | PostExFromSearch): SearchedPostEx => ({
       ...x,
       postId: Number(x.postId),
       id: String(x.postId),
@@ -219,8 +178,8 @@ export default function CommunityScreen() {
     const primary = [...remoteHits.map(normalize), ...localMatches.map(normalize)];
 
     const seen = new Set<number>();
-    const out: PostEx[] = [];
-    const pushUnique = (arr: PostEx[]) => {
+    const out: SearchedPostEx[] = [];
+    const pushUnique = (arr: SearchedPostEx[]) => {
       for (const p of arr) {
         if (!seen.has(p.postId)) {
           seen.add(p.postId);
@@ -291,7 +250,7 @@ export default function CommunityScreen() {
     }
     setLoading(true);
     try {
-      const { data } = await api.get<PostsListResp>(`/api/v1/boards/${boardId}/posts`, {
+      const { data } = await api.get<SearchedPostsResp>(`/api/v1/boards/${boardId}/posts`, {
         params: { sort: sortParam, size: 20, ...(after ? { cursor: after } : null) },
       });
 
@@ -363,7 +322,7 @@ export default function CommunityScreen() {
       if (isFirstMount.current || searchOpen || canQuery) return;
 
       for (const v of viewableItems) {
-        const it = v.item as PostEx | undefined;
+        const it = v.item as SearchedPostEx | undefined;
         if (!it) continue;
         const hasEnough = Array.isArray(it.images) && it.images.length >= 2;
         if (!hasEnough) hydrateImages(it.postId);
@@ -435,11 +394,11 @@ export default function CommunityScreen() {
     }
   };
 
-  const renderPost: ListRenderItem<PostEx> = ({ item }) => (
+  const renderPost: ListRenderItem<SearchedPostEx> = ({ item }) => (
     <PostCard
       data={{
         ...item,
-        category: cat === 'All' ? item.category : cat,
+        category: cat === 'ALL' ? item.category : cat,
         bookmarked: bookmarked[item.postId] ?? item.bookmarked,
         likedByMe: liked[item.postId] ?? item.likedByMe,
         likes: likeCount[item.postId] ?? item.likes,
@@ -481,7 +440,12 @@ export default function CommunityScreen() {
                   <AntDesign name="close" size={14} color="#cfd4da" />
                 </ClearBtn>
               )}
-              <CancelBtn onPress={closeSearch}>
+              <CancelBtn
+                onPress={() => {
+                  closeSearch();
+                  router.push('/community');
+                }}
+              >
                 <CancelText>Cancel</CancelText>
               </CancelBtn>
             </SearchBox>
@@ -504,16 +468,16 @@ export default function CommunityScreen() {
       </Header>
 
       <ChipsWrap>
-        <CategoryChips value={cat} onChange={setCat} />
+        <CategoryChips value={cat} onPress={setCat} />
       </ChipsWrap>
 
       <SortWrap>
-        <SortTabs value={sort} onChange={setSort} />
+        <SortTabs value={sort} onPress={setSort} />
       </SortWrap>
 
       <List
         data={canQuery ? resultsOnly : visible}
-        keyExtractor={(it: PostEx) => String(it.postId)}
+        keyExtractor={(it: SearchedPostEx) => String(it.postId)}
         renderItem={renderPost}
         showsVerticalScrollIndicator={false}
         onEndReachedThreshold={0.4}
@@ -540,7 +504,7 @@ export default function CommunityScreen() {
         viewabilityConfig={viewConfig}
       />
 
-      <WriteFab onPress={handleWritePress} disabled={checkingProfile} />
+      <WriteFab onHandleWritePress={handleWritePress} disabled={checkingProfile} />
       {/* [수정] checking -> checkingProfile */}
       <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
@@ -590,7 +554,7 @@ const SortWrap = styled.View`
   margin-top: 20px;
   margin-bottom: 14px;
 `;
-const List = styled(FlatList as React.ComponentType<FlatListProps<PostEx>>)``;
+const List = styled(FlatList as React.ComponentType<FlatListProps<SearchedPostEx>>)``;
 const FooterLoading = styled.View`
   padding: 16px 0;
 `;
