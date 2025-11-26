@@ -55,7 +55,6 @@ type Font = {
 const FONT = ({ fontFamily, size, weight, lineHeight }: Font) => {
   return {
     fontFamily: (FONT_FAMILY[fontFamily] as any)[weight],
-    fontWeight: weight,
     fontSize: size,
     lineHeight: lineHeight,
   };

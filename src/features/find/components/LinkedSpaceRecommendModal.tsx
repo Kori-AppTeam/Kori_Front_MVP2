@@ -106,7 +106,6 @@ const BadgeText = styled.Text`
   color: ${({ theme }) => theme.colors.primary.white};
   font-family: ${({ theme }) => theme.fonts.body.B4_R.fontFamily};
   font-size: ${({ theme }) => theme.fonts.body.B4_R.fontSize}px;
-  font-weight: ${({ theme }) => theme.fonts.body.B4_R.fontWeight};
   line-height: ${({ theme }) => theme.fonts.body.B4_R.lineHeight}px;
 `;
 
@@ -114,7 +113,6 @@ const SpaceName = styled.Text`
   color: ${({ theme }) => theme.colors.primary.white};
   font-family: ${({ theme }) => theme.fonts.headline.H2_B.fontFamily};
   font-size: ${({ theme }) => theme.fonts.headline.H2_B.fontSize}px;
-  font-weight: ${({ theme }) => theme.fonts.headline.H2_B.fontWeight};
   line-height: ${({ theme }) => theme.fonts.headline.H2_B.lineHeight}px;
 `;
 
@@ -135,7 +133,6 @@ const JoinButtonText = styled.Text`
   color: ${({ theme }) => theme.colors.primary.black};
   font-family: ${({ theme }) => theme.fonts.body.B4_M.fontFamily};
   font-size: ${({ theme }) => theme.fonts.body.B4_M.fontSize}px;
-  font-weight: ${({ theme }) => theme.fonts.body.B4_M.fontWeight};
   line-height: ${({ theme }) => theme.fonts.body.B4_M.lineHeight}px;
 `;
 
@@ -156,6 +153,5 @@ const ActionText = styled.Text`
   color: ${({ theme }) => theme.colors.gray.lightGray_1};
   font-family: ${({ theme }) => theme.fonts.body.B5_M.fontFamily};
   font-size: ${({ theme }) => theme.fonts.body.B5_M.fontSize}px;
-  font-weight: ${({ theme }) => theme.fonts.body.B5_M.fontWeight};
   line-height: ${({ theme }) => theme.fonts.body.B5_M.lineHeight}px;
 `;
