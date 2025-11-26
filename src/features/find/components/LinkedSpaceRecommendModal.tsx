@@ -1,5 +1,6 @@
-import React from 'react';
-import { ActivityIndicator, Modal } from 'react-native';
+import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components/native';
 import { useLinkedSpaceRecommend } from '../hooks/useLinkedSpaceRecommend';
 
@@ -11,61 +12,60 @@ interface Props {
 }
 
 export const LinkedSpaceRecommendModal = ({ visible, onJoin, onDontShowToday, onClose }: Props) => {
-  const { data, isLoading } = useLinkedSpaceRecommend(visible);
+  const bottomSheetRef = useRef<BottomSheetModal | null>(null);
+  const { data } = useLinkedSpaceRecommend(visible);
+
+  // visible이 변경될 때 모달을 열거나 닫음
+  useEffect(() => {
+    if (visible && data) {
+      bottomSheetRef.current?.present();
+    } else {
+      bottomSheetRef.current?.dismiss();
+    }
+  }, [visible, data]);
+
   // data가 없으면 모달을 렌더링하지 않음
-  if (!visible || (!isLoading && !data)) {
+  if (!visible || !data) {
     return null;
   }
 
   return (
-    <Modal transparent visible={visible} animationType="slide" onRequestClose={onClose}>
-      <ModalBackground>
-        <BottomSheet>
-          <ModalCard source={require('@/assets/images/background2.png')}>
-            {isLoading ? (
-              <LoadingContainer>
-                <ActivityIndicator color="#fff" size="large" />
-              </LoadingContainer>
-            ) : data ? (
-              <ContentContainer>
-                <LeftSection>
-                  <LeftTextSection>
-                    <BadgeText>Trending space</BadgeText>
-                    <SpaceName numberOfLines={2}>{data.roomName}</SpaceName>
-                  </LeftTextSection>
-                  <JoinButton onPress={() => onJoin(String(data.roomId), data.roomName)} activeOpacity={0.8}>
-                    <JoinButtonText>Join</JoinButtonText>
-                  </JoinButton>
-                </LeftSection>
+    <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">
+      <BottomSheetContent>
+        <ModalCard source={require('@/assets/images/background2.png')}>
+          {data ? (
+            <ContentContainer>
+              <LeftSection>
+                <LeftTextSection>
+                  <BadgeText>Trending space</BadgeText>
+                  <SpaceName numberOfLines={2}>{data.roomName}</SpaceName>
+                </LeftTextSection>
+                <JoinButton onPress={() => onJoin(String(data.roomId), data.roomName)} activeOpacity={0.8}>
+                  <JoinButtonText>Join</JoinButtonText>
+                </JoinButton>
+              </LeftSection>
 
-                <RightSection>
-                  <SpaceImage source={{ uri: data.roomImageUrl }} />
-                </RightSection>
-              </ContentContainer>
-            ) : null}
-          </ModalCard>
+              <RightSection>
+                <SpaceImage source={{ uri: data.roomImageUrl }} />
+              </RightSection>
+            </ContentContainer>
+          ) : null}
+        </ModalCard>
 
-          <BottomActions>
-            <ActionButton onPress={onDontShowToday} activeOpacity={0.7}>
-              <ActionText>Don't Show again today</ActionText>
-            </ActionButton>
-            <ActionButton onPress={onClose} activeOpacity={0.7}>
-              <ActionText>Close</ActionText>
-            </ActionButton>
-          </BottomActions>
-        </BottomSheet>
-      </ModalBackground>
-    </Modal>
+        <BottomActions>
+          <ActionButton onPress={onDontShowToday} activeOpacity={0.7}>
+            <ActionText>Don't Show again today</ActionText>
+          </ActionButton>
+          <ActionButton onPress={onClose} activeOpacity={0.7}>
+            <ActionText>Close</ActionText>
+          </ActionButton>
+        </BottomActions>
+      </BottomSheetContent>
+    </CustomBottomSheet>
   );
 };
 
-const ModalBackground = styled.View`
-  flex: 1;
-  justify-content: flex-end;
-  background-color: rgba(0, 0, 0, 0.7);
-`;
-
-const BottomSheet = styled.View`
+const BottomSheetContent = styled.View`
   width: 100%;
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
@@ -73,17 +73,11 @@ const BottomSheet = styled.View`
 
 const ModalCard = styled.ImageBackground`
   width: 100%;
-  min-height: 28%;
+  min-height: 300px;
   justify-content: center;
-  border-top-left-radius: 22px;
-  border-top-right-radius: 22px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
   overflow: hidden;
-`;
-
-const LoadingContainer = styled.View`
-  min-height: 150px;
-  justify-content: center;
-  align-items: center;
 `;
 
 const ContentContainer = styled.View`
@@ -102,7 +96,7 @@ const LeftTextSection = styled.View`
 
 const LeftSection = styled.View`
   flex: 1;
-  gap: 32px;
+  gap: 28px;
   max-width: 40%;
 `;
 
@@ -111,16 +105,19 @@ const RightSection = styled.View`
 `;
 
 const BadgeText = styled.Text`
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 400;
+  color: ${({ theme }) => theme.colors.primary.white};
+  font-family: ${({ theme }) => theme.fonts.body.B4_R.fontFamily};
+  font-size: ${({ theme }) => theme.fonts.body.B4_R.fontSize}px;
+  font-weight: ${({ theme }) => theme.fonts.body.B4_R.fontWeight};
+  line-height: ${({ theme }) => theme.fonts.body.B4_R.lineHeight}px;
 `;
 
 const SpaceName = styled.Text`
-  color: #ffffff;
-  font-size: 32px;
-  font-weight: bold;
-  line-height: 42px;
+  color: ${({ theme }) => theme.colors.primary.white};
+  font-family: ${({ theme }) => theme.fonts.headline.H2_B.fontFamily};
+  font-size: ${({ theme }) => theme.fonts.headline.H2_B.fontSize}px;
+  font-weight: ${({ theme }) => theme.fonts.headline.H2_B.fontWeight};
+  line-height: ${({ theme }) => theme.fonts.headline.H2_B.lineHeight}px;
 `;
 
 const SpaceImage = styled.Image`
@@ -130,17 +127,18 @@ const SpaceImage = styled.Image`
 `;
 
 const JoinButton = styled.TouchableOpacity`
-  background-color: #02F59B;
+  background-color: ${({ theme }) => theme.colors.primary.mint};
   padding: 16px 30px;
   border-radius: 10px;
   align-self: flex-start;
 `;
 
 const JoinButtonText = styled.Text`
-  color: #1D1E1F;
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: 0.3px;
+  color: ${({ theme }) => theme.colors.primary.black};
+  font-family: ${({ theme }) => theme.fonts.body.B4_M.fontFamily};
+  font-size: ${({ theme }) => theme.fonts.body.B4_M.fontSize}px;
+  font-weight: ${({ theme }) => theme.fonts.body.B4_M.fontWeight};
+  line-height: ${({ theme }) => theme.fonts.body.B4_M.lineHeight}px;
 `;
 
 const BottomActions = styled.View`
@@ -149,7 +147,7 @@ const BottomActions = styled.View`
   justify-content: space-between;
   padding: 16px 5%;
   padding-bottom: 32px;
-  background-color: #171818;
+  background-color: ${({ theme }) => theme.colors.gray.darkBlack_1};
 `;
 
 const ActionButton = styled.TouchableOpacity`
@@ -157,7 +155,9 @@ const ActionButton = styled.TouchableOpacity`
 `;
 
 const ActionText = styled.Text`
-  color: #CCCFD0;
-  font-size: 14px;
-  font-weight: 500;
+  color: ${({ theme }) => theme.colors.gray.lightGray_1};
+  font-family: ${({ theme }) => theme.fonts.body.B5_M.fontFamily};
+  font-size: ${({ theme }) => theme.fonts.body.B5_M.fontSize}px;
+  font-weight: ${({ theme }) => theme.fonts.body.B5_M.fontWeight};
+  line-height: ${({ theme }) => theme.fonts.body.B5_M.lineHeight}px;
 `;
