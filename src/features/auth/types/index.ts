@@ -1,3 +1,6 @@
+import z from 'zod';
+import { signUpSchema } from '@/src/features/auth/utils/schema';
+
 export type AppLoginResponse = {
   data: {
     accessToken: string;
@@ -18,3 +21,5 @@ export type EmailLoginResponse = {
   email: string;
   isNewUser: boolean;
 };
+
+export type SignUpFormValues = z.infer<typeof signUpSchema>;

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Config } from '@/src/shared/constants/config';
-import { EmailLoginResponse } from '@/src/features/auth/types/api.types';
+import { EmailLoginResponse } from '@/src/features/auth/types';
 
 export async function postEmailAppLogin(email: string, password: string) {
   try {
