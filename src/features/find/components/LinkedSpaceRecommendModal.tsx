@@ -30,7 +30,7 @@ export const LinkedSpaceRecommendModal = ({ visible, onJoin, onDontShowToday, on
   }
 
   return (
-    <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">
+    <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent" handleComponent={() => null}>
       <BottomSheetContent>
         <ModalCard source={require('@/assets/images/background2.png')}>
           <ContentContainer>

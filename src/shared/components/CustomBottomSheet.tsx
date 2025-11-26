@@ -7,9 +7,16 @@ interface CustomBottomSheetProps {
   ref: React.RefObject<BottomSheetModal | null>;
   onChange?: (index: number) => void;
   backgroundColor?: string;
+  handleComponent?: () => null;
 }
 
-const CustomBottomSheet = ({ children, ref, onChange, backgroundColor }: CustomBottomSheetProps) => {
+const CustomBottomSheet = ({
+  children,
+  ref,
+  onChange,
+  backgroundColor = theme.colors.gray.darkGray_1,
+  handleComponent = () => null,
+}: CustomBottomSheetProps) => {
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.6} pressBehavior="close" />
@@ -18,14 +25,14 @@ const CustomBottomSheet = ({ children, ref, onChange, backgroundColor }: CustomB
   );
 
   const bottomSheetModalStyle = {
-    backgroundColor: backgroundColor ?? theme.colors.gray.darkGray_1,
+    backgroundColor: backgroundColor,
   } as const;
 
   const bottomSheetHandleStyle = {
-    backgroundColor: backgroundColor ?? theme.colors.gray.gray_1,
+    backgroundColor: backgroundColor,
   } as const;
 
-  const bottomSheetViewStyle = { flex: 1, backgroundColor: backgroundColor ?? theme.colors.gray.darkGray_1 } as const;
+  const bottomSheetViewStyle = { flex: 1, backgroundColor: backgroundColor } as const;
 
   return (
     <BottomSheetModal
@@ -34,7 +41,7 @@ const CustomBottomSheet = ({ children, ref, onChange, backgroundColor }: CustomB
       backgroundStyle={bottomSheetModalStyle}
       handleIndicatorStyle={bottomSheetHandleStyle}
       backdropComponent={renderBackdrop}
-      handleComponent={() => null} // 핸들 숨기기
+      handleComponent={handleComponent} // 핸들 숨기기
     >
       <BottomSheetView style={bottomSheetViewStyle}>{children}</BottomSheetView>
     </BottomSheetModal>
