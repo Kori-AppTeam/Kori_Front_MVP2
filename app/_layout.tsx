@@ -119,9 +119,13 @@ export default function RootLayout() {
   useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
   useBackgroundNotification(isLoggedIn, checkingToken); // 백그라운드 알림 수신
 
-  if (!loaded || checkingToken) return null;
+  useEffect(() => {
+    if (isLoggedIn) {
+      initializeStomp();
+    }
+  }, [isLoggedIn]);
 
-  initializeStomp(); // STOMP 초기화 함수 호출
+  if (!loaded || checkingToken) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
