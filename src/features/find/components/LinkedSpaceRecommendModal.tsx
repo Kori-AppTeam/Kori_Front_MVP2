@@ -104,16 +104,12 @@ const RightSection = styled.View`
 
 const BadgeText = styled.Text`
   color: ${({ theme }) => theme.colors.primary.white};
-  font-family: ${({ theme }) => theme.fonts.body.B4_R.fontFamily};
-  font-size: ${({ theme }) => theme.fonts.body.B4_R.fontSize}px;
-  line-height: ${({ theme }) => theme.fonts.body.B4_R.lineHeight}px;
+  ${({ theme }) => theme.fonts.body.B4_R};
 `;
 
 const SpaceName = styled.Text`
   color: ${({ theme }) => theme.colors.primary.white};
-  font-family: ${({ theme }) => theme.fonts.headline.H2_B.fontFamily};
-  font-size: ${({ theme }) => theme.fonts.headline.H2_B.fontSize}px;
-  line-height: ${({ theme }) => theme.fonts.headline.H2_B.lineHeight}px;
+  ${({ theme }) => theme.fonts.headline.H2_B};
 `;
 
 const SpaceImage = styled.Image`
@@ -131,9 +127,7 @@ const JoinButton = styled.TouchableOpacity`
 
 const JoinButtonText = styled.Text`
   color: ${({ theme }) => theme.colors.primary.black};
-  font-family: ${({ theme }) => theme.fonts.body.B4_M.fontFamily};
-  font-size: ${({ theme }) => theme.fonts.body.B4_M.fontSize}px;
-  line-height: ${({ theme }) => theme.fonts.body.B4_M.lineHeight}px;
+  ${({ theme }) => theme.fonts.body.B4_M};
 `;
 
 const BottomActions = styled.View`
@@ -151,7 +145,5 @@ const ActionButton = styled.TouchableOpacity`
 
 const ActionText = styled.Text`
   color: ${({ theme }) => theme.colors.gray.lightGray_1};
-  font-family: ${({ theme }) => theme.fonts.body.B5_M.fontFamily};
-  font-size: ${({ theme }) => theme.fonts.body.B5_M.fontSize}px;
-  line-height: ${({ theme }) => theme.fonts.body.B5_M.lineHeight}px;
+  ${({ theme }) => theme.fonts.body.B5_M};
 `;
