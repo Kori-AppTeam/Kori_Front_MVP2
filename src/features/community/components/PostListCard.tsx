@@ -190,5 +190,4 @@ const IconBtn = styled.Pressable`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-right: 16px;
 `;
