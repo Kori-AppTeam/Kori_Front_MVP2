@@ -49,3 +49,8 @@ export const GOOGLE_AUTH_ERROR: AuthErrorConfig = {
   },
   GOOGLE_NO_AUTH_CODE: { message: 'Failed to verify Google account information.' },
 };
+
+export const EMAIL_SIGNUP_ERROR: AuthErrorConfig = {
+  ...UNKNOWN_ERROR,
+  // TODO 공통 에러 추가
+};

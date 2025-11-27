@@ -4,17 +4,21 @@ import { useFormContext } from 'react-hook-form';
 
 import ActionInput from '@/src/features/auth/components/ActionInput';
 import ErrorMessage from '@/src/features/auth/components/ErrorMessage';
+import { useVerifyEmail } from '@/src/features/auth/hooks/useVerifyEmail';
+import Toast from 'react-native-toast-message';
 import { useCheckEmail } from '@/src/features/auth/hooks/useCheckEmail';
+import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
+import { EMAIL_SIGNUP_ERROR } from '@/src/features/auth/constants/error';
 
 interface EmailFormProps {
-  isCheckEmailLoading: boolean;
-  checkEmailError: string;
-  isChecked: boolean;
+  useCheckEmail: ReturnType<typeof useCheckEmail>;
+  useVerifyEmail: ReturnType<typeof useVerifyEmail>;
 }
 
-const EmailForm = ({ isCheckEmailLoading, checkEmailError, isChecked }: EmailFormProps) => {
-  const emailSend = false; // TODO 인증 코드 발송 상태 관리
-  const emailVerified = false; // TODO 이메일 인증 상태 관리
+const EmailForm = ({ useCheckEmail, useVerifyEmail }: EmailFormProps) => {
+  const { isLoading: isCheckEmailLoading, error: checkEmailError, isChecked } = useCheckEmail;
+  const { isSendCodeLoading, isVerifyCodeLoading, verifyCodeError, isVerified, isCodeSent, sendCode, verifyCode } =
+    useVerifyEmail;
 
   const {
     formState: { errors },
@@ -27,19 +31,37 @@ const EmailForm = ({ isCheckEmailLoading, checkEmailError, isChecked }: EmailFor
   const isEmailValid = !errors.email && !!watch('email');
   const isCodeValid = !errors.verificationCode && !!watch('verificationCode');
 
-  const handleSendCode = () => {
+  const handleSendCode = async () => {
     try {
-      // TODO 인증 코드 전송 로직을 hook으로 분리
+      await sendCode(watch('email'));
     } catch (error) {
-      // TODO 에러 처리 및 toast 알림
+      const errorCode = getAxiosErrorCode(error);
+      const errorConfig = EMAIL_SIGNUP_ERROR[errorCode];
+
+      Toast.show({
+        type: 'error',
+        text1: errorConfig.message,
+        text2: `Please try again later.`,
+        position: 'bottom',
+        bottomOffset: 180,
+      });
     }
   };
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode = async () => {
     try {
-      // TODO 인증 코드 검증 로직을 hook으로 분리
+      await verifyCode(watch('email'), watch('verificationCode'));
     } catch (error) {
-      // TODO 에러 처리 및 toast 알림
+      const errorCode = getAxiosErrorCode(error);
+      const errorConfig = EMAIL_SIGNUP_ERROR[errorCode];
+
+      Toast.show({
+        type: 'error',
+        text1: errorConfig.message,
+        text2: `Please try again later.`,
+        position: 'bottom',
+        bottomOffset: 180,
+      });
     }
   };
 
@@ -50,11 +72,11 @@ const EmailForm = ({ isCheckEmailLoading, checkEmailError, isChecked }: EmailFor
           placeholder="Enter email address"
           label="Email"
           onActionPress={handleSendCode}
-          isActionSuccess={emailSend}
+          isActionSuccess={isCodeSent}
           actionLabelText="Send"
           registerField="email"
           actionDisabled={!isEmailValid || !isChecked}
-          isActionLoading={isCheckEmailLoading}
+          isActionLoading={isCheckEmailLoading || isSendCodeLoading}
         />
         <ErrorMessage message={emailError || checkEmailError} />
       </EmailFormSection>
@@ -63,12 +85,13 @@ const EmailForm = ({ isCheckEmailLoading, checkEmailError, isChecked }: EmailFor
           placeholder="Enter Code"
           label="Code Verification"
           onActionPress={handleVerifyCode}
-          isActionSuccess={emailVerified}
+          isActionSuccess={isVerified}
           actionLabelText="Verify"
           registerField="verificationCode"
-          actionDisabled={!isCodeValid || emailVerified}
+          actionDisabled={!isCodeValid || isVerified}
+          isActionLoading={isVerifyCodeLoading}
         />
-        <ErrorMessage message={codeError} />
+        <ErrorMessage message={codeError || verifyCodeError} />
       </EmailFormSection>
     </EmailFormContainer>
   );

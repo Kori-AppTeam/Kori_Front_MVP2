@@ -25,6 +25,7 @@ import CustomButton from '@/src/shared/components/CustomButton';
 import { useEmailSignUpForm } from '@/src/features/auth/hooks/useEmailSignUpForm';
 import { FormProvider } from 'react-hook-form';
 import { useCheckEmail } from '@/src/features/auth/hooks/useCheckEmail';
+import { useVerifyEmail } from '@/src/features/auth/hooks/useVerifyEmail';
 
 enum isDuplicatedEmail {
   Init = 'Init',
@@ -53,104 +54,101 @@ const index = () => {
   const { bottomSheetRef, handleBottomSheetClose, handleBottomSheetOpen } = useConfirmTermsBottomSheet();
 
   const methods = useEmailSignUpForm();
-  const {
-    isLoading: isCheckEmailLoading,
-    isChecked,
-    error: checkEmailError,
-  } = useCheckEmail(methods.watch('email'), methods.formState.errors.email?.message as string);
+  const checkEmailHook = useCheckEmail(methods.watch('email'), methods.formState.errors.email?.message as string);
+  const verifyEmailHook = useVerifyEmail(methods.watch('email'));
 
-  const [checks, setChecks] = useState({
-    isnull: true,
-    uppercase: false,
-    length: false,
-    special: false,
-  });
+  // const [checks, setChecks] = useState({
+  //   isnull: true,
+  //   uppercase: false,
+  //   length: false,
+  //   special: false,
+  // });
 
-  const [EmailChecks, setEmailChecks] = useState({
-    isnull: true,
-    isEmail: false,
-  });
+  // const [EmailChecks, setEmailChecks] = useState({
+  //   isnull: true,
+  //   isEmail: false,
+  // });
 
-  const [isSamePassword, setIsSamePassword] = useState({
-    isnull: true,
-    isSame: false,
-  });
+  // const [isSamePassword, setIsSamePassword] = useState({
+  //   isnull: true,
+  //   isSame: false,
+  // });
 
-  const completeCondition =
-    isCorrect === isCorrectCode.Success &&
-    checks.length &&
-    checks.uppercase &&
-    checks.special &&
-    isSamePassword.isSame === true;
+  // const completeCondition =
+  //   isCorrect === isCorrectCode.Success &&
+  //   checks.length &&
+  //   checks.uppercase &&
+  //   checks.special &&
+  //   isSamePassword.isSame === true;
 
-  useEffect(() => {
-    setChecks({
-      isnull: password.length === 0,
-      length: password.length >= 8 && password.length <= 12,
-      uppercase: /[A-Z]/.test(password),
-      special: /[@!~]/.test(password),
-    });
-  }, [password]);
+  // useEffect(() => {
+  //   setChecks({
+  //     isnull: password.length === 0,
+  //     length: password.length >= 8 && password.length <= 12,
+  //     uppercase: /[A-Z]/.test(password),
+  //     special: /[@!~]/.test(password),
+  //   });
+  // }, [password]);
 
-  useEffect(() => {
-    setEmailChecks({
-      isnull: email.length === 0,
-      isEmail: isEmail(),
-    });
-  }, [email]);
+  // useEffect(() => {
+  //   setEmailChecks({
+  //     isnull: email.length === 0,
+  //     isEmail: isEmail(),
+  //   });
+  // }, [email]);
 
-  useEffect(() => {
-    setIsSamePassword({
-      isnull: repeatPassword.length === 0,
-      isSame: repeatPassword === password,
-    });
-  }, [repeatPassword]);
+  // useEffect(() => {
+  //   setIsSamePassword({
+  //     isnull: repeatPassword.length === 0,
+  //     isSame: repeatPassword === password,
+  //   });
+  // }, [repeatPassword]);
 
-  const isEmail = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  // const isEmail = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // 가입된 이메일 중복 체크 후 -> 이메일 인증 코드 발송
-  const VerifyEmail = async () => {
-    try {
-      const res = await axios.post(`${Config.SERVER_URL}/api/v1/member/email/check`, { email: email });
-      const { exists } = res.data.data;
-      if (exists) {
-        setIsExistEmail(isDuplicatedEmail.Exist);
-      } else {
-        // 이메일 인증 시작
-        const res = await axios.post(`${Config.SERVER_URL}/api/v1/member/send-verification-email`, {
-          email: email,
-          lang: 'en',
-        });
-        setIsExistEmail(isDuplicatedEmail.NotExist);
-      }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        console.error('message:', err.message); // 예: "Network Error"
-        console.error('code:', err.code); // 예: "ERR_NETWORK" (axios 1.x)
-      }
-      console.error('이메일 확인 중 에러 발생', err);
-    }
-  };
+  // // 가입된 이메일 중복 체크 후 -> 이메일 인증 코드 발송
+  // const VerifyEmail = async () => {
+  //   try {
+  //     const res = await axios.post(`${Config.SERVER_URL}/api/v1/member/email/check`, { email: email });
+  //     const { exists } = res.data.data;
+  //     if (exists) {
+  //       setIsExistEmail(isDuplicatedEmail.Exist);
+  //     } else {
+  //       // 이메일 인증 시작
+  //       const res = await axios.post(`${Config.SERVER_URL}/api/v1/member/send-verification-email`, {
+  //         email: email,
+  //         lang: 'en',
+  //       });
+  //       setIsExistEmail(isDuplicatedEmail.NotExist);
+  //     }
+  //   } catch (err) {
+  //     if (axios.isAxiosError(err)) {
+  //       console.error('message:', err.message); // 예: "Network Error"
+  //       console.error('code:', err.code); // 예: "ERR_NETWORK" (axios 1.x)
+  //     }
+  //     console.error('이메일 확인 중 에러 발생', err);
+  //   }
+  // };
 
-  // 이메일 인증 코드 보내서 검증 받음
-  const verifyCode = async () => {
-    try {
-      const res = await axios.post(`${Config.SERVER_URL}/api/v1/member/verify-code`, {
-        email: email,
-        verificationCode: code,
-      });
+  // // 이메일 인증 코드 보내서 검증 받음
+  // const verifyCode = async () => {
+  //   try {
+  //     const res = await axios.post(`${Config.SERVER_URL}/api/v1/member/verify-code`, {
+  //       email: email,
+  //       verificationCode: code,
+  //     });
 
-      const data = res.data.data;
+  //     const data = res.data.data;
 
-      if (data) {
-        setIsCorrect(isCorrectCode.Success);
-      } else {
-        setIsCorrect(isCorrectCode.Fail);
-      }
-    } catch (err) {
-      console.error('코드 확인 중 에러 발생', err);
-    }
-  };
+  //     if (data) {
+  //       setIsCorrect(isCorrectCode.Success);
+  //     } else {
+  //       setIsCorrect(isCorrectCode.Fail);
+  //     }
+  //   } catch (err) {
+  //     console.error('코드 확인 중 에러 발생', err);
+  //   }
+  // };
 
   const JoinMember = async () => {
     const { latitude, longitude } = await requestLocationPermission();
@@ -214,11 +212,7 @@ const index = () => {
         >
           <GeneralLoginContainer>
             <FormProvider {...methods}>
-              <EmailForm
-                isCheckEmailLoading={isCheckEmailLoading}
-                checkEmailError={checkEmailError}
-                isChecked={isChecked}
-              />
+              <EmailForm useCheckEmail={checkEmailHook} useVerifyEmail={verifyEmailHook} />
               {/* 
             <TitleContainer>
               <TitleText>Email</TitleText>
@@ -437,7 +431,11 @@ const index = () => {
             </FormProvider>
           </GeneralLoginContainer>
         </KeyboardAwareScrollView>
-        <CustomButton label="Next" disabled={!methods.formState.isValid} onPress={() => handleBottomSheetOpen()} />
+        <CustomButton
+          label="Next"
+          disabled={!methods.formState.isValid || !verifyEmailHook.isVerified}
+          onPress={() => handleBottomSheetOpen()}
+        />
       </Container>
       {/* 약관 동의 바텀시트 */}
       <ConfirmTermsBottomSheet

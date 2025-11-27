@@ -57,7 +57,7 @@ const InputWrapper = styled.View`
 
 const ActionSuccessBtn = styled.View`
   width: 64px;
-  border-radius: 8px;
+  border-radius: 4px;
   height: 48px;
   background-color: transparent;
   justify-content: center;
