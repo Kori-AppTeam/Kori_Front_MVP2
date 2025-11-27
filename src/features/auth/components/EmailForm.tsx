@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { useFormContext } from 'react-hook-form';
+import Toast from 'react-native-toast-message';
 
 import ActionInput from '@/src/features/auth/components/ActionInput';
 import ErrorMessage from '@/src/features/auth/components/ErrorMessage';
 import { useVerifyEmail } from '@/src/features/auth/hooks/useVerifyEmail';
-import Toast from 'react-native-toast-message';
 import { useCheckEmail } from '@/src/features/auth/hooks/useCheckEmail';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
 import { EMAIL_SIGNUP_ERROR } from '@/src/features/auth/constants/error';

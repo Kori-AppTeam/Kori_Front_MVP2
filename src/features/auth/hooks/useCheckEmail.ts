@@ -35,7 +35,7 @@ export function useCheckEmail(email: string, emailError?: string) {
         }
         setError('');
         setIsChecked(true);
-      } catch (e) {
+      } catch (error) {
         setError('Failed to check email. Please try again later.');
       } finally {
         const elapsed = Date.now() - startTime;

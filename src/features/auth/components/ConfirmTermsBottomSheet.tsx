@@ -11,19 +11,27 @@ import { textStyle, theme } from '@/src/styles/theme';
 import { SIGNUP_PRIVACY_POLICY_ROUTE, SIGNUP_TERMS_AND_CONDITIONS_ROUTE } from '@/src/shared/constants/route';
 import CustomButton from '@/src/shared/components/CustomButton';
 import Checkbox, { CheckboxProps } from '@/src/shared/components/Checkbox';
-import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
+import { requestLocationPermission } from '@/src/features/auth/lib/requestLocationPermission';
 import { patchLocation } from '@/api/member/location';
 
 interface ConfirmTermsBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   bottomSheetClose: () => void;
-  loginProvider?: 'apple' | 'google' | 'email';
+  loginProvider: 'apple' | 'google' | 'email';
+  onPress?: () => void;
+  isLoading?: boolean;
 }
 
-const ConfirmTermsBottomSheet = ({ bottomSheetRef, bottomSheetClose, loginProvider }: ConfirmTermsBottomSheetProps) => {
+const ConfirmTermsBottomSheet = ({
+  bottomSheetRef,
+  bottomSheetClose,
+  loginProvider,
+  onPress: handleEmailProvider,
+  isLoading,
+}: ConfirmTermsBottomSheetProps) => {
   const { confirms, isConfirmedAll, toggleConfirmed, toggleConfirmedAll } = useConfirmTerms();
 
-  const handleButtonPress = async () => {
+  const handleAuthProvider = async () => {
     try {
       const { latitude, longitude } = await requestLocationPermission();
       await patchLocation(latitude, longitude);
@@ -39,6 +47,14 @@ const ConfirmTermsBottomSheet = ({ bottomSheetRef, bottomSheetClose, loginProvid
     }
   };
 
+  const handleButtonPress = () => {
+    if (loginProvider === 'email' && handleEmailProvider) {
+      handleEmailProvider();
+    } else {
+      handleAuthProvider();
+    }
+  };
+
   const showTermsAndConditions = () => {
     bottomSheetClose();
     setTimeout(() => {
@@ -51,29 +67,6 @@ const ConfirmTermsBottomSheet = ({ bottomSheetRef, bottomSheetClose, loginProvid
     setTimeout(() => {
       router.push(SIGNUP_PRIVACY_POLICY_ROUTE);
     }, 300);
-  };
-
-  interface LabelCheckboxProps extends CheckboxProps {
-    label: string;
-    isLabelBold?: boolean;
-    onNextPress?: () => void;
-  }
-
-  // 라벨 체크박스
-  const LabelCheckbox = ({ isChecked, onPress, label, isLabelBold = false, onNextPress }: LabelCheckboxProps) => {
-    return (
-      <CheckBoxContainer>
-        <Checkbox isChecked={isChecked} onPress={() => onPress()} />
-        <CheckText isChecked={isChecked} isBold={isLabelBold}>
-          {label}
-        </CheckText>
-        {onNextPress && (
-          <TouchableOpacity onPress={() => onNextPress()}>
-            <Icon type="next" size={20} color={theme.colors.gray.gray_1} />
-          </TouchableOpacity>
-        )}
-      </CheckBoxContainer>
-    );
   };
 
   // loginProvider가 없는 경우 바텀시트를 렌더링하지 않음
@@ -111,13 +104,36 @@ const ConfirmTermsBottomSheet = ({ bottomSheetRef, bottomSheetClose, loginProvid
             onNextPress={showPrivacyPolicy}
           />
         </CheckboxWrapper>
-        <CustomButton label="Confirm" disabled={!isConfirmedAll} onPress={handleButtonPress} />
+        <CustomButton label="Confirm" disabled={!isConfirmedAll} onPress={handleButtonPress} isLoading={isLoading} />
       </BottomSheetContent>
     </CustomBottomSheet>
   );
 };
 
 export default ConfirmTermsBottomSheet;
+
+interface LabelCheckboxProps extends CheckboxProps {
+  label: string;
+  isLabelBold?: boolean;
+  onNextPress?: () => void;
+}
+
+// 라벨 체크박스
+const LabelCheckbox = ({ isChecked, onPress, label, isLabelBold = false, onNextPress }: LabelCheckboxProps) => {
+  return (
+    <CheckBoxContainer>
+      <Checkbox isChecked={isChecked} onPress={() => onPress()} />
+      <CheckText isChecked={isChecked} isBold={isLabelBold}>
+        {label}
+      </CheckText>
+      {onNextPress && (
+        <TouchableOpacity onPress={() => onNextPress()}>
+          <Icon type="next" size={20} color={theme.colors.gray.gray_1} />
+        </TouchableOpacity>
+      )}
+    </CheckBoxContainer>
+  );
+};
 
 const BottomSheetContent = styled.View`
   width: 100%;
