@@ -18,7 +18,7 @@ const ICON = require('@/assets/images/IsolationMode.png');
 
 export default function CommunityScreen() {
   const [profileModalVisible, setProfileModalVisible] = useState<boolean>(false);
-  const { data: profileCompleted, isLoading, isError, refetch } = useGetVisitor();
+  const { data, isLoading, isError, refetch } = useGetVisitor();
 
   // community 화면 보일 때마다 visitor 검사
   useFocusEffect(
@@ -55,9 +55,11 @@ export default function CommunityScreen() {
       return;
     }
 
-    if (profileCompleted === false) {
-      setProfileModalVisible(true);
-      return;
+    if (data) {
+      if (data.profileCompleted === false) {
+        setProfileModalVisible(true);
+        return;
+      }
     }
     router.push('/community/write');
   };

@@ -4,9 +4,6 @@ import { getIsVisitor } from '../apis/visitor';
 export default function useGetVisitor() {
   return useQuery({
     queryKey: ['isVisitorState'],
-    queryFn: async () => {
-      const { profileCompleted } = await getIsVisitor();
-      return profileCompleted;
-    },
+    queryFn: () => getIsVisitor(),
   });
 }

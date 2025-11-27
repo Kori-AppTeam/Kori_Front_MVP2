@@ -12,7 +12,6 @@ import { timeToAgo } from '../utils/indexUtils';
 import PostBookmarkButton from './post/PostBookmarkButton';
 import PostComment from './post/PostComment';
 import PostLikeButton from './post/PostLikeButton';
-import PostMoreButton from './post/PostMoreButton';
 import PostSingleImage from './post/PostSingleImage';
 import PostTextContent from './post/PostTextContent';
 import PostUserProfileImg from './post/PostUserProfileImg';
@@ -21,9 +20,10 @@ type PostCardProps = {
   data: PostsListItem;
   sort: SortParam;
   category: AllowedCategory;
+  onOpenModal: (postId: number, authorId: number) => void;
 };
 
-const PostListCard = ({ data, sort, category }: PostCardProps) => {
+const PostListCard = ({ data, sort, category, onOpenModal }: PostCardProps) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
@@ -92,7 +92,9 @@ const PostListCard = ({ data, sort, category }: PostCardProps) => {
             <PostComment showComment={false} postId={data.postId} commentCount={data.commentCount} />
           </LeftFooter>
 
-          <PostMoreButton postId={data.postId} authorId={data.authorId} />
+          <IconBtn onPress={() => onOpenModal(data.postId, data.authorId)}>
+            <Icon type="eclipsisGaro" size={20} />
+          </IconBtn>
         </FooterRow>
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />
