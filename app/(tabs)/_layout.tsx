@@ -1,15 +1,16 @@
-import NotificationPermissionModal from '@/src/features/notification/components/NotificationPermissionModal';
 import { initNotificationsSettingStatus, putOSPushAgreement } from '@/src/features/notification/api/notifications';
+import NotificationPermissionModal from '@/src/features/notification/components/NotificationPermissionModal';
 import useNotificationPermission from '@/src/features/notification/hooks/useNotificationPermission';
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import React from 'react';
-import { Dimensions, Image, Text } from 'react-native';
+import { DeviceEventEmitter, Dimensions, Image, Text } from 'react-native';
 
 const { height: screenHeight } = Dimensions.get('window');
 const TAB_BAR_HEIGHT = screenHeight * 0.117; // 화면 높이의 15%
 
 export default function TabLayout() {
   const { permissionSetupRequired, setPermissionSetupRequired, requestOSPermission } = useNotificationPermission();
+  const pathname = usePathname();
 
   return (
     <>
@@ -49,6 +50,13 @@ export default function TabLayout() {
                 resizeMode="contain"
               />
             ),
+          }}
+          listeners={{
+            tabPress: () => {
+              if (pathname === '/') {
+                DeviceEventEmitter.emit('FIND_TAB_PRESSED');
+              }
+            },
           }}
         />
         <Tabs.Screen

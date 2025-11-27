@@ -15,7 +15,7 @@ export function useEmailLogin() {
     } catch (error) {
       throw error;
     }
-  }, []);
+  }, [email, password]);
 
   return { email, setEmail, password, setPassword, emailLogin };
 }

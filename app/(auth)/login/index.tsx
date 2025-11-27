@@ -57,11 +57,16 @@ const index = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Container>
           <LoginInputWrapper>
-            <Input placeholder="Enter email address" value={email} onChangeText={setEmail} label="Email" />
+            <Input
+              placeholder="Enter email address"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              label="Email"
+            />
             <Input
               placeholder="Enter password"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => setPassword(text)}
               label="Password"
               secureTextEntry
             />

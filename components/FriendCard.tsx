@@ -1,9 +1,9 @@
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import CustomButton from '@/src/shared/components/CustomButton';
 import Tag from '@/components/Tag';
-import { Config } from '@/src/shared/constants/config';
 import { getEmojiFor } from '@/src/lib/interests';
+import CustomButton from '@/src/shared/components/CustomButton';
+import { Config } from '@/src/shared/constants/config';
 import { theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import { Platform } from 'react-native';
@@ -17,7 +17,7 @@ type Props = {
   name: string;
   country: string;
   birth?: number;
-  gender?: 'male' | 'female' | 'unspecified';
+  gender?: 'Male' | 'Female' | string;
   purpose: string;
   languages: string[];
   personalities: string[];
@@ -64,8 +64,8 @@ const BTN_GAP = 14;
 const CARD_OUTER_GAP = 16;
 
 const genderIconType: Record<NonNullable<Props['gender']>, import('@/components/common/Icon').IconType> = {
-  male: 'maleColored',
-  female: 'femaleColored',
+  Male: 'maleColored',
+  Female: 'femaleColored',
   unspecified: 'nogender',
 };
 const toUrl = (u?: string) => {
@@ -86,7 +86,7 @@ export default function FriendCard(props: Props) {
     name,
     country,
     birth,
-    gender = 'unspecified',
+    gender,
     purpose,
     languages = [],
     personalities = [],
@@ -109,6 +109,9 @@ export default function FriendCard(props: Props) {
     footerSlot,
     defaultExpanded = true,
   } = props;
+
+  //gender가 Male 또는 Female이 아닌 경우 'unspecified'로 처리
+  const effectiveGender = gender === 'Male' || gender === 'Female' ? gender : 'unspecified';
 
   const [expanded, setExpanded] = useState(Boolean(defaultExpanded));
   const finalAvatarUrl = imageUrl ?? imageKey ?? null;
@@ -149,7 +152,7 @@ export default function FriendCard(props: Props) {
               <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>
 
               <GenderIconSpacer>
-                <Icon type={genderIconType[gender]} size={16} color={theme.colors.gray.gray_1} />
+                <Icon type={genderIconType[effectiveGender]} size={16} color={theme.colors.gray.gray_1} />
               </GenderIconSpacer>
             </MetaRow>
 
