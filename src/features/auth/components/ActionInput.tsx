@@ -12,6 +12,7 @@ interface ActionInputProps extends InputProps {
   actionLabelText: string;
   registerField?: string;
   actionDisabled?: boolean;
+  isActionLoading?: boolean;
 }
 
 const ActionInput = ({ ...props }: ActionInputProps) => {
@@ -30,6 +31,7 @@ const ActionInput = ({ ...props }: ActionInputProps) => {
           width={64}
           onPress={props.onActionPress}
           disabled={props.actionDisabled}
+          isLoading={props.isActionLoading}
         />
       )}
     </RowWrapper>

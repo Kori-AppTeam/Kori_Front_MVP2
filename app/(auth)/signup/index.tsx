@@ -24,6 +24,7 @@ import PasswordForm from '@/src/features/auth/components/PasswordForm';
 import CustomButton from '@/src/shared/components/CustomButton';
 import { useEmailSignUpForm } from '@/src/features/auth/hooks/useEmailSignUpForm';
 import { FormProvider } from 'react-hook-form';
+import { useCheckEmail } from '@/src/features/auth/hooks/useCheckEmail';
 
 enum isDuplicatedEmail {
   Init = 'Init',
@@ -52,6 +53,11 @@ const index = () => {
   const { bottomSheetRef, handleBottomSheetClose, handleBottomSheetOpen } = useConfirmTermsBottomSheet();
 
   const methods = useEmailSignUpForm();
+  const {
+    isLoading: isCheckEmailLoading,
+    isChecked,
+    error: checkEmailError,
+  } = useCheckEmail(methods.watch('email'), methods.formState.errors.email?.message as string);
 
   const [checks, setChecks] = useState({
     isnull: true,
@@ -208,7 +214,11 @@ const index = () => {
         >
           <GeneralLoginContainer>
             <FormProvider {...methods}>
-              <EmailForm />
+              <EmailForm
+                isCheckEmailLoading={isCheckEmailLoading}
+                checkEmailError={checkEmailError}
+                isChecked={isChecked}
+              />
               {/* 
             <TitleContainer>
               <TitleText>Email</TitleText>

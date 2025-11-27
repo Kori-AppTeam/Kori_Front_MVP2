@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 import { useFormContext } from 'react-hook-form';
 
 import ActionInput from '@/src/features/auth/components/ActionInput';
 import ErrorMessage from '@/src/features/auth/components/ErrorMessage';
+import { useCheckEmail } from '@/src/features/auth/hooks/useCheckEmail';
 
-const EmailForm = () => {
-  const [code, setCode] = useState<string>(''); // TODO 인증 코드 상태 관리
+interface EmailFormProps {
+  isCheckEmailLoading: boolean;
+  checkEmailError: string;
+  isChecked: boolean;
+}
 
+const EmailForm = ({ isCheckEmailLoading, checkEmailError, isChecked }: EmailFormProps) => {
   const emailSend = false; // TODO 인증 코드 발송 상태 관리
   const emailVerified = false; // TODO 이메일 인증 상태 관리
 
   const {
     formState: { errors },
-    getValues,
+    watch,
   } = useFormContext();
 
-  const isEmailValid = !errors.email && !!getValues('email');
-  const isCodeValid = !errors.verificationCode && !!getValues('verificationCode');
+  const emailError = errors.email?.message as string;
+  const codeError = errors.verificationCode?.message as string;
+
+  const isEmailValid = !errors.email && !!watch('email');
+  const isCodeValid = !errors.verificationCode && !!watch('verificationCode');
 
   const handleSendCode = () => {
     try {
@@ -45,9 +53,10 @@ const EmailForm = () => {
           isActionSuccess={emailSend}
           actionLabelText="Send"
           registerField="email"
-          actionDisabled={!isEmailValid || emailSend}
+          actionDisabled={!isEmailValid || !isChecked}
+          isActionLoading={isCheckEmailLoading}
         />
-        <ErrorMessage message={errors.email?.message as string} />
+        <ErrorMessage message={emailError || checkEmailError} />
       </EmailFormSection>
       <EmailFormSection>
         <ActionInput
@@ -59,7 +68,7 @@ const EmailForm = () => {
           registerField="verificationCode"
           actionDisabled={!isCodeValid || emailVerified}
         />
-        <ErrorMessage message={errors.verificationCode?.message as string} />
+        <ErrorMessage message={codeError} />
       </EmailFormSection>
     </EmailFormContainer>
   );
