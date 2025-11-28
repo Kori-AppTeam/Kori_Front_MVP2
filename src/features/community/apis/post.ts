@@ -42,3 +42,15 @@ export async function updatePost(postId: number, body: UpdatePostBody) {
   await api.put(`/api/v1/posts/${postId}`, body);
   return true;
 }
+
+// 게시글 신고
+export async function reportPost(postId: number, reason: string) {
+  await api.post(`/api/v1/posts/${postId}/declaration`, { reason });
+  return true;
+}
+
+// 게시글 작성한 유저 차단
+export async function blockUser(userId: number) {
+  await api.post(`/api/v1/users/${userId}/block`);
+  return true;
+}
