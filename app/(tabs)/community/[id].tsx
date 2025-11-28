@@ -15,7 +15,7 @@ import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
 import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
 import { usePostDetail } from '@/src/features/community/hooks/usePostDetail';
 import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
-import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
+import { AllowedCategory, SortParam } from '@/src/features/community/types';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { User } from '@/src/shared/types/user';
 import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';

@@ -1,6 +1,6 @@
 import { getPostComments, RawComment } from '@/api/community/comments';
 import { Comment } from '@/components/CommentItem';
-import { SortParam } from '@/src/features/community/types/postsListType';
+import { SortParam } from '@/src/features/community/types';
 import { useQuery } from '@tanstack/react-query';
 
 function pad2(n: number) {

@@ -5,7 +5,7 @@ import { ActivityIndicator, FlatList, ListRenderItem } from 'react-native';
 import styled from 'styled-components/native';
 import { useGetPosts } from '../hooks/useGetPosts';
 import { useOpenMoreSheet } from '../hooks/useOpenMoreSheet';
-import { AllowedCategory, PostsListItem, SortParam } from '../types/postsListType';
+import { AllowedCategory, PostsListItem, SortParam } from '../types';
 import MyPostModal from './post/MyPostModal';
 import OthersPostModal from './post/OthersPostModal';
 import PostListCard from './PostListCard';

@@ -1,5 +1,5 @@
 import { CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
-import { AllowedCategory } from '@/src/features/community/types/postsListType';
+import { AllowedCategory } from '@/src/features/community/types';
 import React from 'react';
 import styled from 'styled-components/native';
 

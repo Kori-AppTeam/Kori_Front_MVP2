@@ -10,7 +10,7 @@ import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookm
 import CategoryChips from '@/src/features/community/components/CategoryChips';
 import PostCard from '@/src/features/community/components/PostCard';
 import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
-import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
+import { AllowedCategory, SortParam } from '@/src/features/community/types';
 import { SearchedPostEx, SearchedPosts, SearchedPostsResp } from '@/src/features/community/types/searchedPostsType';
 import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
 import { usePostUI } from '@/src/store/usePostUI';

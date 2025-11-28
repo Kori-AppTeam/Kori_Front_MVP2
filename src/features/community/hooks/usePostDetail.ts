@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getPostDetail } from '../apis/post';
-import { AllowedCategory } from '../types/postsListType';
+import { AllowedCategory } from '../types';
 
 // 이후 삭제 예정(useGetPostDetail.tsx로 대체)
 type PostListItem = {

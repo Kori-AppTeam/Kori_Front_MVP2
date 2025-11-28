@@ -1,4 +1,4 @@
-import { SortParam } from '@/src/features/community/types/postsListType';
+import { SortParam } from '@/src/features/community/types';
 import { textStyle } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';

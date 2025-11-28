@@ -4,7 +4,7 @@ import {
   BoardId,
   ClientSortParam,
   SortParam,
-} from '@/src/features/community/types/postsListType';
+} from '@/src/features/community/types';
 
 export const CLIENT_CATEGORY_NAME: Record<AllowedCategory, AllowedClientCategory> = {
   ALL: 'All',

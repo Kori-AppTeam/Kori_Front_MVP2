@@ -1,5 +1,5 @@
 import api from '@/api/axiosInstance';
-import { SortParam } from '@/src/features/community/types/postsListType';
+import { SortParam } from '@/src/features/community/types';
 
 export type RawComment = {
   commentId: number;

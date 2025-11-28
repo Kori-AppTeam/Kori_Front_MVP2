@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getPosts } from '../apis/post';
-import { BoardId, SortParam } from '../types/postsListType';
+import { BoardId, SortParam } from '../types';
 
 export function useCommunityFeed(boardId: BoardId, sortKey: 'new' | 'hot') {
   const sort: SortParam = sortKey === 'hot' ? 'POPULAR' : 'LATEST';

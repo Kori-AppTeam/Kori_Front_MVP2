@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { FlatList } from 'react-native';
-import { PostsListItem } from '../types/postsListType';
+import { PostsListItem } from '../types';
 
 export default function useScrollToTop() {
   const scrollRef = useRef<FlatList<PostsListItem>>(null);

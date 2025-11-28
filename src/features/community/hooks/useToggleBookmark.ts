@@ -1,7 +1,7 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { toggleBookMark } from '../apis/bookmarks';
-import { BoardId, PostDetail, PostsListItem, PostsListResp, SortParam } from '../types/postsListType';
+import { BoardId, PostDetail, PostsListItem, PostsListResp, SortParam } from '../types';
 
 type Vars = { postId: number; isBookmarked: boolean };
 type Context = { prevListData?: InfiniteData<PostsListResp>; prevDetailData?: PostDetail };

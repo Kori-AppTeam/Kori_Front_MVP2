@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getPosts } from '../apis/post';
-import { BoardId, PostsCursorPage, PostsListResp, SortParam } from '../types/postsListType';
+import { BoardId, PostsCursorPage, PostsListResp, SortParam } from '../types';
 
 export function useGetPosts(boardId: BoardId, sort: SortParam) {
   const { data, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =

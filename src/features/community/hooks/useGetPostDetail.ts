@@ -1,6 +1,6 @@
 import { getPostDetail } from '@/src/features/community/apis/post';
 import { useQuery } from '@tanstack/react-query';
-import { PostDetail } from '../types/postsListType';
+import { PostDetail } from '../types';
 
 export function useGetPostDetail(postId: number) {
   const { data, isLoading, isError } = useQuery<PostDetail>({

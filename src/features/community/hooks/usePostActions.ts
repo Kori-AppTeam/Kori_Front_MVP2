@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { PostDetail } from '../types/postsListType';
+import { PostDetail } from '../types';
 import { useDeletePost } from './useMyPosts';
 
 // 게시글 수정, 삭제 핸들러 함수

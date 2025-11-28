@@ -7,7 +7,7 @@ import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import { useToggleBookmark } from '../hooks/useToggleBookmark';
 import { useToggleLike } from '../hooks/useToggleLike';
-import { AllowedCategory, PostsListItem, SortParam } from '../types/postsListType';
+import { AllowedCategory, PostsListItem, SortParam } from '../types';
 import { timeToAgo } from '../utils/indexUtils';
 import PostBookmarkButton from './post/PostBookmarkButton';
 import PostComment from './post/PostComment';

@@ -6,7 +6,7 @@ import {
   PostsListResp,
   RequestPageParams,
   UpdatePostBody,
-} from '../types/postsListType';
+} from '../types';
 
 // 게시글 목록 조회
 export async function getPosts(boardId: BoardId, params: RequestPageParams): Promise<PostsListResp> {

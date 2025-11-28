@@ -1,7 +1,7 @@
 import { toggleLike } from '@/src/features/community/apis/likes';
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
-import { BoardId, PostDetail, PostsListItem, PostsListResp, SortParam } from '../types/postsListType';
+import { BoardId, PostDetail, PostsListItem, PostsListResp, SortParam } from '../types';
 
 type Vars = { postId: number; liked: boolean };
 type Context = { prevListData?: InfiniteData<PostsListResp>; prevDetailData?: PostDetail };

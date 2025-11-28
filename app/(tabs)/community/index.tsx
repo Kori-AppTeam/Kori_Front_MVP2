@@ -7,7 +7,7 @@ import CategoryChips from '@/src/features/community/components/CategoryChips';
 import PostList from '@/src/features/community/components/PostList';
 import useGetVisitor from '@/src/features/community/hooks/useGetVisitor';
 import useScrollToTop from '@/src/features/community/hooks/useScrollToTop';
-import { AllowedCategory, SortParam } from '@/src/features/community/types/postsListType';
+import { AllowedCategory, SortParam } from '@/src/features/community/types';
 import { theme } from '@/src/styles/theme';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';

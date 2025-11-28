@@ -20,7 +20,7 @@ import { usePresignedUpload } from '@/hooks/mutations/useImageUpload';
 import { useBoardWriteOptions } from '@/hooks/queries/useBoardWriteOptions';
 import useCreatePost from '@/src/features/community/hooks/useCreatePost';
 import { useUpdatePost } from '@/src/features/community/hooks/useUpdatePost';
-import { AllowedCategory } from '@/src/features/community/types/postsListType';
+import { AllowedCategory } from '@/src/features/community/types';
 import { theme } from '@/src/styles/theme';
 import { uploadImageToPresignedUrl } from '@/utils/uploadImageToPresignedUrl';
 import { router, useLocalSearchParams } from 'expo-router';

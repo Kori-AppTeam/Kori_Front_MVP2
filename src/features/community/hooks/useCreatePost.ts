@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPost } from '../apis/post';
-import { CreatePostBody } from '../types/postsListType';
+import { CreatePostBody } from '../types';
 
 export default function useCreatePost(boardId?: number) {
   const qc = useQueryClient();
