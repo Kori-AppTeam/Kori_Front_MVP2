@@ -1,5 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import queryClient from '@/api/queryClient';
+import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
+import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
+import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { toastConfig } from '@/src/shared/constants/toast';
+import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
 import {
@@ -9,6 +15,7 @@ import {
   PlusJakartaSans_600SemiBold,
   PlusJakartaSans_700Bold,
 } from '@expo-google-fonts/plus-jakarta-sans';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
@@ -17,18 +24,12 @@ import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
-import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
-import { AUTH_ROUTE } from '@/src/shared/constants/route';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
-import { toastConfig } from '@/src/shared/constants/toast';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
@@ -117,6 +118,12 @@ export default function RootLayout() {
 
   useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
   useBackgroundNotification(isLoggedIn, checkingToken); // 백그라운드 알림 수신
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      initializeStomp();
+    }
+  }, [isLoggedIn]);
 
   if (!loaded || checkingToken) return null;
 

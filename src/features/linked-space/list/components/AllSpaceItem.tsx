@@ -1,0 +1,88 @@
+import Icon from '@/components/common/Icon';
+import ProfileImage from '@/components/common/ProfileImage';
+import { LINKED_SPACE_DETAIL_ROUTE } from '@/src/shared/constants/route';
+import { theme } from '@/src/styles/theme';
+import { useRouter } from 'expo-router';
+import styled from 'styled-components/native';
+import { LinkedSpace } from '../types';
+
+export const AllSpaceItem = ({ data }: { data: LinkedSpace }) => {
+  const router = useRouter();
+
+  // 방 상세로 이동
+  const checkDetail = () => {
+    router.push({
+      pathname: LINKED_SPACE_DETAIL_ROUTE(data.roomId),
+    });
+  };
+  return (
+    <AllSpacesBox onPress={checkDetail}>
+      <AllSpaceTitleContainer>
+        <AllSpaceTitle>{data.roomName}</AllSpaceTitle>
+        <AllSpaceTitleContent>{data.description}</AllSpaceTitleContent>
+        <AllSpaceMemberContainer>
+          <Icon type="person" size={16} color={theme.colors.gray.gray_2} />
+          <AllSpaceMemberCount>{data.userCount ?? data.userCount} members</AllSpaceMemberCount>
+        </AllSpaceMemberContainer>
+      </AllSpaceTitleContainer>
+      <AllSpaceImageContainer>
+        <AllSpaceImage imageUrl={data.roomImageUrl} isVisitor={!data.roomImageUrl} />
+      </AllSpaceImageContainer>
+    </AllSpacesBox>
+  );
+};
+
+const AllSpacesBox = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.3, // 눌렀을 때 살짝만 투명
+  delayPressIn: 50, // 눌림 감지 지연 → 깜빡임 완화
+})`
+  height: 120px;
+  flex-direction: row;
+  border-bottom-width: 1px;
+  border-bottom-color: #353637;
+`;
+
+const AllSpaceTitleContainer = styled.View`
+  width: 65%;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 17px;
+`;
+const AllSpaceTitle = styled.Text`
+  color: #ffffff;
+  font-family: PlusJakartaSans_500Medium;
+  font-size: 16px;
+`;
+const AllSpaceTitleContent = styled.Text.attrs({
+  numberOfLines: 2,
+  ellipsizeMode: 'tail',
+})`
+  color: #cccfd0;
+  font-size: 13px;
+  font-family: PlusJakartaSans_300Light;
+  margin-top: 3px;
+`;
+const AllSpaceMemberContainer = styled.View`
+  margin-top: 20px;
+  flex-direction: row;
+`;
+const AllSpaceMemberCount = styled.Text`
+  margin-left: 3px;
+  color: #949899;
+  font-size: 12px;
+`;
+const AllSpaceImageContainer = styled.View`
+  background-color: #353637;
+  width: 80px;
+  height: 80px;
+  border-radius: 100px;
+  margin: 20px 0px 10px 15px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+`;
+const AllSpaceImage = styled(ProfileImage)`
+  width: 100%;
+  height: 100%;
+  resize-mode: contain;
+`;
