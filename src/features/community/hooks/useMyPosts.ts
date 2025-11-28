@@ -1,7 +1,8 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 
-import { deletePost, getMyPosts, type MyPostsPage } from '@/api/community/my';
+import { getMyPosts, type MyPostsPage } from '@/api/community/my';
+import { deletePost } from '../apis/post';
 
 // 작성한 게시글 조회
 export function useMyPosts(size = 20) {

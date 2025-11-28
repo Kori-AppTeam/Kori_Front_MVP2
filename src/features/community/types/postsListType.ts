@@ -98,3 +98,10 @@ export interface RequestPageParams {
   size?: number;
   cursor?: string | null;
 }
+
+// 게시글 수정
+export type UpdatePostBody = {
+  content: string;
+  images?: string[];
+  removedImages?: string[];
+};

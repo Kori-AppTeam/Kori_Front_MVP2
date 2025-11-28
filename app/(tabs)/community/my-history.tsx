@@ -1,7 +1,7 @@
 import Icon from '@/components/common/Icon';
 import { useDeleteComment } from '@/hooks/mutations/useDeleteComment';
 import { useMyComments } from '@/hooks/queries/useMyComments';
-import { useDeletePost, useMyPosts } from '@/hooks/queries/useMyPosts';
+import { useDeletePost, useMyPosts } from '@/src/features/community/hooks/useMyPosts';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';

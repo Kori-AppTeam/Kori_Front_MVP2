@@ -1,6 +1,7 @@
-import { updatePost, type UpdatePostBody } from '@/api/community/my';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
+import { updatePost } from '../apis/post';
+import { UpdatePostBody } from '../types/postsListType';
 
 type Vars = { postId: number; body: UpdatePostBody };
 
