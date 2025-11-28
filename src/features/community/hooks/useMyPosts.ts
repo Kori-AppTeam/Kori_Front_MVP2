@@ -25,6 +25,10 @@ export function useDeletePost() {
     mutationFn: (postId) => deletePost(postId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['post-list'] });
+    },
+    onError: (error) => {
+      console.error('[delete] error', error);
     },
   });
 }
