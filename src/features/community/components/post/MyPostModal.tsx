@@ -2,17 +2,27 @@ import Icon from '@/components/common/Icon';
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
+import { useGetPostDetail } from '../../hooks/useGetPostDetail';
+import { usePostActions } from '../../hooks/usePostActions';
 
-const MyPostModal = ({ closeModal }: { closeModal: () => void }) => {
+const MyPostModal = ({ closeModal, postId }: { closeModal: () => void; postId: number }) => {
+  // 성공 시 모달 닫기
+  const { handleDeletePost, handleRouterUpdatePost } = usePostActions({
+    onSuccessCallback: closeModal,
+  });
+
+  // 게시글 수정 위한 상세 게시글 정보
+  const { postDetailData } = useGetPostDetail(postId);
+
   return (
     <BottomSheetView>
-      <ButtonContainer onPress={() => console.log('수정')}>
+      <ButtonContainer onPress={() => handleRouterUpdatePost(postId, postDetailData)}>
         <Icon type="edit" size={24} />
         <ButtonText color={theme.colors.primary.white}>Edit</ButtonText>
       </ButtonContainer>
 
-      <ButtonContainer onPress={() => console.log('삭제')}>
-        <Icon type="trashCan" size={24} />
+      <ButtonContainer onPress={() => handleDeletePost(postId)}>
+        <Icon type="trashCan" color={theme.colors.secondary.red} size={24} />
         <ButtonText color={theme.colors.secondary.red}>Delete</ButtonText>
       </ButtonContainer>
 
