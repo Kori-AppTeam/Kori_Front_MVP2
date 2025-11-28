@@ -3,7 +3,15 @@ import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 
-const OthersPostModal = ({ closeModal }: { closeModal: () => void }) => {
+const OthersPostModal = ({
+  closeModal,
+  postId,
+  authorId,
+}: {
+  closeModal: () => void;
+  postId: number;
+  authorId: number;
+}) => {
   return (
     <BottomSheetView>
       <ButtonContainer onPress={() => console.log('게시글 신고')}>
