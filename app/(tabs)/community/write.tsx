@@ -17,9 +17,10 @@ import {
 import styled from 'styled-components/native';
 
 import { usePresignedUpload } from '@/hooks/mutations/useImageUpload';
-import { useUpdatePost } from '@/hooks/mutations/useUpdatePost';
 import { useBoardWriteOptions } from '@/hooks/queries/useBoardWriteOptions';
 import useCreatePost from '@/src/features/community/hooks/useCreatePost';
+import { useUpdatePost } from '@/src/features/community/hooks/useUpdatePost';
+import { AllowedCategory } from '@/src/features/community/types/postsListType';
 import { theme } from '@/src/styles/theme';
 import { uploadImageToPresignedUrl } from '@/utils/uploadImageToPresignedUrl';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -40,11 +41,18 @@ const LOCAL_ALLOW_ANON = new Set<Category>(['Free talk', 'Q&A']);
 const CATS: Category[] = ['News', 'Tip', 'Q&A', 'Event', 'Free talk', 'Activity'];
 const GREEN = '#30F59B';
 
+// 게시글 수정 초기 데이터타입
+interface initialEditData {
+  boardCategory: AllowedCategory;
+  content: string;
+  contentImageUrls?: string[];
+}
+
 export default function WriteScreen() {
   const savingRef = useRef<{ current: boolean }>({ current: false });
   const [saving, setSaving] = useState(false);
 
-  const params = useLocalSearchParams<{ mode?: string; postId?: string; initial?: string }>();
+  const params = useLocalSearchParams<{ mode?: string; postId?: string; initialData?: string }>();
   const isEdit = params.mode === 'edit';
   const postIdNum = params.postId ? Number(params.postId) : undefined;
 
@@ -77,7 +85,7 @@ export default function WriteScreen() {
     }
   }, [isError, error, boardId]);
 
-  const [body, setBody] = useState<string>(params.initial ?? '');
+  const [body, setBody] = useState<string>(params.initialData ?? '');
   const [anonymous, setAnonymous] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const inputRef = useRef<RNTextInput>(null);
