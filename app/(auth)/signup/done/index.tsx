@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
 import { StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { textStyle } from '@/src/styles/theme';
+
+// TODO 이미지 상하단 노치까지 확대
+// TODO _layout.tsx View paddingBottom 제거
 
 const SignUpDoneScreen = () => {
   const router = useRouter();
@@ -15,7 +20,7 @@ const SignUpDoneScreen = () => {
       <StatusBar barStyle="light-content" />
       <Container source={require('@/assets/images/SignUpDone.png')} resizeMode="cover">
         <TitleText>Sign up Done!</TitleText>
-        <SubTitleText>Now,you can use Kori</SubTitleText>
+        <SubTitleText>Now, you can use Kori</SubTitleText>
         <Button onPress={goMakeProfile}>
           <ButtonText>Start</ButtonText>
         </Button>
@@ -38,16 +43,14 @@ const Container = styled.ImageBackground`
 `;
 
 const TitleText = styled.Text`
-  color: #ffffff;
-  font-size: 50px;
-  font-family: InstrumentSerif_400Regular;
+  color: ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => textStyle(theme.fonts.Serif.H1_R)}
   position: absolute;
   top: 100;
 `;
 const SubTitleText = styled.Text`
-  color: #cccfd0;
-  font-size: 17px;
-  font-family: PlusJakartaSans_300Light;
+  color: ${({ theme }) => theme.colors.gray.lightGray_1};
+  ${({ theme }) => textStyle(theme.fonts.body.B3_L)}
   position: absolute;
   top: 170;
 `;
@@ -55,7 +58,7 @@ const Button = styled.TouchableOpacity`
   position: absolute;
   align-self: center;
   bottom: 50;
-  background-color: #02f59b;
+  background-color: ${({ theme }) => theme.colors.primary.mint};
   width: 90%;
   height: 50px;
   border-radius: 8px;
@@ -63,7 +66,6 @@ const Button = styled.TouchableOpacity`
   justify-content: center;
 `;
 const ButtonText = styled.Text`
-  color: #1d1e1f;
-  font-size: 16px;
-  font-family: PlusJakartaSans_500Medium;
+  color: ${({ theme }) => theme.colors.primary.black};
+  ${({ theme }) => textStyle(theme.fonts.body.B3_M)}
 `;
