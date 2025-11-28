@@ -1,10 +1,10 @@
 import React from 'react';
-
 import styled from 'styled-components/native';
-import { theme } from '@/src/styles/theme';
+
 import Icon from '@/components/common/Icon';
 import CustomButton from '@/src/shared/components/CustomButton';
 import Input, { InputProps } from '@/src/shared/components/Input';
+import { theme } from '@/src/styles/theme';
 
 interface ActionInputProps extends InputProps {
   isActionSuccess?: boolean;
@@ -41,7 +41,7 @@ const ActionInput = ({ ...props }: ActionInputProps) => {
 export default ActionInput;
 
 const RowWrapper = styled.View`
-  flex: 1;
+  /* flex: 1; */
 
   height: auto;
   display: flex;
