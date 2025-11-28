@@ -87,7 +87,7 @@ export interface CreatePostBody {
   imageUrls?: string[];
 }
 
-export interface PostsListServerResp extends PostsCursorPage {
+export interface PostsListServerResp {
   success: boolean;
   data: PostsCursorPage;
   timestamp?: string;
@@ -105,3 +105,37 @@ export type UpdatePostBody = {
   images?: string[];
   removedImages?: string[];
 };
+
+// 북마크 게시글 아이템
+export interface BookmarkedPostItem {
+  bookmarkId: number;
+  postId: number;
+  authorName: string;
+  content: string;
+  createdAt: string;
+  isAnonymous: boolean;
+  isLiked: boolean;
+  likeCount: number;
+  commentCount: number;
+  checkCount: number;
+  isMarked: boolean;
+  userImage: string;
+  postImages: string[];
+}
+// 북마크 게시글 단일 응답 타입
+export interface BookmarkedPostsPage {
+  items: BookmarkedPostItem[];
+  hasNext: boolean;
+  nextCursor?: string | null;
+}
+// 북마크 게시글 서버 응답 타입
+export interface BookmarkedPostsResp {
+  message: string;
+  data: BookmarkedPostsPage;
+  timestamp?: string;
+}
+// 북마크 무한스크롤 요청 바디 타입
+export interface BookmarkRequestBody {
+  size: number;
+  cursor?: string | null;
+}
