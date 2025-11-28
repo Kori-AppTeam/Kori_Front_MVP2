@@ -34,8 +34,3 @@ const ErrorText = styled.Text`
   color: ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.small.small_M)};
 `;
-
-const PlaceHoldContainer = styled.Text`
-  ${({ theme }) => textStyle(theme.fonts.small.small_M)};
-  opacity: 0;
-`;
