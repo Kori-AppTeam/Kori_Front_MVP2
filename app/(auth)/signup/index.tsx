@@ -51,7 +51,7 @@ const index = () => {
       <StatusBar barStyle="light-content" />
       <DetailHeader title="Create your account" onButtonPress={() => router.back()} />
       <Container>
-        <KeyboardAwareScrollView enableOnAndroid={true}>
+        <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={40}>
           <GeneralLoginContainer>
             <FormProvider {...methods}>
               <EmailForm useCheckEmail={checkEmailHook} useVerifyEmail={verifyEmailHook} />
