@@ -8,9 +8,9 @@ import { useEmailSignUp } from '@/src/features/auth/hooks/useEmailSignUp';
 import { useEmailSignUpForm } from '@/src/features/auth/hooks/useEmailSignUpForm';
 import { useVerifyEmail } from '@/src/features/auth/hooks/useVerifyEmail';
 import CustomButton from '@/src/shared/components/CustomButton';
-import { SIGNUP_DONE_ROUTE, SIGNUP_ROUTE } from '@/src/shared/constants/route';
-import { usePathname, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { SIGNUP_DONE_ROUTE } from '@/src/shared/constants/route';
+import { useRouter } from 'expo-router';
+import React from 'react';
 import { FormProvider } from 'react-hook-form';
 import { StatusBar } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -19,15 +19,12 @@ import styled from 'styled-components/native';
 
 const index = () => {
   const router = useRouter();
-  const pathname = usePathname();
-
-  const [isNextButtonClicked, setIsNextButtonClicked] = useState<boolean>(false);
-  const { bottomSheetRef, handleBottomSheetClose, handleBottomSheetOpen } = useConfirmTermsBottomSheet();
 
   const methods = useEmailSignUpForm();
   const checkEmailHook = useCheckEmail(methods.watch('email'), methods.formState.errors.email?.message as string);
   const verifyEmailHook = useVerifyEmail(methods.watch('email'));
   const { isLoading: isEmailSignUpLoading, emailSignUp } = useEmailSignUp();
+  const { bottomSheetRef, handleBottomSheetClose, handleBottomSheetOpen } = useConfirmTermsBottomSheet();
 
   const handleEmailSignUp = async () => {
     try {
@@ -49,25 +46,12 @@ const index = () => {
     }
   };
 
-  const showModal = () => {
-    setIsNextButtonClicked(true); // 버튼 클릭 여부 저장
-    handleBottomSheetOpen(); // Next 버튼 클릭 시 모달 열기
-  };
-
-  // next 버튼 클릭 상태에 따라 모달 열기
-  useEffect(() => {
-    // 회원가입 페이지가 아닌 경우 모달 닫음
-    if (pathname !== SIGNUP_ROUTE) return;
-
-    if (isNextButtonClicked) handleBottomSheetOpen();
-  }, [pathname]);
-
   return (
     <SafeArea>
       <StatusBar barStyle="light-content" />
       <DetailHeader title="Create your account" onButtonPress={() => router.back()} />
       <Container>
-        <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} extraScrollHeight={40} enableOnAndroid={true}>
+        <KeyboardAwareScrollView enableOnAndroid={true}>
           <GeneralLoginContainer>
             <FormProvider {...methods}>
               <EmailForm useCheckEmail={checkEmailHook} useVerifyEmail={verifyEmailHook} />
@@ -122,5 +106,5 @@ const GeneralLoginContainer = styled.View`
 
 const BottomButtonWrapper = styled.View`
   width: 100%;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
 `;
