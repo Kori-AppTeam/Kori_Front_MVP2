@@ -27,9 +27,7 @@ export const BuzzingSpaceItem = ({ data }: { data: LinkedSpace }) => {
       </BuzzingImageContainer>
       <BuzzingTitleContainer>
         <BuzzingTitle>{data.roomName}</BuzzingTitle>
-        <BuzzingTitleContent>
-          {data.description}
-        </BuzzingTitleContent>
+        <BuzzingTitleContent>{data.description}</BuzzingTitleContent>
       </BuzzingTitleContainer>
       <BuzzingMemberContainer>
         <Icon type="person" size={16} color={theme.colors.gray.lightGray_1} />

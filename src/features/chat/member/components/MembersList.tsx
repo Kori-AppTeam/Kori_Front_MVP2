@@ -20,7 +20,7 @@ export const MembersList: React.FC<MembersListProps> = ({ members, onPressProfil
       <MemberCountText>Members ({members.length})</MemberCountText>
       <FlatList
         data={members}
-        keyExtractor={item => String(item.userId)}
+        keyExtractor={(item) => String(item.userId)}
         renderItem={({ item }) => (
           <MemberItem
             name={item.firstName}

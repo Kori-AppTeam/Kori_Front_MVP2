@@ -7,22 +7,14 @@ import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { ChatHeaderProps } from '../../types';
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({
-  roomName,
-  onShowMembers,
-  onSearchToggle,
-}) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ roomName, onShowMembers, onSearchToggle }) => {
   const router = useRouter();
 
   return (
     <>
       <LeftSection>
         <TouchableOpacity onPress={() => router.replace('/(tabs)/chat')}>
-          <Icon
-            type="previous"
-            size={HEADER_CONFIG.ICON_SIZE}
-            color={theme.colors.gray.lightGray_1}
-          />
+          <Icon type="previous" size={HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
         </TouchableOpacity>
       </LeftSection>
 
@@ -32,18 +24,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
       <RightSection>
         <TouchableOpacity onPress={onSearchToggle}>
-          <Icon
-            type="search"
-            size={HEADER_CONFIG.ICON_SIZE}
-            color={theme.colors.gray.lightGray_1}
-          />
+          <Icon type="search" size={HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
         </TouchableOpacity>
         <TouchableOpacity onPress={onShowMembers}>
-          <Icon
-            type="hamburger"
-            size={HEADER_CONFIG.ICON_SIZE}
-            color={theme.colors.gray.lightGray_1}
-          />
+          <Icon type="hamburger" size={HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
         </TouchableOpacity>
       </RightSection>
     </>

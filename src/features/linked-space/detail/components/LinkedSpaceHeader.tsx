@@ -3,12 +3,7 @@ import ProfileImage from '@/components/common/ProfileImage';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import {
-  HeaderBackButton,
-  HeaderBackground,
-  HeaderBackgroundContainer,
-  HeaderProfileBox,
-} from '../styles';
+import { HeaderBackButton, HeaderBackground, HeaderBackgroundContainer, HeaderProfileBox } from '../styles';
 
 type LinkedSpaceHeaderProps = {
   imageUrl?: string;
@@ -25,11 +20,7 @@ export const LinkedSpaceHeader = ({ imageUrl }: LinkedSpaceHeaderProps) => {
         </HeaderBackButton>
         <HeaderProfileBox>
           <ProfileImage
-            source={
-              imageUrl
-                ? { uri: imageUrl }
-                : require('@/assets/images/character1.png')
-            }
+            source={imageUrl ? { uri: imageUrl } : require('@/assets/images/character1.png')}
             style={{ width: '100%', height: '100%' }}
             resizeMode="cover"
           />

@@ -66,14 +66,10 @@ const BaseImage = styled.Image`
 `;
 
 // ============= Styled Components =============
-const TranslateButtonBox = styled(BaseButtonBox) <{ position?: 'fixed' | 'center' }>`
-  bottom: ${({ position }) =>
-    position === 'fixed' ? height * TRANSLATE_BUTTON_CONFIG.BOTTOM_RATIO : 'auto'
-  }px;
-  right: ${({ position }) =>
-    position === 'fixed' ? `${TRANSLATE_BUTTON_CONFIG.RIGHT_OFFSET}px` : 'auto'
-  };
-  align-self: ${({ position }) => position === 'center' ? 'center' : 'auto'};
+const TranslateButtonBox = styled(BaseButtonBox)<{ position?: 'fixed' | 'center' }>`
+  bottom: ${({ position }) => (position === 'fixed' ? height * TRANSLATE_BUTTON_CONFIG.BOTTOM_RATIO : 'auto')}px;
+  right: ${({ position }) => (position === 'fixed' ? `${TRANSLATE_BUTTON_CONFIG.RIGHT_OFFSET}px` : 'auto')};
+  align-self: ${({ position }) => (position === 'center' ? 'center' : 'auto')};
 `;
 
 const TranslatingButtonBox = styled(BaseButtonBox)`

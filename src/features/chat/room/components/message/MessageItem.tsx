@@ -31,9 +31,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
   const messageContent = isTranslating ? item.targetContent : item.originContent;
 
   // 메시지 강조 표시 여부
-  const shouldHighlight = isActive &&
-    searchResults.length > 0 &&
-    searchResults[currentIndex]?.id === item.id;
+  const shouldHighlight = isActive && searchResults.length > 0 && searchResults[currentIndex]?.id === item.id;
 
   return (
     <>

@@ -26,7 +26,7 @@ export const ReportReasonModal: React.FC<ReportReasonModalProps> = ({ visible, o
     <BottomSheetBase visible={visible} onClose={onClose}>
       <ModalTitle>Why are you reporting this?</ModalTitle>
 
-      {REPORT_REASONS.map(reason => (
+      {REPORT_REASONS.map((reason) => (
         <MenuItem key={reason.value} onPress={() => onSelectReason(reason.value)}>
           <MenuText>{reason.label}</MenuText>
         </MenuItem>

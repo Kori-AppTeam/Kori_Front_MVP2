@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AppLoginResponse } from '@/src/features/auth/types/api.types';
+import { AppLoginResponse } from '@/src/features/auth/types';
 import { Config } from '@/src/shared/constants/config';
 import { AppleAuthenticationCredential } from 'expo-apple-authentication';
 

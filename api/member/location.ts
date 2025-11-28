@@ -6,11 +6,8 @@ export async function patchLocation(latitude: string | null, longuitude: string 
       latitude: latitude,
       longitude: longuitude,
     });
-
-    if (response.status !== 200) {
-      console.error('[ERROR] 위치 정보 저장 실패');
-    }
   } catch (error) {
-    console.error('[ERROR] 위치 정보 저장 요청 실패', error);
+    // 위치 정보 저장에 실패해도 서비스 이용이 가능하도록 에러를 throw하지 않음
+    return null;
   }
 }

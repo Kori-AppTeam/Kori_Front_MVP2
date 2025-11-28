@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchLinkedSpaceDetail } from '../api/linkedSpaceDetail';
 import { LinkedSpaceDetail } from '../types';
 
-export const LINKED_SPACE_DETAIL_QK = (linkedSpaceId: string) =>
-  ['linkedSpace', 'detail', linkedSpaceId] as const;
+export const LINKED_SPACE_DETAIL_QK = (linkedSpaceId: string) => ['linkedSpace', 'detail', linkedSpaceId] as const;
 
 export const useLinkedSpaceDetail = (linkedSpaceId: string) => {
   const { data, isLoading, error } = useQuery<LinkedSpaceDetail>({

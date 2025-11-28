@@ -14,11 +14,7 @@ import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StatusBar
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
@@ -57,10 +53,12 @@ const ChattingRoomScreen = () => {
         <Header
           roomName={roomName}
           onSearchSubmit={messageSearch.performSearch}
-          onShowMembers={() => router.push({
-            pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
-            params: { roomName },
-          })}
+          onShowMembers={() =>
+            router.push({
+              pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
+              params: { roomName },
+            })
+          }
         />
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -84,10 +82,7 @@ const ChattingRoomScreen = () => {
                 onNavigateDown={() => messageSearch.navigateToDown()}
               />
             ) : (
-              <MessageInput
-                onSendMessage={() => messageActions.sendMessage(roomId)}
-                paddingBottom={insets.bottom}
-              />
+              <MessageInput onSendMessage={() => messageActions.sendMessage(roomId)} paddingBottom={insets.bottom} />
             )}
 
             {/* 프로필 모달 */}
@@ -101,8 +96,7 @@ const ChattingRoomScreen = () => {
             />
 
             {/* 번역 버튼 */}
-            <TranslateButton
-            />
+            <TranslateButton />
           </ChattingScreen>
         </KeyboardAvoidingView>
       </Container>

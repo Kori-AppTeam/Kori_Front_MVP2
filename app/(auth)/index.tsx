@@ -1,10 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { useRouter } from 'expo-router';
 import { ActivityIndicator, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 
-import { patchLocation } from '@/api/member/location';
-import { requestLocationPermission } from '@/lib/location/requestLocationPermission';
 import ConfirmTermsBottomSheet from '@/src/features/auth/components/ConfirmTermsBottomSheet';
 import OnboardingCarousel from '@/src/features/auth/components/OnboardingCarousel';
 import { useConfirmTermsBottomSheet } from '@/src/features/auth/hooks/useConfirmTermsBottomSheet';
@@ -13,7 +10,6 @@ import { usePreloadAssets } from '@/src/shared/hooks/usePreloadAssets';
 import { onboardingImageAssets } from '@/src/features/auth/constants/assets';
 
 const index = () => {
-  const router = useRouter();
   const { bottomSheetRef, handleBottomSheetOpen, handleBottomSheetClose } = useConfirmTermsBottomSheet();
   const [loginProvider, setLoginProvider] = useState<'apple' | 'google' | null>(null);
   const { isReady: isAssetsReady } = usePreloadAssets(onboardingImageAssets);
@@ -23,19 +19,6 @@ const index = () => {
     setLoginProvider(provider);
     handleBottomSheetOpen();
   }, []);
-
-  // TODO 회원가입 로직과 중복, 회원가입 리팩토링 시 같이 리팩토링 필요
-  const confirmAndGoSetProfilePage = async () => {
-    const { latitude, longitude } = await requestLocationPermission();
-    await patchLocation(latitude, longitude);
-
-    handleBottomSheetClose();
-    if (loginProvider === 'apple') {
-      router.push('/screens/makeprofile/GenderStepScreen');
-    } else {
-      router.push('/screens/makeprofile/NameStepScreen');
-    }
-  };
 
   // 에셋을 불러오기 전까지 로딩 화면 표시
   if (!isAssetsReady) {
@@ -61,8 +44,8 @@ const index = () => {
 
       <ConfirmTermsBottomSheet
         bottomSheetRef={bottomSheetRef}
-        onConfirmPress={() => confirmAndGoSetProfilePage()}
         bottomSheetClose={handleBottomSheetClose}
+        loginProvider={loginProvider!}
       />
     </SafeArea>
   );

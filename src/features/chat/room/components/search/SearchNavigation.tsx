@@ -4,10 +4,7 @@ import styled from 'styled-components/native';
 import { useSearchStore } from '../../stores/useSearchStore';
 import { SearchNavigationProps } from '../../types';
 
-const SearchNavigation: React.FC<SearchNavigationProps> = ({
-  onNavigateUp,
-  onNavigateDown,
-}) => {
+const SearchNavigation: React.FC<SearchNavigationProps> = ({ onNavigateUp, onNavigateDown }) => {
   const { isSearching, getSearchResultText } = useSearchStore();
   const searchResultText = getSearchResultText();
 
@@ -29,9 +26,7 @@ const SearchNavigation: React.FC<SearchNavigationProps> = ({
         />
       </NavigationButton>
 
-      {!isSearching && searchResultText && (
-        <ResultText>{searchResultText}</ResultText>
-      )}
+      {!isSearching && searchResultText && <ResultText>{searchResultText}</ResultText>}
     </NavigationContainer>
   );
 };
@@ -71,7 +66,7 @@ const BaseContainer = styled.View`
 `;
 
 const BaseButton = styled.TouchableOpacity<{ disabled: boolean }>`
-  opacity: ${({ disabled }) => disabled ? 0.5 : 1};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 `;
 
 // ============= Styled Components =============

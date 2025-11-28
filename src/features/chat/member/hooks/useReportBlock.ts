@@ -39,10 +39,7 @@ interface UseReportBlockReturn {
 /**
  * 신고/차단 및 관련 모달 관리 Hook
  */
-export const useReportBlock = ({
-  roomId,
-  onLeaveChat,
-}: UseReportBlockParams): UseReportBlockReturn => {
+export const useReportBlock = ({ roomId, onLeaveChat }: UseReportBlockParams): UseReportBlockReturn => {
   // 모달 상태
   const [isModalVisible, setModalVisible] = useState(false);
   const [isReportMenuVisible, setReportMenuVisible] = useState(false);
