@@ -4,10 +4,14 @@ import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
 import CategoryChips from '@/src/features/community/components/CategoryChips';
+import MyPostModal from '@/src/features/community/components/post/MyPostModal';
+import OthersPostModal from '@/src/features/community/components/post/OthersPostModal';
 import PostList from '@/src/features/community/components/PostList';
 import useGetVisitor from '@/src/features/community/hooks/useGetVisitor';
+import { useOpenMoreSheet } from '@/src/features/community/hooks/useOpenMoreSheet';
 import useScrollToTop from '@/src/features/community/hooks/useScrollToTop';
 import { AllowedCategory, SortParam } from '@/src/features/community/types';
+import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import { theme } from '@/src/styles/theme';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -19,6 +23,7 @@ const ICON = require('@/assets/images/IsolationMode.png');
 export default function CommunityScreen() {
   const [profileModalVisible, setProfileModalVisible] = useState<boolean>(false);
   const { data, isLoading, isError, refetch } = useGetVisitor();
+  const { selectedPost, openModal, closeModal, isMine, authorId, bottomSheetRef } = useOpenMoreSheet();
 
   // community 화면 보일 때마다 visitor 검사
   useFocusEffect(
@@ -65,54 +70,67 @@ export default function CommunityScreen() {
   };
 
   return (
-    <Safe>
-      <Header>
-        <Left>
-          <Title onPress={() => scrollToTop(true)}>Community</Title>
-          <IconImage source={ICON} resizeMode="contain" />
-        </Left>
+    <>
+      <Safe>
+        <Header>
+          <Left>
+            <Title onPress={() => scrollToTop(true)}>Community</Title>
+            <IconImage source={ICON} resizeMode="contain" />
+          </Left>
 
-        <Right>
-          <IconBtn
-            onPress={() => {
-              router.push({
-                pathname: '/community/SearchScreen',
-                params: {
-                  qs: `?boardId=${encodeURIComponent(String(CATEGORY_TO_BOARD_ID[category]))}&cat=${encodeURIComponent(category)}`,
-                },
-              });
-            }}
-          >
-            <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
-          </IconBtn>
+          <Right>
+            <IconBtn
+              onPress={() => {
+                router.push({
+                  pathname: '/community/SearchScreen',
+                  params: {
+                    qs: `?boardId=${encodeURIComponent(String(CATEGORY_TO_BOARD_ID[category]))}&cat=${encodeURIComponent(category)}`,
+                  },
+                });
+              }}
+            >
+              <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
+            </IconBtn>
 
-          <IconBtn
-            onPress={() => {
-              router.push('/community/bookmark-list/bookmarks');
-            }}
-          >
-            <Icon type="bookmarkNonSelected" size={24} color={theme.colors.gray.lightGray_1} />
-          </IconBtn>
+            <IconBtn
+              onPress={() => {
+                router.push('/community/bookmark-list/bookmarks');
+              }}
+            >
+              <Icon type="bookmarkNonSelected" size={24} color={theme.colors.gray.lightGray_1} />
+            </IconBtn>
 
-          <IconBtn onPress={() => router.push('/community/my-history/my-history')}>
-            <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
-          </IconBtn>
-        </Right>
-      </Header>
+            <IconBtn onPress={() => router.push('/community/my-history/my-history')}>
+              <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
+            </IconBtn>
+          </Right>
+        </Header>
 
-      <ChipsWrap>
-        <CategoryChips value={category} onPress={handleCategoryChange} />
-      </ChipsWrap>
+        <ChipsWrap>
+          <CategoryChips value={category} onPress={handleCategoryChange} />
+        </ChipsWrap>
 
-      <SortWrap>
-        <SortTabs value={sort} onPress={handleSortChange} />
-      </SortWrap>
+        <SortWrap>
+          <SortTabs value={sort} onPress={handleSortChange} />
+        </SortWrap>
 
-      <PostList sort={sort} category={category} scrollRef={scrollRef} />
+        <PostList sort={sort} category={category} openModal={openModal} scrollRef={scrollRef} />
 
-      <WriteFab onHandleWritePress={handleWritePress} />
-      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
-    </Safe>
+        <WriteFab onHandleWritePress={handleWritePress} />
+        <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
+      </Safe>
+      <CustomBottomSheet ref={bottomSheetRef}>
+        {selectedPost && authorId ? (
+          isMine ? (
+            <MyPostModal closeModal={closeModal} postId={selectedPost} />
+          ) : (
+            <OthersPostModal closeModal={closeModal} postId={selectedPost} authorId={authorId} />
+          )
+        ) : (
+          <></>
+        )}
+      </CustomBottomSheet>
+    </>
   );
 }
 
