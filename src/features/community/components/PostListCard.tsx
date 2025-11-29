@@ -1,13 +1,12 @@
 import Icon from '@/components/common/Icon';
-import { CATEGORY_TO_BOARD_ID, CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
+import { CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
-import { useToggleBookmark } from '../hooks/useToggleBookmark';
-import { useToggleLike } from '../hooks/useToggleLike';
-import { AllowedCategory, PostsListItem, SortParam } from '../types';
+import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
+import { PostsListItem } from '../types';
 import { timeToAgo } from '../utils/indexUtils';
 import PostBookmarkButton from './post/PostBookmarkButton';
 import PostComment from './post/PostComment';
@@ -18,24 +17,13 @@ import PostUserProfileImg from './post/PostUserProfileImg';
 
 type PostCardProps = {
   data: PostsListItem;
-  sort: SortParam;
-  category: AllowedCategory;
   onOpenModal: (postId: number, authorId: number) => void;
 };
 
-const PostListCard = ({ data, sort, category, onOpenModal }: PostCardProps) => {
+const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
-  const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
-  const bookmarkMutation = useToggleBookmark(CATEGORY_TO_BOARD_ID[category], sort);
-
-  const handleToggleLike = (postId: number, isLike: boolean) => {
-    likeMutation.mutate({ postId: postId, liked: isLike });
-  };
-
-  const handleToggleBookmark = (postId: number, isBookmark: boolean) => {
-    bookmarkMutation.mutate({ postId: postId, isBookmarked: isBookmark });
-  };
+  const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
 
   return (
     <Container width={SCREEN_WIDTH}>
@@ -133,6 +121,9 @@ const AuthorImageContainer = styled.View`
 const Meta = styled.View`
   margin-left: 8px;
   flex: 1;
+  gap: 4px;
+  flex-direction: column;
+  justify-content: start;
 `;
 const Author = styled.Text`
   color: ${({ theme }) => theme.colors.primary.white};

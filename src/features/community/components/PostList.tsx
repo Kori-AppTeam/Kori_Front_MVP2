@@ -1,6 +1,6 @@
 import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
-import React, { RefObject } from 'react';
+import React, { RefObject, useCallback } from 'react';
 import { ActivityIndicator, FlatList, ListRenderItem } from 'react-native';
 import styled from 'styled-components/native';
 import { useGetPosts } from '../hooks/useGetPosts';
@@ -22,8 +22,9 @@ const PostList = ({ category, sort, scrollRef }: Props) => {
 
   const { selectedPost, openModal, closeModal, isMine, authorId, bottomSheetRef } = useOpenMoreSheet();
 
-  const renderPost: ListRenderItem<PostsListItem> = ({ item }) => (
-    <PostListCard data={item} sort={sort} category={category} onOpenModal={openModal} />
+  const renderPost: ListRenderItem<PostsListItem> = useCallback(
+    ({ item }) => <PostListCard data={item} onOpenModal={openModal} />,
+    [openModal],
   );
 
   return (
@@ -40,10 +41,10 @@ const PostList = ({ category, sort, scrollRef }: Props) => {
             fetchNextPage();
           }
         }}
-        refreshing={isRefetching}
-        onRefresh={refetch}
+        refreshing={!isLoading && isRefetching}
+        onRefresh={() => refetch()}
         ListFooterComponent={
-          isLoading || isFetchingNextPage ? (
+          isFetchingNextPage ? (
             <FooterLoading>
               <ActivityIndicator />
             </FooterLoading>
