@@ -60,31 +60,34 @@ export function useToggleBookmark() {
   });
 }
 
-// 커뮤니티 북마크 게시글 리스트 캐시 업데이트
+// 커뮤니티, 북마크 게시글 리스트 캐시 업데이트
 const updateBookmarkListCache = (
   qc: QueryClient,
   selectedQueryKey: QueryKey,
   postId: number,
   isBookmarked?: boolean,
 ) => {
-  qc.setQueriesData({ queryKey: selectedQueryKey }, (oldListData: InfiniteData<BookmarkedPostsResp>) => {
-    if (!oldListData) return [];
+  qc.setQueriesData(
+    { queryKey: selectedQueryKey },
+    (oldListData: InfiniteData<BookmarkedPostsResp | PostsListResp>) => {
+      if (!oldListData) return [];
 
-    return {
-      ...oldListData,
-      pages: oldListData.pages.map((page) => {
-        return {
-          ...page,
-          data: {
-            ...page.data,
-            items: page.data.items.map((item) => {
-              return item.postId === postId ? { ...item, isBookmarked: !isBookmarked } : item;
-            }),
-          },
-        };
-      }),
-    };
-  });
+      return {
+        ...oldListData,
+        pages: oldListData.pages.map((page) => {
+          return {
+            ...page,
+            data: {
+              ...page.data,
+              items: page.data.items.map((item) => {
+                return item.postId === postId ? { ...item, isBookmarked: !isBookmarked } : item;
+              }),
+            },
+          };
+        }),
+      };
+    },
+  );
 };
 
 // 상세 게시글 캐시 업데이트
