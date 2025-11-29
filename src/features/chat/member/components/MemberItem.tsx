@@ -88,14 +88,14 @@ const HostBox = styled.View`
 `;
 
 const HostText = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.primary.white};
   font-size: 11px;
-  font-family: PlusJakartaSans_500Medium;
+  ${theme.fonts.small.small_M}
+  ${({ theme }) => theme.fonts.small.small_M};
 `;
 
 const MemberNameText = styled.Text`
   margin-left: 12px;
-  color: #ffffff;
-  font-family: PlusJakartaSans_500Medium;
-  font-size: 14px;
+  color: ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => theme.fonts.body.B4_M};
 `;
