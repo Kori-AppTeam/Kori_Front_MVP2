@@ -88,13 +88,13 @@ export default function CommunityScreen() {
 
           <IconBtn
             onPress={() => {
-              router.push('/community/bookmarks');
+              router.push('/community/bookmark-list/bookmarks');
             }}
           >
             <Icon type="bookmarkNonSelected" size={24} color={theme.colors.gray.lightGray_1} />
           </IconBtn>
 
-          <IconBtn onPress={() => router.push('/community/my-history')}>
+          <IconBtn onPress={() => router.push('/community/my-history/my-history')}>
             <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
           </IconBtn>
         </Right>
