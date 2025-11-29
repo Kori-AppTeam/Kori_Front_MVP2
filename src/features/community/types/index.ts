@@ -110,6 +110,7 @@ export type UpdatePostBody = {
 export interface BookmarkedPostItem {
   bookmarkId: number;
   postId: number;
+  authorId: number;
   authorName: string;
   content: string;
   createdAt: string;
@@ -118,7 +119,7 @@ export interface BookmarkedPostItem {
   likeCount: number;
   commentCount: number;
   checkCount: number;
-  isMarked: boolean;
+  isBookmarked: boolean;
   userImage: string;
   postImages: string[];
 }
