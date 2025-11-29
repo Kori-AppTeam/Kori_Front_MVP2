@@ -26,6 +26,7 @@ export function useDeletePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-posts'] });
       queryClient.invalidateQueries({ queryKey: ['post-list'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-posts'] });
     },
     onError: (error) => {
       console.error('[delete] error', error);
