@@ -1,7 +1,8 @@
-import { textStyle } from '@/src/styles/theme';
+import { textStyle, theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { memo, useCallback, useState } from 'react';
 import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
+import Hyperlink from 'react-native-hyperlink';
 import styled from 'styled-components/native';
 
 type PostTextContentProps = {
@@ -14,6 +15,7 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
   if (isTruncate === true) {
     const [truncate, setTruncate] = useState({ numberOfLines: 0 });
 
+    // 텍스트의 총 라인 수를 계산하는 콜백함수
     const onGetLines = useCallback(
       (e: NativeSyntheticEvent<TextLayoutEventData>) => {
         const lines = e.nativeEvent.lines.length;
@@ -25,9 +27,11 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
     return (
       <ContentText>
         <HiddenText onTextLayout={onGetLines}>{content}</HiddenText>
-        <Body numberOfLines={2} ellipsizeMode="tail">
-          {content}
-        </Body>
+        <Hyperlink linkDefault={true} linkStyle={{ color: theme.colors.primary.mint, textDecorationLine: 'underline' }}>
+          <Body numberOfLines={2} ellipsizeMode="tail">
+            {content}
+          </Body>
+        </Hyperlink>
         {truncate.numberOfLines > 2 ? (
           <MoreContent
             onPress={() => postId && router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } })}
@@ -39,7 +43,13 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
     );
   }
 
-  return <ContentText>{content}</ContentText>;
+  return (
+    <ContentText>
+      <Hyperlink linkDefault={true} linkStyle={{ color: theme.colors.primary.mint, textDecorationLine: 'underline' }}>
+        <Body>{content}</Body>
+      </Hyperlink>
+    </ContentText>
+  );
 };
 
 export default memo(PostTextContent);
@@ -54,7 +64,7 @@ const Body = styled.Text`
   color: ${({ theme }) => theme.colors.primary.white};
   width: 100%;
   text-align: left;
-  ${({ theme }) => textStyle(theme.fonts.body.B3_L)}/* line-height: 18px; */
+  ${({ theme }) => textStyle(theme.fonts.body.B3_L)}
 `;
 const MoreContent = styled.Pressable``;
 const MoreContentText = styled.Text`
