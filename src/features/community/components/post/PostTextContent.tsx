@@ -1,3 +1,4 @@
+import { confirmOpenURL } from '@/src/shared/utils/confirmOpenURL';
 import { textStyle, theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { memo, useCallback, useState } from 'react';
@@ -26,8 +27,15 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
 
     return (
       <ContentText>
-        <HiddenText onTextLayout={onGetLines}>{content}</HiddenText>
-        <Hyperlink linkDefault={true} linkStyle={{ color: theme.colors.primary.mint, textDecorationLine: 'underline' }}>
+        <HiddenText onTextLayout={onGetLines} pointerEvents="none">
+          {content}
+        </HiddenText>
+        <Hyperlink
+          linkDefault={true}
+          linkStyle={{ color: theme.colors.primary.mint, textDecorationLine: 'underline' }}
+          onPress={(url) => confirmOpenURL(url)}
+          style={{ width: '100%' }}
+        >
           <Body numberOfLines={2} ellipsizeMode="tail">
             {content}
           </Body>
@@ -45,7 +53,12 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
 
   return (
     <ContentText>
-      <Hyperlink linkDefault={true} linkStyle={{ color: theme.colors.primary.mint, textDecorationLine: 'underline' }}>
+      <Hyperlink
+        linkDefault={true}
+        linkStyle={{ color: theme.colors.primary.mint, textDecorationLine: 'underline' }}
+        style={{ width: '100%' }}
+        onPress={(url) => confirmOpenURL(url)}
+      >
         <Body>{content}</Body>
       </Hyperlink>
     </ContentText>
@@ -76,7 +89,6 @@ const HiddenText = styled.Text`
   position: absolute;
   opacity: 0;
   z-index: -100;
-  pointer-events: none;
   width: 100%;
   ${({ theme }) => textStyle(theme.fonts.body.B3_L)}
 `;
