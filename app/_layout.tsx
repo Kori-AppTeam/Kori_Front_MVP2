@@ -129,12 +129,12 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider theme={theme}>
-        <SafeAreaProvider>
-          <BottomSheetModalProvider>
-            <AppLayout>
-              <ProfileProvider>
-                <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <SafeAreaProvider>
+            <BottomSheetModalProvider>
+              <AppLayout>
+                <ProfileProvider>
                   {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
                   <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="(tabs)" />
@@ -142,12 +142,12 @@ export default function RootLayout() {
                     <Stack.Screen name="+not-found" />
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
-                </QueryClientProvider>
-              </ProfileProvider>
-            </AppLayout>
-          </BottomSheetModalProvider>
-        </SafeAreaProvider>
-      </ThemeProvider>
+                </ProfileProvider>
+              </AppLayout>
+            </BottomSheetModalProvider>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }
