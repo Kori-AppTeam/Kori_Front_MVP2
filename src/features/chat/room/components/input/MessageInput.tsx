@@ -3,10 +3,7 @@ import styled from 'styled-components/native';
 import { useChatStore } from '../../stores/useChatStore';
 import { MessageInputProps } from '../../types';
 
-const MessageInput: React.FC<MessageInputProps> = ({
-  onSendMessage,
-  paddingBottom = 0,
-}) => {
+const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, paddingBottom = 0 }) => {
   const { currentMessage, setCurrentMessage } = useChatStore();
   const isSendEnabled = currentMessage.trim().length > 0;
 
@@ -81,11 +78,11 @@ const InputBox = styled.TextInput`
   font-family: PlusJakartaSans_400Regular;
 `;
 
-const SendButton = styled(BaseButton) <{ disabled: boolean }>`
+const SendButton = styled(BaseButton)<{ disabled: boolean }>`
   width: ${INPUT_CONFIG.BUTTON_SIZE}px;
   height: ${INPUT_CONFIG.BUTTON_SIZE}px;
   margin: ${INPUT_CONFIG.BUTTON_MARGIN}px;
-  opacity: ${({ disabled }) => disabled ? 0.5 : 1};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 `;
 
 const SendIcon = styled.Image`

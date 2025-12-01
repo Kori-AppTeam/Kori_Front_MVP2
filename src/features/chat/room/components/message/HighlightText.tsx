@@ -8,12 +8,7 @@ const HIGHLIGHT_COLORS = {
   OTHER_MESSAGE: 'rgba(255,255,0,0.3)',
 } as const;
 
-const HighlightText: React.FC<HighlightTextProps> = ({
-  text,
-  keyword,
-  textType,
-  highlightStyle
-}) => {
+const HighlightText: React.FC<HighlightTextProps> = ({ text, keyword, textType, highlightStyle }) => {
   // 키워드가 없으면 일반 텍스트 반환
   if (!keyword) {
     return textType === 'my' ? <MyText>{text}</MyText> : <OtherText>{text}</OtherText>;
@@ -23,9 +18,7 @@ const HighlightText: React.FC<HighlightTextProps> = ({
   const parts = text.split(new RegExp(`(${keyword})`, 'gi'));
 
   const TextComponent = textType === 'my' ? MyText : OtherText;
-  const defaultHighlightColor = textType === 'my'
-    ? HIGHLIGHT_COLORS.MY_MESSAGE
-    : HIGHLIGHT_COLORS.OTHER_MESSAGE;
+  const defaultHighlightColor = textType === 'my' ? HIGHLIGHT_COLORS.MY_MESSAGE : HIGHLIGHT_COLORS.OTHER_MESSAGE;
 
   return (
     <TextComponent>
@@ -34,7 +27,7 @@ const HighlightText: React.FC<HighlightTextProps> = ({
           <TextComponent
             key={index}
             style={{
-              backgroundColor: highlightStyle?.backgroundColor || defaultHighlightColor
+              backgroundColor: highlightStyle?.backgroundColor || defaultHighlightColor,
             }}
           >
             {part}

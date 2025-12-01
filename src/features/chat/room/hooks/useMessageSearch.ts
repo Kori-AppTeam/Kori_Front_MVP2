@@ -50,13 +50,13 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
 
   const flatListRef = useRef<FlatList>(null);
 
-  /** 
+  /**
    * 메시지로 스크롤하는 내부 함수
    * @param messageId 스크롤할 메시지 ID
    */
   const scrollToMessage = useCallback((messageId: number) => {
     const messages = useChatStore.getState().messages;
-    const index = messages.findIndex(msg => msg.id === messageId);
+    const index = messages.findIndex((msg) => msg.id === messageId);
     if (flatListRef.current && index !== -1) {
       try {
         flatListRef.current.scrollToIndex({
@@ -70,32 +70,33 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
     }
   }, []);
 
-  /** 
+  /**
    * 메시지가 로드되었는지 확인하고, 로드되지 않았으면 주변 메시지 로드
    * @param messageId 메시지 ID
    */
-  const checkMessageIsLoaded = useCallback(async (messageId: number) => {
-    const messages = useChatStore.getState().messages;
-    const isLoaded = messages.some(msg => msg.id === messageId);
-    if (isLoaded) {
-      scrollToMessage(messageId);
-      return;
-    }
-    try {
-      setIsSearching(true);
-      const aroundMessages = await loadMessagesAroundAPI(roomId, messageId);
-      mergeMessages(aroundMessages);
+  const checkMessageIsLoaded = useCallback(
+    async (messageId: number) => {
+      const messages = useChatStore.getState().messages;
+      const isLoaded = messages.some((msg) => msg.id === messageId);
+      if (isLoaded) {
+        scrollToMessage(messageId);
+        return;
+      }
+      try {
+        setIsSearching(true);
+        const aroundMessages = await loadMessagesAroundAPI(roomId, messageId);
+        mergeMessages(aroundMessages);
 
-      // 약간의 딜레이 후 스크롤 (렌더링 대기)
-      setTimeout(() => scrollToMessage(messageId), 1000);
-    } catch (error) {
-      console.error('주변 메시지 로드 실패:', error);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [roomId, mergeMessages, setIsSearching, scrollToMessage]);
-
-
+        // 약간의 딜레이 후 스크롤 (렌더링 대기)
+        setTimeout(() => scrollToMessage(messageId), 1000);
+      } catch (error) {
+        console.error('주변 메시지 로드 실패:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [roomId, mergeMessages, setIsSearching, scrollToMessage],
+  );
 
   /** 검색 수행 후 첫 번째 결과로 스크롤 */
   const performSearch = useCallback(async () => {
@@ -138,10 +139,13 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
   /** 현재 메시지가 검색 결과인지 확인
    * @param messageId 메시지 ID
    */
-  const isCurrentMessage = useCallback((messageId: number) => {
-    if (searchResults.length === 0) return false;
-    return searchResults[currentIndex]?.id === messageId;
-  }, [searchResults, currentIndex]);
+  const isCurrentMessage = useCallback(
+    (messageId: number) => {
+      if (searchResults.length === 0) return false;
+      return searchResults[currentIndex]?.id === messageId;
+    },
+    [searchResults, currentIndex],
+  );
 
   return {
     state: {

@@ -51,7 +51,9 @@ export default function HomeScreen() {
           ref={flatListRef}
           data={friends}
           keyExtractor={(item) => String(item.userId)}
-          refreshControl={<RefreshControl refreshing={Boolean(loading.isFetching && !loading.isLoading)} onRefresh={onRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={Boolean(loading.isFetching && !loading.isLoading)} onRefresh={onRefresh} />
+          }
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           renderItem={({ item }) => {
             const uid = item.userId;

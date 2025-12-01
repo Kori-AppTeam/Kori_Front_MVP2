@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  InfoContainer,
-  InfoMembersText,
-  InfoMembersTextContainer,
-  InfoTitleContainer,
-  InfoTitleText,
-} from '../styles';
+import { InfoContainer, InfoMembersText, InfoMembersTextContainer, InfoTitleContainer, InfoTitleText } from '../styles';
 import { HostInfo } from './HostInfo';
 import { ParticipantsInfo } from './ParticipantsInfo';
 
@@ -33,10 +27,7 @@ export const LinkedSpaceInfo = ({
         <InfoMembersText>Members</InfoMembersText>
       </InfoMembersTextContainer>
       <HostInfo imageUrl={ownerImageUrl} firstName={ownerFirstName} />
-      <ParticipantsInfo
-        participantCount={participantCount}
-        participantsImageUrls={participantsImageUrls}
-      />
+      <ParticipantsInfo participantCount={participantCount} participantsImageUrls={participantsImageUrls} />
     </InfoContainer>
   );
 };

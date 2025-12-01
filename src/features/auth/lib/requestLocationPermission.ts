@@ -5,7 +5,6 @@ export async function requestLocationPermission() {
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== 'granted') {
-      console.error('[ERROR] 사용자가 위치 정보 권한을 허용하지 않음');
       return { latitude: null, longitude: null };
     }
 
@@ -15,7 +14,7 @@ export async function requestLocationPermission() {
       longitude: location ? String(location.coords.longitude) : null,
     };
   } catch (error) {
-    console.error('[ERROR] 위치 정보를 가져오는 중 오류 발생', error);
-    throw error;
+    // 오류 발생 시에도 별도 에러 핸들링 없이 null 반환
+    return { latitude: null, longitude: null };
   }
 }

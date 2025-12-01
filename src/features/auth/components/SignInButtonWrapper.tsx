@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { useAppleSignIn } from '@/src/features/auth/hooks/useAppleSignIn';
 import { useGoogleSignIn } from '@/src/features/auth/hooks/useGoogleSignIn';
-import { LOGIN_ROUTE } from '@/src/shared/constants/route';
+import { LOGIN_ROUTE, SIGNUP_PRIVACY_POLICY_ROUTE } from '@/src/shared/constants/route';
 import { textStyle } from '@/src/styles/theme';
 import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
 import { alertAppleRejoinUser } from '@/src/features/auth/lib/alertRejoinAppleUser';
@@ -111,7 +111,8 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
       <SignInButton onPress={handleEmailSignPress} label="Continue with Email" iconType="mail" />
       <SmallText>
         By signing up, you agree to our Terms.{'\n'}
-        See how we use your data in our <HighlightText> Privacy Policy.</HighlightText>
+        See how we use your data in our
+        <HighlightText onPress={() => router.push(SIGNUP_PRIVACY_POLICY_ROUTE)}> Privacy Policy.</HighlightText>
       </SmallText>
     </ButtonContainer>
   );

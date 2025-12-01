@@ -32,11 +32,7 @@ const OtherMessageBubble: React.FC<OtherMessageBubbleProps> = ({
         {showProfile && <SenderNameText>{senderName}</SenderNameText>}
         <MessageBox>
           <BubbleContainer isFirst={isFirst}>
-            <HighlightText
-              text={content}
-              keyword={searchKeyword || ''}
-              textType="other"
-            />
+            <HighlightText text={content} keyword={searchKeyword || ''} textType="other" />
           </BubbleContainer>
           {showTime && <TimeText>{time}</TimeText>}
         </MessageBox>
@@ -88,10 +84,9 @@ const BaseBubble = styled.View`
 `;
 
 // ============= Styled Components =============
-const MessageContainer = styled(BaseContainer) <{ showProfile?: boolean }>`
+const MessageContainer = styled(BaseContainer)<{ showProfile?: boolean }>`
   margin-top: ${({ showProfile }) =>
-    showProfile ? OTHER_MESSAGE_CONFIG.MARGIN_TOP_FIRST : OTHER_MESSAGE_CONFIG.MARGIN_TOP_REGULAR
-  }px;
+    showProfile ? OTHER_MESSAGE_CONFIG.MARGIN_TOP_FIRST : OTHER_MESSAGE_CONFIG.MARGIN_TOP_REGULAR}px;
 `;
 
 const ProfileContainer = styled.View`
@@ -136,9 +131,9 @@ const MessageBox = styled.View`
   justify-content: flex-start;
 `;
 
-const BubbleContainer = styled(BaseBubble) <{ isFirst: boolean }>`
+const BubbleContainer = styled(BaseBubble)<{ isFirst: boolean }>`
   border-radius: ${OTHER_MESSAGE_CONFIG.BORDER_RADIUS}px;
-  border-top-left-radius: ${({ isFirst }) => isFirst ? 0 : OTHER_MESSAGE_CONFIG.BORDER_RADIUS}px;
+  border-top-left-radius: ${({ isFirst }) => (isFirst ? 0 : OTHER_MESSAGE_CONFIG.BORDER_RADIUS)}px;
 `;
 
 const TimeText = styled.Text`

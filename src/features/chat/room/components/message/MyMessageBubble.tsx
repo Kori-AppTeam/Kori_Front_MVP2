@@ -16,11 +16,7 @@ const MyMessageBubble: React.FC<MyMessageBubbleProps> = ({
     <MessageContainer onLongPress={onLongPress}>
       {showTime && <TimeText>{time}</TimeText>}
       <BubbleContainer isFirst={isFirst}>
-        <HighlightText
-          text={content}
-          keyword={searchKeyword}
-          textType="my"
-        />
+        <HighlightText text={content} keyword={searchKeyword} textType="my" />
       </BubbleContainer>
     </MessageContainer>
   );
@@ -71,9 +67,9 @@ const MessageContainer = styled(BaseContainer)`
   margin-top: ${MY_MESSAGE_CONFIG.MARGIN_TOP_REGULAR}px;
 `;
 
-const BubbleContainer = styled(BaseBubble) <{ isFirst: boolean }>`
+const BubbleContainer = styled(BaseBubble)<{ isFirst: boolean }>`
   border-radius: ${MY_MESSAGE_CONFIG.BORDER_RADIUS}px;
-  border-bottom-right-radius: ${({ isFirst }) => isFirst ? 0 : MY_MESSAGE_CONFIG.BORDER_RADIUS}px;
+  border-bottom-right-radius: ${({ isFirst }) => (isFirst ? 0 : MY_MESSAGE_CONFIG.BORDER_RADIUS)}px;
 `;
 
 const TimeText = styled.Text`

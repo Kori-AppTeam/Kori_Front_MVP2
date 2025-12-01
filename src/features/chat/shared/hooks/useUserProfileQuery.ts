@@ -1,10 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  createOneToOneRoom,
-  fetchUserProfile,
-  followUser,
-  unfollowUser,
-} from '../api';
+import { createOneToOneRoom, fetchUserProfile, followUser, unfollowUser } from '../api';
 
 /** 쿼리 키 */
 export const USER_PROFILE_QK = (userId: number) => ['chat', 'userProfile', userId] as const;

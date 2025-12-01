@@ -11,19 +11,49 @@ import { textStyle, theme } from '@/src/styles/theme';
 import { SIGNUP_PRIVACY_POLICY_ROUTE, SIGNUP_TERMS_AND_CONDITIONS_ROUTE } from '@/src/shared/constants/route';
 import CustomButton from '@/src/shared/components/CustomButton';
 import Checkbox, { CheckboxProps } from '@/src/shared/components/Checkbox';
+import { requestLocationPermission } from '@/src/features/auth/lib/requestLocationPermission';
+import { patchLocation } from '@/api/member/location';
 
 interface ConfirmTermsBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
-  onConfirmPress: () => void;
   bottomSheetClose: () => void;
+  loginProvider: 'apple' | 'google' | 'email';
+  onPress?: () => void;
+  isLoading?: boolean;
 }
 
 const ConfirmTermsBottomSheet = ({
   bottomSheetRef,
-  onConfirmPress,
   bottomSheetClose,
+  loginProvider,
+  onPress: handleEmailProvider,
+  isLoading,
 }: ConfirmTermsBottomSheetProps) => {
   const { confirms, isConfirmedAll, toggleConfirmed, toggleConfirmedAll } = useConfirmTerms();
+
+  const handleAuthProvider = async () => {
+    try {
+      const { latitude, longitude } = await requestLocationPermission();
+      await patchLocation(latitude, longitude);
+
+      bottomSheetClose();
+      if (loginProvider === 'apple') {
+        router.push('/screens/makeprofile/GenderStepScreen');
+      } else {
+        router.push('/screens/makeprofile/NameStepScreen');
+      }
+    } catch (error) {
+      console.error('Error obtaining location or patching location:', error);
+    }
+  };
+
+  const handleButtonPress = () => {
+    if (loginProvider === 'email' && handleEmailProvider) {
+      handleEmailProvider();
+    } else {
+      handleAuthProvider();
+    }
+  };
 
   const showTermsAndConditions = () => {
     bottomSheetClose();
@@ -39,28 +69,10 @@ const ConfirmTermsBottomSheet = ({
     }, 300);
   };
 
-  interface LabelCheckboxProps extends CheckboxProps {
-    label: string;
-    isLabelBold?: boolean;
-    onNextPress?: () => void;
+  // loginProvider가 없는 경우 바텀시트를 렌더링하지 않음
+  if (!loginProvider) {
+    return null;
   }
-
-  // 라벨 체크박스
-  const LabelCheckbox = ({ isChecked, onPress, label, isLabelBold = false, onNextPress }: LabelCheckboxProps) => {
-    return (
-      <CheckBoxContainer>
-        <Checkbox isChecked={isChecked} onPress={() => onPress()} />
-        <CheckText isChecked={isChecked} isBold={isLabelBold}>
-          {label}
-        </CheckText>
-        {onNextPress && (
-          <TouchableOpacity onPress={() => onNextPress()}>
-            <Icon type="next" size={20} color={theme.colors.gray.gray_1} />
-          </TouchableOpacity>
-        )}
-      </CheckBoxContainer>
-    );
-  };
 
   return (
     <CustomBottomSheet ref={bottomSheetRef}>
@@ -92,13 +104,36 @@ const ConfirmTermsBottomSheet = ({
             onNextPress={showPrivacyPolicy}
           />
         </CheckboxWrapper>
-        <CustomButton label="Confirm" disabled={!isConfirmedAll} onPress={onConfirmPress} />
+        <CustomButton label="Confirm" disabled={!isConfirmedAll} onPress={handleButtonPress} isLoading={isLoading} />
       </BottomSheetContent>
     </CustomBottomSheet>
   );
 };
 
 export default ConfirmTermsBottomSheet;
+
+interface LabelCheckboxProps extends CheckboxProps {
+  label: string;
+  isLabelBold?: boolean;
+  onNextPress?: () => void;
+}
+
+// 라벨 체크박스
+const LabelCheckbox = ({ isChecked, onPress, label, isLabelBold = false, onNextPress }: LabelCheckboxProps) => {
+  return (
+    <CheckBoxContainer>
+      <Checkbox isChecked={isChecked} onPress={() => onPress()} />
+      <CheckText isChecked={isChecked} isBold={isLabelBold}>
+        {label}
+      </CheckText>
+      {onNextPress && (
+        <TouchableOpacity onPress={() => onNextPress()}>
+          <Icon type="next" size={20} color={theme.colors.gray.gray_1} />
+        </TouchableOpacity>
+      )}
+    </CheckBoxContainer>
+  );
+};
 
 const BottomSheetContent = styled.View`
   width: 100%;

@@ -47,55 +47,61 @@ export const useSearchStore = create<SearchState>((set, get) => ({
     }
   },
 
-  activateSearch: () => set({
-    isActive: true,
-    searchText: '',
-    searchResults: [],
-    currentIndex: 0,
-    totalCount: 0,
-    isSearching: false,
-    error: null,
-  }),
+  activateSearch: () =>
+    set({
+      isActive: true,
+      searchText: '',
+      searchResults: [],
+      currentIndex: 0,
+      totalCount: 0,
+      isSearching: false,
+      error: null,
+    }),
 
-  deactivateSearch: () => set({
-    isActive: false,
-    isSearching: false,
-    searchText: '',
-    searchResults: [],
-    currentIndex: 0,
-    totalCount: 0,
-    error: null,
-  }),
+  deactivateSearch: () =>
+    set({
+      isActive: false,
+      isSearching: false,
+      searchText: '',
+      searchResults: [],
+      currentIndex: 0,
+      totalCount: 0,
+      error: null,
+    }),
 
-  setSearchText: (text: string) => set({
-    searchText: text,
-    isSearching: false,
-  }),
+  setSearchText: (text: string) =>
+    set({
+      searchText: text,
+      isSearching: false,
+    }),
 
-  setSearchResults: (results: ChatMessage[]) => set({
-    searchResults: results,
-    totalCount: results.length,
-    currentIndex: 0,
-    error: null,
-  }),
+  setSearchResults: (results: ChatMessage[]) =>
+    set({
+      searchResults: results,
+      totalCount: results.length,
+      currentIndex: 0,
+      error: null,
+    }),
 
   setCurrentIndex: (index: number) => set({ currentIndex: index }),
 
   setIsSearching: (isSearching: boolean) => set({ isSearching }),
 
-  setError: (error: Error | null) => set({
-    error,
-    isSearching: false,
-  }),
+  setError: (error: Error | null) =>
+    set({
+      error,
+      isSearching: false,
+    }),
 
-  clearSearch: () => set({
-    searchText: '',
-    isSearching: false,
-    searchResults: [],
-    currentIndex: 0,
-    totalCount: 0,
-    error: null,
-  }),
+  clearSearch: () =>
+    set({
+      searchText: '',
+      isSearching: false,
+      searchResults: [],
+      currentIndex: 0,
+      totalCount: 0,
+      error: null,
+    }),
 
   incrementIndex: () => {
     const { currentIndex, searchResults } = get();

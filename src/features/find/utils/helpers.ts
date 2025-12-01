@@ -41,9 +41,5 @@ export const getMyUserId = async (): Promise<number | undefined> => {
  * 팔로잉 목록에서 userId Set 생성
  */
 export const extractFollowingIds = (accepted: FollowingUser[] | undefined): Set<number> => {
-  return new Set(
-    (accepted ?? [])
-      .map((u) => Number(u?.id ?? u?.userId))
-      .filter(Number.isFinite)
-  );
+  return new Set((accepted ?? []).map((u) => Number(u?.id ?? u?.userId)).filter(Number.isFinite));
 };

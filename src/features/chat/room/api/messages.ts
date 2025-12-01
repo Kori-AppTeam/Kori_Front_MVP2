@@ -10,17 +10,11 @@ export const readMessageAllAPI = async (roomId: string): Promise<void> => {
   }
 };
 
-export const loadMessagesAPI = async (
-  roomId: string,
-  lastMessageId: string | number
-): Promise<ChatMessage[]> => {
+export const loadMessagesAPI = async (roomId: string, lastMessageId: string | number): Promise<ChatMessage[]> => {
   try {
-    const res = await api.get(
-      `/api/v1/chat/rooms/${roomId}/messages`,
-      {
-        params: { lastMessageId: lastMessageId || '' }
-      }
-    );
+    const res = await api.get(`/api/v1/chat/rooms/${roomId}/messages`, {
+      params: { lastMessageId: lastMessageId || '' },
+    });
     return res.data.data || [];
   } catch (error) {
     console.error('메시지 로드 실패:', error);
@@ -28,16 +22,13 @@ export const loadMessagesAPI = async (
   }
 };
 
-export const searchMessagesAPI = async (
-  roomId: string,
-  searchText: string
-): Promise<ChatMessage[]> => {
+export const searchMessagesAPI = async (roomId: string, searchText: string): Promise<ChatMessage[]> => {
   try {
     const res = await api.get('/api/v1/chat/search', {
       params: {
         roomId,
-        keyword: searchText
-      }
+        keyword: searchText,
+      },
     });
     return res.data.data || [];
   } catch (error) {
@@ -46,15 +37,9 @@ export const searchMessagesAPI = async (
   }
 };
 
-export const loadMessagesAroundAPI = async (
-  roomId: string,
-  messageId: number
-): Promise<ChatMessage[]> => {
+export const loadMessagesAroundAPI = async (roomId: string, messageId: number): Promise<ChatMessage[]> => {
   try {
-    const res = await api.get(
-      `/api/v1/chat/rooms/${roomId}/messages/around`,
-      { params: { messageId } }
-    );
+    const res = await api.get(`/api/v1/chat/rooms/${roomId}/messages/around`, { params: { messageId } });
     return res.data.data || [];
   } catch (error) {
     console.error('주변 메시지 로드 실패:', error);

@@ -9,10 +9,7 @@ interface CreateSpaceSuccessProps {
 /**
  * 스페이스 생성 성공 화면
  */
-export const CreateSpaceSuccess: React.FC<CreateSpaceSuccessProps> = ({
-  spaceImageUrl,
-  onDone,
-}) => {
+export const CreateSpaceSuccess: React.FC<CreateSpaceSuccessProps> = ({ spaceImageUrl, onDone }) => {
   return (
     <Background source={require('@/assets/images/background2.png')} resizeMode="cover">
       <ProfileBox>

@@ -6,11 +6,7 @@ import { HeaderProps } from '../../types';
 import ChatHeader from './ChatHeader';
 import SearchHeader from './SearchHeader';
 
-const Header: React.FC<HeaderProps> = ({
-  roomName,
-  onSearchSubmit,
-  onShowMembers,
-}) => {
+const Header: React.FC<HeaderProps> = ({ roomName, onSearchSubmit, onShowMembers }) => {
   const { isActive, toggleSearch } = useSearchStore();
 
   return (
@@ -18,11 +14,7 @@ const Header: React.FC<HeaderProps> = ({
       {isActive ? (
         <SearchHeader onSearchSubmit={onSearchSubmit} />
       ) : (
-        <ChatHeader
-          roomName={roomName}
-          onShowMembers={onShowMembers}
-          onSearchToggle={toggleSearch}
-        />
+        <ChatHeader roomName={roomName} onShowMembers={onShowMembers} onSearchToggle={toggleSearch} />
       )}
     </HeaderContainer>
   );
