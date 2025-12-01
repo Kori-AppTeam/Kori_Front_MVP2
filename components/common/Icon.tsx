@@ -2,14 +2,15 @@ import AlarmOff from '@/assets/icons/alarm-off.svg';
 import AlarmOn from '@/assets/icons/alarm-on.svg';
 import Alert from '@/assets/icons/alert.svg';
 import ArrowDown from '@/assets/icons/arrow-down.svg';
+import ArrowTransparent from '@/assets/icons/arrow-transparent.svg';
 import ArrowUp from '@/assets/icons/arrow-up.svg';
 import Bookmark from '@/assets/icons/bookmark-non-selected.svg';
 import SelectedBookmark from '@/assets/icons/bookmark-selected.svg';
 import Box from '@/assets/icons/box.svg';
 import Business from '@/assets/icons/business.svg';
-import Cancel from '@/assets/icons/cancel.svg';
 import CameraColored from '@/assets/icons/camera-colored.svg';
 import CameraDefault from '@/assets/icons/camera-default.svg';
+import Cancel from '@/assets/icons/cancel.svg';
 import Chat from '@/assets/icons/chat.svg';
 import CheckGrayBox from '@/assets/icons/check-gray-box.svg';
 import CheckMintBox from '@/assets/icons/check-mint-box.svg';
@@ -64,6 +65,7 @@ const iconMap = {
   alert: Alert,
   arrowUp: ArrowUp,
   arrowDown: ArrowDown,
+  arrowTransparent: ArrowTransparent,
   business: Business,
   bookmarkNonSelected: Bookmark,
   bookmarkSelected: SelectedBookmark,
