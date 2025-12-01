@@ -11,7 +11,6 @@ import { useLikeComment } from '@/hooks/mutations/useLikeComment';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
-import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
 import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
 import { usePostDetail } from '@/src/features/community/hooks/usePostDetail';
 import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
@@ -288,7 +287,7 @@ export default function PostDetailScreen() {
   const inputRef = useRef<RNTextInput>(null);
   const listRef = useRef<RNFlatList<Comment>>(null);
 
-  const likeMutation = useToggleLike(CATEGORY_TO_BOARD_ID[category], sort);
+  const likeMutation = useToggleLike();
 
   const { data: commentsRaw } = usePostComments(Number.isFinite(postId) ? postId : undefined, sort);
   const commentList: Comment[] = Array.isArray(commentsRaw)
@@ -475,7 +474,7 @@ export default function PostDetailScreen() {
     }
   };
 
-  //게시글에서 열ㄹ기
+  //게시글에서 열기
   const openPostSheet = () => {
     setSheetCtx({ type: 'post' });
     setMenuVisible(true);
@@ -889,7 +888,7 @@ export default function PostDetailScreen() {
   return (
     <Safe>
       <Header>
-        <Back onPress={() => router.back()}>
+        <Back onPress={() => router.push('/community')}>
           <Icon type="previous" size={20} color={theme.colors.primary.white} />
         </Back>
         <HeaderTitle>Post</HeaderTitle>
