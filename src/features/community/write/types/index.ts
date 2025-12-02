@@ -63,3 +63,10 @@ export interface ImageAsset {
   type?: string; // 'image/jpeg', 'image/png' 등
   name?: string; // 파일명
 }
+
+// 게시글 생성 파라미터
+export type CreatePostWithImagesParams = {
+  content: string;
+  isAnonymous: boolean;
+  images?: ImageAsset[];
+};
