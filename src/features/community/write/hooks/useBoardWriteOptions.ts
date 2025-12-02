@@ -1,5 +1,7 @@
-import { BoardWriteOptions, getBoardWriteOptions } from '@/api/community/boards';
 import { useQuery } from '@tanstack/react-query';
+
+import { getBoardWriteOptions } from '../apis/boards';
+import { BoardWriteOptions } from '../types';
 
 export function useBoardWriteOptions(boardId?: number) {
   return useQuery<BoardWriteOptions>({
