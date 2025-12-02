@@ -88,6 +88,7 @@ const fonts = {
     B5_SB: FONT({ fontFamily: 'PlusJakartaSans', size: 13, weight: 'SemiBold', lineHeight: 17 }),
     B5_M: FONT({ fontFamily: 'PlusJakartaSans', size: 13, weight: 'Medium', lineHeight: 17 }),
     B5_R: FONT({ fontFamily: 'PlusJakartaSans', size: 13, weight: 'Regular', lineHeight: 17 }),
+    B5_L: FONT({ fontFamily: 'PlusJakartaSans', size: 13, weight: 'Light', lineHeight: 17 }),
   },
 
   small: {
