@@ -1,4 +1,5 @@
 import Icon from '@/components/common/Icon';
+import RawProfileImage from '@/components/common/ProfileImage';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -21,7 +22,7 @@ export const MemberItem: React.FC<MemberItemProps> = ({ name, isHost, imageUrl, 
     <MemberContainer>
       <TouchableOpacity onPress={onPressProfile}>
         <ProfileBox>
-          <ProfileImage source={imageUrl ? { uri: imageUrl } : require('@/assets/images/character1.png')} />
+          <ProfileImage source={{ uri: imageUrl }} />
         </ProfileBox>
       </TouchableOpacity>
 
@@ -57,7 +58,7 @@ const ProfileBox = styled.View`
   border-radius: 30px;
 `;
 
-const ProfileImage = styled.Image`
+const ProfileImage = styled(RawProfileImage)`
   width: 100%;
   height: 100%;
 `;
@@ -87,14 +88,14 @@ const HostBox = styled.View`
 `;
 
 const HostText = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.primary.white};
   font-size: 11px;
-  font-family: PlusJakartaSans_500Medium;
+  ${theme.fonts.small.small_M}
+  ${({ theme }) => theme.fonts.small.small_M};
 `;
 
 const MemberNameText = styled.Text`
   margin-left: 12px;
-  color: #ffffff;
-  font-family: PlusJakartaSans_500Medium;
-  font-size: 14px;
+  color: ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => theme.fonts.body.B4_M};
 `;
