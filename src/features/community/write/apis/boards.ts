@@ -1,9 +1,5 @@
 import api from '@/api/axiosInstance';
-
-export type BoardWriteOptions = {
-  boardId: number;
-  anonymousWritable: boolean;
-};
+import { BoardWriteOptions } from '../types';
 
 export async function getBoardWriteOptions(boardId: number): Promise<BoardWriteOptions> {
   if (!boardId && boardId !== 0) throw new Error('boardId is required');
@@ -18,3 +14,6 @@ export async function getBoardWriteOptions(boardId: number): Promise<BoardWriteO
     anonymousWritable: Boolean(payload.anonymousWritable),
   };
 }
+
+// Re-export type for convenience
+export type { BoardWriteOptions };
