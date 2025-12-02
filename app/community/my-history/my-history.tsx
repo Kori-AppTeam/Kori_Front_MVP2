@@ -1,7 +1,7 @@
 import Icon from '@/components/common/Icon';
 import { useDeleteComment } from '@/hooks/mutations/useDeleteComment';
 import { useMyComments } from '@/hooks/queries/useMyComments';
-import { useDeletePost, useMyPosts } from '@/src/features/community/hooks/useMyPosts';
+import { useDeletePost, useMyPosts } from '@/src/features/community/post/hooks/useMyPosts';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
@@ -141,7 +141,7 @@ export default function MyHistoryScreen() {
       const target = posts.find((p) => p.id === sheetTarget.id);
       closeSheet();
       router.push({
-        pathname: '/community/write',
+        pathname: '/community/write/write',
         params: { mode: 'edit', postId: sheetTarget.id, initial: target?.body ?? '' },
       });
       return;
@@ -152,7 +152,7 @@ export default function MyHistoryScreen() {
     if (!c?.postId) return;
 
     router.push({
-      pathname: '/community/[id]',
+      pathname: '/community/detail/[id]',
       params: {
         id: c.postId,
         focusCommentId: c.id,
@@ -201,7 +201,7 @@ export default function MyHistoryScreen() {
 
   const goPostDetail = (postId: string) => {
     if (!postId) return;
-    router.push({ pathname: '/community/[id]', params: { id: postId } });
+    router.push({ pathname: '/community/detail/[id]', params: { id: postId } });
   };
 
   const renderPost: ListRenderItem<PostRow> = ({ item }) => {
@@ -245,7 +245,7 @@ export default function MyHistoryScreen() {
   };
 
   const renderComment: ListRenderItem<CommentRow> = ({ item }) => (
-    <RowPress onPress={() => router.push({ pathname: '/community/[id]', params: { id: item.postId } })}>
+    <RowPress onPress={() => router.push({ pathname: '/community/detail/[id]', params: { id: item.postId } })}>
       <TopRow>
         <DateText>{item.createdAt}</DateText>
         <MoreBtn

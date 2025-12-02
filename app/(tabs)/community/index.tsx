@@ -2,17 +2,18 @@ import Icon from '@/components/common/Icon';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
-import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
-import CategoryChips from '@/src/features/community/components/CategoryChips';
-import MyPostModal from '@/src/features/community/components/post/MyPostModal';
-import OthersPostModal from '@/src/features/community/components/post/OthersPostModal';
-import PostList from '@/src/features/community/components/PostList';
-import useGetVisitor from '@/src/features/community/hooks/useGetVisitor';
-import { useOpenMoreSheet } from '@/src/features/community/hooks/useOpenMoreSheet';
-import useScrollToTop from '@/src/features/community/hooks/useScrollToTop';
-import { AllowedCategory, SortParam } from '@/src/features/community/types';
+
+import CategoryChips from '@/src/features/community/post/components/CategoryChips';
+import MyPostModal from '@/src/features/community/post/components/elements/footer/MyPostModal';
+import OthersPostModal from '@/src/features/community/post/components/elements/footer/OthersPostModal';
+import PostList from '@/src/features/community/post/components/PostList';
+import useGetVisitor from '@/src/features/community/post/hooks/useGetVisitor';
+import useScrollToTop from '@/src/features/community/post/hooks/useScrollToTop';
+import { AllowedCategory, SortParam } from '@/src/features/community/post/types';
+import { CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/constants/constants';
+import { useOpenMoreSheet } from '@/src/features/community/shared/hooks/useOpenMoreSheet';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
-import { theme } from '@/src/styles/theme';
+import { textStyle, theme } from '@/src/styles/theme';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
@@ -66,7 +67,7 @@ export default function CommunityScreen() {
         return;
       }
     }
-    router.push('/community/write');
+    router.push('/community/write/write');
   };
 
   return (
@@ -74,7 +75,9 @@ export default function CommunityScreen() {
       <Safe>
         <Header>
           <Left>
-            <Title onPress={() => scrollToTop(true)}>Community</Title>
+            <TextButton onPress={() => scrollToTop(true)} activeOpacity={0.6}>
+              <Title>Community</Title>
+            </TextButton>
             <IconImage source={ICON} resizeMode="contain" />
           </Left>
 
@@ -119,7 +122,7 @@ export default function CommunityScreen() {
         <WriteFab onHandleWritePress={handleWritePress} />
         <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
       </Safe>
-      <CustomBottomSheet ref={bottomSheetRef}>
+      <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">
         {selectedPost && authorId ? (
           isMine ? (
             <MyPostModal closeModal={closeModal} postId={selectedPost} />
@@ -150,11 +153,10 @@ const Left = styled.View`
   align-items: center;
   margin-left: 10px;
 `;
+const TextButton = styled.TouchableOpacity``;
 const Title = styled.Text`
-  color: #ffffff;
-  font-size: 32px;
-  font-family: 'InstrumentSerif_400Regular';
-  letter-spacing: -0.2px;
+  color: ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => textStyle(theme.fonts.Serif.H3_R)};
 `;
 const IconImage = styled.Image`
   margin-left: 4px;

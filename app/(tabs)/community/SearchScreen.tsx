@@ -5,13 +5,17 @@ import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { useSearchPosts, type PostExFromSearch } from '@/hooks/queries/useSearchPosts';
-import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
-import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
-import CategoryChips from '@/src/features/community/components/CategoryChips';
-import PostCard from '@/src/features/community/components/PostCard';
-import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
-import { AllowedCategory, SortParam } from '@/src/features/community/types';
-import { SearchedPostEx, SearchedPosts, SearchedPostsResp } from '@/src/features/community/types/searchedPostsType';
+import { addBookmark, removeBookmark } from '@/src/features/community/post/apis/bookmarks';
+import CategoryChips from '@/src/features/community/post/components/CategoryChips';
+import PostCard from '@/src/features/community/post/components/PostCard';
+import { useToggleLike } from '@/src/features/community/post/hooks/useToggleLike';
+import { AllowedCategory, SortParam } from '@/src/features/community/post/types';
+import {
+  SearchedPostEx,
+  SearchedPosts,
+  SearchedPostsResp,
+} from '@/src/features/community/post/types/searchedPostsType';
+import { CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/constants/constants';
 import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
 import { usePostUI } from '@/src/store/usePostUI';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -99,7 +103,7 @@ export default function CommunityScreen() {
   const sortParam = sort === 'LATEST' ? 'LATEST' : 'POPULAR';
   const boardId = CATEGORY_TO_BOARD_ID[cat];
 
-  const likeMutation = useToggleLike(boardId, sort);
+  const likeMutation = useToggleLike();
   const { data: me } = useMyProfile();
   const { bookmarked, toggleBookmarked, setBookmarked, liked, setLiked, toggleLiked, likeCount, setLikeCount } =
     usePostUI();
@@ -205,7 +209,7 @@ export default function CommunityScreen() {
       const { data } = await api.get<{ userId: number; profileCompleted: boolean }>(`/api/v1/member/is-completed`);
 
       if (data?.profileCompleted) {
-        router.push('/community/write');
+        router.push('/community/write/write');
       } else {
         setProfileModalVisible(true); // alert를 모달로 변경
       }
@@ -286,7 +290,7 @@ export default function CommunityScreen() {
       const { data } = await api.get<{ userId: number; profileCompleted: boolean }>(`/api/v1/member/is-completed`);
 
       if (data?.profileCompleted) {
-        router.push({ pathname: '/community/[id]', params: { id: String(postId) } });
+        router.push({ pathname: '/community/detail/[id]', params: { id: String(postId) } });
       } else {
         setProfileModalVisible(true); // alert를 modal로 변경
       }
@@ -457,10 +461,10 @@ export default function CommunityScreen() {
             <IconBtn onPress={openSearch}>
               <AntDesign name="search1" size={18} color="#cfd4da" />
             </IconBtn>
-            <IconBtn onPress={() => router.push('/community/bookmarks')}>
+            <IconBtn onPress={() => router.push('/community/bookmark-list/bookmarks')}>
               <MaterialIcons name="bookmark-border" size={20} color="#cfd4da" />
             </IconBtn>
-            <IconBtn onPress={() => router.push('/community/my-history')}>
+            <IconBtn onPress={() => router.push('/community/my-history/my-history')}>
               <AntDesign name="user" size={18} color="#cfd4da" />
             </IconBtn>
           </Right>
