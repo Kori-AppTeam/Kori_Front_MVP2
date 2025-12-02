@@ -1,0 +1,51 @@
+import {
+  AllowedCategory,
+  AllowedClientCategory,
+  BoardId,
+  ClientSortParam,
+  SortParam,
+} from '@/src/features/community/post/types';
+
+export const CLIENT_CATEGORY_NAME: Record<AllowedCategory, AllowedClientCategory> = {
+  ALL: 'All',
+  NEWS: 'News',
+  TIP: 'Tip',
+  QNA: 'Q&A',
+  EVENT: 'Event',
+  FREE_TALK: 'Free talk',
+  ACTIVITY: 'Activity',
+};
+
+export const CATEGORY_TO_BOARD_ID: Record<AllowedCategory, BoardId> = {
+  ALL: 1,
+  NEWS: 2,
+  TIP: 3,
+  QNA: 4,
+  EVENT: 5,
+  FREE_TALK: 6,
+  ACTIVITY: 7,
+};
+
+export const CLIENT_SORT_NAME: Record<SortParam, ClientSortParam> = {
+  LATEST: 'New',
+  POPULAR: 'Hot',
+};
+
+// Write 화면용 카테고리 목록 (All 제외)
+export const WRITE_CATEGORIES: AllowedClientCategory[] = ['News', 'Tip', 'Q&A', 'Event', 'Free talk', 'Activity'];
+
+// 익명 작성 가능한 카테고리
+export const ANONYMOUS_ALLOWED_CATEGORIES = new Set<AllowedClientCategory>(['Free talk', 'Q&A']);
+
+// 글 작성 가이드라인
+export const guidelines = [
+  'Profanity or abusive language targeting others',
+  'Sexual content',
+  'Sexualized insults or misogynistic expressions',
+  'Racial or ethnic discriminatory expressions',
+  'Violent or threatening content',
+  'General hate speech or derogatory remarks',
+  'Spam or promotional content',
+];
+
+export const ASPECT_RATIO = 200 / 335; // height / width = 0.597
