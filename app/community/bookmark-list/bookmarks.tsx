@@ -1,8 +1,8 @@
 import Icon from '@/components/common/Icon';
-import BookmarkList from '@/src/features/community/components/BookmarkList';
-import MyPostModal from '@/src/features/community/components/post/MyPostModal';
-import OthersPostModal from '@/src/features/community/components/post/OthersPostModal';
-import { useOpenMoreSheet } from '@/src/features/community/hooks/useOpenMoreSheet';
+import BookmarkList from '@/src/features/community/post/components/BookmarkList';
+import MyPostModal from '@/src/features/community/post/components/elements/footer/MyPostModal';
+import OthersPostModal from '@/src/features/community/post/components/elements/footer/OthersPostModal';
+import { useOpenMoreSheet } from '@/src/features/community/shared/hooks/useOpenMoreSheet';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
@@ -25,7 +25,7 @@ const BookmarksScreen = () => {
 
         <BookmarkList openModal={openModal} />
       </Safe>
-      <CustomBottomSheet ref={bottomSheetRef}>
+      <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">
         {selectedPost && authorId ? (
           isMine ? (
             <MyPostModal closeModal={closeModal} postId={selectedPost} />
