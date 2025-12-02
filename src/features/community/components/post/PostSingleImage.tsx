@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import styled from 'styled-components/native';
+import { ASPECT_RATIO } from '../../constants/constants';
 
 type PostSingleImageProps = {
   imageUrl: string;
@@ -27,7 +28,7 @@ export default memo(PostSingleImage);
 
 const Container = styled.View<{ width: number }>`
   width: ${({ width }) => (width ? width : 335)}px;
-  height: 200px;
+  height: ${({ width }) => (width ? width * ASPECT_RATIO : 200)}px;
   position: relative;
 `;
 const ImageString = styled.Image`
