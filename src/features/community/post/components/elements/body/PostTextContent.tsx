@@ -42,7 +42,7 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
         </Hyperlink>
         {truncate.numberOfLines > 2 ? (
           <MoreContent
-            onPress={() => postId && router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } })}
+            onPress={() => postId && router.push({ pathname: '/community/detail/[id]', params: { id: postId } })}
           >
             <MoreContentText>more</MoreContentText>
           </MoreContent>

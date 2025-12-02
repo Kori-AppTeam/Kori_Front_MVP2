@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import styled from 'styled-components/native';
-import { ASPECT_RATIO } from '../../constants/constants';
+import { ASPECT_RATIO } from '../../../../shared/constants/constants';
 
 type PostSingleImageProps = {
   imageUrl: string;

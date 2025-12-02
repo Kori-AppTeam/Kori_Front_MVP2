@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { PostDetail } from '../types';
+import { InitialEditData, PostDetail } from '../types';
 import { useDeletePost } from './useMyPosts';
 
 // 게시글 수정, 삭제 핸들러 함수
@@ -55,12 +55,19 @@ export const usePostActions = ({ onSuccessCallback }: { onSuccessCallback?: () =
       onSuccessCallback();
     }
 
+    const editData: InitialEditData = {
+      boardCategory: postDetailData.boardCategory,
+      content: postDetailData.content,
+      contentImageUrls: postDetailData.contentImageUrls,
+      isAnonymous: postDetailData.isAnonymous,
+    };
+
     router.push({
-      pathname: '/community/write',
+      pathname: '/community/write/write',
       params: {
         mode: 'edit',
         postId: postId,
-        initialData: JSON.stringify(postDetailData),
+        initialData: JSON.stringify(editData),
       },
     });
   };

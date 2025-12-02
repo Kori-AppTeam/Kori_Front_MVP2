@@ -2,7 +2,7 @@ import Icon from '@/components/common/Icon';
 import { textStyle } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
-import { limitCount } from '../../utils/indexUtils';
+import { limitCount } from '../../../../shared/utils/indexUtils';
 
 type PostLikeButtonProps = {
   isLiked: boolean;

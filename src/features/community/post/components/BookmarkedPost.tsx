@@ -1,26 +1,26 @@
 import Icon from '@/components/common/Icon';
-import { CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
+
+import { timeToAgo } from '../../shared/utils/indexUtils';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
-import { PostsListItem } from '../types';
-import { timeToAgo } from '../utils/indexUtils';
-import PostBookmarkButton from './post/PostBookmarkButton';
-import PostComment from './post/PostComment';
-import PostLikeButton from './post/PostLikeButton';
-import PostSingleImage from './post/PostSingleImage';
-import PostTextContent from './post/PostTextContent';
-import PostUserProfileImg from './post/PostUserProfileImg';
+import { BookmarkedPostItem } from '../types';
+import PostTextContent from './elements/body/PostTextContent';
+import PostComment from './elements/footer/PostComment';
+import PostLikeButton from './elements/footer/PostLikeButton';
+import PostBookmarkButton from './elements/header/PostBookmarkButton';
+import PostUserProfileImg from './elements/header/PostUserProfileImg';
 
-type PostCardProps = {
-  data: PostsListItem;
+const BookmarkedPost = ({
+  data,
+  onOpenModal,
+}: {
+  data: BookmarkedPostItem;
   onOpenModal: (postId: number, authorId: number) => void;
-};
-
-const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
+}) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
@@ -29,24 +29,21 @@ const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
     <Container width={SCREEN_WIDTH}>
       <Wrap
         width={SCREEN_WIDTH}
-        onPress={() => router.push({ pathname: '/(tabs)/community/[id]', params: { id: data.postId } })}
+        onPress={() => router.push({ pathname: '/community/detail/[id]', params: { id: data.postId } })}
       >
         <PostHeader>
           <AuthorImageContainer>
-            <PostUserProfileImg isAnonymous={data.isAnonymous} userImageUrl={data.userImageUrl} />
+            <PostUserProfileImg isAnonymous={data.isAnonymous} userImageUrl={data.userImage} />
           </AuthorImageContainer>
 
           <Meta>
             <Author>{data.authorName}</Author>
             <SubRow>
               <TimeText>{timeToAgo(data.createdAt)}</TimeText>
-              <CategoryBadge>
-                <CategoryText>{CLIENT_CATEGORY_NAME[data.boardCategory]}</CategoryText>
-              </CategoryBadge>
               <Dot>•</Dot>
               <IconBtn>
                 <Icon size={16} type="eye" color="#848687" />
-                <SmallCount>{data.viewCount}</SmallCount>
+                <SmallCount>{data.checkCount}</SmallCount>
               </IconBtn>
             </SubRow>
           </Meta>
@@ -58,15 +55,7 @@ const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
         </PostHeader>
 
         <ContentBox>
-          {data.contentImageUrl && (
-            <PostSingleImage
-              imageUrl={data.contentImageUrl}
-              imageCount={data.imageCount}
-              pageWidth={SCREEN_WIDTH - 20 * 2}
-            />
-          )}
-
-          <PostTextContent isTruncate={true} postId={data.postId} content={data.contentPreview} />
+          <PostTextContent isTruncate={true} postId={data.postId} content={data.content} />
         </ContentBox>
 
         <FooterRow>
@@ -90,7 +79,7 @@ const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
   );
 };
 
-export default memo(PostListCard);
+export default memo(BookmarkedPost);
 
 const Container = styled.View<{ width: number }>`
   flex-direction: column;
@@ -137,17 +126,6 @@ const SubRow = styled.View`
 const TimeText = styled.Text`
   color: ${({ theme }) => theme.colors.gray.gray_1};
   font-size: 11px;
-  ${({ theme }) => textStyle(theme.fonts.small.small_M)}
-`;
-const CategoryBadge = styled.View`
-  padding: 4px 6px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  background: #184b3f;
-`;
-const CategoryText = styled.Text`
-  color: ${({ theme }) => theme.colors.gray.lightGray_1};
   ${({ theme }) => textStyle(theme.fonts.small.small_M)}
 `;
 const Dot = styled.Text`

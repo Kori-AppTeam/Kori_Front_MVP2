@@ -3,7 +3,7 @@ import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
-import { limitCount } from '../../utils/indexUtils';
+import { limitCount } from '../../../../shared/utils/indexUtils';
 
 type CommentProps = {
   showComment: boolean;
@@ -16,7 +16,7 @@ const PostComment = ({ showComment, postId, commentCount }: CommentProps) => {
     <IconBtn
       hitSlop={8}
       onPress={() =>
-        showComment === false && router.push({ pathname: '/(tabs)/community/[id]', params: { id: postId } })
+        showComment === false && router.push({ pathname: '/community/detail/[id]', params: { id: postId } })
       }
     >
       <Icon size={20} type="comment" />

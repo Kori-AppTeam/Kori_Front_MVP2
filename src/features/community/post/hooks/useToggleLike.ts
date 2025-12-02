@@ -1,4 +1,4 @@
-import { toggleLike } from '@/src/features/community/apis/likes';
+import { toggleLike } from '@/src/features/community/post/apis/likes';
 import { InfiniteData, QueryClient, QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { BookmarkedPostItem, BookmarkedPostsResp, PostDetail, PostsListItem, PostsListResp } from '../types';

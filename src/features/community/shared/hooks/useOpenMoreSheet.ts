@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useCallback, useRef, useState } from 'react';
-import useGetVisitor from './useGetVisitor';
+import useGetVisitor from '../../post/hooks/useGetVisitor';
 
 // 게시글 더보기 모달 열기 훅
 export const useOpenMoreSheet = () => {
@@ -12,6 +12,9 @@ export const useOpenMoreSheet = () => {
 
   const openModal = useCallback(
     (postId: number, authorId: number) => {
+      if (!postId || !authorId) return;
+
+      // 선택된 게시글 ID와 작성자 ID 설정
       setSelectedPost(postId);
       setAuthorId(authorId);
 

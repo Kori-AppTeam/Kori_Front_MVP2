@@ -1,5 +1,5 @@
-import { CLIENT_CATEGORY_NAME } from '@/lib/community/constants';
-import { AllowedCategory } from '@/src/features/community/types';
+import { AllowedCategory } from '@/src/features/community/post/types';
+import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/constants';
 import React from 'react';
 import styled from 'styled-components/native';
 
