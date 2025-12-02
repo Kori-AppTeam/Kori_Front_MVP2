@@ -33,6 +33,7 @@ export const confirmOpenURL = async (url: string): Promise<boolean> => {
           },
         },
       ],
+      // 안드로이드에서는 배경 터치로 닫히도록 설정
       { cancelable: true },
     );
   });
