@@ -11,10 +11,10 @@ import { useLikeComment } from '@/hooks/mutations/useLikeComment';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
-import { addBookmark, removeBookmark } from '@/src/features/community/apis/bookmarks';
-import { usePostDetail } from '@/src/features/community/hooks/usePostDetail';
-import { useToggleLike } from '@/src/features/community/hooks/useToggleLike';
-import { AllowedCategory, SortParam } from '@/src/features/community/types';
+import { addBookmark, removeBookmark } from '@/src/features/community/post/apis/bookmarks';
+import { usePostDetail } from '@/src/features/community/post/hooks/usePostDetail';
+import { useToggleLike } from '@/src/features/community/post/hooks/useToggleLike';
+import { AllowedCategory, SortParam } from '@/src/features/community/post/types';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { User } from '@/src/shared/types/user';
 import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
@@ -888,7 +888,7 @@ export default function PostDetailScreen() {
   return (
     <Safe>
       <Header>
-        <Back onPress={() => router.push('/community')}>
+        <Back onPress={() => router.back()}>
           <Icon type="previous" size={20} color={theme.colors.primary.white} />
         </Back>
         <HeaderTitle>Post</HeaderTitle>
