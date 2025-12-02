@@ -1037,6 +1037,9 @@ export default function PostDetailScreen() {
               returnKeyType="send"
               blurOnSubmit
               onSubmitEditing={submit}
+              contextMenuHidden={false}
+              selectTextOnFocus={false}
+              editable={true}
             />
             {anonAllowed && (
               <AnonToggle
