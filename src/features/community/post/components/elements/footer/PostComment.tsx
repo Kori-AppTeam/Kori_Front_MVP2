@@ -1,9 +1,11 @@
 import Icon from '@/components/common/Icon';
+import { COMMUNITY_ROUTER } from '@/src/features/community/shared/constants/constants';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
 import { limitCount } from '../../../../shared/utils/indexUtils';
+import useVisitor from '../../../hooks/useVisitor';
 
 type CommentProps = {
   showComment: boolean;
@@ -12,13 +14,15 @@ type CommentProps = {
 };
 
 const PostComment = ({ showComment, postId, commentCount }: CommentProps) => {
+  const { handleBlockVisitor } = useVisitor();
+
+  const handlePress = () => {
+    if (showComment) return;
+    handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER['DETAIL'], params: { id: postId } }));
+  };
+
   return (
-    <IconBtn
-      hitSlop={8}
-      onPress={() =>
-        showComment === false && router.push({ pathname: '/community/detail/[id]', params: { id: postId } })
-      }
-    >
+    <IconBtn hitSlop={8} onPress={handlePress}>
       <Icon size={20} type="comment" />
       <Count>{limitCount(commentCount)}</Count>
     </IconBtn>

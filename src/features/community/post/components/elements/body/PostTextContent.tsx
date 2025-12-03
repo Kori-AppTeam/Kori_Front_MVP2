@@ -5,6 +5,7 @@ import React, { memo, useCallback, useState } from 'react';
 import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import Hyperlink from 'react-native-hyperlink';
 import styled from 'styled-components/native';
+import useVisitor from '../../../hooks/useVisitor';
 
 type PostTextContentProps = {
   isTruncate: boolean;
@@ -13,6 +14,13 @@ type PostTextContentProps = {
 };
 
 const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) => {
+  const { handleBlockVisitor } = useVisitor();
+
+  const handleMorePress = useCallback(() => {
+    if (!postId) return;
+    handleBlockVisitor(() => router.push({ pathname: '/community/detail/[id]', params: { id: postId } }));
+  }, [postId, handleBlockVisitor]);
+
   if (isTruncate === true) {
     const [truncate, setTruncate] = useState({ numberOfLines: 0 });
 
@@ -41,9 +49,7 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
           </Body>
         </Hyperlink>
         {truncate.numberOfLines > 2 ? (
-          <MoreContent
-            onPress={() => postId && router.push({ pathname: '/community/detail/[id]', params: { id: postId } })}
-          >
+          <MoreContent onPress={handleMorePress}>
             <MoreContentText>more</MoreContentText>
           </MoreContent>
         ) : null}

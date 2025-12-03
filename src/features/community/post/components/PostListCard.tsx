@@ -1,13 +1,13 @@
 import Icon from '@/components/common/Icon';
-import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/constants';
+import { CLIENT_CATEGORY_NAME, COMMUNITY_ROUTER } from '@/src/features/community/shared/constants/constants';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
-
 import { timeToAgo } from '../../shared/utils/indexUtils';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
+import useVisitor from '../hooks/useVisitor';
 import { PostsListItem } from '../types';
 import PostSingleImage from './elements/body/PostSingleImage';
 import PostTextContent from './elements/body/PostTextContent';
@@ -25,12 +25,15 @@ const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
+  const { handleBlockVisitor } = useVisitor();
 
   return (
     <Container width={SCREEN_WIDTH}>
       <Wrap
         width={SCREEN_WIDTH}
-        onPress={() => router.push({ pathname: '/community/detail/[id]', params: { id: data.postId } })}
+        onPress={() => {
+          handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER['DETAIL'], params: { id: data.postId } }));
+        }}
       >
         <PostHeader>
           <AuthorImageContainer>
@@ -81,7 +84,7 @@ const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
             <PostComment showComment={false} postId={data.postId} commentCount={data.commentCount} />
           </LeftFooter>
 
-          <IconBtn onPress={() => onOpenModal(data.postId, data.authorId)}>
+          <IconBtn onPress={() => handleBlockVisitor(() => onOpenModal(data.postId, data.authorId))}>
             <Icon type="eclipsisGaro" size={20} />
           </IconBtn>
         </FooterRow>
