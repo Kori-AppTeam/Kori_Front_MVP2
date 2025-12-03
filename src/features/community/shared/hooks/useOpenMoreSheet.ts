@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useCallback, useRef, useState } from 'react';
-import useGetVisitor from '../../post/hooks/useGetVisitor';
+import useGetVisitor from '../../post/hooks/useVisitor';
 
 // 게시글 더보기 모달 열기 훅
 export const useOpenMoreSheet = () => {
