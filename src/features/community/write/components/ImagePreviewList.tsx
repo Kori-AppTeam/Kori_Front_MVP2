@@ -30,7 +30,7 @@ export function ImagePreviewList({ images, onRemove }: ImagePreviewListProps) {
 }
 
 const PreviewWrap = styled.View`
-  padding: 20px;
+  padding: 30px 20px;
 `;
 const Thumb = styled.View`
   width: 96px;

@@ -2,7 +2,6 @@ import Icon from '@/components/common/Icon';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
-
 import CategoryChips from '@/src/features/community/post/components/CategoryChips';
 import MyPostModal from '@/src/features/community/post/components/elements/footer/MyPostModal';
 import OthersPostModal from '@/src/features/community/post/components/elements/footer/OthersPostModal';

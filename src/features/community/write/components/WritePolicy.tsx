@@ -37,7 +37,6 @@ const Container = styled.View`
   margin-top: auto;
   margin-left: 20px;
   margin-right: 20px;
-  margin-bottom: 30px;
   gap: 12px;
 `;
 const Title = styled(BaseText)`

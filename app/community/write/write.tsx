@@ -1,5 +1,4 @@
 import Icon from '@/components/common/Icon';
-
 import { categoryToClient } from '@/src/features/community/shared/utils/categoryMapper';
 import { AnonymousToggle } from '@/src/features/community/write/components/AnonymousToggle';
 import { CategoryBottomSheetContent } from '@/src/features/community/write/components/CategoryBottomSheetContent';
@@ -15,7 +14,8 @@ import { textStyle, theme } from '@/src/styles/theme';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { KeyboardAvoidingView, Platform, TextInput as RNTextInput, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Platform, TextInput as RNTextInput } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styled from 'styled-components/native';
 
 export default function WriteScreen() {
@@ -73,38 +73,8 @@ export default function WriteScreen() {
     }
   }, [parsedEditData]);
 
-  console.log(parsedEditData);
-
   // 작성 옵션 조회
-  const { data: writeOpt, isFetching: loadingOpt, isError, error } = useBoardWriteOptions(boardId);
-
-  useEffect(() => console.log('[write-options:request]', { boardId }), [boardId]);
-  useEffect(() => {
-    if (loadingOpt) {
-      console.log('[write-options:loading]', { boardId });
-    }
-  }, [loadingOpt, boardId]);
-
-  useEffect(() => {
-    if (writeOpt)
-      console.log('[write-options:success]', {
-        boardId,
-        response: writeOpt,
-        serverAnonymousAllowed: writeOpt.anonymousWritable,
-      });
-  }, [writeOpt, boardId]);
-
-  useEffect(() => {
-    if (isError) {
-      const err: any = error;
-      console.log('[write-options:error]', {
-        boardId,
-        status: err?.response?.status,
-        data: err?.response?.data,
-        message: err?.message,
-      });
-    }
-  }, [isError, error, boardId]);
+  const { data: writeOpt, isFetching: loadingOpt } = useBoardWriteOptions(boardId);
 
   const onSave = () => handleSave(images);
 
@@ -131,18 +101,22 @@ export default function WriteScreen() {
       </Header>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 0}
       >
-        <ScrollView
-          style={{ flex: 1 }}
+        <CategorySelector category={category} onPress={() => !isEdit && openCategorySheet()} disabled={isEdit} />
+        <KeyboardAwareScrollView
+          enableOnAndroid
+          enableAutomaticScroll={false}
+          enableResetScrollToCoords={false}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: 30,
+          }}
         >
-          <CategorySelector category={category} onPress={() => !isEdit && openCategorySheet()} disabled={isEdit} />
-
           <BodyWrap onPress={() => inputRef.current?.focus()}>
             <Input
               ref={inputRef}
@@ -160,10 +134,9 @@ export default function WriteScreen() {
             />
           </BodyWrap>
 
-          {!isFocused && <WritePolicy />}
-        </ScrollView>
-
-        <ImagePreviewList images={images} onRemove={removeImage} />
+          <ImagePreviewList images={images} onRemove={removeImage} />
+          {isFocused === false ? <WritePolicy /> : null}
+        </KeyboardAwareScrollView>
 
         <BottomBar pointerEvents="box-none">
           <BarLeft pointerEvents="box-only">
@@ -195,8 +168,7 @@ const Safe = styled.SafeAreaView`
   background: ${({ theme }) => theme.colors.primary.black};
 `;
 const Header = styled.View`
-  height: 48px;
-  padding: 0 12px;
+  padding: 5px 14px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -216,11 +188,9 @@ const SaveText = styled.Text<{ $enabled: boolean }>`
   ${({ theme }) => textStyle(theme.fonts.body.B3_M)};
 `;
 const BodyWrap = styled.Pressable`
-  flex: 1;
   margin: 24px 20px;
 `;
 const StyledRNInput = styled(RNTextInput)`
-  flex: 1;
   min-height: 200px;
   color: ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.body.B3_L)};
@@ -228,7 +198,6 @@ const StyledRNInput = styled(RNTextInput)`
 `;
 const Input = React.forwardRef<RNTextInput, any>((p, ref) => <StyledRNInput ref={ref} {...p} />);
 Input.displayName = 'Input';
-
 const BottomBar = styled.View`
   padding: 16px 20px;
   border-top-width: 1px;
