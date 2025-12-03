@@ -7,7 +7,7 @@ export function useRefreshToken(isFontLoaded: boolean) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const refreshToken = useCallback(async () => {
+  const autoLogin = useCallback(async () => {
     try {
       const currentRefreshToken = await SecureStore.getItemAsync('refresh');
       if (!currentRefreshToken) {
@@ -29,7 +29,7 @@ export function useRefreshToken(isFontLoaded: boolean) {
   // 폰트가 로딩된 후 토큰 갱신
   useEffect(() => {
     if (isFontLoaded) {
-      refreshToken();
+      autoLogin();
     }
   }, [isFontLoaded]);
 

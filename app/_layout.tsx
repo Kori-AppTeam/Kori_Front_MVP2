@@ -28,7 +28,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-import { useRefreshToken } from '@/src/features/auth/hooks/useRefreshToken';
+import { useRefreshToken } from '@/src/features/auth/hooks/useAutoLogin';
 
 SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
