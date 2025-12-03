@@ -14,13 +14,14 @@ export function useWriteForm({
   initialCategory = 'Activity',
   initialContent = '',
   initialImages = [],
+  initialAnonymous = false,
 }: UseWriteFormProps) {
   const savingRef = useRef({ current: false });
   const initialImagesRef = useRef<string[]>(initialImages); // 초기 이미지 저장 (수정 모드용)
   const [saving, setSaving] = useState(false);
   const [category, setCategory] = useState<AllowedClientCategory>(initialCategory);
   const [body, setBody] = useState<string>(initialContent);
-  const [anonymous, setAnonymous] = useState(false);
+  const [anonymous, setAnonymous] = useState(initialAnonymous);
   const [isFocused, setIsFocused] = useState(false);
 
   // 카테고리로부터 boardId 계산
@@ -32,7 +33,7 @@ export function useWriteForm({
   const canSave = useMemo(() => body.trim().length > 0, [body]);
   const canToggleAnon = ANONYMOUS_ALLOWED_CATEGORIES.has(category);
 
-  // 수정 모드일 때는 익명 토글 불가 (백엔드 API가 isAnonymous 변경을 지원하지 않음)
+  // 수정 모드일 때는 익명 토글 불가 (isAnonymous 변경을 지원하지 않음)
   const canToggleAnonInEdit = isEdit ? false : canToggleAnon;
 
   // 카테고리 변경 시 익명 설정 자동 해제
