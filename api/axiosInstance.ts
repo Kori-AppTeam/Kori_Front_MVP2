@@ -5,12 +5,6 @@ import * as SecureStore from 'expo-secure-store';
 
 const BASE_URL = Config.SERVER_URL;
 
-function maskToken(t?: string | null) {
-  if (!t) return 'no';
-  const v = t.startsWith('Bearer ') ? t.slice(7) : t;
-  return `yes(Bearer ${v.slice(0, 10)}...)`;
-}
-
 function shortUrl(base: string, url?: string) {
   if (!url) return '';
   try {
@@ -20,6 +14,29 @@ function shortUrl(base: string, url?: string) {
     return url;
   }
 }
+
+export const doRefresh = async (): Promise<string | null> => {
+  const rt = await SecureStore.getItemAsync(REFRESH_KEY);
+  if (!rt) return null;
+
+  try {
+    const res = await api.post('/api/v1/member/refresh', { refreshToken: rt });
+    const data = (res as any).data?.data || {};
+    const newAt: string | undefined = data.accessToken;
+    const newRt: string | undefined = data.refreshToken;
+
+    if (newAt) {
+      await SecureStore.setItemAsync(ACCESS_KEY, newAt);
+      (api.defaults.headers as any).Authorization = `Bearer ${newAt}`;
+    }
+    if (newRt) {
+      await SecureStore.setItemAsync(REFRESH_KEY, newRt);
+    }
+    return newAt ?? null;
+  } catch {
+    return null;
+  }
+};
 
 const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -90,29 +107,6 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
     cfg._retry = true;
-
-    const doRefresh = async (): Promise<string | null> => {
-      const rt = await SecureStore.getItemAsync(REFRESH_KEY);
-      if (!rt) return null;
-
-      try {
-        const res = await api.post('/api/v1/member/refresh', { refreshToken: rt });
-        const data = (res as any).data?.data || {};
-        const newAt: string | undefined = data.accessToken;
-        const newRt: string | undefined = data.refreshToken;
-
-        if (newAt) {
-          await SecureStore.setItemAsync(ACCESS_KEY, newAt);
-          (api.defaults.headers as any).Authorization = `Bearer ${newAt}`;
-        }
-        if (newRt) {
-          await SecureStore.setItemAsync(REFRESH_KEY, newRt);
-        }
-        return newAt ?? null;
-      } catch {
-        return null;
-      }
-    };
 
     try {
       if (!refreshPromise) refreshPromise = doRefresh();
