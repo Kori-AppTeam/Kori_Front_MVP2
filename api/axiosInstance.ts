@@ -1,6 +1,7 @@
 import { ACCESS_KEY, isRefreshBlocked, REFRESH_KEY } from '@/src/lib/auth/session';
 import { Config } from '@/src/shared/constants/config';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
 const BASE_URL = Config.SERVER_URL;
@@ -120,6 +121,13 @@ api.interceptors.response.use(
       if (!newAccess) {
         // 👇 [로그 2] 토큰 갱신이 실패해서 원래 요청을 거부함
         console.log('[axios:refresh] 새 토큰이 없으므로, 401 에러를 그대로 반환합니다.');
+
+        // 토큰이 없으면 서버에 요청 보내지 말고, 로그인 화면으로 보내기
+        await SecureStore.deleteItemAsync(ACCESS_KEY);
+        await SecureStore.deleteItemAsync(REFRESH_KEY);
+
+        router.replace('/(auth)');
+
         return Promise.reject(error);
       }
 

@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import queryClient from '@/api/queryClient';
+import { useRefreshToken } from '@/src/features/auth/hooks/useAutoLogin';
 import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
@@ -28,7 +29,6 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-import { useRefreshToken } from '@/src/features/auth/hooks/useAutoLogin';
 
 SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
@@ -89,24 +89,25 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider theme={theme}>
-        <SafeAreaProvider>
-          <BottomSheetModalProvider>
-            <AppLayout>
-              <ProfileProvider>
-                <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <SafeAreaProvider>
+            <BottomSheetModalProvider>
+              <AppLayout>
+                <ProfileProvider>
+                  {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
                   <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name="(auth)" />
                     <Stack.Screen name="+not-found" />
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
-                </QueryClientProvider>
-              </ProfileProvider>
-            </AppLayout>
-          </BottomSheetModalProvider>
-        </SafeAreaProvider>
-      </ThemeProvider>
+                </ProfileProvider>
+              </AppLayout>
+            </BottomSheetModalProvider>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }
