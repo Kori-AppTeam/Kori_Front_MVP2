@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { doRefresh } from '@/api/axiosInstance';
 
-export function useRefreshToken(isFontLoaded: boolean) {
+export function useAutoLogin(isFontLoaded: boolean) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
