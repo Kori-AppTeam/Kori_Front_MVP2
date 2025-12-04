@@ -74,7 +74,7 @@ export default function WriteScreen() {
   }, [parsedEditData]);
 
   // 작성 옵션 조회
-  const { data: writeOpt, isFetching: loadingOpt } = useBoardWriteOptions(boardId);
+  const { isFetching: loadingOpt } = useBoardWriteOptions(boardId);
 
   const onSave = () => handleSave(images);
 

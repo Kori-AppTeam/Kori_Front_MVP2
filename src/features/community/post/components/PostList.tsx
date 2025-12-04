@@ -15,7 +15,7 @@ type Props = {
 };
 
 const PostList = ({ category, sort, scrollRef, openModal }: Props) => {
-  const { data, posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
+  const { posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
     useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
 
   const renderPost: ListRenderItem<PostsListItem> = useCallback(
@@ -26,7 +26,7 @@ const PostList = ({ category, sort, scrollRef, openModal }: Props) => {
   const listEmpty = useMemo(
     () => (
       <Empty>
-        <EmptyText>No bookmarked posts.</EmptyText>
+        <EmptyText>No posts available.</EmptyText>
       </Empty>
     ),
     [],

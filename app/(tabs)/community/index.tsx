@@ -23,7 +23,7 @@ export default function CommunityScreen() {
 
   const { sort, category, handleSortChange, handleCategoryChange, scrollRef, scrollToTop } = useHandleCommunityList();
 
-  const { refetch, isLoading, handleBlockVisitor, profileModalVisible, setProfileModalVisible } = useVisitor();
+  const { refetch, handleBlockVisitor, profileModalVisible, setProfileModalVisible } = useVisitor();
 
   // community 화면 보일 때마다 visitor 검사
   useFocusEffect(
