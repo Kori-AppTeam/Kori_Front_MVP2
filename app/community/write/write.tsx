@@ -103,7 +103,7 @@ export default function WriteScreen() {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 26}
       >
         <CategorySelector category={category} onPress={() => !isEdit && openCategorySheet()} disabled={isEdit} />
         <KeyboardAwareScrollView

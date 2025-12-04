@@ -896,9 +896,9 @@ export default function PostDetailScreen() {
       </Header>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 0}
       >
         <FlatList<Comment>
           ref={listRef}
