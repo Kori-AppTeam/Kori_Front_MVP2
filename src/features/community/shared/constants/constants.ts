@@ -49,11 +49,3 @@ export const guidelines = [
 ];
 
 export const ASPECT_RATIO = 200 / 335; // 게시글 이미지 비율 (높이 / 너비)
-
-export const COMMUNITY_ROUTER = {
-  HOME: '/community',
-  WRITE: '/community/write/write',
-  MY_HISTORY: '/community/my-history/my-history',
-  BOOKMARK: '/community/bookmark-list/bookmarks',
-  DETAIL: '/community/detail/[id]',
-} as const;
