@@ -1,3 +1,4 @@
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { confirmOpenURL } from '@/src/shared/utils/confirmOpenURL';
 import { textStyle, theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
@@ -18,7 +19,7 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
 
   const handleMorePress = useCallback(() => {
     if (!postId) return;
-    handleBlockVisitor(() => router.push({ pathname: '/community/detail/[id]', params: { id: postId } }));
+    handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: postId } }));
   }, [postId, handleBlockVisitor]);
 
   if (isTruncate === true) {

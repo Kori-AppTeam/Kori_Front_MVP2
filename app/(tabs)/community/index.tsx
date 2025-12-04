@@ -8,9 +8,10 @@ import OthersPostModal from '@/src/features/community/post/components/elements/f
 import PostList from '@/src/features/community/post/components/PostList';
 import { useHandleCommunityList } from '@/src/features/community/post/hooks/useHandleList';
 import useVisitor from '@/src/features/community/post/hooks/useVisitor';
-import { CATEGORY_TO_BOARD_ID, COMMUNITY_ROUTER } from '@/src/features/community/shared/constants/constants';
+import { CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/constants/constants';
 import { useOpenMoreSheet } from '@/src/features/community/shared/hooks/useOpenMoreSheet';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { textStyle, theme } from '@/src/styles/theme';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback } from 'react';
@@ -59,7 +60,7 @@ export default function CommunityScreen() {
 
             <IconBtn
               onPress={() => {
-                handleBlockVisitor(() => router.push(COMMUNITY_ROUTER['BOOKMARK']));
+                handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.BOOKMARK));
               }}
             >
               <Icon type="bookmarkNonSelected" size={24} color={theme.colors.gray.lightGray_1} />
@@ -67,7 +68,7 @@ export default function CommunityScreen() {
 
             <IconBtn
               onPress={() => {
-                handleBlockVisitor(() => router.push(COMMUNITY_ROUTER['MY_HISTORY']));
+                handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.MY_HISTORY));
               }}
             >
               <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
@@ -85,7 +86,7 @@ export default function CommunityScreen() {
 
         <PostList sort={sort} category={category} openModal={openModal} scrollRef={scrollRef} />
 
-        <WriteFab onHandleWritePress={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER['WRITE']))} />
+        <WriteFab onHandleWritePress={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.WRITE))} />
         <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
       </Safe>
       <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">

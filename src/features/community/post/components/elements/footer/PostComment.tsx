@@ -1,5 +1,5 @@
 import Icon from '@/components/common/Icon';
-import { COMMUNITY_ROUTER } from '@/src/features/community/shared/constants/constants';
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React from 'react';
@@ -18,7 +18,7 @@ const PostComment = ({ showComment, postId, commentCount }: CommentProps) => {
 
   const handlePress = () => {
     if (showComment) return;
-    handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER['DETAIL'], params: { id: postId } }));
+    handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: postId } }));
   };
 
   return (

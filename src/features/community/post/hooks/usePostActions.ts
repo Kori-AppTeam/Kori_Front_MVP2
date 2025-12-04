@@ -1,7 +1,9 @@
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { InitialEditData, PostDetail } from '../types';
+import { InitialEditData } from '../../write/types';
+import { PostDetail } from '../types';
 import { useDeletePost } from './useMyPosts';
 
 // 게시글 수정, 삭제 핸들러 함수
@@ -63,7 +65,7 @@ export const usePostActions = ({ onSuccessCallback }: { onSuccessCallback?: () =
     };
 
     router.push({
-      pathname: '/community/write/write',
+      pathname: COMMUNITY_ROUTER.WRITE,
       params: {
         mode: 'edit',
         postId: postId,

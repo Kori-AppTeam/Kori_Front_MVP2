@@ -1,10 +1,11 @@
 import Icon from '@/components/common/Icon';
-import { CLIENT_CATEGORY_NAME, COMMUNITY_ROUTER } from '@/src/features/community/shared/constants/constants';
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { textStyle } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
+import { CLIENT_CATEGORY_NAME } from '../../shared/constants/constants';
 import { timeToAgo } from '../../shared/utils/indexUtils';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import useVisitor from '../hooks/useVisitor';
@@ -32,7 +33,7 @@ const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
       <Wrap
         width={SCREEN_WIDTH}
         onPress={() => {
-          handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER['DETAIL'], params: { id: data.postId } }));
+          handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } }));
         }}
       >
         <PostHeader>
