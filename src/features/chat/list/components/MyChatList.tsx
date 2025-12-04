@@ -54,19 +54,19 @@ export const MyChatList = ({ data }: { data: MyChatRoom }) => {
 
 // 스타일 정의
 const ChatRoomWrapper = styled.View`
-  background-color: #1d1e1f;
+  background-color: ${({ theme }) => theme.colors.primary.black};
   height: 80px;
   justify-content: center;
 `;
 
 const RoomBox = styled.TouchableOpacity`
-  background-color: #1d1e1f;
+  background-color: ${({ theme }) => theme.colors.primary.black};
   padding-top: 8px;
   height: 80px;
   flex-direction: row;
   align-items: center;
   border-bottom-width: 1px;
-  border-bottom-color: #353637;
+  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
 `;
 
 const RoomImageContainer = styled.View`
@@ -112,37 +112,32 @@ const ChatPeopleContainer = styled.View`
 `;
 
 const ChatPerson = styled.Text`
-  font-size: 16px;
   margin-left: 5px;
-  font-family: 'PlusJakartaSans_500Medium';
-  color: #ffffff;
+  ${({ theme }) => theme.fonts.body.B2_M};
+  color: ${({ theme }) => theme.colors.primary.white};
   flex-shrink: 1;
 `;
 
 const ChatPeople = styled.Text`
-  font-size: 14px;
   margin-left: 8px;
-  font-family: 'PlusJakartaSans_500Medium';
-  color: #02f59b;
+  ${({ theme }) => theme.fonts.body.B5_M};
+  color: ${({ theme }) => theme.colors.primary.mint};
 `;
 
 const ChatTime = styled.Text`
-  margin-top: 5px;
-  font-size: 11px;
-  font-family: 'PlusJakartaSans_300Light';
-  color: #ffffff;
+  ${({ theme }) => theme.fonts.small.small_L};
+  color: ${({ theme }) => theme.colors.primary.white};
 `;
 
 const ChatContent = styled.Text<{ textColor?: boolean }>`
-  font-size: 13px;
-  margin-left: 1px;
-  color: ${(props) => (props.textColor ? '#ffffff' : '#848687')};
-  font-family: 'PlusJakartaSans_300Light';
+  margin-left: 5px;
+  color: ${(props) => (props.textColor ? `${props.theme.colors.primary.white}` : `${props.theme.colors.gray.gray_1}`)};
+  ${({ theme }) => theme.fonts.body.B4_L};
   flex: 1;
 `;
 
 const ChatCountBox = styled.View`
-  background-color: #02f59b;
+  background-color: ${({ theme }) => theme.colors.primary.mint};
   width: 23px;
   height: 23px;
   align-items: center;
@@ -151,7 +146,7 @@ const ChatCountBox = styled.View`
 `;
 
 const ChatCount = styled.Text`
-  font-family: 'PlusJakartaSans_600SemiBold';
+  ${({ theme }) => theme.fonts.small.small_SB};
   font-size: 9px;
-  color: #1d1e1f;
+  color: ${({ theme }) => theme.colors.primary.black};
 `;
