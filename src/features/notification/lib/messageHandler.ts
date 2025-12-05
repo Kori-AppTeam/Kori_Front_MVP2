@@ -56,9 +56,9 @@ export const handleNotificationPress = (pathname: string) => {
 };
 
 const TARGET_ROUTER: Record<string, Href> = {
-  post: '/community/[id]',
-  comment: '/community/[id]',
-  followUserPost: '/community/[id]',
+  post: '/community/detail/[id]',
+  comment: '/community/detail/[id]',
+  followUserPost: '/community/detail/[id]',
   // chat: '/chat/ChattingRoomScreen',
   follow: '/(tabs)/mypage/follows',
   receive: '/(tabs)/mypage/friends',
@@ -75,7 +75,7 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       if (!pathname.includes('community')) router.replace('/(tabs)/community');
       setTimeout(() => {
         router.navigate({
-          pathname: `/(tabs)/community/[id]`,
+          pathname: `/community/detail/[id]`,
           params: { id: String(data.postId), commentId: String(data.commentId) },
         });
       }, 500);
@@ -85,7 +85,7 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       if (!pathname.includes('community')) router.replace('/community');
       setTimeout(() => {
         router.navigate({
-          pathname: `/(tabs)/community/[id]`,
+          pathname: `/community/detail/[id]`,
           params: { id: String(data.postId) },
         });
       }, 500);

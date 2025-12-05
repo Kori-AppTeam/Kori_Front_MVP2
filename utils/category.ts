@@ -1,5 +1,5 @@
 import type { Category } from '@/components/CategoryChips';
-import { CATEGORY_TO_BOARD_ID } from '@/lib/community/constants';
+import { CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/constants/constants';
 
 export const LOCAL_ALLOW_ANON = new Set<Category>(['Free talk', 'Q&A']);
 

@@ -29,24 +29,6 @@ export async function getMyPosts(params?: { size?: number; cursor?: string }) {
   return data.data;
 }
 
-// 게시글 삭제
-export async function deletePost(postId: number) {
-  await api.delete(`/api/v1/posts/${postId}`);
-  return true;
-}
-
-// 게시글 수정
-export type UpdatePostBody = {
-  content: string;
-  images?: string[];
-  removedImages?: string[];
-};
-
-export async function updatePost(postId: number, body: UpdatePostBody) {
-  await api.put(`/api/v1/posts/${postId}`, body);
-  return true;
-}
-
 export type MyCommentItem = {
   commentId: number;
   postContent: string;
