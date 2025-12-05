@@ -28,3 +28,6 @@ export const COMMUNITY_ROUTER = {
   BOOKMARK: '/community/bookmark-list',
   DETAIL: '/community/detail/[id]',
 } as const;
+
+// 마이페이지 route 경로
+export const MYPAGE_SUPPORT_ROUTE = toRoute('/mypage/support');
