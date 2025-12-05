@@ -1,20 +1,27 @@
 // 채팅방 상단 헤더 컴포넌트
 import Icon from '@/components/common/Icon';
-import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
+import { useChatStore } from '../../stores/useChatStore';
 import { ChatHeaderProps } from '../../types';
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ roomName, onShowMembers, onSearchToggle }) => {
   const router = useRouter();
 
+  const isTranslating = useChatStore((state) => state.isTranslating);
+  const setIsTranslating = useChatStore((state) => state.setIsTranslating);
+
+  const onToggle = () => {
+    setIsTranslating(!isTranslating);
+  };
+
   return (
     <>
       <LeftSection>
         <TouchableOpacity onPress={() => router.replace('/(tabs)/chat')}>
-          <Icon type="previous" size={HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
+          <Icon type="previous" size={HEADER_CONFIG.ICON_SIZE} />
         </TouchableOpacity>
       </LeftSection>
 
@@ -24,10 +31,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ roomName, onShowMembers, onSear
 
       <RightSection>
         <TouchableOpacity onPress={onSearchToggle}>
-          <Icon type="search" size={HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
+          <Icon type="search" size={HEADER_CONFIG.ICON_SIZE} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onToggle}>
+          <Icon type={isTranslating ? 'translateOn' : 'translateOff'} size={HEADER_CONFIG.ICON_SIZE} />
         </TouchableOpacity>
         <TouchableOpacity onPress={onShowMembers}>
-          <Icon type="hamburger" size={HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
+          <Icon type="hamburger" size={HEADER_CONFIG.ICON_SIZE} />
         </TouchableOpacity>
       </RightSection>
     </>
@@ -63,6 +73,7 @@ const CenterSection = styled.View`
 const RightSection = styled(BaseSection)`
   flex-direction: row;
   justify-content: flex-end;
+  gap: 5px;
 `;
 
 const HeaderTitleText = styled.Text`
