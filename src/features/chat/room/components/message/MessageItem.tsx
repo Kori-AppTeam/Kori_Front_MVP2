@@ -1,11 +1,14 @@
 //MyMessageBubble과 OtherMessageBubble을 조합한 형태의 메시지 아이템 컴포넌트
 import { formatDate, formatTime } from '@/src/shared/utils/dateUtils';
-import React from 'react';
+import { theme } from '@/src/styles/theme';
+import React, { useRef, useState } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/native';
 import { useChatStore } from '../../stores/useChatStore';
 import { useSearchStore } from '../../stores/useSearchStore';
 import { MessageItemProps } from '../../types';
 import { displayMessageItem } from '../../utils/displayMessageItem';
+import MessageMenu from './MessageMenu';
 import MyMessageBubble from './MyMessageBubble';
 import OtherMessageBubble from './OtherMessageBubble';
 
@@ -21,11 +24,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
   const { isActive, searchResults, currentIndex, searchText } = useSearchStore();
   const isTranslating = useChatStore((state) => state.isTranslating);
 
-  // 메시지 표시 로직
-  const displayLogic = displayMessageItem(item, index, messages);
+  // 컨텍스트 메뉴 상태 관리
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [messageHeight, setMessageHeight] = useState(0);
+  const bubbleRef = useRef<View>(null);
 
-  // 날짜 구분선 표시 여부
-  const shouldShowDateSeparator = displayLogic.showDate;
+  // 날짜 및 시간 표시, 동일 사용자 판단
+  const displayLogic = displayMessageItem(item, index, messages);
 
   // 메시지 콘텐츠 (번역 여부에 따라)
   const messageContent = isTranslating ? item.targetContent : item.originContent;
@@ -33,20 +39,31 @@ const MessageItem: React.FC<MessageItemProps> = ({
   // 메시지 강조 표시 여부
   const shouldHighlight = isActive && searchResults.length > 0 && searchResults[currentIndex]?.id === item.id;
 
+  // 길게 누르기 핸들러
+  const handleLongPress = () => {
+    bubbleRef.current?.measure((x, y, width, height, pageX, pageY) => {
+      setMenuPosition({ x: pageX, y: pageY });
+      setMessageHeight(height);
+      setMenuVisible(true);
+    });
+  };
+
   return (
     <>
       {/* 메시지 */}
       {isMyMessage ? (
         <MyMessageBubble
+          ref={bubbleRef}
           content={messageContent}
           time={formatTime(item.sentAt)}
           showTime={displayLogic.showTime}
           isFirst={!displayLogic.isSameUser}
           searchKeyword={shouldHighlight ? searchText : undefined}
-          onLongPress={() => onDeleteMessage(item.id)}
+          onLongPress={handleLongPress}
         />
       ) : (
         <OtherMessageBubble
+          ref={bubbleRef}
           content={messageContent}
           time={formatTime(item.sentAt)}
           senderName={item.senderFirstName + ' ' + item.senderLastName}
@@ -56,40 +73,41 @@ const MessageItem: React.FC<MessageItemProps> = ({
           isFirst={!displayLogic.isSameUser}
           searchKeyword={shouldHighlight ? searchText : undefined}
           onProfilePress={() => onProfilePress(item.senderId)}
+          onLongPress={handleLongPress}
         />
       )}
 
       {/* 날짜 구분선 */}
-      {shouldShowDateSeparator && (
+      {displayLogic.showDate && (
         <DateSeparator>
           <DateText>{formatDate(item.sentAt)}</DateText>
         </DateSeparator>
       )}
+
+      {/* 컨텍스트 메뉴 */}
+      <MessageMenu
+        visible={menuVisible}
+        position={menuPosition}
+        messageHeight={messageHeight}
+        isMyMessage={isMyMessage}
+        content={messageContent}
+        onDelete={isMyMessage ? () => onDeleteMessage(item.id) : undefined}
+        onClose={() => setMenuVisible(false)}
+      />
     </>
   );
 };
 
 export default MessageItem;
 
-// ============= Constants =============
-const DATE_SEPARATOR_CONFIG = {
-  MARGIN_VERTICAL: 10,
-  MARGIN_BOTTOM: 10,
-  HEIGHT: 20,
-  FONT_SIZE: 12,
-  COLOR: '#848687',
-} as const;
-
 // ============= Styled Components =============
 const DateSeparator = styled.View`
-  margin: ${DATE_SEPARATOR_CONFIG.MARGIN_VERTICAL}px 0px ${DATE_SEPARATOR_CONFIG.MARGIN_BOTTOM}px 0px;
-  height: ${DATE_SEPARATOR_CONFIG.HEIGHT}px;
+  margin: 20px 0px;
   justify-content: center;
   align-items: center;
 `;
 
 const DateText = styled.Text`
-  color: ${DATE_SEPARATOR_CONFIG.COLOR};
-  font-size: ${DATE_SEPARATOR_CONFIG.FONT_SIZE}px;
-  font-family: PlusJakartaSans_600SemiBold;
+  color: ${theme.colors.gray.gray_1};
+  ${theme.fonts.small.small_SB};
 `;
