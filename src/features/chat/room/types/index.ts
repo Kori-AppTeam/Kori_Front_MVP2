@@ -26,6 +26,7 @@ export interface OtherMessageBubbleProps extends BaseMessageProps {
   senderImageUrl: string;
   isFirst: boolean;
   onProfilePress: () => void;
+  onLongPress: () => void;
 }
 
 export interface MessageItemProps {
