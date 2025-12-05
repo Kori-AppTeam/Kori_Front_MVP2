@@ -4,21 +4,18 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
-import { useChatStore } from '../../stores/useChatStore';
+import { useTranslateTooltip } from '../../hooks/useTranslateTooltip';
 import { ChatHeaderProps } from '../../types';
+import TranslateTooltip from './TranslateTooltip';
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ roomName, onShowMembers, onSearchToggle }) => {
   const router = useRouter();
-
-  const isTranslating = useChatStore((state) => state.isTranslating);
-  const setIsTranslating = useChatStore((state) => state.setIsTranslating);
-
-  const onToggle = () => {
-    setIsTranslating(!isTranslating);
-  };
+  const { showTooltip, isTranslating, handleConfirm, handleCancel, toggleTranslate } = useTranslateTooltip(roomName);
 
   return (
     <>
+      <TranslateTooltip visible={showTooltip} onConfirm={handleConfirm} onCancel={handleCancel} />
+
       <LeftSection>
         <TouchableOpacity onPress={() => router.replace('/(tabs)/chat')}>
           <Icon type="previous" size={HEADER_CONFIG.ICON_SIZE} />
@@ -33,7 +30,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ roomName, onShowMembers, onSear
         <TouchableOpacity onPress={onSearchToggle}>
           <Icon type="search" size={HEADER_CONFIG.ICON_SIZE} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onToggle}>
+        <TouchableOpacity onPress={toggleTranslate}>
           <Icon type={isTranslating ? 'translateOn' : 'translateOff'} size={HEADER_CONFIG.ICON_SIZE} />
         </TouchableOpacity>
         <TouchableOpacity onPress={onShowMembers}>
