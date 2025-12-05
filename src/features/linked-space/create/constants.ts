@@ -31,7 +31,7 @@ export const getDefaultAvatarUrl = (index: number): string => {
 /**
  * 스페이스 이름 최대 길이
  */
-export const SPACE_NAME_MAX_LENGTH = 20;
+export const SPACE_NAME_MAX_LENGTH = 30;
 
 /**
  * 스페이스 설명 최대 길이
