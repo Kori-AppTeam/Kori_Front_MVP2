@@ -1,8 +1,8 @@
 import Icon from '@/components/common/Icon';
 import ReportButton from '@/src/features/mypage/components/ReportButton';
 import { useGetSupportUrl } from '@/src/features/mypage/hooks/useGetSupportUrl';
+import { openURL } from '@/src/shared/utils/confirmOpenURL';
 import { textStyle, theme } from '@/src/styles/theme';
-import { openURL } from 'expo-linking';
 import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
