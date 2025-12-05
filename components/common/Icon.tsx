@@ -53,7 +53,8 @@ import Share from '@/assets/icons/share.svg';
 import StatusOn from '@/assets/icons/status=on.svg';
 import ThumbsUpNonSelected from '@/assets/icons/thumbs-up-non-selected.svg';
 import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
-import Translate from '@/assets/icons/translate.svg';
+import TranslateOn from '@/assets/icons/translate-on.svg';
+import TranslateOff from '@/assets/icons/translate.svg';
 import TrashCan from '@/assets/icons/trash can.svg';
 import Write from '@/assets/icons/write.svg';
 import { theme } from '@/src/styles/theme';
@@ -109,7 +110,8 @@ const iconMap = {
   statusOn: StatusOn,
   thumbsUpNonSelected: ThumbsUpNonSelected,
   thumbsUpSelected: ThumbsUpSelected,
-  translate: Translate,
+  translateOff: TranslateOff,
+  translateOn: TranslateOn,
   trashCan: TrashCan,
   page1: Pagination1,
   page2: Pagination2,
