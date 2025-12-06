@@ -11,7 +11,6 @@ const colors = {
     red: '#FF4F4F',
     blue: '#49CCEA',
     maleLine: '#007AFF',
-    // gradient: 'linear-gradient(45deg, #02F59B, #44C6E9, #9E70FF)', // TODO React Native 그라디언트 적용
   },
 
   gray: {
@@ -24,6 +23,15 @@ const colors = {
     lightGray_1: '#CCCFD0',
     lightGray_2: '#E9E9E9',
     overlay: 'rgba(0, 0, 0, 0.6)',
+  },
+};
+
+/* -------------- gradient styles -------------- */
+const gradients = {
+  primary: {
+    colors: ['#02F59B', '#44C6E9', '#9E70FF'] as const,
+    start: { x: 0, y: 0 },
+    end: { x: 1, y: 1 },
   },
 };
 
@@ -109,6 +117,7 @@ const fonts = {
 export const theme = {
   colors,
   fonts,
+  gradients,
 };
 
 export type ColorType = typeof colors;

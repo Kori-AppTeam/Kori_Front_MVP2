@@ -19,7 +19,11 @@ const TranslateTooltip: React.FC<TranslateTooltipProps> = ({ visible, onConfirm,
         <Overlay>
           <TouchableWithoutFeedback>
             <TooltipContainer>
-              <TooltipBackground colors={['#02F59B', '#44C6E9', '#9E70FF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+              <TooltipBackground
+                colors={theme.gradients.primary.colors}
+                start={theme.gradients.primary.start}
+                end={theme.gradients.primary.end}
+              >
                 <DarkOverlay>
                   <Icon type="translateOn" size={24} />
                   <TooltipContent>
@@ -28,7 +32,11 @@ const TranslateTooltip: React.FC<TranslateTooltipProps> = ({ visible, onConfirm,
                   </TooltipContent>
 
                   <TouchableOpacity onPress={onConfirm} activeOpacity={0.8}>
-                    <OkButton colors={['#02F59B', '#44C6E9', '#9E70FF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                    <OkButton
+                      colors={theme.gradients.primary.colors}
+                      start={theme.gradients.primary.start}
+                      end={theme.gradients.primary.end}
+                    >
                       <OkButtonText>OK</OkButtonText>
                     </OkButton>
                   </TouchableOpacity>
