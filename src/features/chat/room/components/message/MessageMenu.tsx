@@ -24,7 +24,7 @@ const MessageMenu: React.FC<MessageMenuProps> = ({
   onDelete,
   onClose,
 }) => {
-  const scaleAnim = useRef(new Animated.Value(0.6)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   const handleCopy = async () => {
