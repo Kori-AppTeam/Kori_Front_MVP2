@@ -22,11 +22,10 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
   const addMessageToStore = useChatStore((state) => state.addMessage);
   const removeMessageFromStore = useChatStore((state) => state.removeMessage);
   const loadMoreMessagesToStore = useChatStore((state) => state.loadMoreMessages);
-  const setCurrentMessage = useChatStore((state) => state.setCurrentMessage);
   const setFetchingMore = useChatStore((state) => state.setFetchingMore);
   const setHasMore = useChatStore((state) => state.setHasMore);
+  const reset = useChatStore((state) => state.reset);
   const setError = useChatStore((state) => state.setError);
-  const clearMessagesInStore = useChatStore((state) => state.clearMessages);
 
   // Room 초기화 (컴포넌트 마운트 시)
   useEffect(() => {
@@ -40,9 +39,9 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
     init();
 
     return () => {
-      useChatStore.getState().reset();
+      reset();
     };
-  }, [roomId, initialize]);
+  }, [roomId, initialize, reset]);
 
   /** 메시지 로드(+무한 스크롤) */
   const loadMessages = useCallback(async () => {

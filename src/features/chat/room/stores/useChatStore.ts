@@ -26,7 +26,6 @@ interface ChatStoreState extends RoomMessagesState {
   setHasMore: (hasMore: boolean) => void;
 
   // 유틸리티
-  clearMessages: () => void;
   reset: () => void;
   setError: (error: Error | null) => void;
 
@@ -123,14 +122,6 @@ export const useChatStore = create<ChatStoreState>()(
     setHasMore: (hasMore: boolean) => {
       set((state) => {
         state.hasMore = hasMore;
-      });
-    },
-
-    // 메시지 목록 초기화
-    clearMessages: () => {
-      set((state) => {
-        state.messages = [];
-        state.hasMore = true;
       });
     },
 

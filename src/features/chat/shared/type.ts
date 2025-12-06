@@ -5,8 +5,8 @@ export type FollowStatus = 'FOLLOWING' | 'PENDING' | 'NOT_FOLLOWING';
 export interface UserProfileData {
   userId: number;
   id?: number;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   gender: string;
   birthday: number;
   introduction: string;
