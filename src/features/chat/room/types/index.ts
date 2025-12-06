@@ -32,7 +32,6 @@ export interface OtherMessageBubbleProps extends BaseMessageProps {
 export interface MessageItemProps {
   item: ChatMessage;
   index: number;
-  messages: ChatMessage[];
   isMyMessage: boolean;
   onDeleteMessage: (id: number) => void;
   onProfilePress: (senderId: number) => void;

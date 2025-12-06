@@ -12,14 +12,7 @@ import MessageMenu from './MessageMenu';
 import MyMessageBubble from './MyMessageBubble';
 import OtherMessageBubble from './OtherMessageBubble';
 
-const MessageItem: React.FC<MessageItemProps> = ({
-  item,
-  index,
-  messages,
-  isMyMessage,
-  onDeleteMessage,
-  onProfilePress,
-}) => {
+const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onDeleteMessage, onProfilePress }) => {
   // Store에서 직접 가져오기
   const { isActive, searchResults, currentIndex, searchText } = useSearchStore();
   const isTranslating = useChatStore((state) => state.isTranslating);
@@ -31,7 +24,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
   const bubbleRef = useRef<View>(null);
 
   // 날짜 및 시간 표시, 동일 사용자 판단
-  const displayLogic = displayMessageItem(item, index, messages);
+  const displayLogic = displayMessageItem(item, index);
 
   // 메시지 콘텐츠 (번역 여부에 따라)
   const messageContent = isTranslating ? item.targetContent : item.originContent;
