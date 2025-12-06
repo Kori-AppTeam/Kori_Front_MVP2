@@ -21,14 +21,8 @@ export const displayMessageItem = (currentMessage: ChatMessage, index: number) =
   /** 하단 메시지와 같은 시간인지 확인 */
   const isSameTimeBelow = index > 0 && formatTime(messages[index - 1].sentAt) === formatTime(messages[index].sentAt);
 
-  /** 메시지 연속성 여부 */
-  const isMessageContinuous = isSameUserAbove && isSameTimeAbove && isSameUserBelow && isSameTimeBelow;
-
   /** 시간 표시 여부 (메시지 연속성 고려) */
   const showTime =
-    // 메시지가 연속되지 않는 경우
-    // !isMessageContinuous ||
-
     // 하단이 다른 사용자인 경우(최하단 메시지 포함)
     !isSameUserBelow ||
     // 하단이 같은 사용자이지만 시간이 연속되지 않는 경우
