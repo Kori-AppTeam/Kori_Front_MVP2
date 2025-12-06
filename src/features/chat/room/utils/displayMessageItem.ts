@@ -1,6 +1,9 @@
 import { formatDate, formatTime } from '@/src/shared/utils/dateUtils';
+import { useChatStore } from '../stores/useChatStore';
+import { ChatMessage } from '../types/index';
 
-export const displayMessageItem = (currentMessage: any, index: number, messages: any[]) => {
+export const displayMessageItem = (currentMessage: ChatMessage, index: number) => {
+  const messages = useChatStore.getState().messages;
   // 메시지 순서: [0, 1, 2, ..., n] (0이 최신 메시지)
 
   /** 상단 메시지와 같은 사용자인지 확인
