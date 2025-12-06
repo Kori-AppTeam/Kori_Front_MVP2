@@ -62,7 +62,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onD
           senderName={item.senderFirstName + ' ' + item.senderLastName}
           senderImageUrl={item.senderImageUrl}
           showTime={displayLogic.showTime}
-          showProfile={displayLogic.showTime}
+          showProfile={displayLogic.showProfile}
           isFirst={!displayLogic.isSameUser}
           searchKeyword={shouldHighlight ? searchText : undefined}
           onProfilePress={() => onProfilePress(item.senderId)}

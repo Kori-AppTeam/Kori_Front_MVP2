@@ -14,11 +14,13 @@ export const displayMessageItem = (currentMessage: ChatMessage, index: number) =
 
   /** 시간 표시 여부 */
   const showTime =
-    index === 0 ||
+    index === 0 || // 가장 최신 메시지인 경우
     (index < messages.length - 1 &&
       formatTime(messages[index + 1].sentAt) !== formatTime(messages[index].sentAt) &&
-      isSameUser) ||
-    !isSameUser;
+      isSameUser) || // 이전 메시지와 시간이 다른 경우
+    !isSameUser; // 이전 메시지와 사용자가 다른 경우
+
+  const showProfile = !isSameUser || showTime;
 
   /** 날짜 표시 여부 */
   const showDate =
@@ -28,6 +30,7 @@ export const displayMessageItem = (currentMessage: ChatMessage, index: number) =
   return {
     showTime,
     showDate,
+    showProfile,
     isSameUser,
   };
 };
