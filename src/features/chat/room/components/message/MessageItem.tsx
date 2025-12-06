@@ -50,7 +50,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onD
           content={messageContent}
           time={formatTime(item.sentAt)}
           showTime={displayLogic.showTime}
-          isFirst={!displayLogic.isSameUser}
+          isFirst={!displayLogic.isSameUserAbove}
           searchKeyword={shouldHighlight ? searchText : undefined}
           onLongPress={handleLongPress}
         />
@@ -63,7 +63,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onD
           senderImageUrl={item.senderImageUrl}
           showTime={displayLogic.showTime}
           showProfile={displayLogic.showProfile}
-          isFirst={!displayLogic.isSameUser}
+          isFirst={!displayLogic.isSameUserAbove}
           searchKeyword={shouldHighlight ? searchText : undefined}
           onProfilePress={() => onProfilePress(item.senderId)}
           onLongPress={handleLongPress}
