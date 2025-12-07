@@ -89,7 +89,7 @@ export default function RootLayout() {
     } else {
       router.replace(AUTH_ROUTE);
     }
-  }, [loaded, isAutoLoginLoading, isLoggedIn, isVersionCheckLoading, isAppUpToDate]);
+  }, [loaded, isAutoLoginLoading, isLoggedIn, isVersionCheckLoading, isAppUpToDate, router]);
 
   if (!loaded || isAutoLoginLoading || isVersionCheckLoading || !isAppUpToDate) return null;
 
