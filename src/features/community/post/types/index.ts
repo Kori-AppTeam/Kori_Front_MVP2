@@ -133,3 +133,16 @@ export interface BookmarkRequestBody {
   size: number;
   cursor?: string | null;
 }
+
+// 게시글 공통 헤더 컴포넌트
+export interface PostCommonHeaderProps {
+  postId: number;
+  isAnonymous?: boolean;
+  userImageUrl?: string | null;
+  authorName?: string | null;
+  createdAt: string;
+  boardCategory?: AllowedCategory;
+  viewCount: number;
+  isBookmarked?: boolean;
+  onToggleBookmark?: () => void;
+}
