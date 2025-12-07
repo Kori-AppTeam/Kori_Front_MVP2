@@ -1,4 +1,3 @@
-import Icon from '@/components/common/Icon';
 import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
@@ -7,8 +6,7 @@ import styled from 'styled-components/native';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import { BookmarkedPostItem } from '../types';
 import PostTextContent from './elements/body/PostTextContent';
-import PostComment from './elements/footer/PostComment';
-import PostLikeButton from './elements/footer/PostLikeButton';
+import PostCommonFooter from './elements/footer/PostCommonFooter';
 import PostCommonHeader from './elements/header/PostCommonHeader';
 
 const BookmarkedPost = ({
@@ -43,21 +41,14 @@ const BookmarkedPost = ({
           <PostTextContent isTruncate={true} postId={data.postId} content={data.content} />
         </ContentBox>
 
-        <FooterRow>
-          <LeftFooter>
-            <PostLikeButton
-              isLiked={data.isLiked}
-              likeCount={data.likeCount}
-              onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
-            />
-
-            <PostComment showComment={false} postId={data.postId} commentCount={data.commentCount} />
-          </LeftFooter>
-
-          <IconBtn onPress={() => onOpenModal(data.postId, data.authorId)}>
-            <Icon type="eclipsisGaro" size={20} />
-          </IconBtn>
-        </FooterRow>
+        <PostCommonFooter
+          isLiked={data.isLiked}
+          likeCount={data.likeCount}
+          onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
+          onToggleComment={() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } })}
+          commentCount={data.commentCount}
+          onOpenModal={() => onOpenModal(data.postId, data.authorId)}
+        />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />
     </Container>
@@ -90,20 +81,4 @@ const ContentBox = styled.View`
   flex-direction: column;
   justify-content: center;
   gap: 16px;
-`;
-const FooterRow = styled.View`
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-const LeftFooter = styled.View`
-  flex-direction: row;
-  align-items: center;
-  row-gap: 16px;
-`;
-const IconBtn = styled.Pressable`
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
 `;
