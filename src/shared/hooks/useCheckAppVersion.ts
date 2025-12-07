@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { getAppVersion } from '@/src/shared/api/getAppVersion';
 import { showUpdateAlert, showUpdateErrorAlert } from '@/src/shared/utils/showUpdateAlert';
+import { current } from 'immer';
 
 export function useCheckAppVersion() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -44,12 +45,12 @@ export function useCheckAppVersion() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentVersion, platform]);
 
   useEffect(() => {
     // 앱 버전 확인
     checkAppVersion();
-  }, []);
+  }, [checkAppVersion]);
 
   return { isLoading, isAppUpToDate };
 }
