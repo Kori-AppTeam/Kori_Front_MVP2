@@ -80,13 +80,6 @@ export type PostEx = Post & {
   isAnonymous?: boolean;
 };
 
-// 게시글 작성
-export interface CreatePostBody {
-  content: string;
-  isAnonymous: boolean;
-  imageUrls?: string[];
-}
-
 export interface PostsListServerResp {
   success: boolean;
   data: PostsCursorPage;
