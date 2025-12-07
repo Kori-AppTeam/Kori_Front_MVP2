@@ -1,45 +1,52 @@
 // 상대의 메시지 버블 컴포넌트(단일 메시지)
 import RawProfileImage from '@/components/common/ProfileImage';
-import React from 'react';
+import React, { forwardRef } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/native';
 import { OtherMessageBubbleProps } from '../../types';
 import HighlightText from './HighlightText';
 
-const OtherMessageBubble: React.FC<OtherMessageBubbleProps> = ({
-  content,
-  time,
-  senderName,
-  senderImageUrl,
-  showTime,
-  showProfile,
-  isFirst,
-  searchKeyword,
-  onProfilePress,
-}) => {
-  return (
-    <MessageContainer showProfile={showProfile}>
-      <ProfileContainer>
-        {showProfile && (
-          <ProfileBox>
-            <ProfileButton onPress={onProfilePress}>
-              <ProfileImg source={{ uri: senderImageUrl }} />
-            </ProfileButton>
-          </ProfileBox>
-        )}
-      </ProfileContainer>
+const OtherMessageBubble = forwardRef<View, OtherMessageBubbleProps>(
+  (
+    {
+      content,
+      time,
+      senderName,
+      senderImageUrl,
+      showTime,
+      showProfile,
+      isFirst,
+      searchKeyword,
+      onProfilePress,
+      onLongPress,
+    },
+    ref,
+  ) => {
+    return (
+      <MessageContainer ref={ref} showProfile={showProfile} onLongPress={onLongPress}>
+        <ProfileContainer>
+          {showProfile && (
+            <ProfileBox>
+              <ProfileButton onPress={onProfilePress}>
+                <ProfileImg source={{ uri: senderImageUrl }} />
+              </ProfileButton>
+            </ProfileBox>
+          )}
+        </ProfileContainer>
 
-      <ContentContainer>
-        {showProfile && <SenderNameText>{senderName}</SenderNameText>}
-        <MessageBox>
-          <BubbleContainer isFirst={isFirst}>
-            <HighlightText text={content} keyword={searchKeyword || ''} textType="other" />
-          </BubbleContainer>
-          {showTime && <TimeText>{time}</TimeText>}
-        </MessageBox>
-      </ContentContainer>
-    </MessageContainer>
-  );
-};
+        <ContentContainer>
+          {showProfile && <SenderNameText>{senderName}</SenderNameText>}
+          <MessageBox>
+            <BubbleContainer isFirst={isFirst}>
+              <HighlightText text={content} keyword={searchKeyword || ''} textType="other" />
+            </BubbleContainer>
+            {showTime && <TimeText>{time}</TimeText>}
+          </MessageBox>
+        </ContentContainer>
+      </MessageContainer>
+    );
+  },
+);
 
 export default OtherMessageBubble;
 
@@ -58,7 +65,6 @@ const OTHER_MESSAGE_CONFIG = {
   TIME_COLOR: '#848687',
   NAME_COLOR: '#ffffff',
   MARGIN_TOP_FIRST: 20,
-  MARGIN_TOP_REGULAR: 1,
   MESSAGE_BOX_MARGIN_TOP: 5,
   TIME_MARGIN_LEFT: 3,
   TIME_FONT_SIZE: 10,
@@ -85,8 +91,7 @@ const BaseBubble = styled.View`
 
 // ============= Styled Components =============
 const MessageContainer = styled(BaseContainer)<{ showProfile?: boolean }>`
-  margin-top: ${({ showProfile }) =>
-    showProfile ? OTHER_MESSAGE_CONFIG.MARGIN_TOP_FIRST : OTHER_MESSAGE_CONFIG.MARGIN_TOP_REGULAR}px;
+  margin-top: ${({ showProfile }) => (showProfile ? OTHER_MESSAGE_CONFIG.MARGIN_TOP_FIRST : 0)}px;
 `;
 
 const ProfileContainer = styled.View`
