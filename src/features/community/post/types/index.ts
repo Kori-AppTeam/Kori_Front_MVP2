@@ -146,3 +146,15 @@ export interface PostCommonHeaderProps {
   isBookmarked?: boolean;
   onToggleBookmark?: () => void;
 }
+
+// 게시글 공통 푸터 컴포넌트
+export interface PostCommonFooterProps {
+  isLiked: boolean;
+  likeCount: number;
+  onToggleLike: () => void;
+  onToggleComment: () => void;
+  commentCount: number;
+  onOpenModal: () => void;
+  authorId?: number;
+  postId?: number;
+}
