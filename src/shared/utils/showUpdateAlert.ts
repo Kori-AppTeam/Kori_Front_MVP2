@@ -25,7 +25,7 @@ export function showUpdateErrorAlert(error: unknown) {
   const errorConfig = getAxiosErrorCode(error);
 
   const title = 'Version Error';
-  const message = APP_VERSION_CHECK_ERROR[errorConfig].message;
+  const message = APP_VERSION_CHECK_ERROR[errorConfig].message || APP_VERSION_CHECK_ERROR['UNKNOWN_STATUS'].message;
   Alert.alert(title, message, [
     {
       text: 'OK',
