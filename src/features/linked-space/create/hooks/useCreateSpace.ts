@@ -1,5 +1,7 @@
+import { CHAT_ROOMS_QUERY_KEY } from '@/src/features/chat/list/hooks/useChatRooms';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { ALL_SPACES_QUERY_KEY, BUZZING_SPACES_QUERY_KEY } from '../../list/hooks/useLinkedSpaceRooms';
 import { createGroupSpace } from '../api/spaceApi';
 import { getDefaultAvatarUrl } from '../constants';
 import { CreateSpaceFormData } from '../types';
@@ -38,9 +40,9 @@ export const useCreateSpace = () => {
     },
     onSuccess: () => {
       // 채팅방 목록 쿼리들을 무효화하여 최신 데이터 refetch
-      queryClient.invalidateQueries({ queryKey: ['chatRooms'] });
-      queryClient.invalidateQueries({ queryKey: ['buzzingSpaces'] });
-      queryClient.invalidateQueries({ queryKey: ['allSpaces'] });
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: BUZZING_SPACES_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ALL_SPACES_QUERY_KEY });
     },
     onError: (error: Error) => {
       Toast.show({

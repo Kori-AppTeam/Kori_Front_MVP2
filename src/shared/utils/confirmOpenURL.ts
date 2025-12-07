@@ -38,3 +38,12 @@ export const confirmOpenURL = async (url: string): Promise<boolean> => {
     );
   });
 };
+
+export const openURL = async (url: string) => {
+  const supported = await Linking.canOpenURL(url);
+  if (supported) {
+    await Linking.openURL(url);
+  } else {
+    Alert.alert('Invalid URL', `Cannot open the URL: ${url}`);
+  }
+};

@@ -1,11 +1,12 @@
 import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import CustomButton from '@/src/shared/components/CustomButton';
 import { useDeleteAccount } from '@/hooks/mutations/useDeleteAccount';
 import { useUpdateProfile } from '@/hooks/mutations/useUpdateProfile';
 import useMyProfile from '@/hooks/queries/useMyProfile';
 import { uploadLocalImageAndGetKey } from '@/lib/mypage/uploadImage';
+import SupportButton from '@/src/features/mypage/components/SupportButton';
+import CustomButton from '@/src/shared/components/CustomButton';
 import { Config } from '@/src/shared/constants/config';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
@@ -362,6 +363,9 @@ export default function MyPageScreen() {
           <Icon type="next" size={20} color={theme.colors.primary.white} />
         </RowLink>
         <RowSeparator />
+
+        {/* 피드백, 버그 리포트 페이지 이동 버튼 */}
+        <SupportButton />
 
         <SectionTitleRow>
           <SectionTitleIconAccount />
