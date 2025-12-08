@@ -887,6 +887,7 @@ export default function PostDetailScreen() {
 
   return (
     <Safe>
+      {/* 게시글카드로 대체 */}
       <Header>
         <Back onPress={() => router.back()}>
           <Icon type="previous" size={20} color={theme.colors.primary.white} />
@@ -896,9 +897,9 @@ export default function PostDetailScreen() {
       </Header>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 26}
       >
         <FlatList<Comment>
           ref={listRef}
@@ -1019,6 +1020,7 @@ export default function PostDetailScreen() {
                 </Footer>
               </Card>
 
+              {/* 정렬 탭 */}
               <SortWrap>
                 <SortTabs value={sort} onPress={setSort} />
               </SortWrap>
@@ -1026,6 +1028,7 @@ export default function PostDetailScreen() {
           }
         />
 
+        {/* 댓글 인풋 */}
         <InputBar>
           <Composer>
             <BottomInput
