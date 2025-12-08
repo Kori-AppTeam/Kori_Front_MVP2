@@ -151,3 +151,9 @@ export interface PostCommonFooterProps {
   authorId?: number;
   postId?: number;
 }
+
+// 게시글 차단(신고)
+export interface BlockReportPostParams {
+  reasonCategory: string;
+  reasonDetail: string;
+}
