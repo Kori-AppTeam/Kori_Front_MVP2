@@ -34,7 +34,6 @@ export const useScreenChangeTracker = (
           screen_name: currentRouteName,
           screen_class: currentRouteName,
         });
-        console.log(`[Analytics] Screen View: ${currentRouteName}`);
       }
 
       // 4. 현재 화면 이름을 저장

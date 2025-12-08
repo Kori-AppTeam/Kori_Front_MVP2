@@ -23,7 +23,6 @@ export const useTabFocusTracker = () => {
           screen_name: currentScreenName,
           screen_class: 'TabScreen',
         });
-        console.log(`[Analytics] Tab Focus View: ${currentScreenName}`);
       }
     }, [currentScreenName]),
   );
