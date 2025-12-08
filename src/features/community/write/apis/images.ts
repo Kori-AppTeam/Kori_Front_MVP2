@@ -1,5 +1,5 @@
 import api from '@/api/axiosInstance';
-import { PresignRequest, PresignedUrlItem } from '../../post/types';
+import { PresignedUrlItem, PresignRequest } from '../types';
 
 export type PresignResponse = {
   message: string;

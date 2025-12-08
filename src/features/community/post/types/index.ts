@@ -80,13 +80,6 @@ export type PostEx = Post & {
   isAnonymous?: boolean;
 };
 
-// 게시글 작성
-export interface CreatePostBody {
-  content: string;
-  isAnonymous: boolean;
-  imageUrls?: string[];
-}
-
 export interface PostsListServerResp {
   success: boolean;
   data: PostsCursorPage;
@@ -132,4 +125,35 @@ export interface BookmarkedPostsResp {
 export interface BookmarkRequestBody {
   size: number;
   cursor?: string | null;
+}
+
+// 게시글 공통 헤더 컴포넌트
+export interface PostCommonHeaderProps {
+  postId: number;
+  isAnonymous?: boolean;
+  userImageUrl?: string | null;
+  authorName?: string | null;
+  createdAt: string;
+  boardCategory?: AllowedCategory;
+  viewCount: number;
+  isBookmarked?: boolean;
+  onToggleBookmark?: () => void;
+}
+
+// 게시글 공통 푸터 컴포넌트
+export interface PostCommonFooterProps {
+  isLiked: boolean;
+  likeCount: number;
+  onToggleLike: () => void;
+  onToggleComment: () => void;
+  commentCount: number;
+  onOpenModal: () => void;
+  authorId?: number;
+  postId?: number;
+}
+
+// 게시글 차단(신고)
+export interface BlockReportPostParams {
+  reasonCategory: string;
+  reasonDetail: string;
 }

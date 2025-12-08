@@ -1,12 +1,6 @@
 import api from '@/api/axiosInstance';
-import {
-  BoardId,
-  CreatePostBody,
-  PostDetailServerResp,
-  PostsListResp,
-  RequestPageParams,
-  UpdatePostBody,
-} from '../types';
+import { BoardId, PostDetailServerResp, PostsListResp, RequestPageParams } from '../types';
+import { BlockReportPostParams } from './../types/index';
 
 // 게시글 목록 조회
 export async function getPosts(boardId: BoardId, params: RequestPageParams): Promise<PostsListResp> {
@@ -25,27 +19,15 @@ export async function getPostDetail(postId: number): Promise<PostDetailServerRes
   return response.data;
 }
 
-// 게시글 작성
-export async function createPost(boardId: number, body: CreatePostBody) {
-  const { data } = await api.post(`/api/v1/boards/${boardId}/posts`, body);
-  return data as string;
-}
-
 // 게시글 삭제
 export async function deletePost(postId: number) {
   await api.delete(`/api/v1/posts/${postId}`);
   return true;
 }
 
-// 게시글 수정
-export async function updatePost(postId: number, body: UpdatePostBody) {
-  await api.put(`/api/v1/posts/${postId}`, body);
-  return true;
-}
-
 // 게시글 신고
-export async function reportPost(postId: number, reason: string) {
-  await api.post(`/api/v1/posts/${postId}/declaration`, { reason });
+export async function reportPost(postId: number, reason: BlockReportPostParams) {
+  await api.post(`/api/v1/posts/${postId}/declaration`, reason);
   return true;
 }
 

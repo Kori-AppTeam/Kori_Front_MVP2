@@ -70,3 +70,10 @@ export type CreatePostWithImagesParams = {
   isAnonymous: boolean;
   images?: ImageAsset[];
 };
+
+// 게시글 작성
+export interface CreatePostBody {
+  content: string;
+  isAnonymous: boolean;
+  imageUrls?: string[];
+}

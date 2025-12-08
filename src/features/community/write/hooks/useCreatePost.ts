@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createPost } from '../../post/apis/post';
+import { createPost } from '../apis/write';
 import { CreatePostWithImagesParams } from '../types';
 import { useUploadImages } from './useWritePresignedUpload';
 

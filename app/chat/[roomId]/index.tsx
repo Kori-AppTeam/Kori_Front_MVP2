@@ -62,7 +62,7 @@ const ChattingRoomScreen = () => {
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 26}
         >
           {/* 채팅 화면 */}
           <ChattingScreen>
