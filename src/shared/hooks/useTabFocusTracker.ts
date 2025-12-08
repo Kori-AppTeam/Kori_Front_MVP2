@@ -19,10 +19,14 @@ export const useTabFocusTracker = () => {
     useCallback(() => {
       // Firebase Analytics에 screen_view 이벤트 전송
       if (currentScreenName) {
-        analytics().logScreenView({
-          screen_name: currentScreenName,
-          screen_class: 'TabScreen',
-        });
+        try {
+          analytics().logScreenView({
+            screen_name: currentScreenName,
+            screen_class: 'TabScreen',
+          });
+        } catch (error) {
+          console.error(`[Analytics] Failed to log screen view for ${currentScreenName}:`, error);
+        }
       }
     }, [currentScreenName]),
   );

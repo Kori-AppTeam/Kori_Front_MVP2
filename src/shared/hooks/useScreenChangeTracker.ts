@@ -30,10 +30,14 @@ export const useScreenChangeTracker = (
 
       // 3. 화면 이름이 바뀌었을 때만 로그 전송
       if (previousRouteName !== currentRouteName && currentRouteName) {
-        await analytics().logScreenView({
-          screen_name: currentRouteName,
-          screen_class: currentRouteName,
-        });
+        try {
+          await analytics().logScreenView({
+            screen_name: currentRouteName,
+            screen_class: currentRouteName,
+          });
+        } catch (error) {
+          console.error(`[Analytics] Failed to log screen view for ${currentRouteName}:`, error);
+        }
       }
 
       // 4. 현재 화면 이름을 저장
