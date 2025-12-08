@@ -1,4 +1,5 @@
 // 텍스트 내 키워드 하이라이트 컴포넌트
+import { theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 import { HighlightTextProps } from '../../types';
@@ -44,13 +45,11 @@ export default HighlightText;
 
 // ============= Styled Components =============
 const MyText = styled.Text`
-  color: #1d1e1f;
-  font-size: 14px;
-  font-family: PlusJakartaSans_400Regular;
+  color: ${theme.colors.primary.black};
+  ${({ theme }) => theme.fonts.body.B4_R}
 `;
 
 const OtherText = styled.Text`
-  color: #ffffff;
-  font-size: 14px;
-  font-family: PlusJakartaSans_300Light;
+  color: ${theme.colors.primary.white};
+  ${({ theme }) => theme.fonts.body.B4_L}
 `;

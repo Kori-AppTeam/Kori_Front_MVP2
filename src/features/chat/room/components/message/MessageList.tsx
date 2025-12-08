@@ -18,7 +18,6 @@ const MessageList: React.FC<MessageListProps> = ({
     <MessageItem
       item={item}
       index={index}
-      messages={messages}
       isMyMessage={myUserId === item.senderId.toString()}
       onDeleteMessage={onDeleteMessage}
       onProfilePress={onProfilePress}

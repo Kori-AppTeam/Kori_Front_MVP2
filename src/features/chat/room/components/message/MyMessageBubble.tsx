@@ -1,26 +1,22 @@
 // 나의 메시지 버블 컴포넌트(단일 메시지)
-import React from 'react';
+import React, { forwardRef } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/native';
 import { MyMessageBubbleProps } from '../../types';
 import HighlightText from './HighlightText';
 
-const MyMessageBubble: React.FC<MyMessageBubbleProps> = ({
-  content,
-  time,
-  showTime,
-  isFirst,
-  searchKeyword,
-  onLongPress,
-}) => {
-  return (
-    <MessageContainer onLongPress={onLongPress}>
-      {showTime && <TimeText>{time}</TimeText>}
-      <BubbleContainer isFirst={isFirst}>
-        <HighlightText text={content} keyword={searchKeyword} textType="my" />
-      </BubbleContainer>
-    </MessageContainer>
-  );
-};
+const MyMessageBubble = forwardRef<View, MyMessageBubbleProps>(
+  ({ content, time, showTime, isFirst, searchKeyword, onLongPress }, ref) => {
+    return (
+      <MessageContainer ref={ref} onLongPress={onLongPress}>
+        {showTime && <TimeText>{time}</TimeText>}
+        <BubbleContainer isFirst={isFirst}>
+          <HighlightText text={content} keyword={searchKeyword} textType="my" />
+        </BubbleContainer>
+      </MessageContainer>
+    );
+  },
+);
 
 export default MyMessageBubble;
 

@@ -5,7 +5,6 @@ import Header from '@/src/features/chat/room/components/header/Header';
 import MessageInput from '@/src/features/chat/room/components/input/MessageInput';
 import MessageList from '@/src/features/chat/room/components/message/MessageList';
 import SearchNavigation from '@/src/features/chat/room/components/search/SearchNavigation';
-import TranslateButton from '@/src/features/chat/room/components/TranslateButton';
 import { useChatMessages } from '@/src/features/chat/room/hooks/useChatMessages';
 import { useMessageActions } from '@/src/features/chat/room/hooks/useMessageActions';
 import { useMessageSearch } from '@/src/features/chat/room/hooks/useMessageSearch';
@@ -95,8 +94,8 @@ const ChattingRoomScreen = () => {
               onChat={userProfile.actions.startChat}
             />
 
-            {/* 번역 버튼 */}
-            <TranslateButton />
+            {/* 번역 버튼 추후 변경 혹은 삭제 예정 */}
+            {/* <TranslateButton /> */}
           </ChattingScreen>
         </KeyboardAvoidingView>
       </Container>
