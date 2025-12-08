@@ -51,6 +51,7 @@ const IconBtn = styled.Pressable`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  padding: 2px;
 `;
 const Count = styled.Text`
   color: #cfd4da;
