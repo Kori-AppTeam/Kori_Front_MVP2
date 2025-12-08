@@ -134,8 +134,9 @@ export const useUserProfile = (): UserProfileHook => {
       closeProfile();
 
       // 새 채팅방으로 이동
-      router.push({
+      router.replace({
         pathname: CHAT_ROUTE(roomId),
+        params: { roomName: encodeURIComponent(selectedUser.firstname + ' ' + selectedUser.lastname) },
       });
     } catch (error) {
       console.error('채팅방 생성 실패:', error);

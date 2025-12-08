@@ -36,11 +36,7 @@ export const ParticipantsInfo = ({ participantCount, participantsImageUrls }: Pa
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
               <ParticipantsImageBox>
-                <ProfileImage
-                  source={{ uri: item }}
-                  style={{ width: '100%', height: '100%' }}
-                  resizeMode="contain"
-                />
+                <ProfileImage source={{ uri: item }} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
               </ParticipantsImageBox>
             )}
           />

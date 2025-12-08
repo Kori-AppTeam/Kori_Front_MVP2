@@ -8,13 +8,7 @@ import { useSearchStore } from '../../stores/useSearchStore';
 import { SearchHeaderProps } from '../../types';
 
 const SearchHeader: React.FC<SearchHeaderProps> = ({ onSearchSubmit }) => {
-  const {
-    isSearching,
-    searchText,
-    setSearchText,
-    toggleSearch,
-    clearSearch
-  } = useSearchStore();
+  const { isSearching, searchText, setSearchText, toggleSearch, clearSearch } = useSearchStore();
 
   const handleCancel = () => {
     clearSearch();
@@ -24,25 +18,14 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({ onSearchSubmit }) => {
   return (
     <>
       <TouchableOpacity onPress={handleCancel}>
-        <Icon
-          type="previous"
-          size={SEARCH_HEADER_CONFIG.ICON_SIZE}
-          color={theme.colors.gray.lightGray_1}
-        />
+        <Icon type="previous" size={SEARCH_HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
       </TouchableOpacity>
 
       <SearchInputContainer>
         {isSearching ? (
-          <ActivityIndicator
-            size="small"
-            color={theme.colors.gray.lightGray_1}
-          />
+          <ActivityIndicator size="small" color={theme.colors.gray.lightGray_1} />
         ) : (
-          <Icon
-            type="search"
-            size={SEARCH_HEADER_CONFIG.ICON_SIZE}
-            color={theme.colors.gray.lightGray_1}
-          />
+          <Icon type="search" size={SEARCH_HEADER_CONFIG.ICON_SIZE} color={theme.colors.gray.lightGray_1} />
         )}
         <SearchInput
           value={searchText}
@@ -55,11 +38,7 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({ onSearchSubmit }) => {
         />
         {searchText && (
           <TouchableOpacity onPress={() => setSearchText('')}>
-            <Icon
-              type="close"
-              size={SEARCH_HEADER_CONFIG.ICON_SIZE}
-              color={SEARCH_HEADER_CONFIG.CLOSE_ICON_COLOR}
-            />
+            <Icon type="close" size={SEARCH_HEADER_CONFIG.ICON_SIZE} color={SEARCH_HEADER_CONFIG.CLOSE_ICON_COLOR} />
           </TouchableOpacity>
         )}
       </SearchInputContainer>

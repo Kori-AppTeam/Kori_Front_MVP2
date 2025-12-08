@@ -19,3 +19,15 @@ export const SIGNUP_TERMS_AND_CONDITIONS_ROUTE = toRoute('/(auth)/signup/terms-c
 export const SIGNUP_PRIVACY_POLICY_ROUTE = toRoute('/(auth)/signup/privacy-policy');
 export const VERIFY_EMAIL_ROUTE = toRoute('/(auth)/login/verify/email');
 export const VERIFY_PASSWORD_ROUTE = toRoute('/(auth)/login/verify/password');
+
+// 커뮤니티 route 경로
+export const COMMUNITY_ROUTER = {
+  HOME: '/community',
+  WRITE: '/community/write',
+  MY_HISTORY: '/community/my-history',
+  BOOKMARK: '/community/bookmark-list',
+  DETAIL: '/community/detail/[id]',
+} as const;
+
+// 마이페이지 route 경로
+export const MYPAGE_SUPPORT_ROUTE = toRoute('/mypage/support');

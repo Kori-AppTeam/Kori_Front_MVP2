@@ -28,10 +28,7 @@ export const requestPresignedUrl = async (filename: string): Promise<PresignedUr
 /**
  * NCP Storage에 이미지 업로드 API
  */
-export const uploadToNCPStorage = async (
-  presignedInfo: PresignedUrlInfo,
-  imageUri: string,
-): Promise<void> => {
+export const uploadToNCPStorage = async (presignedInfo: PresignedUrlInfo, imageUri: string): Promise<void> => {
   // Base64 인코딩된 파일 읽기
   const fileData = await FileSystem.readAsStringAsync(imageUri, {
     encoding: FileSystem.EncodingType.Base64,

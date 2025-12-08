@@ -6,12 +6,7 @@ import { LinkedSpaceHeader } from '@/src/features/linked-space/detail/components
 import { LinkedSpaceInfo } from '@/src/features/linked-space/detail/components/LinkedSpaceInfo';
 import { useJoinLinkedSpace } from '@/src/features/linked-space/detail/hooks/useJoinLinkedSpace';
 import { useLinkedSpaceDetail } from '@/src/features/linked-space/detail/hooks/useLinkedSpaceDetail';
-import {
-  BottomSpacer,
-  Container,
-  DetailContainer,
-  SectionDivider,
-} from '@/src/features/linked-space/detail/styles';
+import { BottomSpacer, Container, DetailContainer, SectionDivider } from '@/src/features/linked-space/detail/styles';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { ScrollView } from 'react-native';
@@ -22,7 +17,7 @@ const LinkedSpaceDetail = () => {
   const { linkedSpaceDetail, isLoading } = useLinkedSpaceDetail(linkedSpaceId);
   const { handleJoin, isJoining, profileModalVisible, setProfileModalVisible } = useJoinLinkedSpace(
     linkedSpaceId,
-    linkedSpaceDetail?.roomName
+    linkedSpaceDetail?.roomName,
   );
 
   return (

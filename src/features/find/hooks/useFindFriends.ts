@@ -12,7 +12,7 @@ import { useRecommendedFriends } from './useRecommendedFriends';
 
 /**
  * Find Friends 화면의 메인 비즈니스 로직 Hook
- * 
+ *
  * TODO: DeviceEventEmitter를 사용한 하이브리드 방식에서
  * 향후 react-query로 완전히 전환 예정
  */
@@ -40,31 +40,25 @@ export function useFindFriends(limit: number = 20) {
   // DeviceEventEmitter listeners
   // TODO: react-query로 완전히 전환 후 제거 예정
   useEffect(() => {
-    const subCancel = DeviceEventEmitter.addListener(
-      'FOLLOW_REQUEST_CANCELLED',
-      (p: { userId: number }) => {
-        if (p?.userId) {
-          setRequested((prev) => {
-            const next = new Set(prev);
-            next.delete(p.userId);
-            return next;
-          });
-        }
+    const subCancel = DeviceEventEmitter.addListener('FOLLOW_REQUEST_CANCELLED', (p: { userId: number }) => {
+      if (p?.userId) {
+        setRequested((prev) => {
+          const next = new Set(prev);
+          next.delete(p.userId);
+          return next;
+        });
       }
-    );
+    });
 
-    const subSent = DeviceEventEmitter.addListener(
-      'FOLLOW_REQUEST_SENT',
-      (p: { userId: number }) => {
-        if (p?.userId) {
-          setRequested((prev) => {
-            const next = new Set(prev);
-            next.add(p.userId);
-            return next;
-          });
-        }
+    const subSent = DeviceEventEmitter.addListener('FOLLOW_REQUEST_SENT', (p: { userId: number }) => {
+      if (p?.userId) {
+        setRequested((prev) => {
+          const next = new Set(prev);
+          next.add(p.userId);
+          return next;
+        });
       }
-    );
+    });
 
     return () => {
       subCancel.remove();

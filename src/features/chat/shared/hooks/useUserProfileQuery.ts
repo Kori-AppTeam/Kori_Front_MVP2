@@ -1,10 +1,6 @@
+import { CHAT_ROOMS_QUERY_KEY } from '@/src/features/chat/list/hooks/useChatRooms';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  createOneToOneRoom,
-  fetchUserProfile,
-  followUser,
-  unfollowUser,
-} from '../api';
+import { createOneToOneRoom, fetchUserProfile, followUser, unfollowUser } from '../api';
 
 /** 쿼리 키 */
 export const USER_PROFILE_QK = (userId: number) => ['chat', 'userProfile', userId] as const;
@@ -52,7 +48,11 @@ export const useUnfollowUserMutation = () => {
 
 /** 1:1 채팅방 생성 Mutation */
 export const useCreateOneToOneRoomMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createOneToOneRoom,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_QUERY_KEY });
+    },
   });
 };

@@ -32,6 +32,7 @@ export const useLinkedSpaceRecommendModal = () => {
         pathname: CHAT_ROUTE(roomId),
         params: { roomName },
       });
+      setVisible(false);
     } catch (error: any) {
       if (error.response?.status === 428) {
         setProfileModalVisible(true);

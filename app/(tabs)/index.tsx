@@ -11,7 +11,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
 
-export default function HomeScreen() {
+export default function index() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
@@ -51,7 +51,9 @@ export default function HomeScreen() {
           ref={flatListRef}
           data={friends}
           keyExtractor={(item) => String(item.userId)}
-          refreshControl={<RefreshControl refreshing={Boolean(loading.isFetching && !loading.isLoading)} onRefresh={onRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={Boolean(loading.isFetching && !loading.isLoading)} onRefresh={onRefresh} />
+          }
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           renderItem={({ item }) => {
             const uid = item.userId;

@@ -5,7 +5,6 @@ import Header from '@/src/features/chat/room/components/header/Header';
 import MessageInput from '@/src/features/chat/room/components/input/MessageInput';
 import MessageList from '@/src/features/chat/room/components/message/MessageList';
 import SearchNavigation from '@/src/features/chat/room/components/search/SearchNavigation';
-import TranslateButton from '@/src/features/chat/room/components/TranslateButton';
 import { useChatMessages } from '@/src/features/chat/room/hooks/useChatMessages';
 import { useMessageActions } from '@/src/features/chat/room/hooks/useMessageActions';
 import { useMessageSearch } from '@/src/features/chat/room/hooks/useMessageSearch';
@@ -14,11 +13,7 @@ import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StatusBar
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
@@ -57,15 +52,17 @@ const ChattingRoomScreen = () => {
         <Header
           roomName={roomName}
           onSearchSubmit={messageSearch.performSearch}
-          onShowMembers={() => router.push({
-            pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
-            params: { roomName },
-          })}
+          onShowMembers={() =>
+            router.push({
+              pathname: CHAT_MEMBER_ROUTE(Number(roomId)),
+              params: { roomName },
+            })
+          }
         />
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 26}
         >
           {/* 채팅 화면 */}
           <ChattingScreen>
@@ -84,10 +81,7 @@ const ChattingRoomScreen = () => {
                 onNavigateDown={() => messageSearch.navigateToDown()}
               />
             ) : (
-              <MessageInput
-                onSendMessage={() => messageActions.sendMessage(roomId)}
-                paddingBottom={insets.bottom}
-              />
+              <MessageInput onSendMessage={() => messageActions.sendMessage(roomId)} paddingBottom={insets.bottom} />
             )}
 
             {/* 프로필 모달 */}
@@ -100,9 +94,8 @@ const ChattingRoomScreen = () => {
               onChat={userProfile.actions.startChat}
             />
 
-            {/* 번역 버튼 */}
-            <TranslateButton
-            />
+            {/* 번역 버튼 추후 변경 혹은 삭제 예정 */}
+            {/* <TranslateButton /> */}
           </ChattingScreen>
         </KeyboardAvoidingView>
       </Container>

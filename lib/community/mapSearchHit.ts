@@ -1,4 +1,4 @@
-import type { Post } from '@/src/features/community/components/PostCard';
+import type { Post } from '@/src/features/community/post/components/PostCard';
 
 function pad2(n: number) {
   return n < 10 ? `0${n}` : String(n);

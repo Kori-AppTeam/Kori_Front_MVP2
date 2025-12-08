@@ -90,10 +90,8 @@ export const useSpaceImagePicker = () => {
    */
   const openAvatarSheet = () => {
     if (avatarUrl) {
-      const sources = DEFAULT_AVATARS.map(avatar => avatar.source);
-      const cur = sources.findIndex(
-        (img) => (RNImage.resolveAssetSource(img)?.uri ?? '') === avatarUrl
-      );
+      const sources = DEFAULT_AVATARS.map((avatar) => avatar.source);
+      const cur = sources.findIndex((img) => (RNImage.resolveAssetSource(img)?.uri ?? '') === avatarUrl);
 
       if (cur >= 0) {
         setSelectedAvatarIdx(cur);

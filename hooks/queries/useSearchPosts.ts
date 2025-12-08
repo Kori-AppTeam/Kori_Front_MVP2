@@ -1,5 +1,5 @@
 import api from '@/api/axiosInstance';
-import type { Post } from '@/src/features/community/components/PostCard';
+import type { Post } from '@/src/features/community/post/components/PostCard';
 import { useQuery } from '@tanstack/react-query';
 
 export type SearchPostItem = {

@@ -17,12 +17,10 @@ import {
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
-import axios from 'axios';
 import { useFonts } from 'expo-font';
-import { Stack, usePathname, useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
@@ -30,7 +28,11 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-SplashScreen.preventAutoHideAsync().catch(() => {});
+import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
+import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
+import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
+
+SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
@@ -62,79 +64,47 @@ export default function RootLayout() {
 
   const pathname = usePathname();
   const router = useRouter();
-  const [checkingToken, setCheckingToken] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, isLoading: isAutoLoginLoading } = useAutoLogin(loaded);
+  const { isLoading: isVersionCheckLoading, isAppUpToDate } = useCheckAppVersion();
 
-  const checkAndRefreshToken = useCallback(async () => {
-    try {
-      console.log('1. 자동 로그인 시도...');
-      const refreshToken = await SecureStore.getItemAsync('refresh');
-      console.log('2. 저장된 리프레시 토큰:', refreshToken);
-      if (!refreshToken) {
-        setIsLoggedIn(false);
-        return;
-      }
+  const navigationRef = useNavigationContainerRef();
+  useScreenChangeTracker(navigationRef); // 화면 전환 시 Analytics 트래킹
 
-      console.log('3. 서버 URL:', `${process.env.EXPO_PUBLIC_SERVER_URL}/api/v1/member/refresh`);
-      const res = await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/v1/member/refresh`, { refreshToken });
-      console.log('4. 서버 응답 성공:', res.data); // ⭐️ 이 로그를 확인하세요
-      const { accessToken, refreshToken: newRefreshToken, userId } = res.data.data;
-
-      await SecureStore.setItemAsync('jwt', accessToken);
-      await SecureStore.setItemAsync('refresh', newRefreshToken);
-      await SecureStore.setItemAsync('MyuserId', userId.toString());
-
-      setIsLoggedIn(true);
-      console.log('5. 자동 로그인 성공!');
-    } catch (error) {
-      console.error('❌ 자동 로그인 실패:', error); // ⭐️ 이 로그가 뜬다면 실패한 것입니다.
-      setIsLoggedIn(false);
-    } finally {
-      setCheckingToken(false);
-      SplashScreen.hideAsync().catch(() => {});
-    }
-  }, []);
-
-  // 👇 [수정됨] checkAndRefreshToken을 호출하는 useEffect가 이제 하나만 남았습니다.
-  useEffect(() => {
-    if (loaded) checkAndRefreshToken();
-  }, [loaded, checkAndRefreshToken]);
+  useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
+  useBackgroundNotification(isLoggedIn, isAutoLoginLoading); // 백그라운드 알림 수신
 
   useEffect(() => {
-    // 폰트가 로드 안 됐거나, 토큰 확인 중이면 아무것도 안 함 (스플래시 스크린 계속 표시)
-    if (!loaded || checkingToken) {
+    if (
+      !loaded || // 폰트가 로드되지 않았거나,
+      isAutoLoginLoading || // 자동 로그인 중이거나,
+      isVersionCheckLoading || // 버전 확인 중이거나,
+      !isAppUpToDate // 버전 업데이트가 필요한 경우 return
+    ) {
       return;
     }
 
-    // 토큰 확인이 끝났을 때
-    if (isLoggedIn) {
-      // 로그인이 되어있으면 (tabs) 메인 화면으로 이동
-      router.replace('/(tabs)');
-    } else {
-      // 로그인이 안 되어있으면 login 화면으로 이동
-      router.replace(AUTH_ROUTE);
-    }
-  }, [loaded, checkingToken, isLoggedIn, router]); // 이 상태들이 바뀔 때마다 실행
+    // 앱 초기화 단계 완료 후 스플래시 스크린 hide
+    SplashScreen.hideAsync().catch(() => {});
 
-  useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
-  useBackgroundNotification(isLoggedIn, checkingToken); // 백그라운드 알림 수신
-
-  useEffect(() => {
+    // 로그인 상태에 따라 라우팅
     if (isLoggedIn) {
       initializeStomp();
+      router.replace('/(tabs)');
+    } else {
+      router.replace(AUTH_ROUTE);
     }
-  }, [isLoggedIn]);
+  }, [loaded, isAutoLoginLoading, isLoggedIn, isVersionCheckLoading, isAppUpToDate, router]);
 
-  if (!loaded || checkingToken) return null;
+  if (!loaded || isAutoLoginLoading || isVersionCheckLoading || !isAppUpToDate) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider theme={theme}>
-        <SafeAreaProvider>
-          <BottomSheetModalProvider>
-            <AppLayout>
-              <ProfileProvider>
-                <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <SafeAreaProvider>
+            <BottomSheetModalProvider>
+              <AppLayout>
+                <ProfileProvider>
                   {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
                   <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="(tabs)" />
@@ -142,12 +112,12 @@ export default function RootLayout() {
                     <Stack.Screen name="+not-found" />
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
-                </QueryClientProvider>
-              </ProfileProvider>
-            </AppLayout>
-          </BottomSheetModalProvider>
-        </SafeAreaProvider>
-      </ThemeProvider>
+                </ProfileProvider>
+              </AppLayout>
+            </BottomSheetModalProvider>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

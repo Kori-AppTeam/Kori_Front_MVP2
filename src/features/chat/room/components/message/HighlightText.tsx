@@ -1,4 +1,5 @@
 // 텍스트 내 키워드 하이라이트 컴포넌트
+import { theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 import { HighlightTextProps } from '../../types';
@@ -8,12 +9,7 @@ const HIGHLIGHT_COLORS = {
   OTHER_MESSAGE: 'rgba(255,255,0,0.3)',
 } as const;
 
-const HighlightText: React.FC<HighlightTextProps> = ({
-  text,
-  keyword,
-  textType,
-  highlightStyle
-}) => {
+const HighlightText: React.FC<HighlightTextProps> = ({ text, keyword, textType, highlightStyle }) => {
   // 키워드가 없으면 일반 텍스트 반환
   if (!keyword) {
     return textType === 'my' ? <MyText>{text}</MyText> : <OtherText>{text}</OtherText>;
@@ -23,9 +19,7 @@ const HighlightText: React.FC<HighlightTextProps> = ({
   const parts = text.split(new RegExp(`(${keyword})`, 'gi'));
 
   const TextComponent = textType === 'my' ? MyText : OtherText;
-  const defaultHighlightColor = textType === 'my'
-    ? HIGHLIGHT_COLORS.MY_MESSAGE
-    : HIGHLIGHT_COLORS.OTHER_MESSAGE;
+  const defaultHighlightColor = textType === 'my' ? HIGHLIGHT_COLORS.MY_MESSAGE : HIGHLIGHT_COLORS.OTHER_MESSAGE;
 
   return (
     <TextComponent>
@@ -34,7 +28,7 @@ const HighlightText: React.FC<HighlightTextProps> = ({
           <TextComponent
             key={index}
             style={{
-              backgroundColor: highlightStyle?.backgroundColor || defaultHighlightColor
+              backgroundColor: highlightStyle?.backgroundColor || defaultHighlightColor,
             }}
           >
             {part}
@@ -51,13 +45,11 @@ export default HighlightText;
 
 // ============= Styled Components =============
 const MyText = styled.Text`
-  color: #1d1e1f;
-  font-size: 14px;
-  font-family: PlusJakartaSans_400Regular;
+  color: ${theme.colors.primary.black};
+  ${({ theme }) => theme.fonts.body.B4_R}
 `;
 
 const OtherText = styled.Text`
-  color: #ffffff;
-  font-size: 14px;
-  font-family: PlusJakartaSans_300Light;
+  color: ${theme.colors.primary.white};
+  ${({ theme }) => theme.fonts.body.B4_L}
 `;
