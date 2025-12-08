@@ -18,7 +18,7 @@ import {
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { Stack, usePathname, useRouter } from 'expo-router';
+import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
@@ -28,6 +28,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
+import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
 
@@ -65,6 +66,9 @@ export default function RootLayout() {
   const router = useRouter();
   const { isLoggedIn, isLoading: isAutoLoginLoading } = useAutoLogin(loaded);
   const { isLoading: isVersionCheckLoading, isAppUpToDate } = useCheckAppVersion();
+
+  const navigationRef = useNavigationContainerRef();
+  useScreenChangeTracker(navigationRef); // 화면 전환 시 Analytics 트래킹
 
   useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
   useBackgroundNotification(isLoggedIn, isAutoLoginLoading); // 백그라운드 알림 수신
