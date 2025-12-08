@@ -1,5 +1,6 @@
 import api from '@/api/axiosInstance';
 import { BoardId, PostDetailServerResp, PostsListResp, RequestPageParams } from '../types';
+import { BlockReportPostParams } from './../types/index';
 
 // 게시글 목록 조회
 export async function getPosts(boardId: BoardId, params: RequestPageParams): Promise<PostsListResp> {
@@ -25,8 +26,8 @@ export async function deletePost(postId: number) {
 }
 
 // 게시글 신고
-export async function reportPost(postId: number, reason: string) {
-  await api.post(`/api/v1/posts/${postId}/declaration`, { reason });
+export async function reportPost(postId: number, reason: BlockReportPostParams) {
+  await api.post(`/api/v1/posts/${postId}/declaration`, reason);
   return true;
 }
 
