@@ -1,15 +1,14 @@
+import { ErrorConfig } from '@/src/shared/types/error';
 import { statusCodes } from '@react-native-google-signin/google-signin';
-
-type AuthErrorConfig = Record<string, { message: string; code?: string; httpStatus?: number }>;
 
 // 알 수 없는 에러
 // TODO 추후 공통 에러 파일로 분리 필요
-export const UNKNOWN_ERROR: AuthErrorConfig = {
+export const UNKNOWN_ERROR: ErrorConfig = {
   UNKNOWN_ERROR: { message: 'An unknown error occurred.' },
 };
 
 // 이메일 로그인 에러
-export const EMAIL_LOGIN_ERROR: AuthErrorConfig = {
+export const EMAIL_LOGIN_ERROR: ErrorConfig = {
   ...UNKNOWN_ERROR,
   USER_NOT_FOUND: {
     httpStatus: 404,
@@ -23,7 +22,7 @@ export const EMAIL_LOGIN_ERROR: AuthErrorConfig = {
 } as const;
 
 // oauth 공통 에러
-const COMMON_AUTH_ERROR: AuthErrorConfig = {
+const COMMON_AUTH_ERROR: ErrorConfig = {
   EMAIL_ALREADY_REGISTERED: {
     httpStatus: 409,
     message: 'The email is already registered with another account.',
@@ -31,7 +30,7 @@ const COMMON_AUTH_ERROR: AuthErrorConfig = {
 };
 
 // 애플 소셜 로그인 에러
-export const APPLE_AUTH_ERROR: AuthErrorConfig = {
+export const APPLE_AUTH_ERROR: ErrorConfig = {
   ...COMMON_AUTH_ERROR,
   ...UNKNOWN_ERROR,
   ERR_REQUEST_CANCELED: { code: 'ERR_REQUEST_CANCELED', message: 'User canceled the Apple login process.' },
@@ -39,7 +38,7 @@ export const APPLE_AUTH_ERROR: AuthErrorConfig = {
 };
 
 // 구글 소셜 로그인 에러
-export const GOOGLE_AUTH_ERROR: AuthErrorConfig = {
+export const GOOGLE_AUTH_ERROR: ErrorConfig = {
   ...COMMON_AUTH_ERROR,
   ...UNKNOWN_ERROR,
   [statusCodes.SIGN_IN_CANCELLED]: { message: 'User canceled the Google login process.' },
@@ -50,7 +49,7 @@ export const GOOGLE_AUTH_ERROR: AuthErrorConfig = {
   GOOGLE_NO_AUTH_CODE: { message: 'Failed to verify Google account information.' },
 };
 
-export const EMAIL_SIGNUP_ERROR: AuthErrorConfig = {
+export const EMAIL_SIGNUP_ERROR: ErrorConfig = {
   ...UNKNOWN_ERROR,
   // TODO 공통 에러 추가
 };
