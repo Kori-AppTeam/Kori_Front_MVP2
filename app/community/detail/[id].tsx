@@ -11,8 +11,10 @@ import { useLikeComment } from '@/hooks/mutations/useLikeComment';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
-import { addBookmark, removeBookmark } from '@/src/features/community/post/apis/bookmarks';
-import { usePostDetail } from '@/src/features/community/post/hooks/usePostDetail';
+import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
+import PostCommonHeader from '@/src/features/community/post/components/elements/header/PostCommonHeader';
+import { useGetPostDetail } from '@/src/features/community/post/hooks/useGetPostDetail';
+import { useHandleLikeBookmark } from '@/src/features/community/post/hooks/useHandleLikeBookmark';
 import { useToggleLike } from '@/src/features/community/post/hooks/useToggleLike';
 import { AllowedCategory, SortParam } from '@/src/features/community/post/types';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
@@ -124,7 +126,7 @@ export default function PostDetailScreen() {
 
   const postBookmarked = bmMap[postId] ?? false;
 
-  const { data, isLoading, isError, error } = usePostDetail(Number.isFinite(postId) ? postId : undefined);
+  const { postDetailData, isLoading, isError, error } = useGetPostDetail(Number.isFinite(postId) ? postId : undefined);
 
   const fetchUserProfile = async (userId: number) => {
     try {
@@ -144,7 +146,7 @@ export default function PostDetailScreen() {
     }
   };
 
-  const post = data as any;
+  const post = postDetailData as any;
 
   const category: AllowedCategory = React.useMemo(() => resolvePostCategory(post), [post]);
 
@@ -174,9 +176,9 @@ export default function PostDetailScreen() {
   const IMG_W = Dimensions.get('window').width - 32;
 
   const rawImageKeys: string[] = useMemo(() => {
-    const p: any = data ?? {};
+    const p: any = postDetailData ?? {};
     return (p.contentImageUrls as string[] | undefined) ?? (p.imageUrls as string[] | undefined) ?? [];
-  }, [data]);
+  }, [postDetailData]);
 
   const imageUrls: string[] = useMemo(() => keysToUrls(rawImageKeys).slice(0, MAX_IMAGES), [rawImageKeys]);
 
@@ -368,7 +370,7 @@ export default function PostDetailScreen() {
       </Safe>
     );
   }
-  if (isError || !data) {
+  if (isError || !postDetailData) {
     return (
       <Safe>
         <Header>
@@ -452,27 +454,29 @@ export default function PostDetailScreen() {
     );
   };
 
-  const handleToggleLike = async () => {
-    if (!Number.isFinite(postId) || likeMutation.isPending) return;
+  const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
 
-    const prevLiked = likedByMe;
-    const prevCount = likeCountUI;
-    const nextLiked = !prevLiked;
-    const delta = nextLiked ? +1 : -1;
-    const nextCount = Math.max(0, prevCount + delta);
+  // const handleToggleLike = async () => {
+  //   if (!Number.isFinite(postId) || likeMutation.isPending) return;
 
-    toggleLiked(postId);
-    setLikeCount(postId, nextCount);
+  //   const prevLiked = likedByMe;
+  //   const prevCount = likeCountUI;
+  //   const nextLiked = !prevLiked;
+  //   const delta = nextLiked ? +1 : -1;
+  //   const nextCount = Math.max(0, prevCount + delta);
 
-    try {
-      await likeMutation.mutateAsync({ postId, liked: prevLiked });
-    } catch (e) {
-      // 롤백
-      setLiked(postId, prevLiked);
-      setLikeCount(postId, prevCount);
-      console.error('[like detail] error', e);
-    }
-  };
+  //   toggleLiked(postId);
+  //   setLikeCount(postId, nextCount);
+
+  //   try {
+  //     await likeMutation.mutateAsync({ postId, liked: prevLiked });
+  //   } catch (e) {
+  //     // 롤백
+  //     setLiked(postId, prevLiked);
+  //     setLikeCount(postId, prevCount);
+  //     console.error('[like detail] error', e);
+  //   }
+  // };
 
   //게시글에서 열기
   const openPostSheet = () => {
@@ -920,57 +924,23 @@ export default function PostDetailScreen() {
           contentContainerStyle={{ paddingBottom: 92 }}
           ListHeaderComponent={
             <>
+              {/* 여기 게시글카드 */}
               <Card>
-                <Row>
-                  <Meta>
-                    <Pressable
-                      onPress={() => fetchUserProfile(Number(authorId))}
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                    >
-                      <Avatar imageUrl={avatarUrl} isAnonymous={isAnonymous} isVisitor={isVisitorAvatar} />
-                      <Meta>
-                        <Author>{author}</Author>
-                        <MetaRow>
-                          <Sub>{createdLabel || '—'}</Sub>
-                          <Dot>·</Dot>
-                          <Icon type="eye" size={16} color={theme.colors.gray.gray_1} />
-                          <Sub style={{ marginLeft: 6 }}>{views}</Sub>
-                        </MetaRow>
-                      </Meta>
-                    </Pressable>
-                  </Meta>
+                <PostCommonHeader
+                  authorId={postDetailData.authorId}
+                  postId={postDetailData.postId}
+                  authorName={postDetailData.authorName}
+                  isAnonymous={postDetailData.isAnonymous}
+                  userImageUrl={postDetailData.userImageUrl || undefined}
+                  createdAt={postDetailData.createdTime}
+                  boardCategory={postDetailData.boardCategory}
+                  viewCount={postDetailData.viewCount}
+                  isBookmarked={postDetailData.isBookmarked}
+                  onToggleBookmark={() => handleToggleBookmark(postDetailData.postId, postDetailData.isBookmarked)}
+                />
 
-                  <BookmarkWrap
-                    onPress={async () => {
-                      if (bmBusyRef.current[postId]) return;
-                      bmBusyRef.current[postId] = true;
-
-                      const before = postBookmarked;
-                      const next = !before;
-
-                      toggleBookmarked(postId);
-
-                      try {
-                        if (next) {
-                          await addBookmark(postId);
-                        } else {
-                          await removeBookmark(postId);
-                        }
-                      } catch (e) {
-                        setBookmarked(postId, before);
-                        console.log('[bookmark:detail] error', e);
-                      } finally {
-                        bmBusyRef.current[postId] = false;
-                      }
-                    }}
-                    $active={postBookmarked}
-                    hitSlop={8}
-                  >
-                    <Icon type={postBookmarked ? 'bookmarkSelected' : 'bookmarkNonSelected'} size={20} />
-                  </BookmarkWrap>
-                </Row>
-
-                {imageUrls.length > 0 && (
+                {/* 이미지 캐러셀 */}
+                {/* {imageUrls.length > 0 && (
                   <View style={{ marginTop: 10 }}>
                     <Animated.View
                       style={{
@@ -1000,12 +970,16 @@ export default function PostDetailScreen() {
 
                     <Counter>{` ${imgIndex + 1}/${imageUrls.length} `}</Counter>
                   </View>
-                )}
+                )} */}
 
-                <Body>{body}</Body>
+                {/* 텍스트 컨텐츠 */}
+                <PostTextContent isTruncate={false} content={postDetailData.content} />
 
                 <Footer>
-                  <Act onPress={handleToggleLike} disabled={likeMutation.isPending}>
+                  <Act
+                    onPress={() => handleToggleLike(postDetailData.postId, postDetailData.isLiked)}
+                    disabled={likeMutation.isPending}
+                  >
                     <Icon type={likeIconType} size={20} />
                     <ActText>{likeCountUI}</ActText>
                   </Act>
@@ -1310,10 +1284,10 @@ const Dim = styled.Text`
 `;
 
 const Card = styled.View`
-  background: #1d1e1f;
-  padding: 12px 16px 10px 16px;
+  background: ${({ theme }) => theme.colors.primary.black};
+  padding: 20px;
   border-bottom-width: 1px;
-  border-bottom-color: #222426;
+  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
 `;
 const Row = styled.View`
   flex-direction: row;

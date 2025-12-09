@@ -129,6 +129,7 @@ export interface BookmarkRequestBody {
 
 // 게시글 공통 헤더 컴포넌트
 export interface PostCommonHeaderProps {
+  authorId?: number;
   postId: number;
   isAnonymous?: boolean;
   userImageUrl?: string | null;

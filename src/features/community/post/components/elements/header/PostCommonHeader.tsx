@@ -8,6 +8,7 @@ import { PostCommonHeaderProps } from '../../../types';
 import PostUserProfileImg from './PostUserProfileImg';
 
 const PostCommonHeader = ({
+  authorId,
   isAnonymous,
   userImageUrl,
   authorName,
