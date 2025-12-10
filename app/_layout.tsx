@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 import queryClient from '@/api/queryClient';
-import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
@@ -38,8 +37,6 @@ export const unstable_settings = {
   // Ensure any route can link back to `/`
   initialRouteName: 'index',
 };
-
-initGoogleAuth(); // 앱 시작 시 구글 인증 초기화
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();

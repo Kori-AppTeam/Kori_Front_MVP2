@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
@@ -14,6 +14,8 @@ import SignInButton from '@/src/features/auth/components/SignInButton';
 import { APPLE_AUTH_ERROR, GOOGLE_AUTH_ERROR } from '@/src/features/auth/constants/error';
 import { getAuthErrorCode } from '@/src/features/auth/utils/error';
 import { statusCodes } from '@react-native-google-signin/google-signin';
+import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
+import { set } from 'zod';
 
 interface SignInButtonWrapperProps {
   onSuccessSocialSignIn: (provider: 'apple' | 'google') => void;
@@ -22,6 +24,7 @@ interface SignInButtonWrapperProps {
 function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps) {
   const router = useRouter();
   const navigation = useNavigation();
+  const [isGoogleInitialized, setIsGoogleInitialized] = useState<boolean>(false);
   const { isLoading: isGoogleLoading, googleSignIn } = useGoogleSignIn();
   const { isLoading: isAppleLoading, appleSignIn } = useAppleSignIn();
 
@@ -91,6 +94,12 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
     router.push(LOGIN_ROUTE);
   }
 
+  useEffect(() => {
+    initGoogleAuth().then(() => {
+      setIsGoogleInitialized(true);
+    });
+  }, []);
+
   return (
     <ButtonContainer>
       {Platform.OS === 'ios' ? (
@@ -104,6 +113,7 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
         <SignInButton
           onPress={handleGoogleSignInPress}
           loading={isGoogleLoading}
+          disabled={!isGoogleInitialized}
           label="Continue with Google"
           iconType="google"
         />
