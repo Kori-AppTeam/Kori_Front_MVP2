@@ -2,6 +2,7 @@ import Icon from '@/components/common/Icon';
 import { useDeleteComment } from '@/hooks/mutations/useDeleteComment';
 import { useMyComments } from '@/hooks/queries/useMyComments';
 import { useDeletePost, useMyPosts } from '@/src/features/community/post/hooks/useMyPosts';
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
@@ -141,7 +142,7 @@ export default function MyHistoryScreen() {
       const target = posts.find((p) => p.id === sheetTarget.id);
       closeSheet();
       router.push({
-        pathname: '/community/write/write',
+        pathname: COMMUNITY_ROUTER.WRITE,
         params: { mode: 'edit', postId: sheetTarget.id, initial: target?.body ?? '' },
       });
       return;
