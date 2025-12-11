@@ -40,7 +40,6 @@ export function useRequestFeedback() {
     } catch (error) {
       console.error('[Feedback] Failed to send feedback:', error);
       showFeedbackFailedAlert();
-      return;
     }
   }, []);
 
