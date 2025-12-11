@@ -67,7 +67,7 @@ export default function RootLayout() {
   const router = useRouter();
   const { isLoggedIn, isLoading: isAutoLoginLoading } = useAutoLogin(loaded);
   const { isLoading: isVersionCheckLoading, isAppUpToDate } = useCheckAppVersion();
-  const { addStartCount, resetStartCount } = useStartCountStore(); // 앱 시작 횟수 증가 함수
+  const { addStartCount } = useStartCountStore(); // 앱 시작 횟수 증가 함수
 
   const navigationRef = useNavigationContainerRef();
   useScreenChangeTracker(navigationRef); // 화면 전환 시 Analytics 트래킹
@@ -92,7 +92,6 @@ export default function RootLayout() {
     if (isLoggedIn) {
       initializeStomp();
       addStartCount();
-      // resetStartCount();
       router.replace('/(tabs)');
     } else {
       router.replace(AUTH_ROUTE);
