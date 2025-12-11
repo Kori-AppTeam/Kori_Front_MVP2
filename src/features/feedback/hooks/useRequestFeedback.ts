@@ -4,8 +4,8 @@ import {
   showFeedbackAlert,
   showFeedbackDoneAlert,
   showFeedbackFailedAlert,
-} from '@/src/shared/utils/showFeedbackAlert';
-import { postFeedback } from '@/src/shared/api/postFeedback';
+} from '@/src/features/feedback/utils/showFeedbackAlert';
+import { postFeedback } from '@/src/features/feedback/api/postFeedback';
 
 /**
  * 앱 시작 횟수가 5회일 때 사용자에게 피드백을 요청하고, 응답을 서버로 전송합니다.

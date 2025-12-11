@@ -5,7 +5,7 @@ import { LinkedSpaceRecommendModal } from '@/src/features/find/components/Linked
 import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
-import { useRequestFeedback } from '@/src/shared/hooks/useRequestFeedback';
+import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
 import { Text } from '@react-navigation/elements';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
