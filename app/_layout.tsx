@@ -31,7 +31,6 @@ import { ProfileProvider } from './contexts/ProfileContext';
 import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
-import { useStartCountStore } from '@/src/store/useStartCountStore';
 
 SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
@@ -67,7 +66,6 @@ export default function RootLayout() {
   const router = useRouter();
   const { isLoggedIn, isLoading: isAutoLoginLoading } = useAutoLogin(loaded);
   const { isLoading: isVersionCheckLoading, isAppUpToDate } = useCheckAppVersion();
-  const { addStartCount } = useStartCountStore(); // 앱 시작 횟수 증가 함수
 
   const navigationRef = useNavigationContainerRef();
   useScreenChangeTracker(navigationRef); // 화면 전환 시 Analytics 트래킹
@@ -87,7 +85,6 @@ export default function RootLayout() {
 
     // 앱 초기화 단계 완료 후 스플래시 스크린 hide
     SplashScreen.hideAsync().catch(() => {});
-    addStartCount(); // 앱 초기화 후 시작 횟수 증가
 
     // 로그인 상태에 따라 라우팅
     if (isLoggedIn) {

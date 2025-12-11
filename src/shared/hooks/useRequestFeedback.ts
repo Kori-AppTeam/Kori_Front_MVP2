@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   showFeedbackAlert,
   showFeedbackDoneAlert,
   showFeedbackFailedAlert,
 } from '@/src/shared/utils/showFeedbackAlert';
-import { useStartCountStore } from '@/src/store/useStartCountStore';
 import { postFeedback } from '@/src/shared/api/postFeedback';
 
 /**
@@ -19,23 +18,12 @@ import { postFeedback } from '@/src/shared/api/postFeedback';
  */
 
 export function useRequestFeedback() {
-  const [hasRequested, setHasRequested] = useState(false);
-  const { startCount } = useStartCountStore();
-
-  // AsyncStorage에서 hasRequested 값을 불러옴
-  useEffect(() => {
-    AsyncStorage.getItem('hasRequestedFeedback').then((value) => {
-      setHasRequested(value === 'true');
-    });
-  }, []);
-
   // 피드백 응답 처리 함수
   const onPressHandler = useCallback(async (satisfied: string) => {
     try {
       await postFeedback(satisfied, 'no contents'); // 추가 의견은 현재 'no contents'로 전송
       showFeedbackDoneAlert();
       await AsyncStorage.setItem('hasRequestedFeedback', 'true'); // 영구 저장
-      setHasRequested(true);
       return;
     } catch (error) {
       console.error('[Feedback] Failed to send feedback:', error);
@@ -45,13 +33,24 @@ export function useRequestFeedback() {
 
   // 피드백 요청 함수
   const requestFeedback = useCallback(async () => {
+    // 앱 시작 횟수를 storage에서 가져온 후 +1
+    const startCount = await AsyncStorage.getItem('startCount').then((value) => {
+      return value ? Number(value) : 0;
+    });
+    await AsyncStorage.setItem('startCount', String(startCount + 1));
+
+    // 이전에 피드백을 요청한 적이 있는지 확인
+    const hasRequested = await AsyncStorage.getItem('hasRequestedFeedback').then((value) => {
+      return value === 'true';
+    });
+
     // 앱 시작 횟수가 5회이거나 요청된 적이 없는 경우에만 피드백 요청
     if (startCount !== 5 || hasRequested) {
       return;
     }
 
     await showFeedbackAlert(onPressHandler); // 피드백 요청 Alert 표시 및 api 호출
-  }, [startCount, hasRequested, onPressHandler]);
+  }, [onPressHandler]);
 
   // 화면이 처음 렌더링될 때 피드백 요청
   useEffect(() => {
