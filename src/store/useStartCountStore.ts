@@ -12,7 +12,7 @@ interface StartCountStore {
 export const useStartCountStore = create<StartCountStore>()(
   persist(
     (set) => ({
-      startCount: 5,
+      startCount: 0,
       addStartCount: () => set((state) => ({ startCount: state.startCount + 1 })),
       resetStartCount: () => set({ startCount: 0 }),
     }),
