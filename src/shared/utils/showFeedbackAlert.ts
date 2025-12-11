@@ -15,7 +15,6 @@ export async function showFeedbackAlert(onPressHandler: (satisfied: string) => P
       },
     ],
   );
-  return null;
 }
 
 export function showFeedbackFailedAlert() {
