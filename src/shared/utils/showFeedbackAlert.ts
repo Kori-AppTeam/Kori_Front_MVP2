@@ -7,7 +7,7 @@ export async function showFeedbackAlert(onPressHandler: (satisfied: string) => P
     [
       {
         text: 'Not really',
-        onPress: async () => onPressHandler('Not Satisfied'),
+        onPress: async () => onPressHandler('Unsatisfied'),
       },
       {
         text: 'Good',
