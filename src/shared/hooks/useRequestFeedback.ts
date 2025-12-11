@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   showFeedbackAlert,
   showFeedbackDoneAlert,
@@ -19,14 +20,22 @@ import { postFeedback } from '@/src/shared/api/postFeedback';
 
 export function useRequestFeedback() {
   const [hasRequested, setHasRequested] = useState(false);
-
   const { startCount } = useStartCountStore();
+
+  // AsyncStorage에서 hasRequested 값을 불러옴
+  useEffect(() => {
+    AsyncStorage.getItem('hasRequestedFeedback').then((value) => {
+      setHasRequested(value === 'true');
+    });
+  }, []);
 
   // 피드백 응답 처리 함수
   const onPressHandler = useCallback(async (satisfied: string) => {
     try {
       await postFeedback(satisfied, 'no contents'); // 추가 의견은 현재 'no contents'로 전송
       showFeedbackDoneAlert();
+      await AsyncStorage.setItem('hasRequestedFeedback', 'true'); // 영구 저장
+      setHasRequested(true);
       return;
     } catch (error) {
       console.error('[Feedback] Failed to send feedback:', error);
@@ -38,15 +47,12 @@ export function useRequestFeedback() {
   // 피드백 요청 함수
   const requestFeedback = useCallback(async () => {
     // 앱 시작 횟수가 5회이거나 요청된 적이 없는 경우에만 피드백 요청
-    console.log('[Feedback] App Start Count:', startCount);
-
     if (startCount !== 5 || hasRequested) {
       return;
     }
 
     await showFeedbackAlert(onPressHandler); // 피드백 요청 Alert 표시 및 api 호출
-    setHasRequested(true);
-  }, [startCount, hasRequested]);
+  }, [startCount, hasRequested, onPressHandler]);
 
   // 화면이 처음 렌더링될 때 피드백 요청
   useEffect(() => {
