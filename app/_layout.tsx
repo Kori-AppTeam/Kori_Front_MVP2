@@ -87,11 +87,11 @@ export default function RootLayout() {
 
     // 앱 초기화 단계 완료 후 스플래시 스크린 hide
     SplashScreen.hideAsync().catch(() => {});
+    addStartCount(); // 앱 초기화 후 시작 횟수 증가
 
     // 로그인 상태에 따라 라우팅
     if (isLoggedIn) {
       initializeStomp();
-      addStartCount();
       router.replace('/(tabs)');
     } else {
       router.replace(AUTH_ROUTE);
