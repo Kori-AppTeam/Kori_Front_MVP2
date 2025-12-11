@@ -5,6 +5,7 @@ import { LinkedSpaceRecommendModal } from '@/src/features/find/components/Linked
 import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import { useRequestFeedback } from '@/src/shared/hooks/useRequestFeedback';
 import { Text } from '@react-navigation/elements';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -25,6 +26,7 @@ export default function index() {
     handleDontShowToday,
     handleClose: handleRecommendClose,
   } = useLinkedSpaceRecommendModal();
+  useRequestFeedback();
 
   useEffect(() => {
     const listener = DeviceEventEmitter.addListener('FIND_TAB_PRESSED', () => {
