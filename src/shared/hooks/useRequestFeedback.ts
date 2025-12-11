@@ -56,5 +56,5 @@ export function useRequestFeedback() {
   // 화면이 처음 렌더링될 때 피드백 요청
   useEffect(() => {
     requestFeedback();
-  }, [requestFeedback]);
+  }, []);
 }
