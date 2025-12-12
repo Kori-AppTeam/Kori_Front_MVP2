@@ -1,15 +1,14 @@
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import FriendCard from '@/components/FriendCard';
+import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
 import { FindHeader } from '@/src/features/find/components/FindHeader';
 import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
+import { useFindCardActions } from '@/src/features/find/hooks/useFindCardActions';
 import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
-import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
 import { Text } from '@react-navigation/elements';
-import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
 
 export default function index() {
@@ -17,6 +16,14 @@ export default function index() {
   const flatListRef = useRef<FlatList>(null);
 
   const { friends, myId, loading, state, mutations, actions } = useFindFriends(20);
+
+  const { handleFollowRequest, handleCancelRequest, handleCreateChat } = useFindCardActions({
+    myId,
+    state,
+    mutations,
+    actions,
+    setProfileModalVisible,
+  });
 
   const {
     visible: recommendVisible,
@@ -26,8 +33,11 @@ export default function index() {
     handleDontShowToday,
     handleClose: handleRecommendClose,
   } = useLinkedSpaceRecommendModal();
+
   useRequestFeedback();
 
+  // Scroll to top when FIND_TAB_PRESSED event is emitted
+  // FIND_TAB_PRESSED is emitted from app/(tabs)/_layout.tsx
   useEffect(() => {
     const listener = DeviceEventEmitter.addListener('FIND_TAB_PRESSED', () => {
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
@@ -78,67 +88,9 @@ export default function index() {
                   imageKey={item.imageKey}
                   defaultExpanded={false}
                   mode={isSent ? 'sent' : 'friend'}
-                  onFollow={async () => {
-                    if ((myId && uid === myId) || state.inFlight.has(uid)) return;
-
-                    const already = state.requested.has(uid);
-                    if (!already) actions.markRequested(uid);
-
-                    try {
-                      actions.lock(uid);
-                      await mutations.followMutation.mutateAsync(uid);
-                      actions.markRequested(uid);
-                      DeviceEventEmitter.emit('FOLLOW_REQUEST_SENT', { userId: uid });
-                    } catch (e: any) {
-                      const status = e?.response?.status;
-
-                      if (status === 428) {
-                        actions.unmarkRequested(uid);
-                        setProfileModalVisible(true);
-                        return;
-                      }
-
-                      Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to send request.');
-                    } finally {
-                      actions.unlock(uid);
-                    }
-                  }}
-                  onCancel={async () => {
-                    if ((myId && uid === myId) || state.inFlight.has(uid)) return;
-                    const wasSent = state.requested.has(uid);
-                    if (wasSent) actions.unmarkRequested(uid);
-
-                    try {
-                      actions.lock(uid);
-                      await mutations.cancelReqMutation.mutateAsync(uid);
-                      DeviceEventEmitter.emit('FOLLOW_REQUEST_CANCELLED', { userId: uid });
-                    } catch (e: any) {
-                      if (e?.response?.status !== 404) {
-                        Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to cancel request.');
-                      }
-                      if (wasSent) actions.markRequested(uid);
-                    } finally {
-                      actions.unlock(uid);
-                    }
-                  }}
-                  onChat={async () => {
-                    try {
-                      const roomId = await mutations.createRoom({ otherUserId: uid });
-                      router.push({
-                        pathname: CHAT_ROUTE(roomId),
-                        params: { userId: String(uid), roomName: encodeURIComponent(fullName) },
-                      });
-                    } catch (err: any) {
-                      const status = err.response?.status;
-
-                      if (status === 428) {
-                        setProfileModalVisible(true);
-                        return;
-                      }
-
-                      Alert.alert('Chat Error', err?.response?.data?.message ?? 'Failed to create chat room.');
-                    }
-                  }}
+                  onFollow={() => handleFollowRequest(uid)}
+                  onCancel={() => handleCancelRequest(uid)}
+                  onChat={() => handleCreateChat(uid, fullName)}
                 />
               </CardWrap>
             );
