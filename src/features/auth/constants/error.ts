@@ -31,7 +31,7 @@ const COMMON_AUTH_ERROR: ErrorConfig = {
   DUPLICATE_EMAIL_PROVIDER_MISMATCH: {
     httpStatus: 409,
     message: 'Already registered with another social account.',
-    subMessage: 'Please check your email address.',
+    subMessage: 'Please sign in with your existing account.',
   },
 };
 
