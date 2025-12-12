@@ -27,6 +27,10 @@ const COMMON_AUTH_ERROR: ErrorConfig = {
     httpStatus: 409,
     message: 'The email is already registered with another account.',
   },
+  DUPLICATE_EMAIL_PROVIDER_MISMATCH: {
+    httpStatus: 409,
+    message: 'Already registered with another social account.',
+  },
 };
 
 // 애플 소셜 로그인 에러
