@@ -5,6 +5,7 @@ import { FindHeader } from '@/src/features/find/components/FindHeader';
 import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
 import { useFindCardActions } from '@/src/features/find/hooks/useFindCardActions';
 import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
+import { useFindFriendsState } from '@/src/features/find/hooks/useFindFriendsState';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { Text } from '@react-navigation/elements';
 import React, { useEffect, useRef, useState } from 'react';
@@ -15,13 +16,15 @@ export default function index() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
-  const { friends, myId, loading, state, mutations, actions } = useFindFriends(20);
+  // State management
+  const { myId } = useFindFriendsState();
 
+  // Data fetching with filtering
+  const { friends, isLoading, isFetching, refetch } = useFindFriends(20, myId);
+
+  // Card actions
   const { handleFollowRequest, handleCancelRequest, handleCreateChat } = useFindCardActions({
     myId,
-    state,
-    mutations,
-    actions,
     setProfileModalVisible,
   });
 
@@ -47,14 +50,14 @@ export default function index() {
   }, []);
 
   const onRefresh = () => {
-    actions.refetch();
+    refetch();
   };
 
   return (
     <Safe>
       <FindHeader />
 
-      {loading.isLoading ? (
+      {isLoading ? (
         <LoaderWrap>
           <ActivityIndicator />
         </LoaderWrap>
@@ -63,13 +66,10 @@ export default function index() {
           ref={flatListRef}
           data={friends}
           keyExtractor={(item) => String(item.userId)}
-          refreshControl={
-            <RefreshControl refreshing={Boolean(loading.isFetching && !loading.isLoading)} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl refreshing={Boolean(isFetching && !isLoading)} onRefresh={onRefresh} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           renderItem={({ item }) => {
             const uid = item.userId;
-            const isSent = state.requested.has(uid);
             const fullName = [item.firstname, item.lastname].filter(Boolean).join(' ').trim() || 'Unknown';
 
             return (
@@ -84,10 +84,8 @@ export default function index() {
                   languages={item.language || []}
                   personalities={item.hobby || []}
                   bio={item.introduction || undefined}
-                  imageUrl={item.imageKey}
                   imageKey={item.imageKey}
                   defaultExpanded={false}
-                  mode={isSent ? 'sent' : 'friend'}
                   onFollow={() => handleFollowRequest(uid)}
                   onCancel={() => handleCancelRequest(uid)}
                   onChat={() => handleCreateChat(uid, fullName)}

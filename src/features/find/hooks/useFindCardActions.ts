@@ -1,15 +1,12 @@
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
-import { Alert, DeviceEventEmitter } from 'react-native';
-import type { useFindFriends } from './useFindFriends';
-
-type UseFindFriendsReturn = ReturnType<typeof useFindFriends>;
+import { Alert } from 'react-native';
+import { useCancelFollowRequest } from './useCancelFollowRequest';
+import { useCreateOneToOneRoom } from './useCreateOneToOneRoom';
+import { useFollowUser } from './useFollowUser';
 
 interface UseFindCardActionsParams {
   myId: number | undefined;
-  state: UseFindFriendsReturn['state'];
-  mutations: UseFindFriendsReturn['mutations'];
-  actions: UseFindFriendsReturn['actions'];
   setProfileModalVisible: (visible: boolean) => void;
 }
 
@@ -17,39 +14,28 @@ interface UseFindCardActionsParams {
  * FriendCard에서 사용하는 핸들러 로직을 관리하는 Hook
  * 팔로우, 팔로우 취소, 채팅 생성 등의 액션을 처리합니다.
  */
-export function useFindCardActions({
-  myId,
-  state,
-  mutations,
-  actions,
-  setProfileModalVisible,
-}: UseFindCardActionsParams) {
+export function useFindCardActions({ myId, setProfileModalVisible }: UseFindCardActionsParams) {
+  // Mutations
+  const followMutation = useFollowUser();
+  const cancelReqMutation = useCancelFollowRequest();
+  const { mutateAsync: createRoom } = useCreateOneToOneRoom();
   /**
    * 팔로우 요청 핸들러
    */
   const handleFollowRequest = async (uid: number) => {
-    if ((myId && uid === myId) || state.inFlight.has(uid)) return;
-
-    const already = state.requested.has(uid);
-    if (!already) actions.markRequested(uid);
+    if (myId && uid === myId) return;
 
     try {
-      actions.lock(uid);
-      await mutations.followMutation.mutateAsync(uid);
-      actions.markRequested(uid);
-      DeviceEventEmitter.emit('FOLLOW_REQUEST_SENT', { userId: uid });
+      await followMutation.mutateAsync(uid);
     } catch (e: any) {
       const status = e?.response?.status;
 
       if (status === 428) {
-        actions.unmarkRequested(uid);
         setProfileModalVisible(true);
         return;
       }
 
       Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to send request.');
-    } finally {
-      actions.unlock(uid);
     }
   };
 
@@ -57,21 +43,14 @@ export function useFindCardActions({
    * 팔로우 요청 취소 핸들러
    */
   const handleCancelRequest = async (uid: number) => {
-    if ((myId && uid === myId) || state.inFlight.has(uid)) return;
-    const wasSent = state.requested.has(uid);
-    if (wasSent) actions.unmarkRequested(uid);
+    if (myId && uid === myId) return;
 
     try {
-      actions.lock(uid);
-      await mutations.cancelReqMutation.mutateAsync(uid);
-      DeviceEventEmitter.emit('FOLLOW_REQUEST_CANCELLED', { userId: uid });
+      await cancelReqMutation.mutateAsync(uid);
     } catch (e: any) {
       if (e?.response?.status !== 404) {
         Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to cancel request.');
       }
-      if (wasSent) actions.markRequested(uid);
-    } finally {
-      actions.unlock(uid);
     }
   };
 
@@ -80,7 +59,7 @@ export function useFindCardActions({
    */
   const handleCreateChat = async (uid: number, fullName: string) => {
     try {
-      const roomId = await mutations.createRoom({ otherUserId: uid });
+      const roomId = await createRoom({ otherUserId: uid });
       router.push({
         pathname: CHAT_ROUTE(roomId),
         params: { userId: String(uid), roomName: encodeURIComponent(fullName) },
