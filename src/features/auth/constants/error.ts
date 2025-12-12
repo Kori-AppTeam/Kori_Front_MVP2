@@ -26,10 +26,12 @@ const COMMON_AUTH_ERROR: ErrorConfig = {
   EMAIL_ALREADY_REGISTERED: {
     httpStatus: 409,
     message: 'The email is already registered with another account.',
+    subMessage: 'Please check your email address.',
   },
   DUPLICATE_EMAIL_PROVIDER_MISMATCH: {
     httpStatus: 409,
     message: 'Already registered with another social account.',
+    subMessage: 'Please check your email address.',
   },
 };
 
