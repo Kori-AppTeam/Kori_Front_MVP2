@@ -27,6 +27,7 @@ export const COMMUNITY_ROUTER = {
   MY_HISTORY: '/community/my-history',
   BOOKMARK: '/community/bookmark-list',
   DETAIL: '/community/detail/[id]',
+  SEARCH: '/community/search',
 } as const;
 
 // 마이페이지 route 경로

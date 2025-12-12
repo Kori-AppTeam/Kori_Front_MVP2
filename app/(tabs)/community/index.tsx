@@ -48,7 +48,7 @@ export default function CommunityScreen() {
             <IconBtn
               onPress={() => {
                 router.push({
-                  pathname: '/community/SearchScreen',
+                  pathname: COMMUNITY_ROUTER.SEARCH,
                   params: {
                     qs: `?boardId=${encodeURIComponent(String(CATEGORY_TO_BOARD_ID[category]))}&cat=${encodeURIComponent(category)}`,
                   },

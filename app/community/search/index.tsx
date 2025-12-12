@@ -16,6 +16,7 @@ import {
   SearchedPostsResp,
 } from '@/src/features/community/post/types/searchedPostsType';
 import { CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/constants/constants';
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
 import { usePostUI } from '@/src/store/usePostUI';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -209,7 +210,7 @@ export default function CommunityScreen() {
       const { data } = await api.get<{ userId: number; profileCompleted: boolean }>(`/api/v1/member/is-completed`);
 
       if (data?.profileCompleted) {
-        router.push('/community/write/write');
+        router.push(COMMUNITY_ROUTER.WRITE);
       } else {
         setProfileModalVisible(true); // alert를 모달로 변경
       }
@@ -461,10 +462,10 @@ export default function CommunityScreen() {
             <IconBtn onPress={openSearch}>
               <AntDesign name="search1" size={18} color="#cfd4da" />
             </IconBtn>
-            <IconBtn onPress={() => router.push('/community/bookmark-list/bookmarks')}>
+            <IconBtn onPress={() => router.push(COMMUNITY_ROUTER.BOOKMARK)}>
               <MaterialIcons name="bookmark-border" size={20} color="#cfd4da" />
             </IconBtn>
-            <IconBtn onPress={() => router.push('/community/my-history/my-history')}>
+            <IconBtn onPress={() => router.push(COMMUNITY_ROUTER.MY_HISTORY)}>
               <AntDesign name="user" size={18} color="#cfd4da" />
             </IconBtn>
           </Right>
