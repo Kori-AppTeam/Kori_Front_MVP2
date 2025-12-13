@@ -11,6 +11,8 @@ import { useLikeComment } from '@/hooks/mutations/useLikeComment';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
 import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
+import PostCarousel from '@/src/features/community/post/components/elements/body/PostCarousel';
+import PostSingleImage from '@/src/features/community/post/components/elements/body/PostSingleImage';
 import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
 import PostCommonHeader from '@/src/features/community/post/components/elements/header/PostCommonHeader';
 import { useGetPostDetail } from '@/src/features/community/post/hooks/useGetPostDetail';
@@ -97,9 +99,6 @@ const EditInput = forwardRef<RNTextInput, TextInputProps>((props, ref) => <Style
 EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
-  const likeMutation = useToggleLike();
-  const navigation = useNavigation();
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -128,6 +127,8 @@ export default function PostDetailScreen() {
   const postBookmarked = bmMap[postId] ?? false;
 
   const { postDetailData, isLoading, isError, error } = useGetPostDetail(Number.isFinite(postId) ? postId : undefined);
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const fetchUserProfile = async (userId: number) => {
     try {
@@ -261,6 +262,9 @@ export default function PostDetailScreen() {
     },
     [heights, IMG_W, DEFAULT_RATIO, heightAnim],
   );
+
+  const likeMutation = useToggleLike();
+  const navigation = useNavigation();
 
   const openedOnceRef = useRef(false);
 
@@ -433,6 +437,8 @@ export default function PostDetailScreen() {
       },
     );
   };
+
+  const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const submit = () => {
     const text = value.trim();
@@ -939,6 +945,22 @@ export default function PostDetailScreen() {
                 />
 
                 {/* 이미지 캐러셀 */}
+                {postDetailData.contentImageUrls !== undefined &&
+                  (postDetailData.contentImageUrls.length > 1 ? (
+                    <PostCarousel
+                      images={postDetailData.contentImageUrls}
+                      gap={5}
+                      offset={15}
+                      pageWidth={SCREEN_WIDTH - 20 * 2}
+                    />
+                  ) : (
+                    <PostSingleImage
+                      imageUrl={postDetailData.contentImageUrls[0]}
+                      imageCount={postDetailData.imageCount}
+                      pageWidth={SCREEN_WIDTH - 20 * 2}
+                    />
+                  ))}
+
                 {/* {imageUrls.length > 0 && (
                   <View style={{ marginTop: 10 }}>
                     <Animated.View

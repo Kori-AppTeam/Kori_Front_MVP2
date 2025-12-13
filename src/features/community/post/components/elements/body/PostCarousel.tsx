@@ -1,6 +1,6 @@
+import { ASPECT_RATIO } from '@/src/features/community/shared/constants/constants';
 import React, { memo } from 'react';
-import { ListRenderItem } from 'react-native';
-import { FlatList } from 'react-native-reanimated/lib/typescript/Animated';
+import { FlatList, ListRenderItem } from 'react-native';
 import styled from 'styled-components/native';
 
 type PostCarouselProps = {
@@ -17,7 +17,7 @@ const PostCarousel = ({ images, gap, offset, pageWidth }: PostCarouselProps) => 
   };
 
   return (
-    <Container>
+    <Container width={pageWidth}>
       <FlatList
         data={images}
         renderItem={renderItem}
@@ -34,9 +34,9 @@ const PostCarousel = ({ images, gap, offset, pageWidth }: PostCarouselProps) => 
 
 export default memo(PostCarousel);
 
-const Container = styled.View`
-  width: 335;
-  height: 200;
+const Container = styled.View<{ width: number }>`
+  width: ${({ width }) => (width ? width : 335)}px;
+  height: ${({ width }) => (width ? width * ASPECT_RATIO : 200)}px;
   flex: 1;
   align-items: center;
   justify-content: center;
