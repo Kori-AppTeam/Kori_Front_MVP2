@@ -5,22 +5,19 @@ import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import useVisitor from '../hooks/useVisitor';
+import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { PostsListItem } from '../types';
 import PostSingleImage from './elements/body/PostSingleImage';
 import PostTextContent from './elements/body/PostTextContent';
 import PostCommonFooter from './elements/footer/PostCommonFooter';
 import PostCommonHeader from './elements/header/PostCommonHeader';
 
-type PostCardProps = {
-  data: PostsListItem;
-  onOpenModal: (postId: number, authorId: number) => void;
-};
-
-const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
+const PostListCard = ({ data }: { data: PostsListItem }) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
   const { handleBlockVisitor } = useVisitor();
+  const { showMoreSheet } = useMoreSheetStore();
 
   return (
     <Container width={SCREEN_WIDTH}>
@@ -62,7 +59,7 @@ const PostListCard = ({ data, onOpenModal }: PostCardProps) => {
             handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } }))
           }
           commentCount={data.commentCount}
-          onOpenModal={() => handleBlockVisitor(() => onOpenModal(data.postId, data.authorId))}
+          onOpenModal={() => handleBlockVisitor(() => showMoreSheet(data.postId, data.authorId))}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />

@@ -4,20 +4,16 @@ import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
+import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { BookmarkedPostItem } from '../types';
 import PostTextContent from './elements/body/PostTextContent';
 import PostCommonFooter from './elements/footer/PostCommonFooter';
 import PostCommonHeader from './elements/header/PostCommonHeader';
 
-const BookmarkedPost = ({
-  data,
-  onOpenModal,
-}: {
-  data: BookmarkedPostItem;
-  onOpenModal: (postId: number, authorId: number) => void;
-}) => {
+const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
+  const { showMoreSheet } = useMoreSheetStore();
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
 
   return (
@@ -47,7 +43,7 @@ const BookmarkedPost = ({
           onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
           onToggleComment={() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } })}
           commentCount={data.commentCount}
-          onOpenModal={() => onOpenModal(data.postId, data.authorId)}
+          onOpenModal={() => showMoreSheet(data.postId, data.authorId)}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />

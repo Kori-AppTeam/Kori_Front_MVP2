@@ -97,6 +97,7 @@ const EditInput = forwardRef<RNTextInput, TextInputProps>((props, ref) => <Style
 EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
+  const likeMutation = useToggleLike();
   const navigation = useNavigation();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
@@ -288,8 +289,6 @@ export default function PostDetailScreen() {
 
   const inputRef = useRef<RNTextInput>(null);
   const listRef = useRef<RNFlatList<Comment>>(null);
-
-  const likeMutation = useToggleLike();
 
   const { data: commentsRaw } = usePostComments(Number.isFinite(postId) ? postId : undefined, sort);
   const commentList: Comment[] = Array.isArray(commentsRaw)
@@ -975,6 +974,13 @@ export default function PostDetailScreen() {
                 {/* 텍스트 컨텐츠 */}
                 <PostTextContent isTruncate={false} content={postDetailData.content} />
 
+                {/* <PostCommonFooter 
+                  isLiked={postDetailData.isLiked}
+                  likeCount={postDetailData.likeCount}
+                  commentCount={postDetailData.commentCount}
+                  onToggleLike={() => handleToggleLike(postDetailData.postId, postDetailData.isLiked)}
+                  onToggleComment={}
+                /> */}
                 <Footer>
                   <Act
                     onPress={() => handleToggleLike(postDetailData.postId, postDetailData.isLiked)}
@@ -1289,60 +1295,11 @@ const Card = styled.View`
   border-bottom-width: 1px;
   border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
 `;
-const Row = styled.View`
-  flex-direction: row;
-  align-items: center;
-`;
 const Avatar = styled(ProfileImage)`
   width: 34px;
   height: 34px;
   border-radius: 17px;
   background: #2a2b2c;
-`;
-const Meta = styled.View`
-  margin-left: 10px;
-  flex: 1;
-`;
-const Author = styled.Text`
-  color: #fff;
-  font-size: 13px;
-  font-family: 'PlusJakartaSans_700Bold';
-`;
-const MetaRow = styled.View`
-  margin-top: 2px;
-  flex-direction: row;
-  align-items: center;
-`;
-const Sub = styled.Text`
-  color: #9aa0a6;
-  font-size: 11px;
-`;
-const Dot = styled.Text`
-  color: #9aa0a6;
-  margin: 0 6px;
-`;
-
-const BookmarkWrap = styled.Pressable<{ $active?: boolean }>`
-  padding: 6px;
-  background: transparent;
-`;
-
-const Counter = styled.Text`
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.45);
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 12px;
-`;
-
-const Body = styled.Text`
-  color: #d9dcdf;
-  font-size: 14px;
-  line-height: 20px;
-  margin-top: 10px;
 `;
 const Footer = styled.View`
   margin-top: 8px;

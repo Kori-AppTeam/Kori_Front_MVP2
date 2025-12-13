@@ -1,42 +1,23 @@
 import Icon from '@/components/common/Icon';
 import BookmarkList from '@/src/features/community/post/components/BookmarkList';
-import MyPostModal from '@/src/features/community/post/components/elements/footer/MyPostModal';
-import OthersPostModal from '@/src/features/community/post/components/elements/footer/OthersPostModal';
-import { useOpenMoreSheet } from '@/src/features/community/shared/hooks/useOpenMoreSheet';
-import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
 
 const BookmarksScreen = () => {
-  const { selectedPost, openModal, closeModal, isMine, authorId, bottomSheetRef } = useOpenMoreSheet();
-
   return (
-    <>
-      <Safe>
-        <Header>
-          <Back onPress={() => router.back()}>
-            <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
-          </Back>
-          <Title>Bookmarked</Title>
-          <RightSpace />
-        </Header>
+    <Safe>
+      <Header>
+        <Back onPress={() => router.back()}>
+          <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
+        </Back>
+        <Title>Bookmarked</Title>
+        <RightSpace />
+      </Header>
 
-        <BookmarkList openModal={openModal} />
-      </Safe>
-      <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">
-        {selectedPost && authorId ? (
-          isMine ? (
-            <MyPostModal closeModal={closeModal} postId={selectedPost} />
-          ) : (
-            <OthersPostModal closeModal={closeModal} postId={selectedPost} authorId={authorId} />
-          )
-        ) : (
-          <></>
-        )}
-      </CustomBottomSheet>
-    </>
+      <BookmarkList />
+    </Safe>
   );
 };
 
