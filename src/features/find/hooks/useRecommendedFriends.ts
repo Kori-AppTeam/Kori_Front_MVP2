@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getRecommendedFriends } from '../api/friendRecommend';
 import type { FriendItem } from '../types';
-import { toFriendItem } from '../utils/helpers';
 
 /**
  * 추천 친구 목록 조회 Hook
@@ -14,7 +13,7 @@ export function useRecommendedFriends(limit: number = 20) {
     queryKey: ['find', 'recommend', limit],
     queryFn: async () => {
       const data = await getRecommendedFriends(limit);
-      return data.map(toFriendItem);
+      return data;
     },
     staleTime: 60_000,
   });
