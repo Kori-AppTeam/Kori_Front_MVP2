@@ -6,7 +6,6 @@ import { useCreateOneToOneRoom } from './useCreateOneToOneRoom';
 import { useFollowUser } from './useFollowUser';
 
 interface UseFindCardActionsParams {
-  myId: number | undefined;
   setProfileModalVisible: (visible: boolean) => void;
 }
 
@@ -14,7 +13,7 @@ interface UseFindCardActionsParams {
  * FriendCard에서 사용하는 핸들러 로직을 관리하는 Hook
  * 팔로우, 팔로우 취소, 채팅 생성 등의 액션을 처리합니다.
  */
-export function useFindCardActions({ myId, setProfileModalVisible }: UseFindCardActionsParams) {
+export function useFindCardActions({ setProfileModalVisible }: UseFindCardActionsParams) {
   // Mutations
   const followMutation = useFollowUser();
   const cancelReqMutation = useCancelFollowRequest();
@@ -23,8 +22,6 @@ export function useFindCardActions({ myId, setProfileModalVisible }: UseFindCard
    * 팔로우 요청 핸들러
    */
   const handleFollowRequest = async (uid: number) => {
-    if (myId && uid === myId) return;
-
     try {
       await followMutation.mutateAsync(uid);
     } catch (e: any) {
@@ -43,8 +40,6 @@ export function useFindCardActions({ myId, setProfileModalVisible }: UseFindCard
    * 팔로우 요청 취소 핸들러
    */
   const handleCancelRequest = async (uid: number) => {
-    if (myId && uid === myId) return;
-
     try {
       await cancelReqMutation.mutateAsync(uid);
     } catch (e: any) {
