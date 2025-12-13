@@ -1,4 +1,4 @@
-import FriendCard from '@/components/FriendCard';
+import UserProfileCard from '@/src/shared/components/UserProfileCard';
 import React from 'react';
 import { ActivityIndicator, Modal, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
@@ -24,21 +24,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   isLoadingFollow,
   isLoadingChat,
 }) => {
-  const mapApiDataToFriendCardProps = (data: any) => {
-    return {
-      userId: data.userId,
-      name: `${data.firstname} ${data.lastname}`,
-      country: data.country,
-      birth: data.birthday ? new Date(data.birthday).getFullYear() : undefined,
-      gender: data.gender?.toLowerCase() as 'male' | 'female' | 'unspecified',
-      purpose: data.purpose,
-      languages: data.language || [],
-      personalities: data.hobby || [],
-      bio: data.introduction || 'No introduction',
-      imageKey: data.imageKey,
-    };
-  };
-
   const handleFollow = () => {
     if (onFollow) onFollow();
   };
@@ -53,14 +38,17 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         <Backdrop onPress={onClose} activeOpacity={1}>
           <ModalContainer onStartShouldSetResponder={() => true}>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <FriendCard
-                {...mapApiDataToFriendCardProps(userData)}
-                followStatus={userData.followStatus}
-                isLoadingFollow={isLoadingFollow}
-                isLoadingChat={isLoadingChat}
-                onFollow={handleFollow}
-                onUnfollow={handleUnfollow}
-                onChat={onChat || (() => console.log('chat start'))}
+              <UserProfileCard
+                user={userData}
+                defaultExpanded={true}
+                actions={{
+                  ...(userData.followStatus === 'FOLLOWING'
+                    ? { decline: { label: 'Unfollow', onPress: handleUnfollow } }
+                    : userData.followStatus === 'PENDING'
+                      ? { secondary: { label: 'Pending', onPress: () => {} } }
+                      : { primary: { label: 'Follow', onPress: handleFollow } }),
+                  chat: { label: 'Chat', onPress: onChat || (() => {}) },
+                }}
               />
             </ScrollView>
 

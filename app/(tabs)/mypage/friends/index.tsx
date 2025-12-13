@@ -1,58 +1,23 @@
 import Icon from '@/components/common/Icon';
-import FriendCard from '@/components/FriendCard';
 import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
 import useUnfollowAccepted from '@/hooks/mutations/useUnfollowAccepted'; // ✅ 변경
 import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
+import UserProfileCard from '@/src/shared/components/UserProfileCard';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Alert, Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type FriendItem = {
-  id: number;
-  name: string;
-  country: string;
-  birth?: number;
-  purpose: string;
-  languages: string[];
-  personalities: string[];
-  bio?: string;
-  imageKey?: string;
-};
-
-const toFriendItem = (row: any): FriendItem => {
-  const id = Number(row?.id ?? row?.userId);
-  const first = (row?.firstname ?? '').trim();
-  const last = (row?.lastname ?? '').trim();
-  const name = [first, last].filter(Boolean).join(' ') || row?.email || 'Unknown';
-
-  return {
-    id,
-    name,
-    country: row?.country ?? '',
-    birth: row?.birthday,
-    purpose: row?.purpose ?? '',
-    languages: Array.isArray(row?.language) ? row.language : [],
-    personalities: Array.isArray(row?.hobby) ? row.hobby : [],
-    bio: row?.introduction ?? '',
-    imageKey: row?.imageKey ?? undefined,
-  };
-};
-
 export default function FriendsOnlyScreen() {
   const { data, isLoading, isError, refetch } = useAcceptedFollowing();
-  const list = useMemo<FriendItem[]>(
-    () => (data ?? []).map(toFriendItem).filter((v) => Number.isFinite(v.id) && v.id > 0),
-    [data],
-  );
 
   const { mutateAsync: createRoom } = useCreateOneToOneRoom();
 
-  const totalPages = list.length;
+  const totalPages = data?.length ?? 0;
   const [page, setPage] = useState(1);
   const listRef = useRef<import('react-native').FlatList>(null);
 
@@ -101,7 +66,7 @@ export default function FriendsOnlyScreen() {
 
       <HList
         ref={listRef}
-        data={list}
+        data={data}
         keyExtractor={(item) => String(item.id)}
         horizontal
         pagingEnabled
@@ -123,32 +88,30 @@ export default function FriendsOnlyScreen() {
         renderItem={({ item }) => (
           <Page style={{ width: SCREEN_WIDTH }}>
             <Inner>
-              <FriendCard
-                userId={item.id}
-                name={item.name}
-                country={item.country}
-                birth={item.birth}
-                purpose={item.purpose}
-                languages={item.languages}
-                personalities={item.personalities}
-                bio={item.bio}
-                imageKey={item.imageKey}
-                collapsible={false}
-                onUnfollow={() => confirmUnfollow(item.id)}
-                onChat={async () => {
-                  try {
-                    const roomId = await createRoom({ otherUserId: item.id });
-                    router.push({
-                      pathname: CHAT_ROUTE(roomId),
-                      params: {
-                        userId: String(item.id),
-                        roomName: encodeURIComponent(item.name || 'Unknown'),
-                        roomId,
-                      },
-                    });
-                  } catch (e: any) {
-                    console.error('[chat]', e?.message ?? '채팅방 생성 실패');
-                  }
+              <UserProfileCard
+                user={item}
+                defaultExpanded={true}
+                actions={{
+                  primary: {
+                    label: 'Unfollow',
+                    onPress: () => confirmUnfollow(item.id),
+                  },
+                  chat: {
+                    label: 'Chat',
+                    onPress: async () => {
+                      try {
+                        const roomId = await createRoom({ otherUserId: item.id });
+                        router.push({
+                          pathname: CHAT_ROUTE(roomId),
+                          params: {
+                            roomName: `${item.firstname} ${item.lastname}`,
+                          },
+                        });
+                      } catch (e: any) {
+                        console.error('[chat]', e?.message ?? '채팅방 생성 실패');
+                      }
+                    },
+                  },
                 }}
               />
             </Inner>

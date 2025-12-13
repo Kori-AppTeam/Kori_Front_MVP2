@@ -1,12 +1,11 @@
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-import FriendCard from '@/components/FriendCard';
 import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
 import { FindHeader } from '@/src/features/find/components/FindHeader';
 import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
 import { useFindCardActions } from '@/src/features/find/hooks/useFindCardActions';
-import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
-import { useFindFriendsState } from '@/src/features/find/hooks/useFindFriendsState';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
+import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
+import UserProfileCard from '@/src/shared/components/UserProfileCard';
 import { Text } from '@react-navigation/elements';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
@@ -16,15 +15,11 @@ export default function index() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
-  // State management
-  const { myId } = useFindFriendsState();
-
   // Data fetching with filtering
-  const { friends, isLoading, isFetching, refetch } = useFindFriends(20, myId);
+  const { data: friends, isLoading, isFetching, refetch } = useRecommendedFriends(20);
 
   // Card actions
   const { handleFollowRequest, handleCancelRequest, handleCreateChat } = useFindCardActions({
-    myId,
     setProfileModalVisible,
   });
 
@@ -69,26 +64,21 @@ export default function index() {
           refreshControl={<RefreshControl refreshing={Boolean(isFetching && !isLoading)} onRefresh={onRefresh} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           renderItem={({ item }) => {
-            const uid = item.userId;
-            const fullName = [item.firstname, item.lastname].filter(Boolean).join(' ').trim() || 'Unknown';
-
             return (
               <CardWrap>
-                <FriendCard
-                  userId={uid}
-                  name={fullName}
-                  country={item.country || '-'}
-                  birth={item.birthday}
-                  gender={item.gender || 'unspecified'}
-                  purpose={item.purpose || '-'}
-                  languages={item.language || []}
-                  personalities={item.hobby || []}
-                  bio={item.introduction || undefined}
-                  imageKey={item.imageKey}
-                  defaultExpanded={false}
-                  onFollow={() => handleFollowRequest(uid)}
-                  onCancel={() => handleCancelRequest(uid)}
-                  onChat={() => handleCreateChat(uid, fullName)}
+                <UserProfileCard
+                  user={item}
+                  collapsible={true}
+                  actions={{
+                    primary: {
+                      label: 'Follow',
+                      onPress: () => handleFollowRequest(item.userId),
+                    },
+                    chat: {
+                      label: 'Chat',
+                      onPress: () => handleCreateChat(item.userId, `${item.firstname} ${item.lastname}`),
+                    },
+                  }}
                 />
               </CardWrap>
             );

@@ -1,14 +1,14 @@
 import Icon from '@/components/common/Icon';
-import FriendCard from '@/components/FriendCard';
 import useAcceptFollow from '@/hooks/mutations/useAcceptFollow';
 import useCancelFollowRequest from '@/hooks/mutations/useCancelFollowRequest';
 import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
 import useDeclineFollow from '@/hooks/mutations/useDeclineFollow';
 import { useFollowList } from '@/hooks/queries/useFollowList';
+import UserProfileCard from '@/src/shared/components/UserProfileCard';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DeviceEventEmitter,
   Dimensions,
@@ -23,48 +23,24 @@ type Tab = 'received' | 'sent';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type FriendItem = {
-  id: number;
-  name: string;
+  userId: number;
+  firstname: string;
+  lastname: string;
+  gender: string;
+  birthday: number;
   country: string;
-  birth?: number;
+  introduction: string;
   purpose: string;
-  languages: string[];
-  personalities: string[];
-  bio?: string;
-  imageKey?: string;
-  imageUrl?: string;
+  email: string;
+  language: string[];
+  hobby: string[];
+  imageKey: string;
 };
 
 function HListBase(props: FlatListProps<FriendItem>) {
   return <FlatList {...props} />;
 }
 const HList = styled(HListBase)``;
-
-const toItem = (u: any): FriendItem | null => {
-  const idNum = Number(u?.userId ?? u?.id);
-  if (!Number.isFinite(idNum) || idNum <= 0) return null;
-
-  return {
-    id: idNum,
-    name: u?.name ?? 'Unknown',
-    country: u?.country ?? '-',
-    birth: u?.birth,
-    purpose: u?.purpose ?? '',
-    languages: Array.isArray(u?.languages) ? u.languages : [],
-    personalities: Array.isArray(u?.hobbies) ? u.hobbies : [],
-    bio: u?.bio ?? '',
-    imageKey: u?.imageKey,
-    imageUrl: u?.imageUrl,
-  };
-};
-const dedupById = (arr: any[]): FriendItem[] => {
-  const map = new Map<number, FriendItem>();
-  for (const raw of arr || []) {
-    const it = toItem(raw);
-    if (it) map.set(it.id, it);
-  }
-  return [...map.values()];
-};
 
 export default function FollowListScreen() {
   const [tab, setTab] = useState<Tab>('received');
@@ -78,14 +54,14 @@ export default function FollowListScreen() {
     });
 
   const {
-    data: receivedRaw = [],
+    data: receivedList = [],
     isLoading: loadingReceived,
     isError: errorReceived,
     refetch: refetchReceived,
   } = useFollowList('PENDING', 'received');
 
   const {
-    data: sentRaw = [],
+    data: sentList = [],
     isLoading: loadingSent,
     isError: errorSent,
     refetch: refetchSent,
@@ -99,9 +75,6 @@ export default function FollowListScreen() {
     });
     return () => sub.remove();
   }, [refetchSent]);
-
-  const receivedList = useMemo(() => dedupById(receivedRaw), [receivedRaw]);
-  const sentList = useMemo(() => dedupById(sentRaw), [sentRaw]);
 
   const rRef = useRef<FlatList<FriendItem>>(null);
   const sRef = useRef<FlatList<FriendItem>>(null);
@@ -222,7 +195,7 @@ export default function FollowListScreen() {
             ref={rRef}
             listKey="received-list"
             data={receivedList}
-            keyExtractor={(i) => `rec-${String(i?.id)}`}
+            keyExtractor={(i) => `rec-${String(i?.userId)}`}
             horizontal
             pagingEnabled
             decelerationRate="fast"
@@ -236,22 +209,20 @@ export default function FollowListScreen() {
             renderItem={({ item }) => (
               <Page style={{ width: SCREEN_WIDTH }}>
                 <Inner>
-                  <FriendCard
-                    userId={item.id}
-                    name={item.name}
-                    country={item.country}
-                    birth={item.birth}
-                    purpose={item.purpose}
-                    languages={item.languages}
-                    personalities={item.personalities}
-                    bio={item.bio}
-                    imageKey={item.imageKey}
-                    imageUrl={item.imageUrl}
-                    collapsible={false}
-                    mode="received"
-                    onAccept={handleAccept}
-                    onCancel={handleDecline}
-                    onChat={() => {}}
+                  <UserProfileCard
+                    user={item}
+                    defaultExpanded={true}
+                    actions={{
+                      primary: {
+                        label: 'Accept',
+                        onPress: () => handleAccept(item.userId),
+                        loading: inFlight.has(item.userId),
+                      },
+                      decline: {
+                        label: 'Decline',
+                        onPress: () => handleDecline(item.userId),
+                      },
+                    }}
                   />
                 </Inner>
               </Page>
@@ -285,7 +256,7 @@ export default function FollowListScreen() {
             ref={sRef}
             listKey="sent-list"
             data={sentList}
-            keyExtractor={(i) => `sent-${String(i?.id)}`}
+            keyExtractor={(i) => `sent-${String(i?.userId)}`}
             horizontal
             pagingEnabled
             decelerationRate="fast"
@@ -299,34 +270,31 @@ export default function FollowListScreen() {
             renderItem={({ item }) => (
               <Page style={{ width: SCREEN_WIDTH }}>
                 <Inner>
-                  <FriendCard
-                    userId={item.id}
-                    name={item.name}
-                    country={item.country}
-                    birth={item.birth}
-                    purpose={item.purpose}
-                    languages={item.languages}
-                    personalities={item.personalities}
-                    bio={item.bio}
-                    imageKey={item.imageKey}
-                    imageUrl={item.imageUrl}
-                    collapsible={false}
-                    mode="sent"
-                    onAccept={() => {}}
-                    onCancel={() => handleCancelSent(item.id)}
-                    onChat={async () => {
-                      try {
-                        const roomId = await createRoom({ otherUserId: item.id });
-                        router.push({
-                          pathname: CHAT_ROUTE(roomId),
-                          params: {
-                            userId: String(item.id),
-                            roomName: encodeURIComponent(item.name || 'Unknown'),
-                          },
-                        });
-                      } catch (e: any) {
-                        console.error('[chat]', e?.message ?? '채팅방 생성 실패');
-                      }
+                  <UserProfileCard
+                    user={item}
+                    defaultExpanded={true}
+                    actions={{
+                      secondary: {
+                        label: 'Pending',
+                        onPress: () => {},
+                        loading: inFlight.has(item.userId),
+                      },
+                      chat: {
+                        label: 'Chat',
+                        onPress: async () => {
+                          try {
+                            const roomId = await createRoom({ otherUserId: item.userId });
+                            router.push({
+                              pathname: CHAT_ROUTE(roomId),
+                              params: {
+                                roomName: `${item.firstname} ${item.lastname}`,
+                              },
+                            });
+                          } catch (e: any) {
+                            console.error('[chat]', e?.message ?? '채팅방 생성 실패');
+                          }
+                        },
+                      },
                     }}
                   />
                 </Inner>
