@@ -42,7 +42,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                 user={userData}
                 defaultExpanded={true}
                 actions={{
-                  ...(userData.followStatus === 'FOLLOWING'
+                  ...(userData.followStatus === 'ACCEPTED'
                     ? { decline: { label: 'Unfollow', onPress: handleUnfollow } }
                     : userData.followStatus === 'PENDING'
                       ? { secondary: { label: 'Pending', onPress: () => {} } }
