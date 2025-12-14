@@ -1,40 +1,45 @@
+import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import React from 'react';
 import styled from 'styled-components/native';
-import { BottomSheetBase } from './BottomSheetBase';
 
 interface ReportBlockModalProps {
-  visible: boolean;
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   targetUserName: string;
-  onClose: () => void;
   onPressBlock: () => void;
   onPressReport: () => void;
 }
 
 /**
  * 신고/차단 선택 모달
- * BottomSheetBase를 활용한 첫 번째 단계 모달
+ * CustomBottomSheet를 활용한 첫 번째 단계 모달
  */
 export const ReportBlockModal: React.FC<ReportBlockModalProps> = ({
-  visible,
+  bottomSheetRef,
   targetUserName,
-  onClose,
   onPressBlock,
   onPressReport,
 }) => {
   return (
-    <BottomSheetBase visible={visible} onClose={onClose}>
-      <TargetUser>{targetUserName}</TargetUser>
+    <CustomBottomSheet ref={bottomSheetRef}>
+      <Container>
+        <TargetUser>{targetUserName}</TargetUser>
 
-      <MenuItem onPress={onPressReport}>
-        <MenuText>Report</MenuText>
-      </MenuItem>
+        <MenuItem onPress={onPressReport}>
+          <MenuText>Report</MenuText>
+        </MenuItem>
 
-      <MenuItem onPress={onPressBlock}>
-        <MenuText style={{ color: '#FF4F4F' }}>Block</MenuText>
-      </MenuItem>
-    </BottomSheetBase>
+        <MenuItem onPress={onPressBlock}>
+          <MenuText style={{ color: '#FF4F4F' }}>Block</MenuText>
+        </MenuItem>
+      </Container>
+    </CustomBottomSheet>
   );
 };
+
+const Container = styled.View`
+  padding: 20px 0px 40px 0px;
+`;
 
 const TargetUser = styled.Text`
   color: #ffffff;
