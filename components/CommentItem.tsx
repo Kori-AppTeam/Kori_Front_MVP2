@@ -9,8 +9,8 @@ import React, { useMemo, useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import { Alert } from 'react-native';
 import styled from 'styled-components/native';
+import ProfileModal from '../src/shared/components/ProfileModal';
 import ProfileSetupModal from './common/ProfileSetupModal';
-import ProfileModal from './ProfileModal';
 
 export type Comment = {
   id: string | number;
