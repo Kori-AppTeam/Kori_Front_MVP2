@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createOneToOneRoom } from '../api/chat';
 
 type CreateRoomVars = {
-  otherUserId: number | string;
+  otherUserId: number;
 };
 
 /**
@@ -14,9 +14,10 @@ type CreateRoomVars = {
 export function useCreateOneToOneRoom() {
   const queryClient = useQueryClient();
 
-  return useMutation<string, Error, CreateRoomVars>({
+  return useMutation<number, Error, CreateRoomVars>({
     mutationFn: async ({ otherUserId }) => {
-      return await createOneToOneRoom(otherUserId);
+      const data = await createOneToOneRoom(otherUserId);
+      return data.id;
     },
     onSuccess: () => {
       // 채팅방 생성 후 채팅 목록 캐시 무효화
