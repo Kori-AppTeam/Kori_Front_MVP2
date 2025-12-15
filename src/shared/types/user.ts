@@ -10,4 +10,5 @@ export type User = {
   language: string[];
   hobby: string[];
   imageKey: string;
+  followStatus?: string;
 };
