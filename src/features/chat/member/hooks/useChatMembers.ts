@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useUserProfile } from '../../shared/hooks';
-import { fetchChatMembers } from '../api';
+import { useUserProfile } from '../../shared/hooks/useUserProfile';
+import { fetchChatMembers } from '../api/members';
 import type { ChatMember } from '../types';
 
 interface UseChatMembersParams {

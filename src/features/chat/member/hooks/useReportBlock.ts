@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { blockUser, checkIsGroupChat } from '../api';
+import { blockUser, checkIsGroupChat } from '../api/report';
 import type { LeaveChatCallback } from '../types';
 
 interface UseReportBlockParams {

@@ -1,5 +1,4 @@
 //채팅방 화면
-import ProfileModal from '@/components/ProfileModal';
 import { readMessageAllAPI } from '@/src/features/chat/room/api/messages';
 import Header from '@/src/features/chat/room/components/header/Header';
 import MessageInput from '@/src/features/chat/room/components/input/MessageInput';
@@ -8,7 +7,8 @@ import SearchNavigation from '@/src/features/chat/room/components/search/SearchN
 import { useChatMessages } from '@/src/features/chat/room/hooks/useChatMessages';
 import { useMessageActions } from '@/src/features/chat/room/hooks/useMessageActions';
 import { useMessageSearch } from '@/src/features/chat/room/hooks/useMessageSearch';
-import { useUserProfile } from '@/src/features/chat/room/hooks/useUserProfile';
+import { useUserProfile } from '@/src/features/chat/shared/hooks/useUserProfile';
+import ProfileModal from '@/src/shared/components/ProfileModal';
 import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';

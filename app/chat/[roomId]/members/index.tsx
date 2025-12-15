@@ -1,15 +1,15 @@
 // 채팅방 구성원 확인 페이지
-import ProfileModal from '@/components/ProfileModal';
-import {
-  ChatMembersHeader,
-  LeaveChatButton,
-  MembersList,
-  ReportBlockModal,
-  ReportDetailModal,
-  ReportReasonModal,
-} from '@/src/features/chat/member/components';
-import { useChatMembers, useLeaveChatRoom, useReportBlock } from '@/src/features/chat/member/hooks';
+import { ChatMembersHeader } from '@/src/features/chat/member/components/ChatMembersHeader';
+import { LeaveChatButton } from '@/src/features/chat/member/components/LeaveChatButton';
+import { MembersList } from '@/src/features/chat/member/components/MembersList';
+import { ReportBlockModal } from '@/src/features/chat/member/components/ReportBlockModal';
+import { ReportDetailModal } from '@/src/features/chat/member/components/ReportDetailModal';
+import { ReportReasonModal } from '@/src/features/chat/member/components/ReportReasonModal';
+import { useChatMembers } from '@/src/features/chat/member/hooks/useChatMembers';
+import { useLeaveChatRoom } from '@/src/features/chat/member/hooks/useLeaveChatRoom';
+import { useReportBlock } from '@/src/features/chat/member/hooks/useReportBlock';
 import type { ReportReason } from '@/src/features/chat/member/types';
+import ProfileModal from '@/src/shared/components/ProfileModal';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { StatusBar } from 'react-native';

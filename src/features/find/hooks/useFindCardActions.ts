@@ -1,8 +1,8 @@
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
+import { useCreateOneToOneRoom } from '../../chat/room/hooks/useCreateOneToOneRoom';
 import { useCancelFollowRequest } from './useCancelFollowRequest';
-import { useCreateOneToOneRoom } from './useCreateOneToOneRoom';
 import { useFollowUser } from './useFollowUser';
 
 interface UseFindCardActionsParams {
