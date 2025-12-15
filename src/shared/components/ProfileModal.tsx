@@ -14,6 +14,7 @@ type ProfileModalProps = {
   isLoadingChat?: boolean;
 };
 
+// TODO: 팔로우/채팅 관련 로직은 userData의 id만으로도 컨트롤 가능하므로 추후 props 정리 필요
 const ProfileModal: React.FC<ProfileModalProps> = ({
   visible,
   userData,
