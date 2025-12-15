@@ -1,5 +1,3 @@
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
-import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { useCreateOneToOneRoom } from '../../chat/room/hooks/useCreateOneToOneRoom';
 import { useCancelFollowRequest } from './useCancelFollowRequest';
@@ -49,31 +47,8 @@ export function useFindCardActions({ setProfileModalVisible }: UseFindCardAction
     }
   };
 
-  /**
-   * 채팅 생성 핸들러
-   */
-  const handleCreateChat = async (uid: number, fullName: string) => {
-    try {
-      const roomId = await createRoom({ otherUserId: uid });
-      router.push({
-        pathname: CHAT_ROUTE(roomId),
-        params: { userId: String(uid), roomName: encodeURIComponent(fullName) },
-      });
-    } catch (err: any) {
-      const status = err.response?.status;
-
-      if (status === 428) {
-        setProfileModalVisible(true);
-        return;
-      }
-
-      Alert.alert('Chat Error', err?.response?.data?.message ?? 'Failed to create chat room.');
-    }
-  };
-
   return {
     handleFollowRequest,
     handleCancelRequest,
-    handleCreateChat,
   };
 }
