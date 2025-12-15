@@ -1,9 +1,8 @@
 import Icon from '@/components/common/Icon';
-import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
 import useUnfollowAccepted from '@/hooks/mutations/useUnfollowAccepted'; // ✅ 변경
 import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import handleStartChat from '@/src/shared/utils/handleStartChat';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -14,8 +13,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function FriendsOnlyScreen() {
   const { data, isLoading, isError, refetch } = useAcceptedFollowing();
-
-  const { mutateAsync: createRoom } = useCreateOneToOneRoom();
 
   const totalPages = data?.length ?? 0;
   const [page, setPage] = useState(1);
@@ -98,19 +95,7 @@ export default function FriendsOnlyScreen() {
                   },
                   chat: {
                     label: 'Chat',
-                    onPress: async () => {
-                      try {
-                        const roomId = await createRoom({ otherUserId: item.id });
-                        router.push({
-                          pathname: CHAT_ROUTE(roomId),
-                          params: {
-                            roomName: `${item.firstname} ${item.lastname}`,
-                          },
-                        });
-                      } catch (e: any) {
-                        console.error('[chat]', e?.message ?? '채팅방 생성 실패');
-                      }
-                    },
+                    onPress: () => handleStartChat(item.id, `${item.firstname} ${item.lastname}`),
                   },
                 }}
               />

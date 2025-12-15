@@ -1,11 +1,10 @@
 import Icon from '@/components/common/Icon';
 import useAcceptFollow from '@/hooks/mutations/useAcceptFollow';
 import useCancelFollowRequest from '@/hooks/mutations/useCancelFollowRequest';
-import { useCreateOneToOneRoom } from '@/hooks/mutations/useCreateOneToOneRoom';
 import useDeclineFollow from '@/hooks/mutations/useDeclineFollow';
 import { useFollowList } from '@/hooks/queries/useFollowList';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import handleStartChat from '@/src/shared/utils/handleStartChat';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -66,8 +65,6 @@ export default function FollowListScreen() {
     isError: errorSent,
     refetch: refetchSent,
   } = useFollowList('PENDING', 'sent');
-
-  const { mutateAsync: createRoom } = useCreateOneToOneRoom();
 
   useEffect(() => {
     const sub = DeviceEventEmitter.addListener('FOLLOW_REQUEST_SENT', () => {
@@ -281,19 +278,7 @@ export default function FollowListScreen() {
                       },
                       chat: {
                         label: 'Chat',
-                        onPress: async () => {
-                          try {
-                            const roomId = await createRoom({ otherUserId: item.userId });
-                            router.push({
-                              pathname: CHAT_ROUTE(roomId),
-                              params: {
-                                roomName: `${item.firstname} ${item.lastname}`,
-                              },
-                            });
-                          } catch (e: any) {
-                            console.error('[chat]', e?.message ?? '채팅방 생성 실패');
-                          }
-                        },
+                        onPress: () => handleStartChat(item.userId, `${item.firstname} ${item.lastname}`),
                       },
                     }}
                   />

@@ -6,6 +6,7 @@ import { useFindCardActions } from '@/src/features/find/hooks/useFindCardActions
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import handleStartChat from '@/src/shared/utils/handleStartChat';
 import { Text } from '@react-navigation/elements';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
@@ -19,7 +20,7 @@ export default function index() {
   const { data: friends, isLoading, isFetching, refetch } = useRecommendedFriends(20);
 
   // Card actions
-  const { handleFollowRequest, handleCancelRequest, handleCreateChat } = useFindCardActions({
+  const { handleFollowRequest, handleCancelRequest } = useFindCardActions({
     setProfileModalVisible,
   });
 
@@ -76,7 +77,7 @@ export default function index() {
                     },
                     chat: {
                       label: 'Chat',
-                      onPress: () => handleCreateChat(item.userId, `${item.firstname} ${item.lastname}`),
+                      onPress: () => handleStartChat(item.userId, `${item.firstname} ${item.lastname}`),
                     },
                   }}
                 />
