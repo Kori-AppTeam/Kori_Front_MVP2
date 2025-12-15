@@ -61,26 +61,23 @@ const ChatInsideMember = () => {
 
         {/* Report/Block Modal */}
         <ReportBlockModal
-          visible={reportBlock.isModalVisible}
+          bottomSheetRef={reportBlock.reportBlockSheetRef}
           targetUserName={reportBlock.selectedMemberName || ''}
-          onClose={reportBlock.closeModal}
           onPressBlock={reportBlock.handleBlockUser}
-          onPressReport={reportBlock.openReportMenu}
+          onPressReport={reportBlock.openReportReasonSheet}
         />
 
         {/* Report Reason Modal */}
         <ReportReasonModal
-          visible={reportBlock.isReportMenuVisible}
-          onClose={reportBlock.closeReportMenuModal}
+          bottomSheetRef={reportBlock.reportReasonSheetRef}
           onSelectReason={(reason: ReportReason) => {
-            reportBlock.openReportDetailModal();
+            reportBlock.openReportDetailSheet();
           }}
         />
 
         {/* Report Detail Modal */}
         <ReportDetailModal
-          visible={reportBlock.isReportVisible}
-          onClose={reportBlock.closeReportDetailModal}
+          bottomSheetRef={reportBlock.reportDetailSheetRef}
           onSubmit={reportBlock.handleSubmitReport}
         />
       </Container>

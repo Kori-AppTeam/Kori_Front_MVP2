@@ -8,7 +8,6 @@ import { MyChatRoom } from '../types';
 
 export const MyChatList = ({ data }: { data: MyChatRoom }) => {
   const router = useRouter();
-  console.info(data);
 
   //채팅방 진입
   const enterChattingRoom = async () => {
