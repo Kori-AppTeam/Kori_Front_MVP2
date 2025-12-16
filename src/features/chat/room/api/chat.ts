@@ -27,5 +27,5 @@ type participant = {
  */
 export async function createOneToOneRoom(otherUserId: number | string): Promise<CreateChatRoomResponse> {
   const res = await api.post('/api/v1/chat/rooms/oneTone', { otherUserId });
-  return res.data;
+  return res.data.data;
 }
