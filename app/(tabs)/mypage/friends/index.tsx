@@ -2,7 +2,8 @@ import Icon from '@/components/common/Icon';
 import useUnfollowAccepted from '@/hooks/mutations/useUnfollowAccepted'; // ✅ 변경
 import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import handleStartChat from '@/src/shared/utils/handleStartChat';
+
+import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -13,6 +14,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function FriendsOnlyScreen() {
   const { data, isLoading, isError, refetch } = useAcceptedFollowing();
+
+  const createChatRoom = useCreateOneToOneRoom();
 
   const totalPages = data?.length ?? 0;
   const [page, setPage] = useState(1);
@@ -95,7 +98,12 @@ export default function FriendsOnlyScreen() {
                   },
                   chat: {
                     label: 'Chat',
-                    onPress: () => handleStartChat(item.id, `${item.firstname} ${item.lastname}`),
+                    onPress: () =>
+                      createChatRoom.mutate({
+                        otherUserId: item.id,
+                        userName: `${item.firstname} ${item.lastname}`,
+                        routeType: 'push',
+                      }),
                   },
                 }}
               />

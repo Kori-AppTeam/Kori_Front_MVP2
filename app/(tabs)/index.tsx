@@ -1,4 +1,5 @@
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
+import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
 import { FindHeader } from '@/src/features/find/components/FindHeader';
 import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
@@ -6,7 +7,6 @@ import { useFindCardActions } from '@/src/features/find/hooks/useFindCardActions
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import handleStartChat from '@/src/shared/utils/handleStartChat';
 import { Text } from '@react-navigation/elements';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
@@ -23,6 +23,8 @@ export default function index() {
   const { handleFollowRequest, handleCancelRequest } = useFindCardActions({
     setProfileModalVisible,
   });
+
+  const createChatRoom = useCreateOneToOneRoom();
 
   const {
     visible: recommendVisible,
@@ -77,7 +79,12 @@ export default function index() {
                     },
                     chat: {
                       label: 'Chat',
-                      onPress: () => handleStartChat(item.userId, `${item.firstname} ${item.lastname}`),
+                      onPress: () =>
+                        createChatRoom.mutate({
+                          otherUserId: item.userId,
+                          userName: `${item.firstname} ${item.lastname}`,
+                          routeType: 'push',
+                        }),
                     },
                   }}
                 />

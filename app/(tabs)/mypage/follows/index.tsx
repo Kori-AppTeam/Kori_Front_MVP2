@@ -3,8 +3,8 @@ import useAcceptFollow from '@/hooks/mutations/useAcceptFollow';
 import useCancelFollowRequest from '@/hooks/mutations/useCancelFollowRequest';
 import useDeclineFollow from '@/hooks/mutations/useDeclineFollow';
 import { useFollowList } from '@/hooks/queries/useFollowList';
+import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import handleStartChat from '@/src/shared/utils/handleStartChat';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -65,6 +65,8 @@ export default function FollowListScreen() {
     isError: errorSent,
     refetch: refetchSent,
   } = useFollowList('PENDING', 'sent');
+
+  const createChatRoom = useCreateOneToOneRoom();
 
   useEffect(() => {
     const sub = DeviceEventEmitter.addListener('FOLLOW_REQUEST_SENT', () => {
@@ -278,7 +280,12 @@ export default function FollowListScreen() {
                       },
                       chat: {
                         label: 'Chat',
-                        onPress: () => handleStartChat(item.userId, `${item.firstname} ${item.lastname}`),
+                        onPress: () =>
+                          createChatRoom.mutate({
+                            otherUserId: item.userId,
+                            userName: `${item.firstname} ${item.lastname}`,
+                            routeType: 'push',
+                          }),
                       },
                     }}
                   />
