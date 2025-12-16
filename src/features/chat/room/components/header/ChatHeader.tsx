@@ -17,7 +17,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ roomName, onShowMembers, onSear
       <TranslateTooltip visible={showTooltip} onConfirm={handleConfirm} onCancel={handleCancel} />
 
       <LeftSection>
-        <TouchableOpacity onPress={() => router.replace('/(tabs)/chat')}>
+        <TouchableOpacity onPress={() => router.back()}>
           <Icon type="previous" size={HEADER_CONFIG.ICON_SIZE} />
         </TouchableOpacity>
       </LeftSection>

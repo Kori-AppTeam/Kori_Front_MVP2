@@ -51,7 +51,7 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
         Toast.show({
           type: 'error',
           text1: errorConfig.message,
-          text2: 'Please try again later.',
+          text2: errorConfig.subMessage || 'Please try again later.',
         });
       }
     }

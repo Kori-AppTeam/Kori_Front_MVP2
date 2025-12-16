@@ -1,11 +1,11 @@
+import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import React from 'react';
 import styled from 'styled-components/native';
 import type { ReportReason } from '../types';
-import { BottomSheetBase } from './BottomSheetBase';
 
 interface ReportReasonModalProps {
-  visible: boolean;
-  onClose: () => void;
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   onSelectReason: (reason: ReportReason) => void;
 }
 
@@ -19,21 +19,27 @@ const REPORT_REASONS: Array<{ label: string; value: ReportReason }> = [
 
 /**
  * 신고 사유 선택 모달
- * BottomSheetBase를 활용한 두 번째 단계 모달
+ * CustomBottomSheet를 활용한 두 번째 단계 모달
  */
-export const ReportReasonModal: React.FC<ReportReasonModalProps> = ({ visible, onClose, onSelectReason }) => {
+export const ReportReasonModal: React.FC<ReportReasonModalProps> = ({ bottomSheetRef, onSelectReason }) => {
   return (
-    <BottomSheetBase visible={visible} onClose={onClose}>
-      <ModalTitle>Why are you reporting this?</ModalTitle>
+    <CustomBottomSheet ref={bottomSheetRef}>
+      <Container>
+        <ModalTitle>Why are you reporting this?</ModalTitle>
 
-      {REPORT_REASONS.map((reason) => (
-        <MenuItem key={reason.value} onPress={() => onSelectReason(reason.value)}>
-          <MenuText>{reason.label}</MenuText>
-        </MenuItem>
-      ))}
-    </BottomSheetBase>
+        {REPORT_REASONS.map((reason) => (
+          <MenuItem key={reason.value} onPress={() => onSelectReason(reason.value)}>
+            <MenuText>{reason.label}</MenuText>
+          </MenuItem>
+        ))}
+      </Container>
+    </CustomBottomSheet>
   );
 };
+
+const Container = styled.View`
+  padding: 20px 0px 40px 0px;
+`;
 
 const ModalTitle = styled.Text`
   color: #ffffff;
