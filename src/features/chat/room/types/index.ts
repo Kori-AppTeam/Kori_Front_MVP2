@@ -1,4 +1,4 @@
-import type { UserProfileData } from '../../shared/type';
+import { User } from '@/src/shared/types/user';
 
 // ============= Base Types =============
 export interface BaseMessageProps {
@@ -109,7 +109,7 @@ export interface RoomMessagesState {
 }
 
 export interface UserProfileState {
-  selectedUser: UserProfileData | null;
+  selectedUser: User | null;
   isVisible: boolean;
   isLoading: boolean;
   error: Error | null;
