@@ -1,36 +1,42 @@
+import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import { useFollowUserMutation, useUnfollowUserMutation } from '@/src/shared/hooks/useUserProfileQuery';
 import React from 'react';
 import { ActivityIndicator, Modal, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
+import { User } from '../types/user';
 
 type ProfileModalProps = {
   visible: boolean;
-  userData: any;
+  userData: User | undefined | null;
   onClose: () => void;
-  onFollow?: () => void;
-  onUnfollow?: () => void;
-  onChat?: () => void;
   isLoadingFollow?: boolean;
   isLoadingChat?: boolean;
 };
 
-// TODO: 팔로우/채팅 관련 로직은 userData의 id만으로도 컨트롤 가능하므로 추후 props 정리 필요
-const ProfileModal: React.FC<ProfileModalProps> = ({
-  visible,
-  userData,
-  onClose,
-  onFollow,
-  onUnfollow,
-  onChat,
-  isLoadingFollow,
-  isLoadingChat,
-}) => {
+const ProfileModal: React.FC<ProfileModalProps> = ({ visible, userData, onClose, isLoadingFollow, isLoadingChat }) => {
+  const followUserMutation = useFollowUserMutation();
+  const unfollowUserMutation = useUnfollowUserMutation();
+  const createChatRoom = useCreateOneToOneRoom();
+
   const handleFollow = () => {
-    if (onFollow) onFollow();
+    if (!userData) return;
+    followUserMutation.mutate(userData.userId);
   };
 
   const handleUnfollow = () => {
-    if (onUnfollow) onUnfollow();
+    if (!userData) return;
+    unfollowUserMutation.mutate(userData.userId);
+  };
+
+  const handleChat = () => {
+    if (!userData) return;
+    createChatRoom.mutate({
+      otherUserId: userData.userId,
+      userName: `${userData.firstname} ${userData.lastname}`,
+      routeType: 'replace',
+      closeProfile: onClose,
+    });
   };
 
   return (
@@ -48,7 +54,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                     : userData.followStatus === 'PENDING'
                       ? { secondary: { label: 'Pending', onPress: () => {} } }
                       : { primary: { label: 'Follow', onPress: handleFollow } }),
-                  chat: { label: 'Chat', onPress: onChat || (() => {}) },
+                  chat: { label: 'Chat', onPress: handleChat },
                 }}
               />
             </ScrollView>
