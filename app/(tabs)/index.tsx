@@ -3,11 +3,12 @@ import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateO
 import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
 import { FindHeader } from '@/src/features/find/components/FindHeader';
 import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
-import { useFindCardActions } from '@/src/features/find/hooks/useFindCardActions';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import { useFollowUserMutation } from '@/src/shared/hooks/useUserProfileQuery';
 import { Text } from '@react-navigation/elements';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
@@ -15,16 +16,13 @@ import styled from 'styled-components/native';
 export default function index() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+  const queryClient = useQueryClient();
 
   // Data fetching with filtering
   const { data: friends, isLoading, isFetching, refetch } = useRecommendedFriends(20);
 
-  // Card actions
-  const { handleFollowRequest, handleCancelRequest } = useFindCardActions({
-    setProfileModalVisible,
-  });
-
   const createChatRoom = useCreateOneToOneRoom();
+  const followMutation = useFollowUserMutation();
 
   const {
     visible: recommendVisible,
@@ -34,6 +32,44 @@ export default function index() {
     handleDontShowToday,
     handleClose: handleRecommendClose,
   } = useLinkedSpaceRecommendModal();
+
+  const handleFollowPress = (userId: number) => {
+    followMutation.mutate(userId);
+
+    // Update React Query cache to reflect PENDING status
+    queryClient.setQueryData(['find', 'recommend', 20], (oldData: typeof friends) => {
+      if (!oldData) return oldData;
+      return oldData.map((friend) => (friend.userId === userId ? { ...friend, followStatus: 'PENDING' } : friend));
+    });
+  };
+
+  // Define card actions based on follow status
+  const getCardActions = (item: NonNullable<typeof friends>[0]) => {
+    return {
+      ...(item.followStatus === 'PENDING'
+        ? {
+            secondary: {
+              label: 'Pending',
+              onPress: () => {},
+            },
+          }
+        : {
+            primary: {
+              label: 'Follow',
+              onPress: () => handleFollowPress(item.userId),
+            },
+          }),
+      chat: {
+        label: 'Chat',
+        onPress: () =>
+          createChatRoom.mutate({
+            otherUserId: item.userId,
+            userName: `${item.firstname} ${item.lastname}`,
+            routeType: 'push',
+          }),
+      },
+    };
+  };
 
   useRequestFeedback();
 
@@ -66,31 +102,11 @@ export default function index() {
           keyExtractor={(item) => String(item.userId)}
           refreshControl={<RefreshControl refreshing={Boolean(isFetching && !isLoading)} onRefresh={onRefresh} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
-          renderItem={({ item }) => {
-            return (
-              <CardWrap>
-                <UserProfileCard
-                  user={item}
-                  collapsible={true}
-                  actions={{
-                    primary: {
-                      label: 'Follow',
-                      onPress: () => handleFollowRequest(item.userId),
-                    },
-                    chat: {
-                      label: 'Chat',
-                      onPress: () =>
-                        createChatRoom.mutate({
-                          otherUserId: item.userId,
-                          userName: `${item.firstname} ${item.lastname}`,
-                          routeType: 'push',
-                        }),
-                    },
-                  }}
-                />
-              </CardWrap>
-            );
-          }}
+          renderItem={({ item }) => (
+            <CardWrap>
+              <UserProfileCard user={item} collapsible={true} actions={getCardActions(item)} />
+            </CardWrap>
+          )}
           ListEmptyComponent={
             <EmptyWrap>
               <EmptyText>
