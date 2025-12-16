@@ -49,7 +49,7 @@ export default function index() {
       ...(item.followStatus === 'PENDING'
         ? {
             secondary: {
-              label: 'Pending',
+              label: 'Following',
               onPress: () => {},
             },
           }
