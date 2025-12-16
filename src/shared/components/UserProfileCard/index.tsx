@@ -20,7 +20,7 @@ import { UserProfileCardDetails } from './UserProfileCardDetails';
 import { UserProfileCardHeader } from './UserProfileCardHeader';
 
 export default function UserProfileCard(props: UserProfileCardProps) {
-  const { user, actions, collapsible = false, defaultExpanded = false, footerSlot } = props;
+  const { user, actions, collapsible = false, defaultExpanded = false } = props;
 
   const [expanded, setExpanded] = useState(Boolean(defaultExpanded));
 
@@ -54,8 +54,6 @@ export default function UserProfileCard(props: UserProfileCardProps) {
         {expanded && <UserProfileCardDetails purpose={user.purpose} languages={user.language} interests={user.hobby} />}
 
         <UserProfileCardActions actions={actions} />
-
-        {footerSlot}
       </CardInner>
     </CardWrap>
   );

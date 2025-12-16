@@ -23,5 +23,4 @@ export interface UserProfileCardProps {
   actions?: UserProfileActions;
   collapsible?: boolean;
   defaultExpanded?: boolean;
-  footerSlot?: React.ReactNode;
 }
