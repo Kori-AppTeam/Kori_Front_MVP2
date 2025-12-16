@@ -1,5 +1,7 @@
 // components/UserProfileCard/types.ts
 
+import { User } from '../../types/user';
+
 export type Gender = 'Male' | 'Female' | 'Unspecified';
 
 export interface ActionButton {
@@ -16,23 +18,8 @@ export interface UserProfileActions {
   chat?: ActionButton;
 }
 
-export interface UserProfileData {
-  userId: number;
-  firstname: string;
-  lastname: string;
-  gender: string;
-  birthday: number;
-  country: string;
-  introduction: string;
-  purpose: string;
-  email: string;
-  language: string[];
-  hobby: string[];
-  imageKey: string;
-}
-
 export interface UserProfileCardProps {
-  user: UserProfileData;
+  user: User;
   actions?: UserProfileActions;
   collapsible?: boolean;
   defaultExpanded?: boolean;
