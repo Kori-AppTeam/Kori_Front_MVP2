@@ -37,7 +37,7 @@ export default function UserProfileCard(props: UserProfileCardProps) {
           country={user.country}
           birth={user.birthday}
           gender={user.gender}
-          bio={user.introduction}
+          introduction={user.introduction}
           imageKey={user.imageKey}
           expanded={expanded}
         />
