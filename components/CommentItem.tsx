@@ -262,8 +262,6 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
         visible={isProfileVisible}
         onClose={() => setIsProfileVisible(false)}
         userData={selectedUser}
-        onChat={handleStartChat}
-        onFollow={handleFollow}
         isLoadingChat={isChatLoading}
         isLoadingFollow={isFollowLoading}
       />

@@ -1264,9 +1264,6 @@ export default function PostDetailScreen() {
         visible={isProfileVisible}
         userData={selectedUser}
         onClose={() => setIsProfileVisible(false)}
-        onFollow={handleFollow}
-        onUnfollow={handleUnfollow}
-        onChat={handleStartChat}
         isLoadingFollow={isFollowLoading}
         isLoadingChat={isChatLoading}
       />
