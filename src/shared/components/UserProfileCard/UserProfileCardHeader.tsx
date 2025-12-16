@@ -10,14 +10,14 @@ import { BIO_MARGIN_BOTTOM, BIO_MARGIN_TOP, GENDER_ICON_MAP, META_MARGIN_TOP, NA
 interface Props {
   name: string;
   country: string;
-  birth?: number;
+  birth: string;
   gender: string;
-  bio?: string;
-  imageKey?: string;
+  introduction: string;
+  imageKey: string;
   expanded: boolean;
 }
 
-export function UserProfileCardHeader({ name, country, birth, gender, bio, imageKey, expanded }: Props) {
+export function UserProfileCardHeader({ name, country, birth, gender, introduction, imageKey, expanded }: Props) {
   const effectiveGender = gender === 'Male' || gender === 'Female' ? gender : 'Unspecified';
 
   return (
@@ -29,7 +29,7 @@ export function UserProfileCardHeader({ name, country, birth, gender, bio, image
       <MetaLine>
         <MetaRow>
           <MetaDim>Birth </MetaDim>
-          <MetaStrong>{birth ? String(birth) : '-'}</MetaStrong>
+          <MetaStrong>{birth}</MetaStrong>
 
           <GenderIconSpacer>
             <Icon type={GENDER_ICON_MAP[effectiveGender]} size={16} color={theme.colors.gray.gray_1} />
@@ -40,7 +40,7 @@ export function UserProfileCardHeader({ name, country, birth, gender, bio, image
         <MetaStrong>{country}</MetaStrong>
       </MetaLine>
 
-      <Bio numberOfLines={expanded ? 4 : 2}>{bio || 'No introduction'}</Bio>
+      <Bio numberOfLines={expanded ? 4 : 2}>{introduction || 'No introduction'}</Bio>
     </Container>
   );
 }
