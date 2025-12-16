@@ -5,6 +5,7 @@ import useDeclineFollow from '@/hooks/mutations/useDeclineFollow';
 import { useFollowList } from '@/hooks/queries/useFollowList';
 import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import { User } from '@/src/shared/types/user';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -21,22 +22,7 @@ import styled from 'styled-components/native';
 type Tab = 'received' | 'sent';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type FriendItem = {
-  userId: number;
-  firstname: string;
-  lastname: string;
-  gender: string;
-  birthday: number;
-  country: string;
-  introduction: string;
-  purpose: string;
-  email: string;
-  language: string[];
-  hobby: string[];
-  imageKey: string;
-};
-
-function HListBase(props: FlatListProps<FriendItem>) {
+function HListBase(props: FlatListProps<User>) {
   return <FlatList {...props} />;
 }
 const HList = styled(HListBase)``;
@@ -75,8 +61,8 @@ export default function FollowListScreen() {
     return () => sub.remove();
   }, [refetchSent]);
 
-  const rRef = useRef<FlatList<FriendItem>>(null);
-  const sRef = useRef<FlatList<FriendItem>>(null);
+  const rRef = useRef<FlatList<User>>(null);
+  const sRef = useRef<FlatList<User>>(null);
   const [rPage, setRPage] = useState(1);
   const [sPage, setSPage] = useState(1);
 
@@ -141,7 +127,7 @@ export default function FollowListScreen() {
     ref.current?.scrollToIndex?.({ index: safe, animated: true });
   };
 
-  const getLayout: FlatListProps<FriendItem>['getItemLayout'] = (_data, index) => ({
+  const getLayout: FlatListProps<User>['getItemLayout'] = (_data, index) => ({
     length: SCREEN_WIDTH,
     offset: SCREEN_WIDTH * index,
     index,
@@ -154,7 +140,7 @@ export default function FollowListScreen() {
     setSPage(Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH) + 1);
   };
 
-  const onScrollToIndexFailed: FlatListProps<FriendItem>['onScrollToIndexFailed'] = (info) => {
+  const onScrollToIndexFailed: FlatListProps<User>['onScrollToIndexFailed'] = (info) => {
     setTimeout(() => {
       info?.averageItemLength &&
         (info as any).props?.ref?.current?.scrollToOffset?.({
