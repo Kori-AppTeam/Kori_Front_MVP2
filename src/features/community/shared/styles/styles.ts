@@ -97,3 +97,24 @@ export const EmptyText = styled.Text`
   color: #cfd4da;
   font-size: 14px;
 `;
+
+// 게시글 카드 공통 스타일
+export const Container = styled.View`
+  width: 100%;
+  align-items: center;
+`;
+export const Wrap = styled.Pressable<{ width: number }>`
+  width: ${({ width }) => (width ? width : 335)}px;
+  padding: 20px 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+export const ContentBox = styled.View`
+  width: 100%;
+  padding: 20px 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+`;

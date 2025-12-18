@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
+import { Container, Wrap } from '../../shared/styles/styles';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { BookmarkedPostItem } from '../types';
@@ -17,7 +18,7 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
 
   return (
-    <Container width={SCREEN_WIDTH}>
+    <Container>
       <Wrap
         width={SCREEN_WIDTH}
         onPress={() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } })}
@@ -53,19 +54,6 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
 
 export default memo(BookmarkedPost);
 
-const Container = styled.View<{ width: number }>`
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const Wrap = styled.Pressable<{ width: number }>`
-  width: ${({ width }) => (width ? width : 335)}px;
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 const BorderLine = styled.View<{ width: number }>`
   width: ${({ width }) => (width ? width - 20 * 2 : 335)}px;
   border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};

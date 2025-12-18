@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
+import { Container, ContentBox, Wrap } from '../../shared/styles/styles';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import useVisitor from '../hooks/useVisitor';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
@@ -20,7 +21,7 @@ const PostListCard = ({ data }: { data: PostsListItem }) => {
   const { showMoreSheet } = useMoreSheetStore();
 
   return (
-    <Container width={SCREEN_WIDTH}>
+    <Container>
       <Wrap
         width={SCREEN_WIDTH}
         onPress={() => {
@@ -69,29 +70,8 @@ const PostListCard = ({ data }: { data: PostsListItem }) => {
 
 export default memo(PostListCard);
 
-const Container = styled.View<{ width: number }>`
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const Wrap = styled.Pressable<{ width: number }>`
-  width: ${({ width }) => (width ? width : 335)}px;
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 const BorderLine = styled.View<{ width: number }>`
   width: ${({ width }) => (width ? width - 20 * 2 : 335)}px;
   border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
   border-bottom-width: 1px;
-`;
-const ContentBox = styled.View`
-  width: 100%;
-  padding: 20px 0;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
 `;
