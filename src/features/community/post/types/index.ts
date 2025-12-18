@@ -146,7 +146,7 @@ export interface PostCommonFooterProps {
   isLiked: boolean;
   likeCount: number;
   onToggleLike: () => void;
-  onToggleComment: () => void;
+  onToggleComment?: () => void;
   commentCount: number;
   onOpenModal: () => void;
   authorId?: number;
