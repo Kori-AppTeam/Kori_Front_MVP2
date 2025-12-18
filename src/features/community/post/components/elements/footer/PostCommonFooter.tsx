@@ -38,6 +38,7 @@ export default PostCommonFooter;
 
 const FooterRow = styled.View`
   width: 100%;
+  padding: 0 20px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;

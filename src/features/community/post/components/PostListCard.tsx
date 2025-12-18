@@ -75,7 +75,7 @@ const Container = styled.View<{ width: number }>`
   justify-content: center;
 `;
 const Wrap = styled.Pressable<{ width: number }>`
-  width: ${({ width }) => (width ? width - 20 * 2 : 335)};
+  width: ${({ width }) => (width ? width : 335)}px;
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -92,5 +92,6 @@ const ContentBox = styled.View`
   padding: 20px 0;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 16px;
 `;

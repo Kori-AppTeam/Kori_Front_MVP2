@@ -59,6 +59,8 @@ export default memo(PostCommonHeader);
 const PostHeader = styled.View`
   flex-direction: row;
   align-items: center;
+  padding: 0 20px;
+  width: 100%;
 `;
 const AuthorImageContainer = styled.View`
   width: 44px;

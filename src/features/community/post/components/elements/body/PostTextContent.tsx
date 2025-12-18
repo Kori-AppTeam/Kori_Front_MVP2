@@ -77,6 +77,7 @@ export default memo(PostTextContent);
 const ContentText = styled.View`
   flex-direction: column;
   width: 100%;
+  padding: 0 20px;
   align-items: flex-start;
   gap: 4px;
 `;
