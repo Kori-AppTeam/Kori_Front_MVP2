@@ -4,7 +4,6 @@ import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-import ProfileModal from '@/components/ProfileModal';
 import SortTabs from '@/components/SortTabs';
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
 import { useLikeComment } from '@/hooks/mutations/useLikeComment';
@@ -15,6 +14,7 @@ import { addBookmark, removeBookmark } from '@/src/features/community/post/apis/
 import { usePostDetail } from '@/src/features/community/post/hooks/usePostDetail';
 import { useToggleLike } from '@/src/features/community/post/hooks/useToggleLike';
 import { AllowedCategory, SortParam } from '@/src/features/community/post/types';
+import ProfileModal from '@/src/shared/components/ProfileModal';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { User } from '@/src/shared/types/user';
 import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
@@ -1264,9 +1264,6 @@ export default function PostDetailScreen() {
         visible={isProfileVisible}
         userData={selectedUser}
         onClose={() => setIsProfileVisible(false)}
-        onFollow={handleFollow}
-        onUnfollow={handleUnfollow}
-        onChat={handleStartChat}
         isLoadingFollow={isFollowLoading}
         isLoadingChat={isChatLoading}
       />

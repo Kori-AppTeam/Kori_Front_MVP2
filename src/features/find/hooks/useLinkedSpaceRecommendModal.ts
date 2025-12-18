@@ -7,6 +7,9 @@ import { useEffect, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { shouldShowModal, suppressModalForToday } from '../utils/modalStorage';
 
+/**
+ * 링크드 스페이스 추천 모달의 상태와 핸들러를 관리하는 Hook
+ */
 export const useLinkedSpaceRecommendModal = () => {
   const [visible, setVisible] = useState(false);
   const [profileModalVisible, setProfileModalVisible] = useState(false);

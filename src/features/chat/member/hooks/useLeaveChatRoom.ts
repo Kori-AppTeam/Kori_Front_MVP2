@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { leaveChatRoom } from '../api';
+import { leaveChatRoom } from '../api/room';
 
 interface UseLeaveChatRoomParams {
   roomId: string | number;

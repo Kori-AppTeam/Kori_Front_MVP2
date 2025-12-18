@@ -1,5 +1,5 @@
 export type User = {
-  userId: string;
+  userId: number;
   firstname: string;
   lastname: string;
   gender: string;
@@ -10,4 +10,5 @@ export type User = {
   language: string[];
   hobby: string[];
   imageKey: string;
+  followStatus?: string;
 };

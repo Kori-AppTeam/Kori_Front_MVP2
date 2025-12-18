@@ -1,22 +1,28 @@
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-import FriendCard from '@/components/FriendCard';
+import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
+import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
 import { FindHeader } from '@/src/features/find/components/FindHeader';
 import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
-import { useFindFriends } from '@/src/features/find/hooks/useFindFriends';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
-import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
+import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
+import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import { useFollowUserMutation } from '@/src/shared/hooks/useUserProfileQuery';
 import { Text } from '@react-navigation/elements';
-import { router } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
 
 export default function index() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+  const queryClient = useQueryClient();
 
-  const { friends, myId, loading, state, mutations, actions } = useFindFriends(20);
+  // Data fetching with filtering
+  const { data: friends, isLoading, isFetching, refetch } = useRecommendedFriends(20);
+
+  const createChatRoom = useCreateOneToOneRoom();
+  const followMutation = useFollowUserMutation();
 
   const {
     visible: recommendVisible,
@@ -26,8 +32,49 @@ export default function index() {
     handleDontShowToday,
     handleClose: handleRecommendClose,
   } = useLinkedSpaceRecommendModal();
+
+  const handleFollowPress = (userId: number) => {
+    followMutation.mutate(userId);
+
+    // Update React Query cache to reflect PENDING status
+    queryClient.setQueryData(['find', 'recommend', 20], (oldData: typeof friends) => {
+      if (!oldData) return oldData;
+      return oldData.map((friend) => (friend.userId === userId ? { ...friend, followStatus: 'PENDING' } : friend));
+    });
+  };
+
+  // Define card actions based on follow status
+  const getCardActions = (item: NonNullable<typeof friends>[0]) => {
+    return {
+      ...(item.followStatus === 'PENDING'
+        ? {
+            secondary: {
+              label: 'Following',
+              onPress: () => {},
+            },
+          }
+        : {
+            primary: {
+              label: 'Follow',
+              onPress: () => handleFollowPress(item.userId),
+            },
+          }),
+      chat: {
+        label: 'Chat',
+        onPress: () =>
+          createChatRoom.mutate({
+            otherUserId: item.userId,
+            userName: `${item.firstname} ${item.lastname}`,
+            routeType: 'push',
+          }),
+      },
+    };
+  };
+
   useRequestFeedback();
 
+  // Scroll to top when FIND_TAB_PRESSED event is emitted
+  // FIND_TAB_PRESSED is emitted from app/(tabs)/_layout.tsx
   useEffect(() => {
     const listener = DeviceEventEmitter.addListener('FIND_TAB_PRESSED', () => {
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
@@ -37,14 +84,14 @@ export default function index() {
   }, []);
 
   const onRefresh = () => {
-    actions.refetch();
+    refetch();
   };
 
   return (
     <Safe>
       <FindHeader />
 
-      {loading.isLoading ? (
+      {isLoading ? (
         <LoaderWrap>
           <ActivityIndicator />
         </LoaderWrap>
@@ -53,96 +100,13 @@ export default function index() {
           ref={flatListRef}
           data={friends}
           keyExtractor={(item) => String(item.userId)}
-          refreshControl={
-            <RefreshControl refreshing={Boolean(loading.isFetching && !loading.isLoading)} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl refreshing={Boolean(isFetching && !isLoading)} onRefresh={onRefresh} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
-          renderItem={({ item }) => {
-            const uid = item.userId;
-            const isSent = state.requested.has(uid);
-            const fullName = [item.firstname, item.lastname].filter(Boolean).join(' ').trim() || 'Unknown';
-
-            return (
-              <CardWrap>
-                <FriendCard
-                  userId={uid}
-                  name={fullName}
-                  country={item.country || '-'}
-                  birth={item.birthday}
-                  gender={item.gender || 'unspecified'}
-                  purpose={item.purpose || '-'}
-                  languages={item.language || []}
-                  personalities={item.hobby || []}
-                  bio={item.introduction || undefined}
-                  imageUrl={item.imageKey}
-                  imageKey={item.imageKey}
-                  defaultExpanded={false}
-                  mode={isSent ? 'sent' : 'friend'}
-                  onFollow={async () => {
-                    if ((myId && uid === myId) || state.inFlight.has(uid)) return;
-
-                    const already = state.requested.has(uid);
-                    if (!already) actions.markRequested(uid);
-
-                    try {
-                      actions.lock(uid);
-                      await mutations.followMutation.mutateAsync(uid);
-                      actions.markRequested(uid);
-                      DeviceEventEmitter.emit('FOLLOW_REQUEST_SENT', { userId: uid });
-                    } catch (e: any) {
-                      const status = e?.response?.status;
-
-                      if (status === 428) {
-                        actions.unmarkRequested(uid);
-                        setProfileModalVisible(true);
-                        return;
-                      }
-
-                      Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to send request.');
-                    } finally {
-                      actions.unlock(uid);
-                    }
-                  }}
-                  onCancel={async () => {
-                    if ((myId && uid === myId) || state.inFlight.has(uid)) return;
-                    const wasSent = state.requested.has(uid);
-                    if (wasSent) actions.unmarkRequested(uid);
-
-                    try {
-                      actions.lock(uid);
-                      await mutations.cancelReqMutation.mutateAsync(uid);
-                      DeviceEventEmitter.emit('FOLLOW_REQUEST_CANCELLED', { userId: uid });
-                    } catch (e: any) {
-                      if (e?.response?.status !== 404) {
-                        Alert.alert('Failed', e?.response?.data?.message ?? 'Failed to cancel request.');
-                      }
-                      if (wasSent) actions.markRequested(uid);
-                    } finally {
-                      actions.unlock(uid);
-                    }
-                  }}
-                  onChat={async () => {
-                    try {
-                      const roomId = await mutations.createRoom({ otherUserId: uid });
-                      router.push({
-                        pathname: CHAT_ROUTE(roomId),
-                        params: { userId: String(uid), roomName: encodeURIComponent(fullName) },
-                      });
-                    } catch (err: any) {
-                      const status = err.response?.status;
-
-                      if (status === 428) {
-                        setProfileModalVisible(true);
-                        return;
-                      }
-
-                      Alert.alert('Chat Error', err?.response?.data?.message ?? 'Failed to create chat room.');
-                    }
-                  }}
-                />
-              </CardWrap>
-            );
-          }}
+          renderItem={({ item }) => (
+            <CardWrap>
+              <UserProfileCard user={item} collapsible={true} actions={getCardActions(item)} />
+            </CardWrap>
+          )}
           ListEmptyComponent={
             <EmptyWrap>
               <EmptyText>
