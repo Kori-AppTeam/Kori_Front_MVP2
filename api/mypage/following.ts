@@ -1,19 +1,18 @@
 import api from '@/api/axiosInstance';
 
 export type AcceptedFriendRow = {
-  id?: number;
-  userId?: number;
-  firstname?: string;
-  lastname?: string;
-  gender?: string;
-  birthday?: number;
-  country?: string;
-  introduction?: string;
-  purpose?: string;
-  email?: string;
-  language?: string[];
-  hobby?: string[];
-  imageKey?: string | null;
+  userId: number;
+  firstname: string;
+  lastname: string;
+  gender: string;
+  birthday: number;
+  country: string;
+  introduction: string;
+  purpose: string;
+  email: string;
+  language: string[];
+  hobby: string[];
+  imageKey: string | null;
 };
 
 export async function getAcceptedFollowing(): Promise<AcceptedFriendRow[]> {

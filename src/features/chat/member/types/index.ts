@@ -1,5 +1,3 @@
-import { UserProfileData } from '../../shared/type';
-
 /** 채팅방 멤버 타입 */
 export interface ChatMember {
   userId: number;
@@ -8,9 +6,6 @@ export interface ChatMember {
   userImageUrl: string;
   isHost: boolean;
 }
-
-/** 사용자 프로필 데이터 재export (편의성) */
-export type { UserProfileData };
 
 /** 신고 사유 */
 export type ReportReason = 'Spam' | 'Sexual Activity' | 'Violence' | 'Fraud' | 'Etc';

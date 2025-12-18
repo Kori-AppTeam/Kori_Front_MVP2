@@ -1,6 +1,5 @@
-import { CHAT_ROOMS_QUERY_KEY } from '@/src/features/chat/list/hooks/useChatRooms';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createOneToOneRoom, fetchUserProfile, followUser, unfollowUser } from '../api';
+import { fetchUserProfile, followUser, unfollowUser } from '../api/userProfile';
 
 /** 쿼리 키 */
 export const USER_PROFILE_QK = (userId: number) => ['chat', 'userProfile', userId] as const;
@@ -21,7 +20,7 @@ export const useFollowUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: followUser,
+    mutationFn: (userId: number) => followUser(userId),
     onSuccess: (_, userId) => {
       // 해당 사용자 프로필 캐시 무효화
       queryClient.invalidateQueries({
@@ -36,23 +35,12 @@ export const useUnfollowUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: unfollowUser,
+    mutationFn: (userId: number) => unfollowUser(userId),
     onSuccess: (_, userId) => {
       // 해당 사용자 프로필 캐시 무효화
       queryClient.invalidateQueries({
         queryKey: USER_PROFILE_QK(userId),
       });
-    },
-  });
-};
-
-/** 1:1 채팅방 생성 Mutation */
-export const useCreateOneToOneRoomMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: createOneToOneRoom,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_QUERY_KEY });
     },
   });
 };

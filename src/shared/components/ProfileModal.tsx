@@ -1,50 +1,42 @@
-import FriendCard from '@/components/FriendCard';
+import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
+import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import { useFollowUserMutation, useUnfollowUserMutation } from '@/src/shared/hooks/useUserProfileQuery';
 import React from 'react';
 import { ActivityIndicator, Modal, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
+import { User } from '../types/user';
 
 type ProfileModalProps = {
   visible: boolean;
-  userData: any;
+  userData: User | undefined | null;
   onClose: () => void;
-  onFollow?: () => void;
-  onUnfollow?: () => void;
-  onChat?: () => void;
   isLoadingFollow?: boolean;
   isLoadingChat?: boolean;
 };
 
-const ProfileModal: React.FC<ProfileModalProps> = ({
-  visible,
-  userData,
-  onClose,
-  onFollow,
-  onUnfollow,
-  onChat,
-  isLoadingFollow,
-  isLoadingChat,
-}) => {
-  const mapApiDataToFriendCardProps = (data: any) => {
-    return {
-      userId: data.userId,
-      name: `${data.firstname} ${data.lastname}`,
-      country: data.country,
-      birth: data.birthday ? new Date(data.birthday).getFullYear() : undefined,
-      gender: data.gender?.toLowerCase() as 'male' | 'female' | 'unspecified',
-      purpose: data.purpose,
-      languages: data.language || [],
-      personalities: data.hobby || [],
-      bio: data.introduction || 'No introduction',
-      imageKey: data.imageKey,
-    };
-  };
+const ProfileModal: React.FC<ProfileModalProps> = ({ visible, userData, onClose, isLoadingFollow, isLoadingChat }) => {
+  const followUserMutation = useFollowUserMutation();
+  const unfollowUserMutation = useUnfollowUserMutation();
+  const createChatRoom = useCreateOneToOneRoom();
 
   const handleFollow = () => {
-    if (onFollow) onFollow();
+    if (!userData) return;
+    followUserMutation.mutate(userData.userId);
   };
 
   const handleUnfollow = () => {
-    if (onUnfollow) onUnfollow();
+    if (!userData) return;
+    unfollowUserMutation.mutate(userData.userId);
+  };
+
+  const handleChat = () => {
+    if (!userData) return;
+    createChatRoom.mutate({
+      otherUserId: userData.userId,
+      userName: `${userData.firstname} ${userData.lastname}`,
+      routeType: 'replace',
+      closeProfile: onClose,
+    });
   };
 
   return (
@@ -53,14 +45,17 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         <Backdrop onPress={onClose} activeOpacity={1}>
           <ModalContainer onStartShouldSetResponder={() => true}>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <FriendCard
-                {...mapApiDataToFriendCardProps(userData)}
-                followStatus={userData.followStatus}
-                isLoadingFollow={isLoadingFollow}
-                isLoadingChat={isLoadingChat}
-                onFollow={handleFollow}
-                onUnfollow={handleUnfollow}
-                onChat={onChat || (() => console.log('chat start'))}
+              <UserProfileCard
+                user={userData}
+                defaultExpanded={true}
+                actions={{
+                  ...(userData.followStatus === 'ACCEPTED'
+                    ? { decline: { label: 'Unfollow', onPress: handleUnfollow } }
+                    : userData.followStatus === 'PENDING'
+                      ? { secondary: { label: 'Pending', onPress: () => {} } }
+                      : { primary: { label: 'Follow', onPress: handleFollow } }),
+                  chat: { label: 'Chat', onPress: handleChat },
+                }}
               />
             </ScrollView>
 

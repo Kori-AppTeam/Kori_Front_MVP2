@@ -1,5 +1,4 @@
 //채팅방 화면
-import ProfileModal from '@/components/ProfileModal';
 import { readMessageAllAPI } from '@/src/features/chat/room/api/messages';
 import Header from '@/src/features/chat/room/components/header/Header';
 import MessageInput from '@/src/features/chat/room/components/input/MessageInput';
@@ -8,8 +7,9 @@ import SearchNavigation from '@/src/features/chat/room/components/search/SearchN
 import { useChatMessages } from '@/src/features/chat/room/hooks/useChatMessages';
 import { useMessageActions } from '@/src/features/chat/room/hooks/useMessageActions';
 import { useMessageSearch } from '@/src/features/chat/room/hooks/useMessageSearch';
-import { useUserProfile } from '@/src/features/chat/room/hooks/useUserProfile';
+import ProfileModal from '@/src/shared/components/ProfileModal';
 import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
+import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
@@ -28,7 +28,15 @@ const ChattingRoomScreen = () => {
   const { loadMessages } = useChatMessages(roomId);
   const messageActions = useMessageActions();
   const messageSearch = useMessageSearch(roomId);
-  const userProfile = useUserProfile();
+
+  // ----------- profile modal ----------- //
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [profileVisible, setProfileVisible] = useState(false);
+  const { data: selectedUser } = useUserProfileQuery(selectedUserId);
+  const handleProfilePress = (userId: number) => {
+    setSelectedUserId(userId);
+    setProfileVisible(true);
+  };
 
   // ----------- effects & handlers ----------- //
   useEffect(() => {
@@ -70,7 +78,7 @@ const ChattingRoomScreen = () => {
               myUserId={myUserId}
               onLoadMore={loadMessages}
               onDeleteMessage={messageActions.deleteMessageWithConfirm}
-              onProfilePress={userProfile.actions.fetchProfile}
+              onProfilePress={handleProfilePress}
               flatListRef={messageSearch.flatListRef}
             />
 
@@ -85,14 +93,7 @@ const ChattingRoomScreen = () => {
             )}
 
             {/* 프로필 모달 */}
-            <ProfileModal
-              visible={userProfile.state.isVisible}
-              userData={userProfile.state.selectedUser}
-              onClose={userProfile.actions.closeProfile}
-              onFollow={userProfile.actions.followUser}
-              onUnfollow={userProfile.actions.unfollowUser}
-              onChat={userProfile.actions.startChat}
-            />
+            <ProfileModal visible={profileVisible} userData={selectedUser} onClose={() => setProfileVisible(false)} />
 
             {/* 번역 버튼 추후 변경 혹은 삭제 예정 */}
             {/* <TranslateButton /> */}

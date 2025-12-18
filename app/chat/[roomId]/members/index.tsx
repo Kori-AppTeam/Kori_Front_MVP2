@@ -1,17 +1,18 @@
 // 채팅방 구성원 확인 페이지
-import ProfileModal from '@/components/ProfileModal';
-import {
-  ChatMembersHeader,
-  LeaveChatButton,
-  MembersList,
-  ReportBlockModal,
-  ReportDetailModal,
-  ReportReasonModal,
-} from '@/src/features/chat/member/components';
-import { useChatMembers, useLeaveChatRoom, useReportBlock } from '@/src/features/chat/member/hooks';
+import { ChatMembersHeader } from '@/src/features/chat/member/components/ChatMembersHeader';
+import { LeaveChatButton } from '@/src/features/chat/member/components/LeaveChatButton';
+import { MembersList } from '@/src/features/chat/member/components/MembersList';
+import { ReportBlockModal } from '@/src/features/chat/member/components/ReportBlockModal';
+import { ReportDetailModal } from '@/src/features/chat/member/components/ReportDetailModal';
+import { ReportReasonModal } from '@/src/features/chat/member/components/ReportReasonModal';
+import { useChatMembers } from '@/src/features/chat/member/hooks/useChatMembers';
+import { useLeaveChatRoom } from '@/src/features/chat/member/hooks/useLeaveChatRoom';
+import { useReportBlock } from '@/src/features/chat/member/hooks/useReportBlock';
 import type { ReportReason } from '@/src/features/chat/member/types';
+import ProfileModal from '@/src/shared/components/ProfileModal';
+import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -20,8 +21,17 @@ const ChatInsideMember = () => {
   const { roomId, roomName } = useLocalSearchParams<{ roomId: string; roomName: string }>();
 
   // 멤버 목록 & 프로필
-  const { members, isLoadingMembers, userProfile } = useChatMembers({ roomId });
-  const { state: profileState, actions: profileActions } = userProfile;
+  const { members } = useChatMembers({ roomId });
+
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const { data: selectedUser, isLoading, error } = useUserProfileQuery(selectedUserId);
+
+  const [profileVisible, setProfileVisible] = useState(false);
+
+  const handleProfilePress = (userId: number) => {
+    setSelectedUserId(userId);
+    setProfileVisible(true);
+  };
 
   // 채팅방 나가기
   const { handleLeaveChat } = useLeaveChatRoom({ roomId });
@@ -42,19 +52,12 @@ const ChatInsideMember = () => {
         {/* Members List */}
         <MembersList
           members={members}
-          onPressProfile={profileActions.fetchProfile}
+          onPressProfile={handleProfilePress}
           onPressMore={reportBlock.openReportBlockMenu}
         />
 
         {/* Profile Modal */}
-        <ProfileModal
-          visible={profileState.isVisible}
-          userData={profileState.selectedUser}
-          onClose={profileActions.closeProfile}
-          onFollow={profileActions.followUser}
-          onUnfollow={profileActions.unfollowUser}
-          onChat={profileActions.startChat}
-        />
+        <ProfileModal visible={profileVisible} userData={selectedUser} onClose={() => setProfileVisible(false)} />
 
         {/* Leave Chat Button */}
         <LeaveChatButton onPress={handleLeaveChat} />
