@@ -693,6 +693,8 @@ export default function PostDetailScreen() {
     );
   }
 
+  console.log(postDetailData);
+
   return (
     <Safe>
       {/* 게시글카드로 대체 */}
@@ -746,6 +748,7 @@ export default function PostDetailScreen() {
                 <ContentBox>
                   {/* 이미지 컨텐츠 */}
                   {postDetailData.contentImageUrls !== undefined &&
+                    postDetailData.contentImageUrls.length > 0 &&
                     (postDetailData.contentImageUrls.length > 1 ? (
                       <PostCarousel
                         images={postDetailData.contentImageUrls}
@@ -1079,8 +1082,7 @@ const Avatar = styled(ProfileImage)`
 
 const SortWrap = styled.View`
   background: #171818;
-  padding: 10px 16px 0 16px;
-  margin-bottom: 15px;
+  margin-bottom: 24px;
 `;
 const InputBar = styled.View`
   padding: 10px 12px 14px 12px;

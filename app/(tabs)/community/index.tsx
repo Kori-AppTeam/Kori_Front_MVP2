@@ -123,6 +123,6 @@ const ChipsWrap = styled.View`
   margin-top: 12px;
 `;
 const SortWrap = styled.View`
-  margin-top: 20px;
-  margin-left: 10px;
+  margin-top: 12px;
+  margin-bottom: 4px;
 `;
