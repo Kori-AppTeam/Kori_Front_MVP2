@@ -2,8 +2,7 @@ import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
-import styled from 'styled-components/native';
-import { Container, Wrap } from '../../shared/styles/styles';
+import { BorderLine, Container, ContentBox, Wrap } from '../../shared/styles/styles';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { BookmarkedPostItem } from '../types';
@@ -53,16 +52,3 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
 };
 
 export default memo(BookmarkedPost);
-
-const BorderLine = styled.View<{ width: number }>`
-  width: ${({ width }) => (width ? width - 20 * 2 : 335)}px;
-  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
-  border-bottom-width: 1px;
-`;
-const ContentBox = styled.View`
-  width: 100%;
-  padding: 20px 0;
-  flex-direction: column;
-  justify-content: center;
-  gap: 16px;
-`;

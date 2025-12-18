@@ -118,3 +118,8 @@ export const ContentBox = styled.View`
   align-items: center;
   gap: 16px;
 `;
+export const BorderLine = styled.View<{ width: number }>`
+  width: ${({ width }) => (width ? width - 20 * 2 : 335)}px;
+  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
+  border-bottom-width: 1px;
+`;
