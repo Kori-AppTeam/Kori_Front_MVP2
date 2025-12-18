@@ -14,20 +14,18 @@ import { usePostComments } from '@/hooks/queries/usePostComments';
 import PostCarousel from '@/src/features/community/post/components/elements/body/PostCarousel';
 import PostSingleImage from '@/src/features/community/post/components/elements/body/PostSingleImage';
 import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
+import PostCommonFooter from '@/src/features/community/post/components/elements/footer/PostCommonFooter';
 import PostCommonHeader from '@/src/features/community/post/components/elements/header/PostCommonHeader';
 import { useGetPostDetail } from '@/src/features/community/post/hooks/useGetPostDetail';
 import { useHandleLikeBookmark } from '@/src/features/community/post/hooks/useHandleLikeBookmark';
-import { useToggleLike } from '@/src/features/community/post/hooks/useToggleLike';
+import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSheetStore';
 import { AllowedCategory, SortParam } from '@/src/features/community/post/types';
+import { ContentBox } from '@/src/features/community/shared/styles/styles';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { User } from '@/src/shared/types/user';
-import { formatCreatedYMD } from '@/src/shared/utils/dateUtils';
-import { usePostUI } from '@/src/store/usePostUI';
 import { theme } from '@/src/styles/theme';
-import { loadAspectRatios } from '@/src/utils/image';
 import { LOCAL_ALLOW_ANON, resolvePostCategory } from '@/utils/category';
-import { keysToUrls } from '@/utils/image';
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
 import {
@@ -41,49 +39,15 @@ import {
   Modal,
   Platform,
   Pressable,
-  Image as RNImage,
   TextInput as RNTextInput,
   TextInputProps,
   View,
-  ViewToken,
 } from 'react-native';
 import styled from 'styled-components/native';
 
 const SCREEN_W = Dimensions.get('window').width;
 const H_PADDING = 32;
 const IMG_W = SCREEN_W - H_PADDING;
-
-function ResponsiveImage({ uri, width, radius = 12 }: { uri: string; width: number; radius?: number }) {
-  const [ratio, setRatio] = React.useState<number | null>(null);
-
-  React.useEffect(() => {
-    let mounted = true;
-    RNImage.getSize(
-      uri,
-      (w, h) => {
-        if (mounted) setRatio(w > 0 && h > 0 ? w / h : 16 / 9);
-      },
-      () => {
-        if (mounted) setRatio(16 / 9);
-      },
-    );
-    return () => {
-      mounted = false;
-    };
-  }, [uri]);
-
-  if (!ratio) {
-    return <View style={{ width, height: width / (16 / 9), borderRadius: radius, backgroundColor: '#111213' }} />;
-  }
-
-  return (
-    <RNImage
-      source={{ uri }}
-      resizeMode="cover"
-      style={{ width, aspectRatio: ratio, borderRadius: radius, backgroundColor: '#111213' }}
-    />
-  );
-}
 
 const StyledEditInput = styled(RNTextInput)`
   min-height: 220px;
@@ -111,20 +75,6 @@ export default function PostDetailScreen() {
     commentId?: string;
   }>();
   const postId = Number(id);
-  const {
-    bookmarked: bmMap,
-    toggleBookmarked,
-    hydrateFromServer,
-    setBookmarked,
-    liked,
-    likeCount,
-    setLiked,
-    toggleLiked,
-    setLikeCount,
-    hydrateLikeFromServer,
-  } = usePostUI();
-
-  const postBookmarked = bmMap[postId] ?? false;
 
   const { postDetailData, isLoading, isError, error } = useGetPostDetail(Number.isFinite(postId) ? postId : undefined);
 
@@ -173,98 +123,8 @@ export default function PostDetailScreen() {
     });
   }, [postId, category, serverAnonymousAllowed, anonAllowed, cmtOpts]);
 
-  const DEFAULT_RATIO = 16 / 9;
-  const MAX_IMAGES = 5;
-  const IMG_W = Dimensions.get('window').width - 32;
-
-  const rawImageKeys: string[] = useMemo(() => {
-    const p: any = postDetailData ?? {};
-    return (p.contentImageUrls as string[] | undefined) ?? (p.imageUrls as string[] | undefined) ?? [];
-  }, [postDetailData]);
-
-  const imageUrls: string[] = useMemo(() => keysToUrls(rawImageKeys).slice(0, MAX_IMAGES), [rawImageKeys]);
-
-  const [ratios, setRatios] = useState<number[]>([]);
-  const heights = useMemo(
-    () => (ratios.length ? ratios : imageUrls.map(() => DEFAULT_RATIO)).map((r) => IMG_W / r),
-    [ratios, imageUrls, IMG_W],
-  );
-
-  const [imgIndex, setImgIndex] = useState(0);
-  const heightAnim = useRef(new Animated.Value(IMG_W / DEFAULT_RATIO)).current;
-
   //댓글 바로 숨기기 (임시로)
   const [hiddenCommentIds, setHiddenCommentIds] = useState<Set<number>>(new Set());
-
-  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    if (!viewableItems?.length) return;
-    const i = viewableItems[0].index ?? 0;
-    syncHeightForIndex(i);
-  }).current;
-
-  const currentIndexRef = useRef(0);
-
-  const syncHeightForIndex = React.useCallback(
-    (i: number) => {
-      currentIndexRef.current = i;
-      setImgIndex(i);
-      const nextH = heights[i] ?? IMG_W / DEFAULT_RATIO;
-      Animated.timing(heightAnim, {
-        toValue: nextH,
-        duration: 180,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }).start();
-    },
-    [heights, IMG_W, DEFAULT_RATIO, heightAnim],
-  );
-
-  const onMomentumScrollEnd = (e: any) => {
-    const x = e?.nativeEvent?.contentOffset?.x ?? 0;
-    const i = Math.max(0, Math.round(x / IMG_W));
-    syncHeightForIndex(i);
-  };
-  const onScrollEndDrag = (e: any) => {
-    const x = e?.nativeEvent?.contentOffset?.x ?? 0;
-    const i = Math.max(0, Math.round(x / IMG_W));
-    syncHeightForIndex(i);
-  };
-
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      if (!imageUrls.length) return;
-      const rs = await loadAspectRatios(imageUrls, DEFAULT_RATIO);
-      if (!alive) return;
-      setRatios(rs);
-
-      const i = currentIndexRef.current;
-      const r = rs[i] ?? DEFAULT_RATIO;
-      heightAnim.setValue(IMG_W / r);
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [imageUrls, DEFAULT_RATIO, IMG_W, heightAnim]);
-
-  const syncHeightForOffset = React.useCallback(
-    (x: number) => {
-      const i = Math.max(0, Math.round(x / IMG_W));
-      setImgIndex(i);
-
-      const nextH = heights[i] ?? IMG_W / DEFAULT_RATIO;
-      Animated.timing(heightAnim, {
-        toValue: nextH,
-        duration: 180,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }).start();
-    },
-    [heights, IMG_W, DEFAULT_RATIO, heightAnim],
-  );
-
-  const likeMutation = useToggleLike();
-  const navigation = useNavigation();
 
   const openedOnceRef = useRef(false);
 
@@ -312,21 +172,6 @@ export default function PostDetailScreen() {
 
   const { mutateAsync: updateCommentMut } = useUpdateComment();
   const likeBusyRef = useRef<Record<number, boolean>>({});
-  const bmBusyRef = useRef<Record<number, boolean>>({});
-
-  useEffect(() => {
-    const serverVal = (post as any)?.bookmarked;
-    hydrateFromServer(postId, typeof serverVal === 'boolean' ? serverVal : undefined);
-  }, [postId, post, hydrateFromServer]);
-
-  useEffect(() => {
-    if (!Number.isFinite(postId) || !post) return;
-
-    const liked = Boolean((post as any).likedByMe ?? (post as any).isLike ?? (post as any).isLiked ?? false);
-    const count = post.likeCount ?? 0;
-
-    hydrateLikeFromServer(postId, liked, count);
-  }, [postId, post, hydrateLikeFromServer]);
 
   useEffect(() => {
     if (isError && error) {
@@ -356,63 +201,6 @@ export default function PostDetailScreen() {
     const t = setTimeout(() => editInputRef.current?.focus(), 350);
     return () => clearTimeout(t);
   }, [intent, focusCommentId, commentList.length]);
-
-  if (isLoading) {
-    return (
-      <Safe>
-        <Header>
-          <Back onPress={() => router.back()}>
-            <Icon type="previous" size={20} color={theme.colors.gray.lightGray_1} />
-          </Back>
-          <HeaderTitle>Post</HeaderTitle>
-          <RightPlaceholder />
-        </Header>
-        <Center>
-          <Dim>Loading…</Dim>
-        </Center>
-      </Safe>
-    );
-  }
-  if (isError || !postDetailData) {
-    return (
-      <Safe>
-        <Header>
-          <Back onPress={() => router.back()}>
-            <Icon type="previous" size={20} color={theme.colors.gray.lightGray_1} />
-          </Back>
-          <HeaderTitle>Post</HeaderTitle>
-          <RightPlaceholder />
-        </Header>
-        <Center>
-          <Dim>Post not found.</Dim>
-        </Center>
-      </Safe>
-    );
-  }
-
-  const authorId: string = String(post.authorId ?? '');
-  const authorName: string = post.authorName ?? 'Unknown';
-  const postType = post.type ?? post.category ?? post.postType ?? post.kind ?? 'unknown';
-  const isBlocked = Boolean(post.blocked ?? post.isBlocked);
-  const isDeleted = Boolean(post.deleted ?? post.isDeleted ?? post.status === 'DELETED');
-
-  const isAnonymous = Boolean(post.anonymous ?? post.isAnonymous ?? post.private);
-  const author = isAnonymous ? 'Anonymity' : authorName;
-  const avatarUrl = post.userImageUrl || undefined;
-  const isVisitorAvatar = !avatarUrl;
-
-  const createdRaw = post.createdTime ?? post.createdAt ?? post.timestamp;
-  const createdLabel = formatCreatedYMD(createdRaw);
-
-  const serverLikeCount = post.likeCount ?? 0;
-  const commentCount = post.commentCount ?? 0;
-  const views = post.viewCount ?? 0;
-  const body = post.content ?? '';
-
-  const serverLiked = Boolean((post as any).likedByMe ?? (post as any).isLike ?? (post as any).isLiked ?? false);
-
-  const likedByMe = liked[postId] ?? serverLiked;
-  const likeCountUI = likeCount[postId] ?? serverLikeCount;
 
   try {
     console.groupCollapsed('[post-meta]');
@@ -461,28 +249,6 @@ export default function PostDetailScreen() {
 
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
 
-  // const handleToggleLike = async () => {
-  //   if (!Number.isFinite(postId) || likeMutation.isPending) return;
-
-  //   const prevLiked = likedByMe;
-  //   const prevCount = likeCountUI;
-  //   const nextLiked = !prevLiked;
-  //   const delta = nextLiked ? +1 : -1;
-  //   const nextCount = Math.max(0, prevCount + delta);
-
-  //   toggleLiked(postId);
-  //   setLikeCount(postId, nextCount);
-
-  //   try {
-  //     await likeMutation.mutateAsync({ postId, liked: prevLiked });
-  //   } catch (e) {
-  //     // 롤백
-  //     setLiked(postId, prevLiked);
-  //     setLikeCount(postId, prevCount);
-  //     console.error('[like detail] error', e);
-  //   }
-  // };
-
   //게시글에서 열기
   const openPostSheet = () => {
     setSheetCtx({ type: 'post' });
@@ -511,27 +277,27 @@ export default function PostDetailScreen() {
     }).start();
   };
 
-  const openCommentReport = (c: Comment) => {
-    const cid = Number((c as any).id ?? (c as any).commentId);
-    if (!Number.isFinite(cid)) return;
-    setReportTarget('comment');
-    setReportCommentId(cid);
-    setReportText('');
-    setReportOpen(true);
-  };
+  // const openCommentReport = (c: Comment) => {
+  //   const cid = Number((c as any).id ?? (c as any).commentId);
+  //   if (!Number.isFinite(cid)) return;
+  //   setReportTarget('comment');
+  //   setReportCommentId(cid);
+  //   setReportText('');
+  //   setReportOpen(true);
+  // };
 
-  const closeMenu = () =>
-    new Promise<void>((resolve) => {
-      Animated.timing(slideY, {
-        toValue: 300,
-        duration: 200,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }).start(() => {
-        setMenuVisible(false);
-        resolve();
-      });
-    });
+  // const closeMenu = () =>
+  //   new Promise<void>((resolve) => {
+  //     Animated.timing(slideY, {
+  //       toValue: 300,
+  //       duration: 200,
+  //       easing: Easing.in(Easing.cubic),
+  //       useNativeDriver: true,
+  //     }).start(() => {
+  //       setMenuVisible(false);
+  //       resolve();
+  //     });
+  //   });
 
   const onSubmitReport = () => {
     const reason = reportText.trim();
@@ -625,14 +391,14 @@ export default function PostDetailScreen() {
       return next;
     });
   };
-  const unhideCommentLocal = (cid: number) => {
-    setHiddenCommentIds((prev) => {
-      if (!prev.has(cid)) return prev;
-      const next = new Set(prev);
-      next.delete(cid);
-      return next;
-    });
-  };
+  // const unhideCommentLocal = (cid: number) => {
+  //   setHiddenCommentIds((prev) => {
+  //     if (!prev.has(cid)) return prev;
+  //     const next = new Set(prev);
+  //     next.delete(cid);
+  //     return next;
+  //   });
+  // };
 
   //r게시글 차단
   const blockPostFromSheet = () => {
@@ -885,14 +651,47 @@ export default function PostDetailScreen() {
     }
   };
 
-  const likeIconType = likedByMe ? 'thumbsUpSelected' : 'thumbsUpNonSelected';
-
   const reportTitle =
     reportTarget === 'user'
       ? 'Report This User'
       : reportTarget === 'comment'
         ? 'Report This Comment'
         : 'Report This Post';
+
+  const { showMoreSheet } = useMoreSheetStore();
+
+  if (isLoading) {
+    return (
+      <Safe>
+        <Header>
+          <Back onPress={() => router.back()}>
+            <Icon type="previous" size={20} color={theme.colors.gray.lightGray_1} />
+          </Back>
+          <HeaderTitle>Post</HeaderTitle>
+          <RightPlaceholder />
+        </Header>
+        <Center>
+          <Dim>Loading…</Dim>
+        </Center>
+      </Safe>
+    );
+  }
+  if (isError || !postDetailData) {
+    return (
+      <Safe>
+        <Header>
+          <Back onPress={() => router.back()}>
+            <Icon type="previous" size={20} color={theme.colors.gray.lightGray_1} />
+          </Back>
+          <HeaderTitle>Post</HeaderTitle>
+          <RightPlaceholder />
+        </Header>
+        <Center>
+          <Dim>Post not found.</Dim>
+        </Center>
+      </Safe>
+    );
+  }
 
   return (
     <Safe>
@@ -930,7 +729,7 @@ export default function PostDetailScreen() {
           ListHeaderComponent={
             <>
               {/* 여기 게시글카드 */}
-              <Card>
+              <Container>
                 <PostCommonHeader
                   authorId={postDetailData.authorId}
                   postId={postDetailData.postId}
@@ -944,83 +743,37 @@ export default function PostDetailScreen() {
                   onToggleBookmark={() => handleToggleBookmark(postDetailData.postId, postDetailData.isBookmarked)}
                 />
 
-                {/* 이미지 캐러셀 */}
-                {postDetailData.contentImageUrls !== undefined &&
-                  (postDetailData.contentImageUrls.length > 1 ? (
-                    <PostCarousel
-                      images={postDetailData.contentImageUrls}
-                      gap={5}
-                      offset={15}
-                      pageWidth={SCREEN_WIDTH - 20 * 2}
-                    />
-                  ) : (
-                    <PostSingleImage
-                      imageUrl={postDetailData.contentImageUrls[0]}
-                      imageCount={postDetailData.imageCount}
-                      pageWidth={SCREEN_WIDTH - 20 * 2}
-                    />
-                  ))}
-
-                {/* {imageUrls.length > 0 && (
-                  <View style={{ marginTop: 10 }}>
-                    <Animated.View
-                      style={{
-                        height: heightAnim,
-                        overflow: 'hidden',
-                        borderRadius: 12,
-                        backgroundColor: '#111213',
-                      }}
-                    >
-                      <FlatList
-                        data={imageUrls}
-                        keyExtractor={(u, i) => `${u}#${i}`}
-                        horizontal
-                        pagingEnabled
-                        snapToInterval={IMG_W}
-                        decelerationRate="fast"
-                        removeClippedSubviews={false}
-                        scrollEventThrottle={16}
-                        onMomentumScrollEnd={onMomentumScrollEnd}
-                        onScrollEndDrag={onScrollEndDrag}
-                        onViewableItemsChanged={onViewableItemsChanged}
-                        renderItem={({ item }) => (
-                          <RNImage source={{ uri: item }} resizeMode="cover" style={{ width: IMG_W, height: '100%' }} />
-                        )}
+                <ContentBox>
+                  {/* 이미지 컨텐츠 */}
+                  {postDetailData.contentImageUrls !== undefined &&
+                    (postDetailData.contentImageUrls.length > 1 ? (
+                      <PostCarousel
+                        images={postDetailData.contentImageUrls}
+                        gap={5}
+                        offset={20}
+                        pageWidth={SCREEN_WIDTH}
+                        imageCount={postDetailData.imageCount}
                       />
-                    </Animated.View>
+                    ) : (
+                      <PostSingleImage
+                        imageUrl={postDetailData.contentImageUrls[0]}
+                        imageCount={postDetailData.imageCount}
+                        pageWidth={SCREEN_WIDTH - 20 * 2}
+                      />
+                    ))}
 
-                    <Counter>{` ${imgIndex + 1}/${imageUrls.length} `}</Counter>
-                  </View>
-                )} */}
+                  {/* 텍스트 컨텐츠 */}
+                  <PostTextContent isTruncate={false} content={postDetailData.content} />
+                </ContentBox>
 
-                {/* 텍스트 컨텐츠 */}
-                <PostTextContent isTruncate={false} content={postDetailData.content} />
-
-                {/* <PostCommonFooter 
+                <PostCommonFooter
                   isLiked={postDetailData.isLiked}
                   likeCount={postDetailData.likeCount}
                   commentCount={postDetailData.commentCount}
                   onToggleLike={() => handleToggleLike(postDetailData.postId, postDetailData.isLiked)}
-                  onToggleComment={}
-                /> */}
-                <Footer>
-                  <Act
-                    onPress={() => handleToggleLike(postDetailData.postId, postDetailData.isLiked)}
-                    disabled={likeMutation.isPending}
-                  >
-                    <Icon type={likeIconType} size={20} />
-                    <ActText>{likeCountUI}</ActText>
-                  </Act>
-                  <Act>
-                    <Icon type="comment" size={20} color={theme.colors.gray.lightGray_1} />
-                    <ActText>{commentCount}</ActText>
-                  </Act>
-                  <Grow />
-                  <MoreBtn onPress={openPostSheet} hitSlop={8}>
-                    <Icon type="eclipsisGaro" size={20} color={theme.colors.gray.gray_1} />
-                  </MoreBtn>
-                </Footer>
-              </Card>
+                  onOpenModal={() => showMoreSheet(postDetailData.postId, postDetailData.authorId)}
+                />
+              </Container>
 
               {/* 정렬 탭 */}
               <SortWrap>
@@ -1281,6 +1034,15 @@ const Safe = styled.SafeAreaView`
   flex: 1;
   background: #1d1e1f;
 `;
+const Container = styled.View`
+  padding: 20px 0;
+  background-color: ${({ theme }) => theme.colors.primary.black};
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
 const Header = styled.View`
   height: 48px;
   padding: 0 12px;
@@ -1311,39 +1073,11 @@ const Dim = styled.Text`
   color: #cfd4da;
 `;
 
-const Card = styled.View`
-  background: ${({ theme }) => theme.colors.primary.black};
-  padding: 20px;
-  border-bottom-width: 1px;
-  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
-`;
 const Avatar = styled(ProfileImage)`
   width: 34px;
   height: 34px;
   border-radius: 17px;
   background: #2a2b2c;
-`;
-const Footer = styled.View`
-  margin-top: 8px;
-  flex-direction: row;
-  align-items: center;
-`;
-const Act = styled.Pressable<{ disabled?: boolean }>`
-  flex-direction: row;
-  align-items: center;
-  margin-right: 16px;
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
-`;
-const ActText = styled.Text`
-  color: #cfd4da;
-  margin-left: 6px;
-  font-size: 12px;
-`;
-const Grow = styled.View`
-  flex: 1;
-`;
-const MoreBtn = styled.Pressable`
-  padding: 6px;
 `;
 
 const SortWrap = styled.View`
