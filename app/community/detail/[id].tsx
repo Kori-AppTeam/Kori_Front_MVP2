@@ -1,15 +1,13 @@
 import api from '@/api/axiosInstance';
-import { blockComment } from '@/api/community/comments';
 import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import SortTabs from '@/components/SortTabs';
-import { useCreateComment } from '@/hooks/mutations/useCreateComment';
 import { useLikeComment } from '@/hooks/mutations/useLikeComment';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
-import { useCommentWriteOptions } from '@/hooks/queries/useCommentWriteOptions';
 import { usePostComments } from '@/hooks/queries/usePostComments';
+import { blockComment } from '@/src/features/community/post/apis/comments';
 import PostCarousel from '@/src/features/community/post/components/elements/body/PostCarousel';
 import PostSingleImage from '@/src/features/community/post/components/elements/body/PostSingleImage';
 import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
@@ -18,13 +16,12 @@ import PostCommonHeader from '@/src/features/community/post/components/elements/
 import { useGetPostDetail } from '@/src/features/community/post/hooks/useGetPostDetail';
 import { useHandleLikeBookmark } from '@/src/features/community/post/hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSheetStore';
-import { AllowedCategory, SortParam } from '@/src/features/community/post/types';
+import { SortParam } from '@/src/features/community/post/types';
 import { ContentBox } from '@/src/features/community/shared/styles/styles';
 import ProfileModal from '@/src/shared/components/ProfileModal';
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
-import { User } from '@/src/shared/types/user';
+import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
 import { theme } from '@/src/styles/theme';
-import { LOCAL_ALLOW_ANON, resolvePostCategory } from '@/utils/category';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
@@ -34,7 +31,6 @@ import {
   Dimensions,
   Easing,
   FlatList,
-  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -63,7 +59,6 @@ const EditInput = forwardRef<RNTextInput, TextInputProps>((props, ref) => <Style
 EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
-  const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
@@ -78,50 +73,53 @@ export default function PostDetailScreen() {
 
   const { postDetailData, isLoading, isError, error } = useGetPostDetail(Number.isFinite(postId) ? postId : undefined);
 
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  // 프로필 모달 상태 관리
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
+  const [targetUserId, setTargetUserId] = useState<number | null>(null);
+  const selectedUser = useUserProfileQuery(targetUserId);
 
-  const fetchUserProfile = async (userId: number) => {
-    try {
-      console.log('[Profile] fetching user:', userId);
-      setIsLoadingProfile(true);
-      const res = await api.get(`/api/v1/member/${userId}/info`);
-      // 안전하게 실제 user 객체를 꺼내서 저장
-      const userObj = (res.data && (res.data.data ?? res.data)) || res;
-      console.log('[Profile] resolved userObj:', userObj);
-      setSelectedUser(userObj);
-      setIsProfileVisible(true);
-    } catch (err) {
-      console.error('프로필 불러오기 실패', err);
-      Alert.alert('Error', 'Failed to load user profile');
-    } finally {
-      setIsLoadingProfile(false);
-    }
+  const handleSetSelectedUser = (userId: number) => {
+    setTargetUserId(userId);
+    setIsProfileVisible(true);
   };
 
-  const post = postDetailData as any;
+  // const [value, setValue] = useState('');
+  //   const [anonymous, setAnonymous] = useState(false);
+  //   const createCmt = useCreateComment(postId);
 
-  const category: AllowedCategory = React.useMemo(() => resolvePostCategory(post), [post]);
+  // const post = postDetailData as any;
 
-  const { data: cmtOpts } = useCommentWriteOptions(Number.isFinite(postId) ? postId : undefined);
+  // const category: AllowedCategory = React.useMemo(() => resolvePostCategory(post), [post]);
 
-  const serverAnonymousAllowed = Boolean(
-    (cmtOpts as any)?.isAnonymousAvailable ?? (cmtOpts as any)?.isAnonymousAvaliable,
-  );
+  // const { data: cmtOpts } = useCommentWriteOptions(Number.isFinite(postId) ? postId : undefined);
 
-  const anonAllowed = React.useMemo(() => {
-    const local = category ? LOCAL_ALLOW_ANON.has(category) : false;
-    return serverAnonymousAllowed || local;
-  }, [serverAnonymousAllowed, category]);
+  // const serverAnonymousAllowed = Boolean(
+  //   (cmtOpts as any)?.isAnonymousAvailable ?? (cmtOpts as any)?.isAnonymousAvaliable,
+  // );
 
-  React.useEffect(() => {
-    console.log('[comment:write-options]', {
-      postId,
-      category,
-      serverAnonymousAllowed,
-      anonAllowed,
-      raw: cmtOpts,
-    });
-  }, [postId, category, serverAnonymousAllowed, anonAllowed, cmtOpts]);
+  // const anonAllowed = React.useMemo(() => {
+  //   const local = category ? LOCAL_ALLOW_ANON.has(category) : false;
+  //   return serverAnonymousAllowed || local;
+  // }, [serverAnonymousAllowed, category]);
+
+  //   const submit = () => {
+  //   const text = value.trim();
+  //   if (!text || !Number.isFinite(postId)) return;
+  //   createCmt.mutate(
+  //     {
+  //       comment: text,
+  //       anonymous: anonAllowed ? !!anonymous : false,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         setValue('');
+  //         Keyboard.dismiss();
+  //         requestAnimationFrame(() => listRef.current?.scrollToOffset({ offset: 0, animated: true }));
+  //       },
+  //       onError: () => Alert.alert('Comment', 'Failed to post comment.'),
+  //     },
+  //   );
+  // };
 
   //댓글 바로 숨기기 (임시로)
   const [hiddenCommentIds, setHiddenCommentIds] = useState<Set<number>>(new Set());
@@ -142,16 +140,9 @@ export default function PostDetailScreen() {
   type SheetCtx = { type: 'post' | 'comment' | null; commentId?: number };
   const [sheetCtx, setSheetCtx] = useState<SheetCtx>({ type: null });
 
-  const createCmt = useCreateComment(postId);
-
   const [sort, setSort] = useState<SortParam>('LATEST');
   const likeComment = useLikeComment(postId, sort);
 
-  const [value, setValue] = useState('');
-  const [anonymous, setAnonymous] = useState(false);
-  const canSend = value.trim().length > 0;
-
-  const inputRef = useRef<RNTextInput>(null);
   const listRef = useRef<RNFlatList<Comment>>(null);
 
   const { data: commentsRaw } = usePostComments(Number.isFinite(postId) ? postId : undefined, sort);
@@ -202,12 +193,6 @@ export default function PostDetailScreen() {
     return () => clearTimeout(t);
   }, [intent, focusCommentId, commentList.length]);
 
-  try {
-    console.groupCollapsed('[post-meta]');
-    const keys = Object.keys(post || {});
-    console.groupEnd();
-  } catch {}
-
   const toggleCommentLike = (comment: Comment) => {
     const cmtId = Number((comment as any).id ?? (comment as any).commentId);
     if (!Number.isFinite(cmtId)) return;
@@ -227,25 +212,6 @@ export default function PostDetailScreen() {
   };
 
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
-
-  const submit = () => {
-    const text = value.trim();
-    if (!text || !Number.isFinite(postId)) return;
-    createCmt.mutate(
-      {
-        comment: text,
-        anonymous: anonAllowed ? !!anonymous : false,
-      },
-      {
-        onSuccess: () => {
-          setValue('');
-          Keyboard.dismiss();
-          requestAnimationFrame(() => listRef.current?.scrollToOffset({ offset: 0, animated: true }));
-        },
-        onError: () => Alert.alert('Comment', 'Failed to post comment.'),
-      },
-    );
-  };
 
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
 
@@ -531,126 +497,6 @@ export default function PostDetailScreen() {
     }
   };
 
-  // 🔽 [추가] 팔로우 요청 함수
-  const handleFollow = async () => {
-    // 로딩 중이거나, 유저 정보가 없으면 중단
-    if (isFollowLoading || !selectedUser) return;
-
-    // selectedUser에서 ID와 현재 팔로우 상태를 가져옵니다.
-    const targetUserId = (selectedUser as any)?.userId;
-    const currentStatus = (selectedUser as any)?.followStatus;
-
-    if (!targetUserId) {
-      Alert.alert('Error', 'Could not find user ID.');
-      return;
-    }
-
-    // "NOT_FOLLOWING" 상태일 때만 팔로우 요청을 보냅니다.
-    if (currentStatus !== 'NOT_FOLLOWING') {
-      console.log(`[Follow] Action ignored. Current status: ${currentStatus}`);
-      return;
-    }
-
-    console.log(`[Follow] Attempting to follow user: ${targetUserId}`);
-    setIsFollowLoading(true);
-
-    try {
-      // 1. API 호출: POST /api/v1/home/follow/{userId}
-      await api.post(`/api/v1/home/follow/${targetUserId}`);
-
-      // 2. API 성공 시, 로컬 state를 "PENDING"으로 즉시 변경 (Optimistic UI)
-      //    (모달이 이 state를 보고 버튼 모양을 "Pending"으로 바꿀 겁니다)
-      setSelectedUser((prevUser) => ({
-        ...(prevUser as any),
-        followStatus: 'PENDING',
-      }));
-
-      Alert.alert('Follow', 'Follow request sent!');
-    } catch (err: any) {
-      // 3. 에러 처리 (백엔드 로직에 맞게)
-      console.error('[Follow] Failed to send follow request:', err);
-
-      const status = err.response?.status;
-      if (status === 428) {
-        setProfileModalVisible(true);
-        return;
-      }
-
-      const errorData = err.response?.data;
-      const errorCode = errorData?.code; // 백엔드에서 보낸 에러 코드
-
-      let msg = 'Failed to send follow request.';
-      if (errorCode === 'PROFILE_SET_NOT_COMPLETED') {
-        msg = 'You must complete your own profile before you can follow others.';
-      } else if (errorCode === 'FOLLOW_ALREADY_EXISTS') {
-        msg = 'You have already sent a request or are already following this user.';
-        // 혹시 모르니 state를 PENDING으로 강제 동기화
-        setSelectedUser((prevUser) => ({
-          ...(prevUser as any),
-          followStatus: 'PENDING', // 또는 'ACCEPTED'일 수 있으나 PENDING이 더 가능성 높음
-        }));
-      } else if (errorCode === 'CANNOT_FOLLOW_YOURSELF') {
-        msg = 'You cannot follow yourself.';
-      }
-
-      Alert.alert('Follow Error', msg);
-    } finally {
-      setIsFollowLoading(false);
-    }
-  };
-
-  const handleUnfollow = async () => {
-    // 로딩 중이거나, 유저 정보가 없으면 중단
-    if (isFollowLoading || !selectedUser) return;
-
-    // selectedUser에서 ID와 현재 팔로우 상태를 가져옵니다.
-    const targetUserId = (selectedUser as any)?.userId;
-    const currentStatus = (selectedUser as any)?.followStatus;
-
-    // "ACCEPTED" (친구) 상태가 아니면 함수를 실행하지 않습니다.
-    if (currentStatus !== 'ACCEPTED') {
-      console.log(`[Unfollow] Action ignored. Current status: ${currentStatus}`);
-      Alert.alert('Unfollow', 'You can only unfollow users you are already friends with.');
-      return;
-    }
-
-    console.log(`[Unfollow] Attempting to unfollow user: ${targetUserId}`);
-    setIsFollowLoading(true);
-
-    try {
-      // 1. API 호출: DELETE /api/v1/users/follow/accepted/{friendId}
-      await api.delete(`/api/v1/users/follow/accepted/${targetUserId}`);
-
-      // 2. API 성공 시, 로컬 state를 "NOT_FOLLOWING"으로 즉시 변경
-      setSelectedUser((prevUser) => ({
-        ...(prevUser as any),
-        followStatus: 'NOT_FOLLOWING',
-      }));
-
-      Alert.alert('Unfollow', 'You have successfully unfollowed this user.');
-    } catch (err: any) {
-      // 3. 에러 처리
-      console.error('[Unfollow] Failed to unfollow:', err);
-      const status = err.response?.status;
-      let msg = 'Failed to unfollow user.';
-
-      if (status === 404) {
-        msg = 'User not found or you are not following them.';
-        // 404 에러 시 로컬 state를 강제로 'NOT_FOLLOWING'으로 동기화
-        setSelectedUser((prevUser) => ({
-          ...(prevUser as any),
-          followStatus: 'NOT_FOLLOWING',
-        }));
-      } else if (status === 401) {
-        msg = 'Please log in again.';
-      }
-
-      Alert.alert('Unfollow Error', msg);
-    } finally {
-      setIsFollowLoading(false);
-    }
-  };
-
   const reportTitle =
     reportTarget === 'user'
       ? 'Report This User'
@@ -693,8 +539,6 @@ export default function PostDetailScreen() {
     );
   }
 
-  console.log(postDetailData);
-
   return (
     <Safe>
       {/* 게시글카드로 대체 */}
@@ -719,7 +563,7 @@ export default function PostDetailScreen() {
             <CommentItem
               data={item}
               isFirst={index === 0}
-              onPressProfile={fetchUserProfile}
+              onPressProfile={() => item.authorId && handleSetSelectedUser(item.authorId)}
               onPressLike={() => toggleCommentLike(item)}
               onPressMore={(c) => openCommentSheet(c)}
             />
@@ -730,9 +574,11 @@ export default function PostDetailScreen() {
           contentContainerStyle={{ paddingBottom: 92 }}
           ListHeaderComponent={
             <>
-              {/* 여기 게시글카드 */}
+              {/* 게시글카드 */}
               <Container>
                 <PostCommonHeader
+                  showProfileModal={true}
+                  onShowProfileModal={() => handleSetSelectedUser(postDetailData.authorId)}
                   authorId={postDetailData.authorId}
                   postId={postDetailData.postId}
                   authorName={postDetailData.authorName}
@@ -787,7 +633,7 @@ export default function PostDetailScreen() {
         />
 
         {/* 댓글 인풋 */}
-        <InputBar>
+        {/* <InputBar>
           <Composer>
             <BottomInput
               ref={inputRef}
@@ -821,7 +667,7 @@ export default function PostDetailScreen() {
           <SendBtn onPress={submit} disabled={!canSend} hitSlop={8}>
             <Icon type="send" size={24} color={canSend ? theme.colors.primary.mint : theme.colors.gray.lightGray_1} />
           </SendBtn>
-        </InputBar>
+        </InputBar> */}
       </KeyboardAvoidingView>
 
       <Modal transparent visible={menuVisible} onRequestClose={() => setMenuVisible(false)} animationType="none">
@@ -1020,7 +866,7 @@ export default function PostDetailScreen() {
       </Modal>
       <ProfileModal
         visible={isProfileVisible}
-        userData={selectedUser}
+        userData={selectedUser.data}
         onClose={() => setIsProfileVisible(false)}
         isLoadingFollow={isFollowLoading}
         isLoadingChat={isChatLoading}
@@ -1083,59 +929,6 @@ const Avatar = styled(ProfileImage)`
 const SortWrap = styled.View`
   background: #171818;
   margin-bottom: 24px;
-`;
-const InputBar = styled.View`
-  padding: 10px 12px 14px 12px;
-  background: #1d1e1f;
-  border-top-width: 1px;
-  border-top-color: #222426;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 10px;
-`;
-const Composer = styled.View`
-  flex: 1;
-  background: #414142;
-  border-radius: 8px;
-  padding: 10px 12px;
-  flex-direction: row;
-  align-items: center;
-`;
-const BottomInput = styled(RNTextInput)`
-  flex: 1;
-  color: #ffffff;
-  font-size: 14px;
-  padding: 0;
-  background: transparent;
-`;
-const AnonToggle = styled.Pressable`
-  flex-direction: row;
-  align-items: center;
-  margin-left: 10px;
-`;
-const AnonLabel = styled.Text`
-  color: #cccfd5;
-  font-size: 14px;
-  margin-right: 8px;
-  font-family: 'PlusJakartaSans_Light';
-`;
-const Check = styled.View<{ $active?: boolean }>`
-  width: 16px;
-  height: 16px;
-  border-radius: 2px;
-  border-width: 1.1px;
-  border-color: #cccfd5;
-  background: ${({ $active }) => ($active ? '#30f59b' : 'transparent')};
-  align-items: center;
-  justify-content: center;
-`;
-
-const SendBtn = styled.Pressable<{ disabled?: boolean }>`
-  width: 36px;
-  height: 36px;
-  align-items: center;
-  justify-content: center;
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 `;
 
 const SheetHandle = styled.View`

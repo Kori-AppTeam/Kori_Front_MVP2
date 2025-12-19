@@ -129,6 +129,8 @@ export interface BookmarkRequestBody {
 
 // 게시글 공통 헤더 컴포넌트
 export interface PostCommonHeaderProps {
+  showProfileModal?: boolean;
+  onShowProfileModal?: () => void;
   authorId?: number;
   postId: number;
   isAnonymous?: boolean;
