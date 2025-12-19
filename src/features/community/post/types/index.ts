@@ -158,3 +158,32 @@ export interface BlockReportPostParams {
   reasonCategory: string;
   reasonDetail: string;
 }
+
+// 상세게시글 댓글 타입
+export interface Comment {
+  commentId: number;
+  parentCommentId: number;
+  authorId: number;
+  authorName: string;
+  content: string;
+  isAnonymous: boolean;
+  isLiked: boolean;
+  likeCount: number;
+  createdAt: string;
+  userImage: string;
+  deleted: boolean;
+}
+
+// 댓글 무한스크롤 페이지 타입
+export interface CommentsCursorPage {
+  items: Comment[];
+  hasNext: boolean;
+  nextCursor?: string | null;
+}
+
+// 댓글 리스트 서버 응답 타입
+export interface CommentsListResp {
+  message: string;
+  data: CommentsCursorPage;
+  timestamp: string;
+}
