@@ -1,64 +1,30 @@
 import api from '@/api/axiosInstance';
-import { SortParam } from '@/src/features/community/post/types';
+import { CommentsListResp, CreateCommentReq, SortParam } from '@/src/features/community/post/types';
 
-export type RawComment = {
-  commentId: number;
-  parentId?: number | null;
-
-  authorName?: string | null;
-  userName?: string | null;
-  nickname?: string | null;
-  writerName?: string | null;
-
-  anonymous?: boolean;
-  isAnonymous?: boolean;
-  likedByMe?: boolean;
-  isLiked?: boolean;
-
-  userImageUrl?: string | null;
-  userImage?: string | null;
-  avatarUrl?: string | null;
-
-  content?: string;
-  comment?: string;
-  text?: string;
-  createdAt?: string | number;
-  createdTime?: string | number;
-
-  likeCount?: number;
-};
-
-export type ListResp<T> = {
-  success: boolean;
-  data: { items: T[]; hasNext: boolean; nextCursor?: string };
-  timestamp?: string;
-};
-
+// 댓글 조회
 export async function getPostComments(postId: number, sort: SortParam) {
-  const { data } = await api.get<ListResp<RawComment>>(`/api/v1/posts/${postId}/comments`, {
-    params: { sort: sort, size: 100 },
+  const { data } = await api.get<CommentsListResp>(`/api/v1/posts/${postId}/comments`, {
+    params: { sort: sort, size: 20 },
   });
   return data;
 }
 
-export async function createComment(postId: number, body: { comment: string; anonymous?: boolean; parentId?: number }) {
-  const { data } = await api.post<string>(`/api/v1/posts/${postId}/comments`, body);
-  return data;
+// 댓글 작성
+export async function createComment(postId: number, body: CreateCommentReq) {
+  await api.post<string>(`/api/v1/posts/${postId}/comments`, body);
 }
 
+// 댓글 삭제
 export async function deleteComment(commentId: number) {
   await api.delete(`/api/v1/comments/${commentId}`);
-  return commentId;
 }
 
-export type UpdateCommentReq = { content: string };
-
-export async function updateComment(commentId: number, body: UpdateCommentReq) {
+// 댓글 수정
+export async function updateComment(commentId: number, body: { content: string }) {
   await api.patch(`/api/v1/comments/${commentId}`, body);
-  return commentId;
 }
 
-//댓글 차단 api 추가
+//댓글 차단
 export async function blockComment(commentId: number, reason?: string) {
   const body = reason && reason.trim().length > 0 ? { reason } : undefined;
   return api.post(`/api/v1/comments/${commentId}/block`, body);
