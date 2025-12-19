@@ -1,10 +1,12 @@
 import api from '@/api/axiosInstance';
-import { CommentsListResp, CreateCommentReq, SortParam } from '@/src/features/community/post/types';
+import { CommentsListResp, CreateCommentReq, RequestPageParams } from '@/src/features/community/post/types';
 
 // 댓글 조회
-export async function getPostComments(postId: number, sort: SortParam) {
+export async function getPostComments(postId: number, params: RequestPageParams) {
+  const { sort = 'LATEST', size = 20, cursor } = params ?? {};
+
   const { data } = await api.get<CommentsListResp>(`/api/v1/posts/${postId}/comments`, {
-    params: { sort: sort, size: 20 },
+    params: { sort, size, cursor },
   });
   return data;
 }
