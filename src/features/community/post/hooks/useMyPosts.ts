@@ -7,7 +7,7 @@ import { deletePost } from '../apis/post';
 // 작성한 게시글 조회
 export function useMyPosts(size = 20) {
   const query = useInfiniteQuery({
-    queryKey: ['my-posts', { size }],
+    queryKey: ['post', 'my', { size }],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) => getMyPosts({ size, cursor: pageParam }),
     getNextPageParam: (lastPage: MyPostsPage) => (lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined),
@@ -24,9 +24,7 @@ export function useDeletePost() {
   return useMutation<boolean, AxiosError, number>({
     mutationFn: (postId) => deletePost(postId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-posts'] });
-      queryClient.invalidateQueries({ queryKey: ['post-list'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['post'] });
     },
     onError: (error) => {
       console.error('[delete] error', error);
