@@ -1,13 +1,10 @@
-import { InfiniteData, QueryClient, QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { toggleBookMark } from '../apis/bookmarks';
-import { BookmarkedPostsResp, PostDetail, PostsListResp } from '../types';
 
 type Vars = { postId: number; isBookmarked: boolean };
 type Context = {
-  prevListData?: Array<[QueryKey, InfiniteData<PostsListResp> | undefined]>;
-  prevDetailData?: PostDetail;
-  prevBookmarkData?: Array<[QueryKey, InfiniteData<BookmarkedPostsResp> | undefined]>;
+  prevData?: Array<[QueryKey, any]>;
 };
 
 export function useToggleBookmark() {
@@ -16,37 +13,43 @@ export function useToggleBookmark() {
   return useMutation<boolean, AxiosError, Vars, Context>({
     mutationFn: ({ postId, isBookmarked }) => toggleBookMark(postId, isBookmarked),
     onMutate: async ({ postId, isBookmarked }): Promise<Context> => {
-      await Promise.all([
-        qc.cancelQueries({ queryKey: ['post-list'] }),
-        qc.cancelQueries({ queryKey: ['bookmarked-posts'] }),
-        qc.cancelQueries({ queryKey: ['post-detail', postId] }),
-      ]);
+      await qc.cancelQueries({ queryKey: ['post'] });
 
-      const prevListData = qc.getQueriesData({ queryKey: ['post-list'] }) as Array<
-        [QueryKey, InfiniteData<PostsListResp>]
-      >;
-      const prevBookmarkData = qc.getQueriesData({ queryKey: ['bookmarked-posts'] }) as Array<
-        [QueryKey, InfiniteData<BookmarkedPostsResp>]
-      >;
-      const prevDetailData = qc.getQueryData<PostDetail>(['post-detail', postId]);
+      const prevData = qc.getQueriesData({ queryKey: ['post'] });
 
-      updateBookmarkListCache(qc, ['post-list'], postId, isBookmarked);
-      updateBookmarkDetailCache(qc, postId, isBookmarked);
-      updateBookmarkListCache(qc, ['bookmarked-posts'], postId, isBookmarked);
+      // 모든 post 하위 쿼리 업데이트 (list, bookmarked, detail 등)
+      qc.setQueriesData({ queryKey: ['post'] }, (oldData: any) => {
+        if (!oldData) return oldData;
 
-      return { prevListData, prevDetailData, prevBookmarkData };
+        // InfiniteData 타입 (list, bookmarked)
+        if (oldData.pages) {
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: any) => ({
+              ...page,
+              data: {
+                ...page.data,
+                items: page.data.items.map((item: any) =>
+                  item.postId === postId ? { ...item, isBookmarked: !isBookmarked } : item,
+                ),
+              },
+            })),
+          };
+        }
+
+        // PostDetail 타입 (detail)
+        if (oldData.postId === postId) {
+          return { ...oldData, isBookmarked: !isBookmarked };
+        }
+
+        return oldData;
+      });
+
+      return { prevData };
     },
     onError: (error, { postId, isBookmarked }, context) => {
-      if (context?.prevDetailData) {
-        qc.setQueryData(['post-detail', postId], context.prevDetailData);
-      }
-      if (context?.prevListData) {
-        context.prevListData.forEach(([queryKey, data]) => {
-          qc.setQueryData(queryKey, data);
-        });
-      }
-      if (context?.prevBookmarkData) {
-        context.prevBookmarkData.forEach(([queryKey, data]) => {
+      if (context?.prevData) {
+        context.prevData.forEach(([queryKey, data]) => {
           qc.setQueryData(queryKey, data);
         });
       }
@@ -54,46 +57,8 @@ export function useToggleBookmark() {
     onSettled: (data, errors, { isBookmarked }) => {
       // 북마크 해제 시 북마크 페이지 안에 있으면 refetch 하지 않고 데이터가 상했다는 표시만 전달
       if (!isBookmarked) {
-        qc.invalidateQueries({ queryKey: ['bookmarked-posts'], refetchType: 'none' });
+        qc.invalidateQueries({ queryKey: ['post', 'bookmarked'], refetchType: 'none' });
       }
     },
   });
 }
-
-// 커뮤니티, 북마크 게시글 리스트 캐시 업데이트
-const updateBookmarkListCache = (
-  qc: QueryClient,
-  selectedQueryKey: QueryKey,
-  postId: number,
-  isBookmarked?: boolean,
-) => {
-  qc.setQueriesData(
-    { queryKey: selectedQueryKey },
-    (oldListData: InfiniteData<BookmarkedPostsResp | PostsListResp>) => {
-      if (!oldListData) return [];
-
-      return {
-        ...oldListData,
-        pages: oldListData.pages.map((page) => {
-          return {
-            ...page,
-            data: {
-              ...page.data,
-              items: page.data.items.map((item) => {
-                return item.postId === postId ? { ...item, isBookmarked: !isBookmarked } : item;
-              }),
-            },
-          };
-        }),
-      };
-    },
-  );
-};
-
-// 상세 게시글 캐시 업데이트
-const updateBookmarkDetailCache = (qc: QueryClient, postId: number, isBookmarked: boolean) => {
-  qc.setQueryData(['post-detail', postId], (oldData: PostDetail) => {
-    if (!oldData) return undefined;
-    return { ...oldData, isBookmarked: !isBookmarked };
-  });
-};
