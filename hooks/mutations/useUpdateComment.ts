@@ -1,4 +1,4 @@
-import { updateComment } from '@/api/community/comments';
+import { updateComment } from '@/src/features/community/post/apis/comments';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type Vars = { commentId: number; content: string };

@@ -1,4 +1,4 @@
-import { deleteComment } from '@/api/community/comments';
+import { deleteComment } from '@/src/features/community/post/apis/comments';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function useDeleteComment() {

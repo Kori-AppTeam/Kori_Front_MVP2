@@ -1,5 +1,5 @@
-import { createComment } from '@/api/community/comments';
 import { Comment } from '@/components/CommentItem';
+import { createComment } from '@/src/features/community/post/apis/comments';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const AV = require('@/assets/images/character1.png');
