@@ -187,3 +187,10 @@ export interface CommentsListResp {
   data: CommentsCursorPage;
   timestamp: string;
 }
+
+// 댓글 작성 요청 바디 타입
+export interface CreateCommentReq {
+  comment: string;
+  anonymous: boolean;
+  parentId: number;
+}
