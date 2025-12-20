@@ -3,12 +3,13 @@ import { useMemo } from 'react';
 import { getPostComments } from '../../apis/comments';
 import { CommentsCursorPage, CommentsListResp, SortParam } from '../../types';
 
-export const useGetPostComments = (postId: number, sort: SortParam) => {
+export const useGetPostComments = (postId: number | undefined, sort: SortParam) => {
   const query = useInfiniteQuery<CommentsListResp>({
-    queryKey: ['post-comments', postId, sort],
+    queryKey: ['comments', 'post', postId, sort],
     initialPageParam: undefined,
+    enabled: !!postId,
     queryFn: ({ pageParam }) =>
-      getPostComments(postId, { sort: sort, size: 20, cursor: pageParam as string | undefined }),
+      getPostComments(postId as number, { sort: sort, size: 20, cursor: pageParam as string | undefined }),
     getNextPageParam: (lastItem) => {
       const item: CommentsCursorPage = lastItem.data;
       return item.hasNext ? (item.nextCursor ?? undefined) : undefined;
