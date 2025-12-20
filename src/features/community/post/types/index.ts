@@ -194,5 +194,5 @@ export interface CommentsListResp {
 export interface CreateCommentReq {
   comment: string;
   anonymous: boolean;
-  parentId: number;
+  parentId: number | null;
 }
