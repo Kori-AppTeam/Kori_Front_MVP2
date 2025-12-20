@@ -123,3 +123,28 @@ export const BorderLine = styled.View<{ width: number }>`
   border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
   border-bottom-width: 1px;
 `;
+
+// 게시글 푸터
+export const FooterRow = styled.View`
+  width: 100%;
+  padding: 0 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+export const LeftFooter = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+`;
+export const IconBtn = styled.Pressable`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2px;
+`;
+export const Count = styled.Text`
+  color: #cfd4da;
+  margin-left: 6px;
+  ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
+`;
