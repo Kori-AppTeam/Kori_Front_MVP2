@@ -1,29 +1,28 @@
 import api from '@/api/axiosInstance';
-import CommentItem, { Comment } from '@/components/CommentItem';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
-import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import SortTabs from '@/components/SortTabs';
-import { useLikeComment } from '@/hooks/mutations/useLikeComment';
 import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
-import { usePostComments } from '@/hooks/queries/usePostComments';
 import { blockComment } from '@/src/features/community/post/apis/comments';
 import PostCarousel from '@/src/features/community/post/components/elements/body/PostCarousel';
 import PostSingleImage from '@/src/features/community/post/components/elements/body/PostSingleImage';
 import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
+import PostComment from '@/src/features/community/post/components/elements/comment/PostComment';
+import PostCommentInput from '@/src/features/community/post/components/elements/comment/PostCommentInput';
 import PostCommonFooter from '@/src/features/community/post/components/elements/footer/PostCommonFooter';
 import PostCommonHeader from '@/src/features/community/post/components/elements/header/PostCommonHeader';
+import { useCommentManager } from '@/src/features/community/post/hooks/comment/useCommentManager';
 import { useGetPostDetail } from '@/src/features/community/post/hooks/useGetPostDetail';
 import { useHandleLikeBookmark } from '@/src/features/community/post/hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSheetStore';
 import { SortParam } from '@/src/features/community/post/types';
 import { ContentBox } from '@/src/features/community/shared/styles/styles';
+import { CommentNode } from '@/src/features/community/shared/utils/organizeComment';
 import ProfileModal from '@/src/shared/components/ProfileModal';
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
 import { theme } from '@/src/styles/theme';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
 import {
   Alert,
@@ -41,10 +40,6 @@ import {
 } from 'react-native';
 import styled from 'styled-components/native';
 
-const SCREEN_W = Dimensions.get('window').width;
-const H_PADDING = 32;
-const IMG_W = SCREEN_W - H_PADDING;
-
 const StyledEditInput = styled(RNTextInput)`
   min-height: 220px;
   border-radius: 8px;
@@ -59,10 +54,6 @@ const EditInput = forwardRef<RNTextInput, TextInputProps>((props, ref) => <Style
 EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
-  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const [isFollowLoading, setIsFollowLoading] = useState(false);
-  const [profileModalVisible, setProfileModalVisible] = useState(false);
   const { id, focusCommentId, intent, commentId } = useLocalSearchParams<{
     id: string;
     focusCommentId?: string;
@@ -71,7 +62,10 @@ export default function PostDetailScreen() {
   }>();
   const postId = Number(id);
 
+  const [sort, setSort] = useState<SortParam>('LATEST');
   const { postDetailData, isLoading, isError, error } = useGetPostDetail(Number.isFinite(postId) ? postId : undefined);
+
+  const manage = useCommentManager(postId, sort);
 
   // 프로필 모달 상태 관리
   const [isProfileVisible, setIsProfileVisible] = useState(false);
@@ -83,52 +77,9 @@ export default function PostDetailScreen() {
     setIsProfileVisible(true);
   };
 
-  // const [value, setValue] = useState('');
-  //   const [anonymous, setAnonymous] = useState(false);
-  //   const createCmt = useCreateComment(postId);
-
-  // const post = postDetailData as any;
-
-  // const category: AllowedCategory = React.useMemo(() => resolvePostCategory(post), [post]);
-
-  // const { data: cmtOpts } = useCommentWriteOptions(Number.isFinite(postId) ? postId : undefined);
-
-  // const serverAnonymousAllowed = Boolean(
-  //   (cmtOpts as any)?.isAnonymousAvailable ?? (cmtOpts as any)?.isAnonymousAvaliable,
-  // );
-
-  // const anonAllowed = React.useMemo(() => {
-  //   const local = category ? LOCAL_ALLOW_ANON.has(category) : false;
-  //   return serverAnonymousAllowed || local;
-  // }, [serverAnonymousAllowed, category]);
-
-  //   const submit = () => {
-  //   const text = value.trim();
-  //   if (!text || !Number.isFinite(postId)) return;
-  //   createCmt.mutate(
-  //     {
-  //       comment: text,
-  //       anonymous: anonAllowed ? !!anonymous : false,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         setValue('');
-  //         Keyboard.dismiss();
-  //         requestAnimationFrame(() => listRef.current?.scrollToOffset({ offset: 0, animated: true }));
-  //       },
-  //       onError: () => Alert.alert('Comment', 'Failed to post comment.'),
-  //     },
-  //   );
-  // };
-
-  //댓글 바로 숨기기 (임시로)
-  const [hiddenCommentIds, setHiddenCommentIds] = useState<Set<number>>(new Set());
-
-  const openedOnceRef = useRef(false);
-
   const [menuVisible, setMenuVisible] = useState(false);
   const slideY = useRef(new Animated.Value(300)).current;
-
+  const [anonymous, setAnonymous] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportText, setReportText] = useState('');
   const [reportLoading, setReportLoading] = useState(false);
@@ -140,96 +91,40 @@ export default function PostDetailScreen() {
   type SheetCtx = { type: 'post' | 'comment' | null; commentId?: number };
   const [sheetCtx, setSheetCtx] = useState<SheetCtx>({ type: null });
 
-  const [sort, setSort] = useState<SortParam>('LATEST');
-  const likeComment = useLikeComment(postId, sort);
-
-  const listRef = useRef<RNFlatList<Comment>>(null);
-
-  const { data: commentsRaw } = usePostComments(Number.isFinite(postId) ? postId : undefined, sort);
-  const commentList: Comment[] = Array.isArray(commentsRaw)
-    ? (commentsRaw as Comment[])
-    : ((commentsRaw as any)?.items ?? []);
-
   //리스트 보이도록
   const getCmtId = (c: any) => Number(c?.id ?? c?.commentId);
-  const visibleComments: Comment[] = useMemo(
-    () => commentList.filter((c) => !hiddenCommentIds.has(getCmtId(c))),
-    [commentList, hiddenCommentIds],
-  );
+  // const visibleComments: Comment[] = useMemo(
+  //   () => commentList.filter((c) => !hiddenCommentIds.has(getCmtId(c))),
+  //   [commentList, hiddenCommentIds],
+  // );
 
   const [editVisible, setEditVisible] = useState(false);
   const [editText, setEditText] = useState('');
   const editInputRef = useRef<RNTextInput>(null);
 
   const { mutateAsync: updateCommentMut } = useUpdateComment();
-  const likeBusyRef = useRef<Record<number, boolean>>({});
 
-  useEffect(() => {
-    if (isError && error) {
-      const status = (error as any).response?.status;
-
-      if (status === 428) {
-        setProfileModalVisible(true);
-        return;
-      }
-    }
-  }, [isError, error]);
-
-  useEffect(() => {
-    if (openedOnceRef.current) return;
-    if (intent !== 'edit' || !focusCommentId) return;
-    if (!Array.isArray(commentList) || commentList.length === 0) return;
-
-    const target = commentList.find((c) => String((c as any).id ?? (c as any).commentId) === String(focusCommentId));
-    if (!target) return;
-
-    const body = (target as any).content ?? (target as any).comment ?? (target as any).text ?? '';
-
-    setEditText(String(body));
-    setEditVisible(true);
-    openedOnceRef.current = true;
-
-    const t = setTimeout(() => editInputRef.current?.focus(), 350);
-    return () => clearTimeout(t);
-  }, [intent, focusCommentId, commentList.length]);
-
-  const toggleCommentLike = (comment: Comment) => {
-    const cmtId = Number((comment as any).id ?? (comment as any).commentId);
-    if (!Number.isFinite(cmtId)) return;
-    if (likeBusyRef.current[cmtId]) return;
-    likeBusyRef.current[cmtId] = true;
-
-    const prevLiked = Boolean((comment as any).likedByMe ?? (comment as any).isLiked ?? false);
-
-    likeComment.mutate(
-      { commentId: cmtId, liked: prevLiked },
-      {
-        onSettled: () => {
-          likeBusyRef.current[cmtId] = false;
-        },
-      },
-    );
-  };
+  const listRef = useRef<RNFlatList<CommentNode>>(null);
 
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
 
   //게시글에서 열기
-  const openPostSheet = () => {
-    setSheetCtx({ type: 'post' });
-    setMenuVisible(true);
-    slideY.setValue(300);
-    Animated.timing(slideY, {
-      toValue: 0,
-      duration: 220,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  };
+  // const openPostSheet = () => {
+  //   setSheetCtx({ type: 'post' });
+  //   setMenuVisible(true);
+  //   slideY.setValue(300);
+  //   Animated.timing(slideY, {
+  //     toValue: 0,
+  //     duration: 220,
+  //     easing: Easing.out(Easing.cubic),
+  //     useNativeDriver: true,
+  //   }).start();
+  // };
 
   //댓글에서 열기
-  const openCommentSheet = (c: Comment) => {
+  const openCommentSheet = (c: CommentNode) => {
     const cid = Number((c as any).id ?? (c as any).commentId);
     if (!Number.isFinite(cid)) return;
     setSheetCtx({ type: 'comment', commentId: cid });
@@ -350,6 +245,8 @@ export default function PostDetailScreen() {
     }
   };
 
+  const [hiddenCommentIds, setHiddenCommentIds] = useState<Set<number>>(new Set());
+
   const hideCommentLocal = (cid: number) => {
     setHiddenCommentIds((prev) => {
       const next = new Set(prev);
@@ -434,68 +331,6 @@ export default function PostDetailScreen() {
       },
     ]);
   };
-  const handleStartChat = async () => {
-    // 2. 이미 로딩 중이거나 선택된 유저가 없으면 중단
-    if (isChatLoading || !selectedUser) {
-      console.log('Chat creation in progress or no user selected.');
-      return;
-    }
-
-    // 3. selectedUser에서 상대방 ID 추출 (키 이름은 실제 데이터에 맞게 조정 필요)
-    const otherUserId = (selectedUser as any)?.id ?? (selectedUser as any)?.userId;
-
-    if (!otherUserId) {
-      Alert.alert('Error', 'Could not find user ID to start chat.');
-      return;
-    }
-
-    console.log(`[Chat] Attempting to create room with user: ${otherUserId}`);
-    setIsChatLoading(true);
-
-    try {
-      // 4. API 호출
-      const response = await api.post('/api/v1/chat/rooms/oneTone', {
-        otherUserId: Number(otherUserId),
-      });
-
-      // 5. 응답 데이터에서 채팅방 ID 추출
-      // API 응답 본문이 { "id": ..., "participants": ... } 형태이므로 response.data가 바로 채팅방 객체입니다.
-      console.log('[Chat] API Response Data:', JSON.stringify(response.data, null, 2));
-      const newRoom = response.data.data;
-      const roomId = newRoom?.id;
-
-      if (!roomId) {
-        throw new Error('Chat room ID not found in API response.');
-      }
-
-      console.log(`[Chat] Successfully created room. ID: ${roomId}`);
-
-      // 6. 성공 시 프로필 모달 닫기
-      setIsProfileVisible(false);
-
-      // 7. expo-router를 사용해 채팅방으로 이동
-      //    (경로는 실제 채팅방 스크린 경로에 맞게 수정하세요. 예: '/chat/[id]')
-      router.push({
-        pathname: CHAT_ROUTE(roomId),
-      });
-    } catch (err: any) {
-      // 8. 에러 처리
-      console.error('[Chat] Failed to create chat room:', err);
-      const status = err.response?.status;
-
-      if (status === 428) {
-        setProfileModalVisible(true);
-        return;
-      }
-
-      const msg =
-        status === 400 ? 'Invalid request.' : status === 401 ? 'Please log in to chat.' : 'Failed to start chat.';
-      Alert.alert('Chat Error', msg);
-    } finally {
-      // 9. 로딩 상태 해제
-      setIsChatLoading(false);
-    }
-  };
 
   const reportTitle =
     reportTarget === 'user'
@@ -555,23 +390,36 @@ export default function PostDetailScreen() {
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 26}
       >
-        <FlatList<Comment>
+        <FlatList<CommentNode>
           ref={listRef}
-          data={visibleComments}
-          keyExtractor={(it) => String((it as any).id ?? (it as any).commentId)}
+          data={manage.organizedComments}
+          keyExtractor={(item) => String(item.commentId)}
           renderItem={({ item, index }) => (
-            <CommentItem
-              data={item}
-              isFirst={index === 0}
-              onPressProfile={() => item.authorId && handleSetSelectedUser(item.authorId)}
-              onPressLike={() => toggleCommentLike(item)}
-              onPressMore={(c) => openCommentSheet(c)}
-            />
+            <>
+              <PostComment
+                data={item}
+                onShowProfileModal={() => handleSetSelectedUser(item.authorId)}
+                onToggleLike={() => manage.toggleCommentLike(item)}
+                onOpenModal={() => openCommentSheet(item)}
+                onClickReply={() => manage.onClickReplyToComment(item.commentId)}
+              />
+              {item.replies &&
+                item.replies.map((reply) => (
+                  <PostComment
+                    key={reply.commentId}
+                    data={reply}
+                    onShowProfileModal={() => handleSetSelectedUser(reply.authorId)}
+                    onToggleLike={() => manage.toggleCommentLike(reply)}
+                    onOpenModal={() => openCommentSheet(reply)}
+                  />
+                ))}
+            </>
           )}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          style={{ backgroundColor: '#171818' }}
-          contentContainerStyle={{ paddingBottom: 92 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          style={{ backgroundColor: theme.colors.gray.darkBlack_1 }}
+          onTouchStart={manage.onCancelReplyToComment}
           ListHeaderComponent={
             <>
               {/* 게시글카드 */}
@@ -624,50 +472,26 @@ export default function PostDetailScreen() {
                 />
               </Container>
 
-              {/* 정렬 탭 */}
-              <SortWrap>
-                <SortTabs value={sort} onPress={setSort} />
-              </SortWrap>
+              {/* 정렬 탭 - 댓글 있을 때만 렌더링 */}
+              {manage.organizedComments.length > 0 && (
+                <SortWrap>
+                  <SortTabs value={sort} onPress={setSort} />
+                </SortWrap>
+              )}
             </>
           }
         />
 
         {/* 댓글 인풋 */}
-        {/* <InputBar>
-          <Composer>
-            <BottomInput
-              ref={inputRef}
-              value={value}
-              onChangeText={setValue}
-              placeholder="Write Your Text"
-              placeholderTextColor="#616262"
-              returnKeyType="send"
-              blurOnSubmit
-              onSubmitEditing={submit}
-              contextMenuHidden={false}
-              selectTextOnFocus={false}
-              editable={true}
-            />
-            {anonAllowed && (
-              <AnonToggle
-                onPress={() => {
-                  const next = !anonymous;
-                  console.log('[comment:anon:toggle]', { category, anonAllowed, before: anonymous, after: next });
-                  setAnonymous(next);
-                }}
-              >
-                <AnonLabel>Anonymous</AnonLabel>
-                <Check $active={anonymous}>
-                  {anonymous && <Icon type="check" size={16} color={theme.colors.primary.white} />}
-                </Check>
-              </AnonToggle>
-            )}
-          </Composer>
-
-          <SendBtn onPress={submit} disabled={!canSend} hitSlop={8}>
-            <Icon type="send" size={24} color={canSend ? theme.colors.primary.mint : theme.colors.gray.lightGray_1} />
-          </SendBtn>
-        </InputBar> */}
+        <PostCommentInput
+          inputRef={manage.inputRef}
+          text={manage.value}
+          onChangeText={manage.setValue}
+          onSubmit={() => manage.handleSubmitComment(manage.value, anonymous)}
+          isAnonymous={anonymous}
+          setAnonymous={setAnonymous}
+          category={postDetailData.boardCategory}
+        />
       </KeyboardAvoidingView>
 
       <Modal transparent visible={menuVisible} onRequestClose={() => setMenuVisible(false)} animationType="none">
@@ -868,10 +692,7 @@ export default function PostDetailScreen() {
         visible={isProfileVisible}
         userData={selectedUser.data}
         onClose={() => setIsProfileVisible(false)}
-        isLoadingFollow={isFollowLoading}
-        isLoadingChat={isChatLoading}
       />
-      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
 }
