@@ -124,5 +124,5 @@ const ChipsWrap = styled.View`
 `;
 const SortWrap = styled.View`
   margin-top: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 `;
