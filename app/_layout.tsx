@@ -31,6 +31,7 @@ import { ProfileProvider } from './contexts/ProfileContext';
 import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
@@ -66,7 +67,7 @@ export default function RootLayout() {
   const router = useRouter();
   const { isLoggedIn, isLoading: isAutoLoginLoading } = useAutoLogin(loaded);
   const { isLoading: isVersionCheckLoading, isAppUpToDate } = useCheckAppVersion();
-
+  const isOnboardingVisited = AsyncStorage.getItem('onboardingVisited');
   const navigationRef = useNavigationContainerRef();
   useScreenChangeTracker(navigationRef); // 화면 전환 시 Analytics 트래킹
 
@@ -83,16 +84,25 @@ export default function RootLayout() {
       return;
     }
 
-    // 앱 초기화 단계 완료 후 스플래시 스크린 hide
-    SplashScreen.hideAsync().catch(() => {});
+    const initializeApp = async () => {
+      // 앱 초기화 단계 완료 후 스플래시 스크린 hide
+      SplashScreen.hideAsync().catch(() => {});
 
-    // 로그인 상태에 따라 라우팅
-    if (isLoggedIn) {
-      initializeStomp();
-      router.replace('/(tabs)');
-    } else {
-      router.replace(AUTH_ROUTE);
-    }
+      // 로그인 상태에 따라 라우팅
+      if (isLoggedIn) {
+        initializeStomp();
+        router.replace('/(tabs)');
+      } else {
+        const isOnboardingVisited = await AsyncStorage.getItem('onboardingVisited');
+        if (isOnboardingVisited) {
+          router.replace('/(auth)');
+        } else {
+          router.replace('/onboarding');
+        }
+      }
+    };
+
+    initializeApp();
   }, [loaded, isAutoLoginLoading, isLoggedIn, isVersionCheckLoading, isAppUpToDate, router]);
 
   if (!loaded || isAutoLoginLoading || isVersionCheckLoading || !isAppUpToDate) return null;
@@ -108,7 +118,7 @@ export default function RootLayout() {
                   {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
                   <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="(tabs)" />
-                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="onboarding" />
                     <Stack.Screen name="+not-found" />
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
