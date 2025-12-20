@@ -13,9 +13,10 @@ interface PostCommentProps {
   onShowProfileModal: () => void;
   onToggleLike: () => void;
   onOpenModal: () => void;
+  onClickReply?: () => void;
 }
 
-const PostComment = ({ data, onShowProfileModal, onToggleLike, onOpenModal }: PostCommentProps) => {
+const PostComment = ({ data, onShowProfileModal, onToggleLike, onOpenModal, onClickReply }: PostCommentProps) => {
   return (
     <Container>
       {data.parentCommentId && <Icon size={20} type="commentArrow" />}
@@ -45,7 +46,7 @@ const PostComment = ({ data, onShowProfileModal, onToggleLike, onOpenModal }: Po
             </IconBtn>
 
             {!data.parentCommentId && (
-              <IconBtn hitSlop={8}>
+              <IconBtn hitSlop={8} onPress={onClickReply}>
                 <Icon size={20} type="comment" />
               </IconBtn>
             )}
@@ -63,7 +64,7 @@ const PostComment = ({ data, onShowProfileModal, onToggleLike, onOpenModal }: Po
 export default PostComment;
 
 const Container = styled.View`
-  padding: 0 20px;
+  padding: 0 20px 20px 20px;
   flex-direction: row;
   gap: 8px;
 `;
