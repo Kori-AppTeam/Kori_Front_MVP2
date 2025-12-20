@@ -1,11 +1,9 @@
 import axiosInstance from '@/api/axiosInstance';
 
-const path = (id: number) => `/api/v1/comments/${id}/likes/me`;
-
 export async function addCommentLike(commentId: number): Promise<void> {
-  await axiosInstance.put<void>(path(commentId));
+  await axiosInstance.put(`/api/v1/comments/${commentId}/likes/me`);
 }
 
 export async function removeCommentLike(commentId: number): Promise<void> {
-  await axiosInstance.delete<void>(path(commentId));
+  await axiosInstance.delete(`/api/v1/comments/${commentId}/likes/me`);
 }
