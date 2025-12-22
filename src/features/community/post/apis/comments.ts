@@ -27,7 +27,11 @@ export async function updateComment(commentId: number, body: { content: string }
 }
 
 //댓글 차단
-export async function blockComment(commentId: number, reason?: string) {
-  const body = reason && reason.trim().length > 0 ? { reason } : undefined;
-  return api.post(`/api/v1/comments/${commentId}/block`, body);
+// 서버 쪽에 reason 필드가 없어 주석처리
+// export async function blockComment(commentId: number, reason?: string) {
+//   const body = reason && reason.trim().length > 0 ? { reason } : undefined;
+//   return api.post(`/api/v1/comments/${commentId}/block`, body);
+// }
+export async function blockComment(commentId: number) {
+  await api.post(`/api/v1/comments/${commentId}/block`);
 }
