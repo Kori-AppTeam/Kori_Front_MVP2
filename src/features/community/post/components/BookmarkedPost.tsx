@@ -40,7 +40,7 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
           onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
           onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}
           commentCount={data.commentCount}
-          onOpenModal={() => showMoreSheet(data.postId, data.authorId)}
+          onOpenModal={() => showMoreSheet('post', data.postId, data.authorId)}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />

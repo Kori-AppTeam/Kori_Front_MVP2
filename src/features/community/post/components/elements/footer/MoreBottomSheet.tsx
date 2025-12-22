@@ -13,10 +13,10 @@ const MoreBottomSheet = () => {
   const router = useRouter();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { data } = useVisitor();
-  const { selectedPostId, authorId, isMoreSheetVisible, hideMoreSheet } = useMoreSheetStore();
+  const { type, selectedPostId, authorId, isMoreSheetVisible, hideMoreSheet } = useMoreSheetStore();
 
   // usePostActions 훅 호출
-  const { handleDeletePost, handleRouterUpdatePost, handleReportPost, handleBlockUser } = usePostActions();
+  const postActions = usePostActions();
 
   const isMine = data?.userId === authorId;
 
@@ -35,6 +35,32 @@ const MoreBottomSheet = () => {
   const isDetailPage = currentPath.startsWith('/community/detail/');
   const onSuccessNavigate = isDetailPage ? () => router.back() : undefined;
 
+  // 게시글 더보기 바텀시트 렌더링 함수
+  const renderPostBottomSheet = () => {
+    if (selectedPostId && authorId) {
+      if (isMine) {
+        return (
+          <MyPostModal
+            onSuccessNavigate={onSuccessNavigate}
+            onDelete={postActions.handleDeletePost}
+            onEdit={postActions.handleRouterUpdatePost}
+            onClose={hideMoreSheet}
+          />
+        );
+      } else {
+        return (
+          <OthersPostModal
+            onSuccessNavigate={onSuccessNavigate}
+            onReport={postActions.handleReportPost}
+            onBlock={postActions.handleBlockUser}
+            onClose={hideMoreSheet}
+          />
+        );
+      }
+    }
+    return <></>;
+  };
+
   return (
     <CustomBottomSheet
       ref={bottomSheetRef}
@@ -45,25 +71,7 @@ const MoreBottomSheet = () => {
         }
       }}
     >
-      {selectedPostId && authorId ? (
-        isMine ? (
-          <MyPostModal
-            onSuccessNavigate={onSuccessNavigate}
-            onDelete={handleDeletePost}
-            onEdit={handleRouterUpdatePost}
-            onClose={hideMoreSheet}
-          />
-        ) : (
-          <OthersPostModal
-            onSuccessNavigate={onSuccessNavigate}
-            onReport={handleReportPost}
-            onBlock={handleBlockUser}
-            onClose={hideMoreSheet}
-          />
-        )
-      ) : (
-        <></>
-      )}
+      {type === 'post' ? renderPostBottomSheet() : <></>}
     </CustomBottomSheet>
   );
 };
