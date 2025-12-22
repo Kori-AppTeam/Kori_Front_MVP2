@@ -3,7 +3,7 @@ import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
 import { router, usePathname } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { COMMON_ERROR_MESSAGE, POST_ERROR_MESSAGE } from '../../shared/constants/error';
+import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../shared/constants/error';
 import { InitialEditData } from '../../write/types';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { useReportSheetStore } from '../store/useReportSheetStore';
@@ -60,7 +60,7 @@ export const usePostActions = () => {
                 onError: (error) => {
                   const errorCode = getAxiosErrorCode(error);
                   const errorMessage =
-                    POST_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Delete failed';
+                    COMMUNITY_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Delete failed';
 
                   Toast.show({ type: 'error', text1: errorMessage });
                 },
@@ -140,7 +140,7 @@ export const usePostActions = () => {
                   onError: (error) => {
                     const errorCode = getAxiosErrorCode(error);
                     const errorMessage =
-                      POST_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Report failed';
+                      COMMUNITY_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Report failed';
 
                     Toast.show({ type: 'error', text1: errorMessage });
                   },
@@ -181,8 +181,11 @@ export const usePostActions = () => {
                   }
                 },
                 onError: (error) => {
-                  console.error('[block user] error', error);
-                  Toast.show({ type: 'error', text1: 'User block failed' });
+                  const errorCode = getAxiosErrorCode(error);
+                  const errorMessage =
+                    COMMUNITY_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Report failed';
+
+                  Toast.show({ type: 'error', text1: errorMessage });
                 },
                 onSettled: () => resetMoreSheetData(),
               });

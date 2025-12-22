@@ -1,9 +1,9 @@
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
 import { useMemo, useRef, useState } from 'react';
-import { Alert, Keyboard, TextInput as RNTextInput } from 'react-native';
+import { Keyboard, TextInput as RNTextInput } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { COMMENT_ERROR } from '../../../shared/constants/error';
+import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../../shared/constants/error';
 import { Comment, SortParam } from '../../types';
 import { CommentNode, organizeComment } from './../../../shared/utils/organizeComment';
 import { useGetPostComments } from './useGetPostComments';
@@ -52,17 +52,14 @@ export function useCommentManager(postId: number, sort: SortParam) {
         onSuccess: () => {
           setReplyToCommentId(null);
           setValue('');
+          Keyboard.dismiss();
         },
         onError: (error) => {
           const errorCode = getAxiosErrorCode(error);
-          if (errorCode === 'NOT_AVAILABLE_ANONYMOUS') {
-            Alert.alert('Error', COMMENT_ERROR.NOT_AVAILABLE_ANONYMOUS);
-          } else {
-            Toast.show({
-              type: 'error',
-              text1: 'Failed to post comment.',
-            });
-          }
+          const errorMessage =
+            COMMUNITY_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Failed to post comment.';
+
+          Toast.show({ type: 'error', text1: errorMessage });
         },
       },
     );
