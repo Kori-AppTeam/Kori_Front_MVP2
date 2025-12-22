@@ -5,7 +5,7 @@ import { BookmarkedPostsPage, BookmarkedPostsResp } from '../types';
 
 export function useGetBookmarkedPosts() {
   const query = useInfiniteQuery<BookmarkedPostsResp>({
-    queryKey: ['post', 'bookmarked'],
+    queryKey: ['post', 'list', 'bookmark'],
     initialPageParam: undefined,
     queryFn: ({ pageParam }) => getMyBookmarks({ size: 20, cursor: pageParam as string | undefined }),
     getNextPageParam: (lastItem) => {
