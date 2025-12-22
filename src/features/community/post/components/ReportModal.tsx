@@ -112,7 +112,7 @@ const Dialog = styled.View`
   max-width: 360px;
   background: ${theme.colors.gray.darkGray_1_5};
   border-radius: 12px;
-  padding: 12px;
+  padding: 12px 12px 20px 12px;
   gap: 12px;
 `;
 const DialogHeader = styled.View`
@@ -127,7 +127,7 @@ const DialogTitle = styled.View`
   gap: 4px;
 `;
 const DialogTitleText = styled.Text<{ $danger?: boolean }>`
-  color: ${({ $danger }) => ($danger ? theme.colors.secondary.red : '#e7eaed')};
+  color: ${({ $danger }) => ($danger ? theme.colors.secondary.red : theme.colors.primary.white)};
   ${({ theme }) => textStyle(theme.fonts.body.B3_M)}
 `;
 const DialogTextarea = styled.TextInput`
