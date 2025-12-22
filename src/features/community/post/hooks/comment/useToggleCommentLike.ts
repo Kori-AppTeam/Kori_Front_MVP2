@@ -18,11 +18,10 @@ export const useToggleCommentLike = () => {
 
       const delta = liked ? -1 : 1;
 
-      // 모든 comment 하위 쿼리 업데이트
+      // 댓글 목록 업데이트 (InfiniteData)
       qc.setQueriesData({ queryKey: ['comments'] }, (oldData: any) => {
         if (!oldData) return oldData;
 
-        // InfiniteData 타입 (list)
         if (oldData.pages) {
           return {
             ...oldData,
@@ -43,16 +42,6 @@ export const useToggleCommentLike = () => {
                 }),
               },
             })),
-          };
-        }
-
-        // 단일 Comment 타입 (detail)
-        if (oldData.commentId === commentId) {
-          const prev = Number(oldData.likeCount ?? 0);
-          return {
-            ...oldData,
-            isLiked: !liked,
-            likeCount: Math.max(0, Math.min(999, prev + delta)),
           };
         }
 
