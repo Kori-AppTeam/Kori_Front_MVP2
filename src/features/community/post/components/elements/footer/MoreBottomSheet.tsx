@@ -9,7 +9,7 @@ import OthersPostModal from './OthersPostModal';
 const MoreBottomSheet = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { data } = useVisitor();
-  const { selectedPostId, authorId, isMoreSheetVisible, hideMoreSheet } = useMoreSheetStore();
+  const { selectedPostId, authorId, isMoreSheetVisible, resetData } = useMoreSheetStore();
 
   const isMine = data?.userId === authorId;
 
@@ -27,19 +27,11 @@ const MoreBottomSheet = () => {
       backgroundColor="transparent"
       onChange={(index) => {
         if (index === -1) {
-          hideMoreSheet();
+          resetData();
         }
       }}
     >
-      {selectedPostId && authorId ? (
-        isMine ? (
-          <MyPostModal closeModal={hideMoreSheet} postId={selectedPostId} />
-        ) : (
-          <OthersPostModal closeModal={hideMoreSheet} postId={selectedPostId} authorId={authorId} />
-        )
-      ) : (
-        <></>
-      )}
+      {selectedPostId && authorId ? isMine ? <MyPostModal /> : <OthersPostModal /> : <></>}
     </CustomBottomSheet>
   );
 };
