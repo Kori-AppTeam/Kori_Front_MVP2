@@ -18,10 +18,7 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
 
   return (
     <Container>
-      <Wrap
-        width={SCREEN_WIDTH}
-        onPress={() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } })}
-      >
+      <Wrap width={SCREEN_WIDTH} onPress={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}>
         <PostCommonHeader
           postId={data.postId}
           isAnonymous={data.isAnonymous}
@@ -41,7 +38,7 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
           isLiked={data.isLiked}
           likeCount={data.likeCount}
           onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
-          onToggleComment={() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } })}
+          onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}
           commentCount={data.commentCount}
           onOpenModal={() => showMoreSheet(data.postId, data.authorId)}
         />

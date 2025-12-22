@@ -24,7 +24,7 @@ const PostListCard = ({ data }: { data: PostsListItem }) => {
       <Wrap
         width={SCREEN_WIDTH}
         onPress={() => {
-          handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } }));
+          handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId)));
         }}
       >
         <PostCommonHeader
@@ -55,9 +55,7 @@ const PostListCard = ({ data }: { data: PostsListItem }) => {
           isLiked={data.isLiked}
           likeCount={data.likeCount}
           onToggleLike={() => handleBlockVisitor(() => handleToggleLike(data.postId, data.isLiked))}
-          onToggleComment={() =>
-            handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } }))
-          }
+          onToggleComment={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId)))}
           commentCount={data.commentCount}
           onOpenModal={() => handleBlockVisitor(() => showMoreSheet(data.postId, data.authorId))}
         />
