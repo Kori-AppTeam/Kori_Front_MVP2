@@ -376,7 +376,6 @@ export default function PostDetailScreen() {
 
   return (
     <Safe>
-      {/* 게시글카드로 대체 */}
       <Header>
         <Back onPress={() => router.back()}>
           <Icon type="previous" size={20} color={theme.colors.primary.white} />
@@ -431,7 +430,7 @@ export default function PostDetailScreen() {
                   postId={postDetailData.postId}
                   authorName={postDetailData.authorName}
                   isAnonymous={postDetailData.isAnonymous}
-                  userImageUrl={postDetailData.userImageUrl || undefined}
+                  userImageUrl={postDetailData.userImageUrl}
                   createdAt={postDetailData.createdTime}
                   boardCategory={postDetailData.boardCategory}
                   viewCount={postDetailData.viewCount}
@@ -585,63 +584,6 @@ export default function PostDetailScreen() {
       </Modal>
 
       <Modal
-        visible={reportOpen}
-        transparent
-        animationType="fade"
-        statusBarTranslucent
-        presentationStyle="overFullScreen"
-        onRequestClose={() => setReportOpen(false)}
-      >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.55)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 24,
-          }}
-        >
-          <Pressable
-            onPress={() => setReportOpen(false)}
-            style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-          />
-          <Dialog>
-            <DialogHeader>
-              <DialogTitle>
-                <Icon type="alert" size={24} color={theme.colors.secondary.red} />
-                <DialogTitleText $danger> {reportTitle}</DialogTitleText>
-              </DialogTitle>
-              <CloseBtn onPress={() => setReportOpen(false)}>
-                <Icon type="close" size={16} color="#cfd4da" />
-              </CloseBtn>
-            </DialogHeader>
-
-            <DialogTextarea
-              value={reportText}
-              onChangeText={setReportText}
-              placeholder={
-                reportTarget === 'user'
-                  ? 'Tell us what’s wrong with this user’s content…'
-                  : reportTarget === 'comment'
-                    ? 'Tell us what’s wrong with this comment…'
-                    : 'Tell us what’s wrong with this post…'
-              }
-              blurOnSubmit
-              returnKeyType="done"
-              placeholderTextColor="#858b90"
-              multiline
-              textAlignVertical="top"
-              editable={!reportLoading}
-            />
-
-            <SubmitBtn onPress={onSubmitReport} disabled={reportLoading || !reportText.trim()}>
-              <SubmitText>{reportLoading ? 'Submitting…' : 'Submit'}</SubmitText>
-            </SubmitBtn>
-          </Dialog>
-        </View>
-      </Modal>
-
-      <Modal
         visible={editVisible}
         transparent
         animationType="fade"
@@ -780,54 +722,10 @@ const SheetDivider = styled.View`
   margin: 4px 0;
 `;
 
-const Dialog = styled.View`
-  width: 100%;
-  max-width: 360px;
-  background: #2a2b2c;
-  border-radius: 12px;
-  padding: 12px 12px 16px 12px;
-`;
-const DialogHeader = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-`;
-const DialogTitle = styled.View`
-  flex-direction: row;
-  align-items: center;
-`;
-const DialogTitleText = styled.Text<{ $danger?: boolean }>`
-  color: ${({ $danger }) => ($danger ? '#ff4d4f' : '#e7eaed')};
-  font-size: 14px;
-  font-weight: 700;
-`;
 const CloseBtn = styled.Pressable`
   padding: 4px;
 `;
-const DialogTextarea = styled.TextInput`
-  min-height: 220px;
-  border-radius: 8px;
-  padding: 12px;
-  background: #1f2021;
-  color: #e7eaed;
-  font-size: 14px;
-  border-width: 1px;
-  border-color: #3a3d40;
-`;
-const SubmitBtn = styled.Pressable<{ disabled?: boolean }>`
-  background: #ff4d4f;
-  padding: 12px;
-  border-radius: 8px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 12px;
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
-`;
-const SubmitText = styled.Text`
-  color: #ffffff;
-  font-weight: 700;
-`;
+
 const EditBox = styled.View`
   width: 100%;
   max-width: 360px;
