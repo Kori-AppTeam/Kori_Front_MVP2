@@ -24,7 +24,6 @@ const PostCommentInput = ({
   setAnonymous,
   category,
 }: PostCommentInputProps) => {
-  console.log(category);
   const canSend = text.trim().length > 0;
   return (
     <InputBar>

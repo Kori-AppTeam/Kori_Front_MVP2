@@ -1,16 +1,14 @@
-import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
-import ProfileImage from '@/components/common/ProfileImage';
 import SortTabs from '@/components/SortTabs';
 import PostCarousel from '@/src/features/community/post/components/elements/body/PostCarousel';
 import PostSingleImage from '@/src/features/community/post/components/elements/body/PostSingleImage';
 import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
+import EditCommentModal from '@/src/features/community/post/components/elements/comment/EditCommentModal';
 import PostComment from '@/src/features/community/post/components/elements/comment/PostComment';
 import PostCommentInput from '@/src/features/community/post/components/elements/comment/PostCommentInput';
 import PostCommonFooter from '@/src/features/community/post/components/elements/footer/PostCommonFooter';
 import PostCommonHeader from '@/src/features/community/post/components/elements/header/PostCommonHeader';
 import { useCommentManager } from '@/src/features/community/post/hooks/comment/useCommentManager';
-import { useUpdateComment } from '@/src/features/community/post/hooks/comment/useUpdateComment';
 import { useGetPostDetail } from '@/src/features/community/post/hooks/useGetPostDetail';
 import { useHandleLikeBookmark } from '@/src/features/community/post/hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSheetStore';
@@ -19,28 +17,16 @@ import { ContentBox } from '@/src/features/community/shared/styles/styles';
 import { CommentNode } from '@/src/features/community/shared/utils/organizeComment';
 import ProfileModal from '@/src/shared/components/ProfileModal';
 import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
-import { theme } from '@/src/styles/theme';
+import { textStyle, theme } from '@/src/styles/theme';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
-import {
-  Alert,
-  Animated,
-  Dimensions,
-  Easing,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput as RNTextInput,
-} from 'react-native';
+import { Dimensions, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import styled from 'styled-components/native';
 
 export default function PostDetailScreen() {
-  const { id, focusCommentId, intent, commentId } = useLocalSearchParams<{
+  const { id } = useLocalSearchParams<{
     id: string;
-    focusCommentId?: string;
-    intent?: string;
-    commentId?: string;
   }>();
   const postId = Number(id);
 
@@ -59,155 +45,13 @@ export default function PostDetailScreen() {
     setIsProfileVisible(true);
   };
 
-  const [menuVisible, setMenuVisible] = useState(false);
-  const slideY = useRef(new Animated.Value(300)).current;
   const [anonymous, setAnonymous] = useState(false);
-
-  //댓글 신고랑 차단
-  type SheetCtx = { type: 'post' | 'comment' | null; commentId?: number };
-  const [sheetCtx, setSheetCtx] = useState<SheetCtx>({ type: null });
-
-  //리스트 보이도록
-  const getCmtId = (c: any) => Number(c?.id ?? c?.commentId);
-  // const visibleComments: Comment[] = useMemo(
-  //   () => commentList.filter((c) => !hiddenCommentIds.has(getCmtId(c))),
-  //   [commentList, hiddenCommentIds],
-  // );
-
-  const [editVisible, setEditVisible] = useState(false);
-  const [editText, setEditText] = useState('');
-  const editInputRef = useRef<RNTextInput>(null);
-
-  const { mutateAsync: updateCommentMut } = useUpdateComment();
 
   const listRef = useRef<RNFlatList<CommentNode>>(null);
 
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
-
-  //댓글에서 열기
-  const openCommentSheet = (c: CommentNode) => {
-    const cid = Number((c as any).id ?? (c as any).commentId);
-    if (!Number.isFinite(cid)) return;
-    setSheetCtx({ type: 'comment', commentId: cid });
-    setMenuVisible(true);
-    slideY.setValue(300);
-    Animated.timing(slideY, {
-      toValue: 0,
-      duration: 220,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const onSaveEdit = async () => {
-    const text = editText.trim();
-    if (!text) {
-      Alert.alert('Edit', 'Please enter your comment.');
-      return;
-    }
-    if (!focusCommentId) {
-      Alert.alert('Edit', 'Comment id missing.');
-      return;
-    }
-
-    try {
-      await updateCommentMut({ commentId: Number(focusCommentId), content: text });
-      setEditVisible(false);
-    } catch (e) {
-      console.log('[update comment] error', e);
-      Alert.alert('Edit', 'Failed to save changes.');
-    }
-  };
-
-  const [hiddenCommentIds, setHiddenCommentIds] = useState<Set<number>>(new Set());
-
-  const hideCommentLocal = (cid: number) => {
-    setHiddenCommentIds((prev) => {
-      const next = new Set(prev);
-      next.add(cid);
-      return next;
-    });
-  };
-  // const unhideCommentLocal = (cid: number) => {
-  //   setHiddenCommentIds((prev) => {
-  //     if (!prev.has(cid)) return prev;
-  //     const next = new Set(prev);
-  //     next.delete(cid);
-  //     return next;
-  //   });
-  // };
-
-  //r게시글 차단
-  const blockPostFromSheet = () => {
-    if (!Number.isFinite(postId)) return;
-    setMenuVisible(false);
-
-    Alert.alert('Block', 'Are you sure you want to block this post?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Block',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await api.post(`/api/v1/posts/${postId}/declaration`, {});
-
-            Alert.alert('Block', 'This post has been blocked.');
-          } catch (e: any) {
-            const s = e?.response?.status;
-            const msg =
-              s === 401
-                ? 'Authentication required. Please log in again.'
-                : s === 403
-                  ? 'You do not have permission.'
-                  : s === 404
-                    ? 'Post not found.'
-                    : 'Failed to block this post.';
-            Alert.alert('Block', msg);
-            console.log('[block post] error', { status: s, postId, e });
-          } finally {
-            router.back();
-          }
-        },
-      },
-    ]);
-  };
-
-  // const blockCommentFromSheet = () => {
-  //   if (sheetCtx.type !== 'comment' || !Number.isFinite(sheetCtx.commentId!)) return;
-  //   const cid = sheetCtx.commentId!;
-  //   setMenuVisible(false);
-
-  //   Alert.alert('Block', 'Are you sure you want to block this comment?', [
-  //     { text: 'Cancel', style: 'cancel' },
-  //     {
-  //       text: 'Block',
-  //       style: 'destructive',
-  //       onPress: async () => {
-  //         hideCommentLocal(cid);
-
-  //         try {
-  //           await blockComment(cid, 'Blocked from comment sheet');
-  //           Alert.alert('Block', 'This comment has been blocked.');
-  //         } catch (e: any) {
-  //           const s = e?.response?.status;
-  //           const msg =
-  //             s === 401
-  //               ? 'Authentication required. Please log in again.'
-  //               : s === 403
-  //                 ? 'You do not have permission.'
-  //                 : s === 404
-  //                   ? 'Comment not found.'
-  //                   : 'Failed to block this comment.';
-  //           Alert.alert('Block', msg);
-  //           console.log('[block comment] error', { status: s, commentId: cid, e });
-  //         }
-  //       },
-  //     },
-  //   ]);
-  // };
-
   const { showMoreSheet } = useMoreSheetStore();
 
   if (isLoading) {
@@ -247,7 +91,7 @@ export default function PostDetailScreen() {
     <Safe>
       <Header>
         <Back onPress={() => router.back()}>
-          <Icon type="previous" size={20} color={theme.colors.primary.white} />
+          <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
         </Back>
         <HeaderTitle>Post</HeaderTitle>
         <RightPlaceholder />
@@ -268,7 +112,7 @@ export default function PostDetailScreen() {
                 data={item}
                 onShowProfileModal={() => handleSetSelectedUser(item.authorId)}
                 onToggleLike={() => manage.toggleCommentLike(item)}
-                onOpenModal={() => openCommentSheet(item)}
+                onOpenModal={() => showMoreSheet('comment', postId, item.authorId, item.commentId, item.content)}
                 onClickReply={() => manage.onClickReplyToComment(item.commentId)}
               />
               {/* 대댓글 */}
@@ -279,7 +123,7 @@ export default function PostDetailScreen() {
                     data={reply}
                     onShowProfileModal={() => handleSetSelectedUser(reply.authorId)}
                     onToggleLike={() => manage.toggleCommentLike(reply)}
-                    onOpenModal={() => openCommentSheet(reply)}
+                    onOpenModal={() => showMoreSheet('comment', postId, reply.authorId, reply.commentId, reply.content)}
                   />
                 ))}
             </>
@@ -363,65 +207,22 @@ export default function PostDetailScreen() {
         />
       </KeyboardAvoidingView>
 
-      {/* <Modal
-        visible={editVisible}
-        transparent
-        animationType="fade"
-        statusBarTranslucent
-        onRequestClose={() => setEditVisible(false)}
-      >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.55)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 24,
-          }}
-        >
-          <Pressable
-            style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-            onPress={() => setEditVisible(false)}
-          />
-          <EditBox>
-            <EditHeader>
-              <EditTitle>
-                <Icon type="edit" size={24} color={theme.colors.primary.white} />
-                <EditTitleText> Edit My Comments</EditTitleText>
-              </EditTitle>
-              <CloseBtn onPress={() => setEditVisible(false)}>
-                <Icon type="close" size={24} color={theme.colors.primary.white} />
-              </CloseBtn>
-            </EditHeader>
-
-            <EditInput
-              ref={editInputRef}
-              value={editText}
-              onChangeText={setEditText}
-              placeholder=""
-              placeholderTextColor="#858b90"
-              multiline
-              textAlignVertical="top"
-            />
-
-            <SaveBtn onPress={onSaveEdit}>
-              <SaveText>Save Edit</SaveText>
-            </SaveBtn>
-          </EditBox>
-        </View>
-      </Modal> */}
+      {/* 프로필모달 */}
       <ProfileModal
         visible={isProfileVisible}
         userData={selectedUser.data}
         onClose={() => setIsProfileVisible(false)}
       />
+
+      {/* 댓글 수정 모달 */}
+      <EditCommentModal />
     </Safe>
   );
 }
 
 const Safe = styled.SafeAreaView`
   flex: 1;
-  background: #1d1e1f;
+  background: ${({ theme }) => theme.colors.primary.black};
 `;
 const Container = styled.View`
   padding: 20px 0;
@@ -433,8 +234,7 @@ const Container = styled.View`
   align-items: center;
 `;
 const Header = styled.View`
-  height: 48px;
-  padding: 0 12px;
+  padding: 11px 20px 16px 20px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -444,9 +244,8 @@ const Back = styled.Pressable`
   align-items: flex-start;
 `;
 const HeaderTitle = styled.Text`
-  color: #fff;
-  font-size: 18px;
-  font-family: 'PlusJakartaSans_500Bold';
+  ${({ theme }) => textStyle(theme.fonts.body.B2_M)};
+  color: ${({ theme }) => theme.colors.primary.white};
   text-align: center;
   flex: 1;
 `;
@@ -461,43 +260,6 @@ const Center = styled.View`
 const Dim = styled.Text`
   color: #cfd4da;
 `;
-
-const Avatar = styled(ProfileImage)`
-  width: 34px;
-  height: 34px;
-  border-radius: 17px;
-  background: #2a2b2c;
-`;
-
 const SortWrap = styled.View`
-  background: #171818;
   margin-bottom: 24px;
-`;
-
-const SheetHandle = styled.View`
-  align-self: center;
-  width: 44px;
-  height: 4px;
-  border-radius: 2px;
-  background: #44484d;
-  margin-bottom: 8px;
-`;
-const SheetItem = styled.Pressable`
-  flex-direction: row;
-  align-items: center;
-  padding: 14px 20px;
-`;
-const SheetIcon = styled.View`
-  width: 28px;
-  align-items: center;
-  margin-right: 8px;
-`;
-const SheetLabel = styled.Text<{ $danger?: boolean }>`
-  color: ${({ $danger }) => ($danger ? '#ff4d4f' : '#e6e9ed')};
-  font-size: 16px;
-`;
-const SheetDivider = styled.View`
-  height: 1px;
-  background: #2c2f33;
-  margin: 4px 0;
 `;
