@@ -1,6 +1,6 @@
 import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
-import { router, usePathname } from 'expo-router';
+import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../shared/constants/error';
@@ -28,11 +28,9 @@ export const usePostActions = () => {
   } = useReportSheetStore();
   const { postDetailData } = useGetPostDetail(selectedPostId || undefined);
 
-  const pathname = usePathname();
   // 게시글 삭제 핸들러
-  const handleDeletePost = () => {
+  const handleDeletePost = (onSuccessCallback?: () => void) => {
     if (!selectedPostId) return;
-    console.log(selectedPostId);
 
     // 바텀시트 닫기
     hideMoreSheet();
@@ -51,11 +49,8 @@ export const usePostActions = () => {
             onPress: () => {
               deletePostMutation(selectedPostId, {
                 onSuccess: () => {
-                  // 커뮤니티 toast 디자인 수정 필요
                   Toast.show({ type: 'success', text1: '1 Post deleted' });
-                  if (pathname === COMMUNITY_ROUTER.DETAIL[selectedPostId]) {
-                    router.back();
-                  }
+                  onSuccessCallback?.();
                 },
                 onError: (error) => {
                   const errorCode = getAxiosErrorCode(error);
@@ -64,7 +59,9 @@ export const usePostActions = () => {
 
                   Toast.show({ type: 'error', text1: errorMessage });
                 },
-                onSettled: () => resetMoreSheetData(),
+                onSettled: () => {
+                  resetMoreSheetData();
+                },
               });
             },
           },
@@ -110,7 +107,7 @@ export const usePostActions = () => {
   };
 
   // 게시글 신고 제출
-  const submitReportPost = (reason: BlockReportPostParams, afterSuccess?: () => void) => {
+  const submitReportPost = (reason: BlockReportPostParams, onSuccessCallback?: () => void) => {
     if (!selectedId || !selectedCategory) return;
 
     hideReportSheet();
@@ -132,10 +129,7 @@ export const usePostActions = () => {
                 {
                   onSuccess: () => {
                     Toast.show({ type: 'success', text1: 'Reported successfully' });
-
-                    if (afterSuccess) {
-                      afterSuccess();
-                    }
+                    onSuccessCallback?.();
                   },
                   onError: (error) => {
                     const errorCode = getAxiosErrorCode(error);
@@ -156,7 +150,7 @@ export const usePostActions = () => {
   };
 
   // 게시글 작성 유저 차단 핸들러
-  const handleBlockUser = (afterSuccess?: () => void) => {
+  const handleBlockUser = (onSuccessCallback?: () => void) => {
     if (!authorId) return;
 
     // 바텀시트 닫기
@@ -175,10 +169,7 @@ export const usePostActions = () => {
               blockUserMutation(authorId, {
                 onSuccess: () => {
                   Toast.show({ type: 'success', text1: 'User blocked successfully' });
-
-                  if (afterSuccess) {
-                    afterSuccess();
-                  }
+                  onSuccessCallback?.();
                 },
                 onError: (error) => {
                   const errorCode = getAxiosErrorCode(error);

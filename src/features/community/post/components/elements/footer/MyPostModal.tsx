@@ -9,31 +9,32 @@ import {
 } from '@/src/features/community/shared/styles/styles';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
-import { usePostActions } from '../../../hooks/usePostActions';
-import { useMoreSheetStore } from '../../../store/useMoreSheetStore';
 
-const MyPostModal = () => {
-  // 성공 시 모달 닫기
-  const { handleDeletePost, handleRouterUpdatePost } = usePostActions();
-  const { hideMoreSheet } = useMoreSheetStore();
+interface MyPostModalProps {
+  onSuccessNavigate?: () => void;
+  onDelete: (callback?: () => void) => void;
+  onEdit: () => void;
+  onClose: () => void;
+}
 
+const MyPostModal = ({ onSuccessNavigate, onDelete, onEdit, onClose }: MyPostModalProps) => {
   return (
     <BottomSheetContent>
       <HandleWrap>
         <Handle />
       </HandleWrap>
       <ButtonWrap>
-        <ButtonContainer onPress={() => handleRouterUpdatePost()}>
+        <ButtonContainer onPress={() => onEdit()}>
           <Icon type="edit" size={24} />
           <ButtonText color={theme.colors.primary.white}>Edit</ButtonText>
         </ButtonContainer>
 
-        <ButtonContainer onPress={() => handleDeletePost()}>
+        <ButtonContainer onPress={() => onDelete(onSuccessNavigate)}>
           <Icon type="trashCan" color={theme.colors.secondary.red} size={24} />
           <ButtonText color={theme.colors.secondary.red}>Delete</ButtonText>
         </ButtonContainer>
 
-        <ButtonContainer onPress={() => hideMoreSheet()}>
+        <ButtonContainer onPress={() => onClose()}>
           <Icon type="close" size={24} />
           <ButtonText>Cancel</ButtonText>
         </ButtonContainer>

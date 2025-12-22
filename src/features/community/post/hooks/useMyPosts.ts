@@ -46,9 +46,10 @@ export function useDeletePost() {
         return oldData;
       });
 
-      qc.removeQueries({ queryKey: ['post', 'detail', postId] });
-
       return { prevData };
+    },
+    onSuccess: (postId) => {
+      qc.removeQueries({ queryKey: ['post', 'detail', postId] });
     },
     onError: (error, postId, context) => {
       if (context?.prevData) {
