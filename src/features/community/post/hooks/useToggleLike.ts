@@ -19,45 +19,42 @@ export function useToggleLike() {
 
       const delta = liked ? -1 : 1;
 
-      // 모든 post 하위 쿼리 업데이트 (list, bookmarked, detail 등)
-      qc.setQueriesData({ queryKey: ['post'] }, (oldData: any) => {
-        if (!oldData) return oldData;
+      // 리스트형 쿼리 업데이트 (list, bookmark)
+      qc.setQueriesData({ queryKey: ['post', 'list'] }, (oldData: any) => {
+        if (!oldData?.pages) return oldData;
 
-        // InfiniteData 타입 (list, bookmarked)
-        if (oldData.pages) {
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page: any) => ({
-              ...page,
-              data: {
-                ...page.data,
-                items: page.data.items.map((item: any) => {
-                  if (item.postId === postId) {
-                    const prev = Number(item.likeCount ?? 0);
-                    return {
-                      ...item,
-                      isLiked: !liked,
-                      likeCount: Math.max(0, Math.min(999, prev + delta)),
-                    };
-                  }
-                  return item;
-                }),
-              },
-            })),
-          };
-        }
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: {
+              ...page.data,
+              items: page.data.items.map((item: any) => {
+                if (item.postId === postId) {
+                  const prev = Number(item.likeCount ?? 0);
+                  return {
+                    ...item,
+                    isLiked: !liked,
+                    likeCount: Math.max(0, Math.min(999, prev + delta)),
+                  };
+                }
+                return item;
+              }),
+            },
+          })),
+        };
+      });
 
-        // PostDetail 타입 (detail)
-        if (oldData.postId === postId) {
-          const prev = Number(oldData.likeCount ?? 0);
-          return {
-            ...oldData,
-            isLiked: !liked,
-            likeCount: Math.max(0, Math.min(999, prev + delta)),
-          };
-        }
+      // 상세 쿼리 업데이트
+      qc.setQueriesData({ queryKey: ['post', 'detail', postId] }, (oldData: any) => {
+        if (!oldData || oldData.postId !== postId) return oldData;
 
-        return oldData;
+        const prev = Number(oldData.likeCount ?? 0);
+        return {
+          ...oldData,
+          isLiked: !liked,
+          likeCount: Math.max(0, Math.min(999, prev + delta)),
+        };
       });
 
       return { prevData };

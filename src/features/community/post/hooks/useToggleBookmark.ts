@@ -17,32 +17,27 @@ export function useToggleBookmark() {
 
       const prevData = qc.getQueriesData({ queryKey: ['post'] });
 
-      // 모든 post 하위 쿼리 업데이트 (list, bookmarked, detail 등)
-      qc.setQueriesData({ queryKey: ['post'] }, (oldData: any) => {
-        if (!oldData) return oldData;
+      // 리스트형 쿼리 업데이트 (list, bookmark)
+      qc.setQueriesData({ queryKey: ['post', 'list'] }, (oldData: any) => {
+        if (!oldData?.pages) return oldData;
 
-        // InfiniteData 타입 (list, bookmarked)
-        if (oldData.pages) {
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page: any) => ({
-              ...page,
-              data: {
-                ...page.data,
-                items: page.data.items.map((item: any) =>
-                  item.postId === postId ? { ...item, isBookmarked: !isBookmarked } : item,
-                ),
-              },
-            })),
-          };
-        }
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: {
+              ...page.data,
+              items: page.data.items.map((item: any) =>
+                item.postId === postId ? { ...item, isBookmarked: !isBookmarked } : item,
+              ),
+            },
+          })),
+        };
+      });
 
-        // PostDetail 타입 (detail)
-        if (oldData.postId === postId) {
-          return { ...oldData, isBookmarked: !isBookmarked };
-        }
-
-        return oldData;
+      // 상세 쿼리 업데이트
+      qc.setQueriesData({ queryKey: ['post', 'detail', postId] }, (oldData: any) => {
+        return { ...oldData, isBookmarked: !isBookmarked };
       });
 
       return { prevData };
@@ -56,8 +51,8 @@ export function useToggleBookmark() {
     },
     onSettled: (data, errors, { isBookmarked }) => {
       // 북마크 해제 시 북마크 페이지 안에 있으면 refetch 하지 않고 데이터가 상했다는 표시만 전달
-      if (!isBookmarked) {
-        qc.invalidateQueries({ queryKey: ['post', 'bookmarked'], refetchType: 'none' });
+      if (isBookmarked) {
+        qc.invalidateQueries({ queryKey: ['post', 'list', 'bookmark'], refetchType: 'none' });
       }
     },
   });
