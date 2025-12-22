@@ -9,12 +9,11 @@ import { CommentNode, organizeComment } from './../../../shared/utils/organizeCo
 import { useGetPostComments } from './useGetPostComments';
 import { useToggleCommentLike } from './useToggleCommentLike';
 
-// 상세게시글 댓글 관리 훅
+// 상세게시글 댓글 작성 및 좋아요 관리 훅
 export function useCommentManager(postId: number, sort: SortParam) {
   const { data } = useGetPostComments(Number.isFinite(postId) ? postId : undefined, sort);
   const createCommentMutation = useCreateComment(postId);
   const likeComment = useToggleCommentLike();
-  const likeBusyRef = useRef<Record<number, boolean>>({});
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [value, setValue] = useState('');
   const inputRef = useRef<RNTextInput | null>(null);
@@ -70,18 +69,8 @@ export function useCommentManager(postId: number, sort: SortParam) {
     const { commentId, isLiked } = comment;
 
     if (!Number.isFinite(commentId)) return;
-    if (likeBusyRef.current[commentId]) return;
 
-    likeBusyRef.current[commentId] = true;
-
-    likeComment.mutate(
-      { commentId: commentId, liked: isLiked },
-      {
-        onSettled: () => {
-          likeBusyRef.current[commentId] = false;
-        },
-      },
-    );
+    likeComment.mutate({ commentId, liked: isLiked });
   };
 
   return {
