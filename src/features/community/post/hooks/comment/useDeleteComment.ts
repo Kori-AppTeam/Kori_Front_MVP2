@@ -23,7 +23,7 @@ export function useDeleteComment() {
             ...oldData,
             pages: oldData.pages.map((page: any) => ({
               ...page,
-              items: page.items.filter((item: any) => item.commentId !== commentId),
+              items: page.items ? page.items.filter((item: any) => item.commentId !== commentId) : [],
             })),
           };
         }
@@ -40,6 +40,10 @@ export function useDeleteComment() {
           qc.setQueryData(queryKey, data);
         });
       }
+    },
+    onSettled: () => {
+      // 성공/실패와 관계없이 쿼리 무효화
+      qc.invalidateQueries({ queryKey: ['comments'] });
     },
   });
 }
