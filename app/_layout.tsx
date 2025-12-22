@@ -3,6 +3,7 @@ import queryClient from '@/api/queryClient';
 import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
 import MoreBottomSheet from '@/src/features/community/post/components/elements/footer/MoreBottomSheet';
+import ReportModal from '@/src/features/community/post/components/ReportModal';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
@@ -114,8 +115,9 @@ export default function RootLayout() {
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
                 </ProfileProvider>
-                {/* 커뮤니티 게시글 더보기 바텀시트 */}
+                {/* 커뮤니티 관련 모달 - 전역에서 사용 */}
                 <MoreBottomSheet />
+                <ReportModal />
               </AppLayout>
             </BottomSheetModalProvider>
           </SafeAreaProvider>
