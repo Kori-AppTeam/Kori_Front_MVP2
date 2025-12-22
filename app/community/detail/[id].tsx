@@ -2,8 +2,6 @@ import api from '@/api/axiosInstance';
 import Icon from '@/components/common/Icon';
 import ProfileImage from '@/components/common/ProfileImage';
 import SortTabs from '@/components/SortTabs';
-import { useUpdateComment } from '@/hooks/mutations/useUpdateComment';
-import { blockComment } from '@/src/features/community/post/apis/comments';
 import PostCarousel from '@/src/features/community/post/components/elements/body/PostCarousel';
 import PostSingleImage from '@/src/features/community/post/components/elements/body/PostSingleImage';
 import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
@@ -12,6 +10,7 @@ import PostCommentInput from '@/src/features/community/post/components/elements/
 import PostCommonFooter from '@/src/features/community/post/components/elements/footer/PostCommonFooter';
 import PostCommonHeader from '@/src/features/community/post/components/elements/header/PostCommonHeader';
 import { useCommentManager } from '@/src/features/community/post/hooks/comment/useCommentManager';
+import { useUpdateComment } from '@/src/features/community/post/hooks/comment/useUpdateComment';
 import { useGetPostDetail } from '@/src/features/community/post/hooks/useGetPostDetail';
 import { useHandleLikeBookmark } from '@/src/features/community/post/hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSheetStore';
@@ -22,7 +21,7 @@ import ProfileModal from '@/src/shared/components/ProfileModal';
 import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
 import { theme } from '@/src/styles/theme';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { forwardRef, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { FlatList as RNFlatList } from 'react-native';
 import {
   Alert,
@@ -31,27 +30,10 @@ import {
   Easing,
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   Platform,
-  Pressable,
   TextInput as RNTextInput,
-  TextInputProps,
-  View,
 } from 'react-native';
 import styled from 'styled-components/native';
-
-const StyledEditInput = styled(RNTextInput)`
-  min-height: 220px;
-  border-radius: 8px;
-  padding: 12px;
-  background: #1f2021;
-  color: #e7eaed;
-  font-size: 14px;
-  border-width: 1px;
-  border-color: #3a3d40;
-`;
-const EditInput = forwardRef<RNTextInput, TextInputProps>((props, ref) => <StyledEditInput ref={ref} {...props} />);
-EditInput.displayName = 'EditInput';
 
 export default function PostDetailScreen() {
   const { id, focusCommentId, intent, commentId } = useLocalSearchParams<{
@@ -80,12 +62,6 @@ export default function PostDetailScreen() {
   const [menuVisible, setMenuVisible] = useState(false);
   const slideY = useRef(new Animated.Value(300)).current;
   const [anonymous, setAnonymous] = useState(false);
-  const [reportOpen, setReportOpen] = useState(false);
-  const [reportText, setReportText] = useState('');
-  const [reportLoading, setReportLoading] = useState(false);
-  const [reportCommentId, setReportCommentId] = useState<number | null>(null);
-  type ReportTarget = 'post' | 'user' | 'comment';
-  const [reportTarget, setReportTarget] = useState<ReportTarget>('post');
 
   //댓글 신고랑 차단
   type SheetCtx = { type: 'post' | 'comment' | null; commentId?: number };
@@ -110,19 +86,6 @@ export default function PostDetailScreen() {
 
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
 
-  //게시글에서 열기
-  // const openPostSheet = () => {
-  //   setSheetCtx({ type: 'post' });
-  //   setMenuVisible(true);
-  //   slideY.setValue(300);
-  //   Animated.timing(slideY, {
-  //     toValue: 0,
-  //     duration: 220,
-  //     easing: Easing.out(Easing.cubic),
-  //     useNativeDriver: true,
-  //   }).start();
-  // };
-
   //댓글에서 열기
   const openCommentSheet = (c: CommentNode) => {
     const cid = Number((c as any).id ?? (c as any).commentId);
@@ -136,93 +99,6 @@ export default function PostDetailScreen() {
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
-  };
-
-  // const openCommentReport = (c: Comment) => {
-  //   const cid = Number((c as any).id ?? (c as any).commentId);
-  //   if (!Number.isFinite(cid)) return;
-  //   setReportTarget('comment');
-  //   setReportCommentId(cid);
-  //   setReportText('');
-  //   setReportOpen(true);
-  // };
-
-  // const closeMenu = () =>
-  //   new Promise<void>((resolve) => {
-  //     Animated.timing(slideY, {
-  //       toValue: 300,
-  //       duration: 200,
-  //       easing: Easing.in(Easing.cubic),
-  //       useNativeDriver: true,
-  //     }).start(() => {
-  //       setMenuVisible(false);
-  //       resolve();
-  //     });
-  //   });
-
-  const onSubmitReport = () => {
-    const reason = reportText.trim();
-
-    if (reportTarget !== 'comment' && !reason) {
-      Alert.alert('Report', 'Please enter details.');
-      return;
-    }
-
-    const titleText =
-      reportTarget === 'user'
-        ? 'Report This User'
-        : reportTarget === 'comment'
-          ? 'Report This Comment'
-          : 'Report This Post';
-
-    Alert.alert('Report', `Are you sure\n${titleText}?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Report',
-        style: 'destructive',
-        onPress: async () => {
-          setReportLoading(true);
-          try {
-            if (reportTarget === 'comment') {
-              if (!reportText.trim()) throw new Error('reason required');
-              await api.post('/api/v1/chat/declaration', {
-                ignored: reportText.trim(),
-                // commentId: reportCommentId
-              });
-            } else if (reportTarget === 'user') {
-              await api.post(`/api/v1/posts/${postId}/block`, { reason });
-            } else {
-              await api.post(`/api/v1/posts/${postId}/block`, { reason });
-            }
-
-            setReportOpen(false);
-            setReportText('');
-            setReportCommentId(null);
-            Alert.alert('Report', 'We’ve received your report. It may take up to 24 hours for review.');
-          } catch (e: any) {
-            const s = e?.response?.status;
-            let msg =
-              s === 401
-                ? 'Authentication required. Please log in again.'
-                : s === 403
-                  ? 'You do not have permission.'
-                  : s === 404
-                    ? 'Target not found.'
-                    : s === 400
-                      ? 'This comment cannot be blocked.'
-                      : 'Failed to submit the report.';
-            Alert.alert('Report', msg);
-
-            console.group('[report] error');
-            console.log('target', reportTarget, 'status', s);
-            console.log('meta', { postId, reportCommentId });
-            console.groupEnd();
-          } finally {
-            setReportLoading(false);
-          }
-        },
-      },
-    ]);
   };
 
   const onSaveEdit = async () => {
@@ -298,46 +174,39 @@ export default function PostDetailScreen() {
     ]);
   };
 
-  const blockCommentFromSheet = () => {
-    if (sheetCtx.type !== 'comment' || !Number.isFinite(sheetCtx.commentId!)) return;
-    const cid = sheetCtx.commentId!;
-    setMenuVisible(false);
+  // const blockCommentFromSheet = () => {
+  //   if (sheetCtx.type !== 'comment' || !Number.isFinite(sheetCtx.commentId!)) return;
+  //   const cid = sheetCtx.commentId!;
+  //   setMenuVisible(false);
 
-    Alert.alert('Block', 'Are you sure you want to block this comment?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Block',
-        style: 'destructive',
-        onPress: async () => {
-          hideCommentLocal(cid);
+  //   Alert.alert('Block', 'Are you sure you want to block this comment?', [
+  //     { text: 'Cancel', style: 'cancel' },
+  //     {
+  //       text: 'Block',
+  //       style: 'destructive',
+  //       onPress: async () => {
+  //         hideCommentLocal(cid);
 
-          try {
-            await blockComment(cid, 'Blocked from comment sheet');
-            Alert.alert('Block', 'This comment has been blocked.');
-          } catch (e: any) {
-            const s = e?.response?.status;
-            const msg =
-              s === 401
-                ? 'Authentication required. Please log in again.'
-                : s === 403
-                  ? 'You do not have permission.'
-                  : s === 404
-                    ? 'Comment not found.'
-                    : 'Failed to block this comment.';
-            Alert.alert('Block', msg);
-            console.log('[block comment] error', { status: s, commentId: cid, e });
-          }
-        },
-      },
-    ]);
-  };
-
-  const reportTitle =
-    reportTarget === 'user'
-      ? 'Report This User'
-      : reportTarget === 'comment'
-        ? 'Report This Comment'
-        : 'Report This Post';
+  //         try {
+  //           await blockComment(cid, 'Blocked from comment sheet');
+  //           Alert.alert('Block', 'This comment has been blocked.');
+  //         } catch (e: any) {
+  //           const s = e?.response?.status;
+  //           const msg =
+  //             s === 401
+  //               ? 'Authentication required. Please log in again.'
+  //               : s === 403
+  //                 ? 'You do not have permission.'
+  //                 : s === 404
+  //                   ? 'Comment not found.'
+  //                   : 'Failed to block this comment.';
+  //           Alert.alert('Block', msg);
+  //           console.log('[block comment] error', { status: s, commentId: cid, e });
+  //         }
+  //       },
+  //     },
+  //   ]);
+  // };
 
   const { showMoreSheet } = useMoreSheetStore();
 
@@ -402,6 +271,7 @@ export default function PostDetailScreen() {
                 onOpenModal={() => openCommentSheet(item)}
                 onClickReply={() => manage.onClickReplyToComment(item.commentId)}
               />
+              {/* 대댓글 */}
               {item.replies &&
                 item.replies.map((reply) => (
                   <PostComment
@@ -467,7 +337,7 @@ export default function PostDetailScreen() {
                   likeCount={postDetailData.likeCount}
                   commentCount={postDetailData.commentCount}
                   onToggleLike={() => handleToggleLike(postDetailData.postId, postDetailData.isLiked)}
-                  onOpenModal={() => showMoreSheet(postDetailData.postId, postDetailData.authorId)}
+                  onOpenModal={() => showMoreSheet('post', postDetailData.postId, postDetailData.authorId)}
                 />
               </Container>
 
@@ -493,97 +363,7 @@ export default function PostDetailScreen() {
         />
       </KeyboardAvoidingView>
 
-      <Modal transparent visible={menuVisible} onRequestClose={() => setMenuVisible(false)} animationType="none">
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <Pressable style={{ flex: 1 }} onPress={() => setMenuVisible(false)} />
-          <Animated.View
-            style={{
-              transform: [{ translateY: slideY }],
-              backgroundColor: '#232425',
-              paddingBottom: 20,
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              paddingTop: 10,
-            }}
-          >
-            <SheetHandle />
-
-            {sheetCtx.type === 'post' && (
-              <>
-                <SheetItem
-                  onPress={() => {
-                    setMenuVisible(false);
-                    setReportTarget('post');
-                    setReportText('');
-                    setReportOpen(true);
-                  }}
-                >
-                  <SheetIcon>
-                    <Icon type="alert" size={24} color={theme.colors.secondary.red} />
-                  </SheetIcon>
-                  <SheetLabel $danger>Report This Post</SheetLabel>
-                </SheetItem>
-
-                <SheetItem
-                  onPress={() => {
-                    setMenuVisible(false);
-                    setReportTarget('user');
-                    setReportText('');
-                    setReportOpen(true);
-                  }}
-                >
-                  <SheetIcon>
-                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
-                  </SheetIcon>
-                  <SheetLabel $danger>Report This User</SheetLabel>
-                </SheetItem>
-
-                <SheetItem onPress={blockPostFromSheet}>
-                  <SheetIcon>
-                    <Icon type="close" size={24} color={theme.colors.secondary.red} />
-                  </SheetIcon>
-                  <SheetLabel $danger>Block This Post</SheetLabel>
-                </SheetItem>
-              </>
-            )}
-
-            {sheetCtx.type === 'comment' && (
-              <>
-                <SheetItem
-                  onPress={() => {
-                    setMenuVisible(false);
-                    setReportTarget('comment');
-                    setReportCommentId(sheetCtx.commentId!);
-                    setReportText('');
-                    setReportOpen(true);
-                  }}
-                >
-                  <SheetIcon>
-                    <Icon type="alert" size={24} color={theme.colors.secondary.red} />
-                  </SheetIcon>
-                  <SheetLabel $danger>Report This Comment</SheetLabel>
-                </SheetItem>
-
-                <SheetItem onPress={blockCommentFromSheet}>
-                  <SheetIcon>
-                    <Icon type="person" size={24} color={theme.colors.secondary.red} />
-                  </SheetIcon>
-                  <SheetLabel $danger>Block This User</SheetLabel>
-                </SheetItem>
-              </>
-            )}
-
-            <SheetItem onPress={() => setMenuVisible(false)}>
-              <SheetIcon>
-                <Icon type="close" size={24} color={theme.colors.gray.lightGray_1} />
-              </SheetIcon>
-              <SheetLabel>Cancel</SheetLabel>
-            </SheetItem>
-          </Animated.View>
-        </View>
-      </Modal>
-
-      <Modal
+      {/* <Modal
         visible={editVisible}
         transparent
         animationType="fade"
@@ -629,7 +409,7 @@ export default function PostDetailScreen() {
             </SaveBtn>
           </EditBox>
         </View>
-      </Modal>
+      </Modal> */}
       <ProfileModal
         visible={isProfileVisible}
         userData={selectedUser.data}
@@ -720,43 +500,4 @@ const SheetDivider = styled.View`
   height: 1px;
   background: #2c2f33;
   margin: 4px 0;
-`;
-
-const CloseBtn = styled.Pressable`
-  padding: 4px;
-`;
-
-const EditBox = styled.View`
-  width: 100%;
-  max-width: 360px;
-  background: #2a2b2c;
-  border-radius: 12px;
-  padding: 12px 12px 16px 12px;
-`;
-const EditHeader = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-`;
-const EditTitle = styled.View`
-  flex-direction: row;
-  align-items: center;
-`;
-const EditTitleText = styled.Text`
-  color: #cfd4da;
-  font-size: 14px;
-  font-weight: 700;
-`;
-const SaveBtn = styled.Pressable`
-  background: #30f59b;
-  padding: 12px;
-  border-radius: 8px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 12px;
-`;
-const SaveText = styled.Text`
-  color: #000;
-  font-weight: 700;
 `;
