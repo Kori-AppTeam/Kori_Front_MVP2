@@ -35,3 +35,13 @@ export async function updateComment(commentId: number, body: { content: string }
 export async function blockComment(commentId: number) {
   await api.post(`/api/v1/comments/${commentId}/block`);
 }
+
+// 댓글 좋아요
+export async function addCommentLike(commentId: number): Promise<void> {
+  await api.put(`/api/v1/comments/${commentId}/likes/me`);
+}
+
+// 댓글 좋아요 취소
+export async function removeCommentLike(commentId: number): Promise<void> {
+  await api.delete(`/api/v1/comments/${commentId}/likes/me`);
+}

@@ -1,5 +1,5 @@
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
-import { addCommentLike, removeCommentLike } from '../../apis/commentLikes';
+import { addCommentLike, removeCommentLike } from '../../apis/comments';
 
 type Vars = { commentId: number; liked: boolean };
 type Context = {
