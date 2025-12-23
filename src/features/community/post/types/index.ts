@@ -196,3 +196,45 @@ export interface CreateCommentReq {
   anonymous: boolean;
   parentId: number | null;
 }
+
+// 마이 히스토리 게시글 타입
+export interface MyHistoryPost {
+  postId: number;
+  content: string;
+  createdAt: string;
+  isLiked: boolean;
+  likeCount: number;
+  commentCount: number;
+  viewCount: number;
+  imageUrl: string;
+  imageCount: number;
+}
+export interface MyHistoryPostsCursorPage {
+  items: MyHistoryPost[];
+  hasNext: boolean;
+  nextCursor: string | null;
+}
+export interface MyHistoryPostsServerResp {
+  message: string;
+  data: MyHistoryPostsCursorPage;
+  timestamp?: string;
+}
+
+// 마이 히스토리 댓글 타입
+export interface MyHistoryComment {
+  commentId: number;
+  postId: number;
+  postContent: string;
+  commentContent: string;
+  createdAt: string;
+}
+export interface MyHistoryCommentCursorPage {
+  items: MyHistoryComment[];
+  hasNext: boolean;
+  nextCursor: string | null;
+}
+export interface MyHistoryCommentsServerResp {
+  message: string;
+  data: MyHistoryCommentCursorPage;
+  timestamp?: string;
+}
