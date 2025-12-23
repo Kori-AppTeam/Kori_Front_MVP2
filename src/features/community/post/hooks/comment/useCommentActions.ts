@@ -1,4 +1,6 @@
+import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
+import { usePathname, useRouter } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../../shared/constants/error';
@@ -10,10 +12,12 @@ import { useUpdateComment } from './useUpdateComment';
 
 // 댓글 수정, 삭제, 차단 핸들러 함수 (바텀시트)
 export const useCommentActions = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const deleteCommentMutation = useDeleteComment();
   const blockCommentMutation = useBlockComment();
   const updateCommentMutation = useUpdateComment();
-  const { hideMoreSheet, selectedCommentId, resetData: resetMoreSheetData } = useMoreSheetStore();
+  const { hideMoreSheet, selectedCommentId, selectedPostId, resetData: resetMoreSheetData } = useMoreSheetStore();
   const {
     showEditCommentSheet,
     hideEditCommentSheet,
@@ -109,14 +113,27 @@ export const useCommentActions = () => {
       return;
     }
 
+    const isMyHistoryPage = pathname.startsWith('/community/my-history');
+    const isDetailPage = pathname.startsWith('/community/detail/');
+
     // 바텀시트 닫기
     hideMoreSheet();
 
-    // 수정 모달 열기
-    setTimeout(() => {
-      console.log('Opening edit sheet with:', selectedCommentId, content);
-      showEditCommentSheet(selectedCommentId, content);
-    }, 400);
+    // 마이히스토리 페이지에서 댓글 수정 시 상세페이지로 이동
+    if (isMyHistoryPage && selectedPostId) {
+      setTimeout(() => {
+        router.push(COMMUNITY_ROUTER.DETAIL(selectedPostId));
+        // 페이지 이동 후 수정 모달 열기
+        setTimeout(() => {
+          showEditCommentSheet(selectedCommentId, content);
+        }, 500);
+      }, 400);
+    } else {
+      // 상세페이지에서는 바로 수정 모달 열기
+      setTimeout(() => {
+        showEditCommentSheet(selectedCommentId, content);
+      }, 400);
+    }
   };
 
   // 댓글 수정 저장
