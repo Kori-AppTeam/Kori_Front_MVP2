@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { getMyComments } from '../apis/my';
-import { MyHistoryCommentCursorPage, MyHistoryCommentsServerResp } from '../types';
+import { getMyComments } from '../../apis/my';
+import { MyHistoryCommentCursorPage, MyHistoryCommentsServerResp } from '../../types';
 
 export const useGetMyHistoryComments = (size = 20) => {
   const query = useInfiniteQuery<MyHistoryCommentsServerResp>({
-    queryKey: ['comment', 'list', 'myHistory'],
+    queryKey: ['comments', 'list', 'myHistory'],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) => getMyComments({ size, cursor: pageParam as string | undefined }),
     getNextPageParam: (lastPage) => {
