@@ -5,7 +5,7 @@ export const useBlockUser = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (postId: number) => blockUser(postId),
+    mutationFn: (userId: number) => blockUser(userId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['post'] });
     },
