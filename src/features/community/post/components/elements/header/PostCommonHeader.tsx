@@ -30,7 +30,7 @@ const PostCommonHeader = ({
         </AuthorImageContainer>
       )}
 
-      <Meta>
+      <Meta author={authorName}>
         {authorName !== undefined && <Author>{authorName}</Author>}
         <SubRow>
           <TimeText>{timeToAgo(createdAt)}</TimeText>
@@ -69,8 +69,8 @@ const AuthorImageContainer = styled(Pressable)`
   width: 44px;
   height: 44px;
 `;
-const Meta = styled.View`
-  margin-left: 8px;
+const Meta = styled.View<{ author?: string | null }>`
+  margin-left: ${({ author }) => (author ? '8px' : '0')};
   flex: 1;
   gap: 4px;
   flex-direction: column;
