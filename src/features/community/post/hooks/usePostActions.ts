@@ -9,8 +9,8 @@ import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { useReportSheetStore } from '../store/useReportSheetStore';
 import { BlockReportPostParams } from '../types';
 import { useBlockUser } from './useBlockUser';
+import { useDeletePost } from './useDeletePost';
 import { useGetPostDetail } from './useGetPostDetail';
-import { useDeletePost } from './useMyPosts';
 import { useReportPost } from './useReportPost';
 
 // 게시글 수정, 삭제, 신고, 차단 핸들러 함수(바텀시트)
