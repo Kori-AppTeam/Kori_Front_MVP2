@@ -29,7 +29,7 @@ export const useMoreSheetStore = create<UseMoreSheetStore>((set) => ({
   authorId: null,
   type: null,
 
-  showMoreSheet: (type: SheetType, postId?: number, authorId?: number, commentId?: number, commentContent?: string) => {
+  showMoreSheet: (type: SheetType, postId: number, authorId: number, commentId?: number, commentContent?: string) => {
     if (!postId || !authorId) return;
 
     set(() => ({
