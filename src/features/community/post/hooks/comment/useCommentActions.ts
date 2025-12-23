@@ -22,7 +22,6 @@ export const useCommentActions = () => {
     showEditCommentSheet,
     hideEditCommentSheet,
     selectedCommentId: editCommentId,
-    commentContent,
     resetData: resetEditCommentSheetData,
   } = useEditCommentSheetStore();
 
@@ -47,7 +46,6 @@ export const useCommentActions = () => {
                   Toast.show({ type: 'success', text1: 'Comment deleted' });
                 },
                 onError: (error) => {
-                  console.error('Comment delete error:', error);
                   const errorCode = getAxiosErrorCode(error);
                   const errorMessage =
                     COMMUNITY_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Delete failed';
@@ -107,14 +105,11 @@ export const useCommentActions = () => {
 
   // 댓글 수정 핸들러 (모달 열기)
   const handleEditComment = (content: string) => {
-    console.log('handleEditComment called', { selectedCommentId, content });
     if (!selectedCommentId) {
-      console.log('No selectedCommentId');
       return;
     }
 
     const isMyHistoryPage = pathname.startsWith('/community/my-history');
-    const isDetailPage = pathname.startsWith('/community/detail/');
 
     // 바텀시트 닫기
     hideMoreSheet();
