@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
 import { SCREEN_WIDTH } from '../../shared/constants/constants';
-import { BorderLine, Container } from '../../shared/styles/styles';
+import { BorderLine, Container, IconBtn } from '../../shared/styles/styles';
 import { timeToAgo } from '../../shared/utils/indexUtils';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { MyHistoryComment } from '../types';
@@ -26,13 +26,13 @@ const MyCommentCard = ({ authorId, data }: MyCommentCardProps) => {
 
         <BottomRow>
           <ParentSnippet numberOfLines={1}>{data.postContent}</ParentSnippet>
-          <MoreBtn
+          <IconBtn
             onPress={() =>
               authorId && showMoreSheet('comment', data.postId, authorId, data.commentId, data.commentContent)
             }
           >
             <Icon type="eclipsisGaro" size={20} color={theme.colors.gray.gray_1} />
-          </MoreBtn>
+          </IconBtn>
         </BottomRow>
       </RowPress>
       <BorderLine width={SCREEN_WIDTH} />
@@ -52,12 +52,6 @@ const BottomRow = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-`;
-
-const MoreBtn = styled.Pressable`
-  padding: 2px;
-  align-items: center;
-  justify-content: center;
 `;
 
 const DateText = styled.Text`
