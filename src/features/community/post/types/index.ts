@@ -55,11 +55,7 @@ export interface PostsCursorPage {
 
 export interface PostsListResp {
   message: string;
-  data: {
-    items: PostsListItem[];
-    hasNext: boolean;
-    nextCursor?: string | null;
-  };
+  data: PostsCursorPage;
   timestamp?: string;
 }
 
