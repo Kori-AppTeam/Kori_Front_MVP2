@@ -1,45 +1,35 @@
 import api from '@/api/axiosInstance';
+import { SearchedPostServerResp, SearchReqParams } from '../../search/types';
+import { BoardId } from '../types';
 
-export type SearchPostItem = {
-  postId: number;
-  contentPreview?: string;
-  content?: string;
-  userName?: string;
-  boardCategory?: string;
-  createdAt?: string | number;
-  likeCount?: number;
-  commentCount?: number;
-  viewCount?: number;
-  userImageUrl?: string;
-  contentImageUrls?: string[];
-  imageUrls?: string[];
-  contentImageUrl?: string;
-  imageUrl?: string;
-  isLiked?: boolean;
-  likedByMe?: boolean;
-  isLike?: boolean;
-  score?: number;
-};
-
-export type SearchPostHit = {
-  item: SearchPostItem;
-  highlight?: string;
-  score?: number;
-};
-
-export type SearchPostsPage =
-  | {
-      items: SearchPostHit[];
-      hasNext: boolean;
-      nextCursor?: string | null;
-      timestamp?: string;
-    }
-  | SearchPostHit[];
-
-export async function getSearchPosts(params: { boardId: number; q: string; size?: number; cursor?: string | null }) {
+export const getSearchPosts = async (params: SearchReqParams) => {
   const { boardId, q, size, cursor } = params;
-  const res = await api.get<SearchPostsPage>(`/api/v1/search/${boardId}/posts`, {
-    params: { q, ...(size ? { size } : {}), ...(cursor ? { cursor } : {}) },
+  const res = await api.get<SearchedPostServerResp>(`/api/v1/search/${boardId}/posts`, {
+    params: { q, size, cursor: cursor ?? undefined },
   });
   return res.data;
-}
+};
+
+export const getAutoCompleteSuggestions = async (boardId: BoardId, q: string): Promise<string[]> => {
+  const res = await api.get(`/api/v1/search/${boardId}/suggest`, {
+    params: { q },
+  });
+  return res.data;
+};
+
+export const getRecentSearchKeywords = async (): Promise<string[]> => {
+  const res = await api.get<string[]>(`/api/v1/search/recent`);
+  return res.data;
+};
+
+// 최근 검색어 단건 삭제
+export const deleteRecentSearchKeyword = async (q: string): Promise<void> => {
+  await api.delete(`/api/v1/search/recent`, {
+    params: { q },
+  });
+};
+
+// 최근 검색어 전체 삭제
+export const clearRecentSearchKeywords = async (): Promise<void> => {
+  await api.delete(`/api/v1/search/recent/all`);
+};
