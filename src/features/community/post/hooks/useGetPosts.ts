@@ -5,7 +5,7 @@ import { BoardId, PostsCursorPage, PostsListResp, SortParam } from '../types';
 
 export function useGetPosts(boardId: BoardId, sort: SortParam) {
   const query = useInfiniteQuery<PostsListResp>({
-    queryKey: ['post-list', boardId, sort],
+    queryKey: ['post', 'list', boardId, sort],
     initialPageParam: undefined,
     queryFn: ({ pageParam }) => getPosts(boardId, { sort: sort, size: 20, cursor: pageParam as string | undefined }),
     getNextPageParam: (lastItem) => {

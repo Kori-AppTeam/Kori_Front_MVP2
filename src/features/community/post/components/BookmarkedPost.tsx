@@ -2,30 +2,23 @@ import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Dimensions } from 'react-native';
-import styled from 'styled-components/native';
+import { BorderLine, Container, ContentBox, Wrap } from '../../shared/styles/styles';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
+import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { BookmarkedPostItem } from '../types';
 import PostTextContent from './elements/body/PostTextContent';
 import PostCommonFooter from './elements/footer/PostCommonFooter';
 import PostCommonHeader from './elements/header/PostCommonHeader';
 
-const BookmarkedPost = ({
-  data,
-  onOpenModal,
-}: {
-  data: BookmarkedPostItem;
-  onOpenModal: (postId: number, authorId: number) => void;
-}) => {
+const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
+  const { showMoreSheet } = useMoreSheetStore();
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
 
   return (
-    <Container width={SCREEN_WIDTH}>
-      <Wrap
-        width={SCREEN_WIDTH}
-        onPress={() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } })}
-      >
+    <Container>
+      <Wrap width={SCREEN_WIDTH} onPress={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}>
         <PostCommonHeader
           postId={data.postId}
           isAnonymous={data.isAnonymous}
@@ -45,9 +38,9 @@ const BookmarkedPost = ({
           isLiked={data.isLiked}
           likeCount={data.likeCount}
           onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
-          onToggleComment={() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: data.postId } })}
+          onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}
           commentCount={data.commentCount}
-          onOpenModal={() => onOpenModal(data.postId, data.authorId)}
+          onOpenModal={() => showMoreSheet('post', data.postId, data.authorId)}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />
@@ -56,29 +49,3 @@ const BookmarkedPost = ({
 };
 
 export default memo(BookmarkedPost);
-
-const Container = styled.View<{ width: number }>`
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const Wrap = styled.Pressable<{ width: number }>`
-  width: ${({ width }) => (width ? width - 20 * 2 : 335)};
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-const BorderLine = styled.View<{ width: number }>`
-  width: ${({ width }) => (width ? width - 20 * 2 : 335)}px;
-  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
-  border-bottom-width: 1px;
-`;
-const ContentBox = styled.View`
-  width: 100%;
-  padding: 20px 0;
-  flex-direction: column;
-  justify-content: center;
-  gap: 16px;
-`;

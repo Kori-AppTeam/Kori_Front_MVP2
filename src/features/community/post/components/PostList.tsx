@@ -11,17 +11,13 @@ type Props = {
   category: AllowedCategory;
   sort: SortParam;
   scrollRef: RefObject<FlatList<PostsListItem> | null>;
-  openModal: (postId: number, authorId: number) => void;
 };
 
-const PostList = ({ category, sort, scrollRef, openModal }: Props) => {
+const PostList = ({ category, sort, scrollRef }: Props) => {
   const { posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
     useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
 
-  const renderPost: ListRenderItem<PostsListItem> = useCallback(
-    ({ item }) => <PostListCard data={item} onOpenModal={openModal} />,
-    [openModal],
-  );
+  const renderPost: ListRenderItem<PostsListItem> = useCallback(({ item }) => <PostListCard data={item} />, []);
 
   const listEmpty = useMemo(
     () => (

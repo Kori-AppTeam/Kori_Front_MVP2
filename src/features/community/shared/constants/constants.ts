@@ -5,6 +5,7 @@ import {
   ClientSortParam,
   SortParam,
 } from '@/src/features/community/post/types';
+import { Dimensions } from 'react-native';
 
 export const CLIENT_CATEGORY_NAME: Record<AllowedCategory, AllowedClientCategory> = {
   ALL: 'All',
@@ -49,3 +50,4 @@ export const guidelines = [
 ];
 
 export const ASPECT_RATIO = 200 / 335; // 게시글 이미지 비율 (높이 / 너비)
+export const SCREEN_WIDTH = Math.round(Dimensions.get('window').width); // 화면 가로 길이

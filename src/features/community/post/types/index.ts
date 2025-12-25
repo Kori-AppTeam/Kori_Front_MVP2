@@ -129,6 +129,9 @@ export interface BookmarkRequestBody {
 
 // 게시글 공통 헤더 컴포넌트
 export interface PostCommonHeaderProps {
+  showProfileModal?: boolean;
+  onShowProfileModal?: () => void;
+  authorId?: number;
   postId: number;
   isAnonymous?: boolean;
   userImageUrl?: string | null;
@@ -145,7 +148,7 @@ export interface PostCommonFooterProps {
   isLiked: boolean;
   likeCount: number;
   onToggleLike: () => void;
-  onToggleComment: () => void;
+  onToggleComment?: () => void;
   commentCount: number;
   onOpenModal: () => void;
   authorId?: number;
@@ -156,4 +159,82 @@ export interface PostCommonFooterProps {
 export interface BlockReportPostParams {
   reasonCategory: string;
   reasonDetail: string;
+}
+
+// 상세게시글 댓글 타입
+export interface Comment {
+  commentId: number;
+  parentCommentId: number;
+  authorId: number;
+  authorName: string;
+  content: string;
+  isAnonymous: boolean;
+  isLiked: boolean;
+  likeCount: number;
+  createdAt: string;
+  userImage: string;
+  deleted: boolean;
+}
+
+// 댓글 무한스크롤 페이지 타입
+export interface CommentsCursorPage {
+  items: Comment[];
+  hasNext: boolean;
+  nextCursor?: string | null;
+}
+
+// 댓글 리스트 서버 응답 타입
+export interface CommentsListResp {
+  message: string;
+  data: CommentsCursorPage;
+  timestamp: string;
+}
+
+// 댓글 작성 요청 바디 타입
+export interface CreateCommentReq {
+  comment: string;
+  anonymous: boolean;
+  parentId: number | null;
+}
+
+// 마이 히스토리 게시글 타입
+export interface MyHistoryPost {
+  postId: number;
+  content: string;
+  createdAt: string;
+  isLiked: boolean;
+  likeCount: number;
+  commentCount: number;
+  viewCount: number;
+  imageUrl: string;
+  imageCount: number;
+}
+export interface MyHistoryPostsCursorPage {
+  items: MyHistoryPost[];
+  hasNext: boolean;
+  nextCursor: string | null;
+}
+export interface MyHistoryPostsServerResp {
+  message: string;
+  data: MyHistoryPostsCursorPage;
+  timestamp?: string;
+}
+
+// 마이 히스토리 댓글 타입
+export interface MyHistoryComment {
+  commentId: number;
+  postId: number;
+  postContent: string;
+  commentContent: string;
+  createdAt: string;
+}
+export interface MyHistoryCommentCursorPage {
+  items: MyHistoryComment[];
+  hasNext: boolean;
+  nextCursor: string | null;
+}
+export interface MyHistoryCommentsServerResp {
+  message: string;
+  data: MyHistoryCommentCursorPage;
+  timestamp?: string;
 }

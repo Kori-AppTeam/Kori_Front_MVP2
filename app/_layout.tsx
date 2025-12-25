@@ -1,10 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import queryClient from '@/api/queryClient';
+import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
+import MoreBottomSheet from '@/src/features/community/post/components/elements/footer/MoreBottomSheet';
+import ReportModal from '@/src/features/community/post/components/ReportModal';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { toastConfig } from '@/src/shared/constants/toast';
+import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
+import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
@@ -28,9 +33,6 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
-import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
-import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
 
 SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
@@ -113,6 +115,9 @@ export default function RootLayout() {
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
                 </ProfileProvider>
+                {/* 커뮤니티 관련 모달 - 전역에서 사용 */}
+                <MoreBottomSheet />
+                <ReportModal />
               </AppLayout>
             </BottomSheetModalProvider>
           </SafeAreaProvider>

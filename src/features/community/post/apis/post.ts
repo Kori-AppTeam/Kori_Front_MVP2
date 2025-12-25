@@ -26,13 +26,11 @@ export async function deletePost(postId: number) {
 }
 
 // 게시글 신고
-export async function reportPost(postId: number, reason: BlockReportPostParams) {
+export async function reportPost(postId: number, reason: BlockReportPostParams): Promise<void> {
   await api.post(`/api/v1/posts/${postId}/declaration`, reason);
-  return true;
 }
 
 // 게시글 작성한 유저 차단
-export async function blockUser(userId: number) {
+export async function blockUser(userId: number): Promise<void> {
   await api.post(`/api/v1/users/${userId}/block`);
-  return true;
 }

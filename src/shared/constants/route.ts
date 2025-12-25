@@ -26,7 +26,7 @@ export const COMMUNITY_ROUTER = {
   WRITE: '/community/write',
   MY_HISTORY: '/community/my-history',
   BOOKMARK: '/community/bookmark-list',
-  DETAIL: '/community/detail/[id]',
+  DETAIL: (postId: number | string) => toRoute(`/community/detail/${postId}`),
   SEARCH: '/community/search',
 } as const;
 

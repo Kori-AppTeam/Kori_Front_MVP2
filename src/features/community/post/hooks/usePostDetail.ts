@@ -82,7 +82,7 @@ type PostDetail = {
 
 export function usePostDetail(postId?: number) {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['post-detail', postId],
+    queryKey: ['post', 'detail', postId],
     queryFn: async () => {
       const result = await getPostDetail(postId!);
 
