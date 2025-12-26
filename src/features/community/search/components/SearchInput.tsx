@@ -27,7 +27,15 @@ const SearchInput = ({ value, onChangeText, placeholder, onSubmitEditing }: Sear
           placeholderTextColor={theme.colors.gray.darkGray_2}
           returnKeyType="search"
           onSubmitEditing={onSubmitEditing}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="default"
         />
+        {value.length > 0 && (
+          <IconBtn onPress={() => onChangeText('')}>
+            <Icon type="cancel" size={20} color={theme.colors.gray.gray_2} />
+          </IconBtn>
+        )}
       </InputContainer>
     </Container>
   );
@@ -43,7 +51,7 @@ const Container = styled.View`
   padding: 14px 20px;
 `;
 const IconBtn = styled.Pressable`
-  padding: 4px;
+  padding: 2px;
   align-items: center;
   justify-content: center;
 `;
@@ -54,7 +62,7 @@ const InputContainer = styled.View`
   justify-content: center;
   background-color: ${theme.colors.gray.darkGray_1};
   border-radius: 4px;
-  padding: 10px 12px;
+  padding: 0 12px;
   gap: 6px;
 `;
 const Input = styled.TextInput`
