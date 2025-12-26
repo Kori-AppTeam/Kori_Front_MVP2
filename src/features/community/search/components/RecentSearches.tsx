@@ -13,6 +13,7 @@ type RecentSearchesProps = {
 const RecentSearches = ({ data }: RecentSearchesProps) => {
   const { mutate: deleteRecentSearchKeyword } = useDeleteRecentSearchKeyword();
   const { mutate: clearRecentSearchKeywords } = useClearRecentSearchKeywords();
+
   return (
     <Container>
       <HeaderRow>
@@ -31,6 +32,7 @@ const RecentSearches = ({ data }: RecentSearchesProps) => {
             </IconBtn>
           </SearchedItem>
         )}
+        contentContainerStyle={{ flexGrow: 1 }}
       />
     </Container>
   );
