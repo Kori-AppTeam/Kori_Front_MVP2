@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { getSearchPosts } from '../../post/apis/search';
 import { BoardId } from '../../post/types';
+import { getSearchPosts } from '../apis/search';
 import { SearchedPostCursorPage, SearchedPostServerResp } from '../types';
 
 export const useGetSearchedPosts = (boardId: BoardId, q: string, size = 20) => {
@@ -13,9 +13,13 @@ export const useGetSearchedPosts = (boardId: BoardId, q: string, size = 20) => {
       const item: SearchedPostCursorPage = lastPage.data;
       return item.hasNext ? (item.nextCursor ?? undefined) : undefined;
     },
+    enabled: !!boardId && !!q && q.trim().length > 0,
   });
 
-  const items = useMemo(() => query.data?.pages.flatMap((p) => p.data.items.map((it) => it.item)) ?? [], [query.data]);
+  const items = useMemo(
+    () => query.data?.pages.flatMap((p) => p.data.items.map((data) => data.item)) ?? [],
+    [query.data],
+  );
 
   return { ...query, items };
 };
