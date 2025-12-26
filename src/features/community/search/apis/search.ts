@@ -37,12 +37,6 @@ export const deleteRecentSearchKeyword = async (q: string): Promise<void> => {
   });
 };
 
-// 최근 검색어 저장
-export const saveRecentSearchKeyword = async (q: string): Promise<void> => {
-  console.log('[saveRecentSearchKeyword] Request:', q);
-  await api.post(`/api/v1/search/recent`, { text: q });
-};
-
 // 최근 검색어 전체 삭제
 export const clearRecentSearchKeywords = async (): Promise<void> => {
   await api.delete(`/api/v1/search/recent/all`);
