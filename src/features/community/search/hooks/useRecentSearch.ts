@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { clearRecentSearchKeywords, deleteRecentSearchKeyword, getRecentSearchKeywords } from '../../post/apis/search';
+import { clearRecentSearchKeywords, deleteRecentSearchKeyword, getRecentSearchKeywords } from '../apis/search';
 
 // 최근 검색어 조회
 export const useGetRecentSearch = () => {
   return useQuery<string[]>({
     queryKey: ['recentSearchKeywords'],
     queryFn: () => getRecentSearchKeywords(),
-    initialData: [],
+    staleTime: 0,
   });
 };
 
