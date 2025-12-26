@@ -1,12 +1,18 @@
 import api from '@/api/axiosInstance';
-import { SearchedPostServerResp, SearchReqParams } from '../../search/types';
-import { BoardId } from '../types';
+import { BoardId } from '../../post/types';
+import { SearchedPostServerResp, SearchReqParams } from '../types';
 
 export const getSearchPosts = async (params: SearchReqParams) => {
-  const { boardId, q, size, cursor } = params;
+  const { boardId, q, size = 20, cursor } = params ?? {};
+
   const res = await api.get<SearchedPostServerResp>(`/api/v1/search/${boardId}/posts`, {
-    params: { q, size, cursor: cursor ?? undefined },
+    params: {
+      q,
+      size,
+      ...(cursor && { cursor }),
+    },
   });
+
   return res.data;
 };
 
@@ -18,7 +24,9 @@ export const getAutoCompleteSuggestions = async (boardId: BoardId, q: string): P
 };
 
 export const getRecentSearchKeywords = async (): Promise<string[]> => {
+  console.log('[getRecentSearchKeywords] Request');
   const res = await api.get<string[]>(`/api/v1/search/recent`);
+  console.log('[getRecentSearchKeywords] Response:', res.data);
   return res.data;
 };
 
@@ -29,7 +37,18 @@ export const deleteRecentSearchKeyword = async (q: string): Promise<void> => {
   });
 };
 
+// 최근 검색어 저장
+export const saveRecentSearchKeyword = async (q: string): Promise<void> => {
+  console.log('[saveRecentSearchKeyword] Request:', q);
+  await api.post(`/api/v1/search/recent`, { text: q });
+};
+
 // 최근 검색어 전체 삭제
 export const clearRecentSearchKeywords = async (): Promise<void> => {
   await api.delete(`/api/v1/search/recent/all`);
+};
+
+// 자동완성 키워드 클릭 기록
+export const clickedAutoSuggestedKeyword = async (q: string): Promise<void> => {
+  await api.post(`/api/v1/search/clicked`, { text: q });
 };
