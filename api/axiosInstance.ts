@@ -18,7 +18,11 @@ function shortUrl(base: string, url?: string) {
 
 export const doRefresh = async (): Promise<string | null> => {
   const rt = await SecureStore.getItemAsync(REFRESH_KEY);
-  if (!rt) return null;
+  if (!rt) {
+    // 리프레시 토큰이 없을 경우 남아있을 수 있는 Authorization 헤더 제거
+    delete (api.defaults.headers as any).Authorization;
+    return null;
+  }
 
   try {
     const res = await api.post('/api/v1/member/refresh', { refreshToken: rt });
@@ -29,12 +33,17 @@ export const doRefresh = async (): Promise<string | null> => {
     if (newAt) {
       await SecureStore.setItemAsync(ACCESS_KEY, newAt);
       (api.defaults.headers as any).Authorization = `Bearer ${newAt}`;
+      redirectingToAuth = false;
     }
     if (newRt) {
       await SecureStore.setItemAsync(REFRESH_KEY, newRt);
     }
     return newAt ?? null;
   } catch {
+    // 리프레시 실패 시 저장된 토큰과 헤더를 정리해 이후 요청에서 만료된 토큰이 다시 실리지 않도록 함
+    await SecureStore.deleteItemAsync(ACCESS_KEY).catch(() => {});
+    await SecureStore.deleteItemAsync(REFRESH_KEY).catch(() => {});
+    delete (api.defaults.headers as any).Authorization;
     return null;
   }
 };
@@ -46,6 +55,7 @@ const api: AxiosInstance = axios.create({
 });
 
 let refreshPromise: Promise<string | null> | null = null;
+let redirectingToAuth = false;
 
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
@@ -125,8 +135,12 @@ api.interceptors.response.use(
         // 토큰이 없으면 서버에 요청 보내지 말고, 로그인 화면으로 보내기
         await SecureStore.deleteItemAsync(ACCESS_KEY);
         await SecureStore.deleteItemAsync(REFRESH_KEY);
+        delete (api.defaults.headers as any).Authorization;
 
-        router.replace('/(auth)');
+        if (!redirectingToAuth) {
+          redirectingToAuth = true; // 중복 리다이렉트 방지
+          router.replace('/(auth)');
+        }
 
         return Promise.reject(error);
       }
