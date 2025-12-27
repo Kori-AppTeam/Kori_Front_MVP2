@@ -46,6 +46,9 @@ export function useCommentManager(postId: number, sort: SortParam) {
     const text = value.trim();
     if (!text || !Number.isFinite(postId)) return;
 
+    // 중복클릭 방지
+    if (isSubmitting.current) return;
+
     isSubmitting.current = true;
 
     createCommentMutation.mutate(
@@ -60,9 +63,6 @@ export function useCommentManager(postId: number, sort: SortParam) {
           setValue('');
           Keyboard.dismiss();
           Toast.show({ type: 'success', text1: 'Comment posted' });
-          setTimeout(() => {
-            isSubmitting.current = false;
-          }, 400);
         },
         onError: (error) => {
           const errorCode = getAxiosErrorCode(error);
@@ -70,6 +70,10 @@ export function useCommentManager(postId: number, sort: SortParam) {
             COMMUNITY_ERROR_MESSAGE[errorCode] || COMMON_ERROR_MESSAGE[errorCode] || 'Failed to post comment.';
 
           Toast.show({ type: 'error', text1: errorMessage });
+        },
+        onSettled: () => {
+          // 성공, 실패 상관없이 제출 상태 해제
+          isSubmitting.current = false;
         },
       },
     );
