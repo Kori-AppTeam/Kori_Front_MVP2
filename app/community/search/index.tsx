@@ -8,7 +8,7 @@ import { useGetRecentSearch } from '@/src/features/community/search/hooks/useRec
 import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/constants';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
 
 export default function CommunityScreen() {
@@ -20,8 +20,6 @@ export default function CommunityScreen() {
   const debouncedValue = useDebounce(value);
   const effectiveQ = debouncedValue.trim().toLowerCase();
 
-  console.log('[Search] State:', { value, debouncedValue, effectiveQ, isSubmitted, category, recentSearchKeywords });
-
   // 검색어 변경 처리
   const handleChangeText = (text: string) => {
     setValue(text);
@@ -30,12 +28,12 @@ export default function CommunityScreen() {
 
   // 검색어 제출 처리
   const handleSubmit = () => {
-    if (effectiveQ.length === 0) return;
+    if (value.trim().length === 0) return;
     setIsSubmitted(true);
     Keyboard.dismiss();
   };
 
-  // 자동완성에서 검색어 제출 처리
+  // 최근 검색어, 자동완성에서 검색어 제출 처리
   const handleSubmitAutoComplete = (text: string) => {
     if (text.length === 0) return;
     setValue(text);
@@ -45,28 +43,38 @@ export default function CommunityScreen() {
 
   return (
     <Safe>
-      <SearchInput
-        value={value}
-        onChangeText={handleChangeText}
-        placeholder={`Search in ${CLIENT_CATEGORY_NAME[category]}`}
-        onSubmitEditing={handleSubmit}
-      />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Container>
+          <SearchInput
+            value={value}
+            onChangeText={handleChangeText}
+            placeholder={`Search in ${CLIENT_CATEGORY_NAME[category]}`}
+            onSubmitEditing={handleSubmit}
+          />
 
-      {/* 최근검색어 */}
-      {!value && recentSearchKeywords && recentSearchKeywords.length > 0 && !isSubmitted && (
-        <RecentSearches data={recentSearchKeywords || []} />
-      )}
+          {/* 최근검색어 */}
+          {!value && recentSearchKeywords && recentSearchKeywords.length > 0 && !isSubmitted && (
+            <RecentSearches data={recentSearchKeywords || []} onSubmit={handleSubmitAutoComplete} />
+          )}
 
-      {/* 자동완성 */}
-      {effectiveQ.length !== 0 && !isSubmitted && (
-        <AutoComplete category={category} value={effectiveQ} onSubmitEditing={handleSubmitAutoComplete} />
-      )}
+          {/* 자동완성 */}
+          {value.trim().length > 0 && !isSubmitted && (
+            <AutoComplete category={category} value={effectiveQ} onSubmitEditing={handleSubmitAutoComplete} />
+          )}
 
-      {/* 검색 결과 */}
-      {effectiveQ.length !== 0 && isSubmitted && <SearchedPostsResult category={category} value={effectiveQ} />}
+          {/* 검색 결과 */}
+          {value.trim().length > 0 && isSubmitted && (
+            <SearchedPostsResult category={category} value={value.trim().toLowerCase()} />
+          )}
+        </Container>
+      </TouchableWithoutFeedback>
     </Safe>
   );
 }
+
+const Container = styled.View`
+  flex: 1;
+`;
 
 const Safe = styled.SafeAreaView`
   flex: 1;
