@@ -1,5 +1,3 @@
-import { Post } from '@/src/features/community/post/components/PostCard';
-
 export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type SortParam = 'LATEST' | 'POPULAR';
 export type ClientSortParam = 'New' | 'Hot';
@@ -64,17 +62,6 @@ export interface PostDetailServerResp {
   data: PostDetail;
   timestamp?: string;
 }
-
-export type PostEx = Post & {
-  postId: number;
-  authorName?: string;
-  hotScore?: number;
-  minutesAgo?: number;
-  bookmarked?: boolean;
-  likedByMe?: boolean;
-  userImageUrl?: string;
-  isAnonymous?: boolean;
-};
 
 export interface PostsListServerResp {
   success: boolean;
