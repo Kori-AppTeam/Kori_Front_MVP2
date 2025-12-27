@@ -25,7 +25,7 @@ const AutoComplete = ({ category, value, onSubmitEditing }: AutoCompleteProps) =
     <Container>
       {autoSuggestions?.map((suggestion, index) => (
         <SuggestionItem
-          key={index}
+          key={`${index}-${suggestion}`}
           onPress={() => {
             postClickedKeyword(suggestion);
             onSubmitEditing(suggestion);
