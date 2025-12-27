@@ -12,7 +12,7 @@ import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
 
 export default function CommunityScreen() {
-  const { category } = useLocalSearchParams<{ category: AllowedCategory }>();
+  const { category = 'ALL' } = useLocalSearchParams<{ category: AllowedCategory }>();
   const [value, setValue] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
