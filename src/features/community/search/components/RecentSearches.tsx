@@ -29,7 +29,7 @@ const RecentSearches = ({ data, onSubmit }: RecentSearchesProps) => {
           <SearchedItem onPress={() => onSubmit(item)}>
             <SearchedItemText>{item}</SearchedItemText>
             <IconBtn onPress={() => deleteRecentSearchKeyword(item)}>
-              <Icon type="cancel" size={16} color={theme.colors.gray.lightGray_2} />
+              <Icon type="cancelDark" size={16} color={theme.colors.gray.darkGray_1_5} />
             </IconBtn>
           </SearchedItem>
         )}
@@ -66,11 +66,12 @@ const ClearAllText = styled.Text`
 const SearchedItem = styled.Pressable`
   padding: 10px 0;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 `;
 
 const SearchedItemText = styled.Text`
+  flex: 1;
   color: ${theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.body.B4_L)};
 `;
