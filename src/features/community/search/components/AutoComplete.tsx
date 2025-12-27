@@ -16,13 +16,6 @@ const AutoComplete = ({ category, value, onSubmitEditing }: AutoCompleteProps) =
   const { data: autoSuggestions } = useGetAutoSuggestions(CATEGORY_TO_BOARD_ID[category], value);
   const { mutate: postClickedKeyword } = usePostClickedKeyword();
 
-  console.log('[AutoComplete] Rendered:', {
-    category,
-    value,
-    boardId: CATEGORY_TO_BOARD_ID[category],
-    autoSuggestions,
-  });
-
   // 자동완성 결과가 없으면 아무것도 렌더링하지 않음
   if (!autoSuggestions || autoSuggestions.length === 0) {
     return null;
@@ -49,6 +42,7 @@ const AutoComplete = ({ category, value, onSubmitEditing }: AutoCompleteProps) =
 export default AutoComplete;
 
 const Container = styled.View`
+  flex: 1;
   margin-top: 10px;
   padding: 0 20px;
 `;
