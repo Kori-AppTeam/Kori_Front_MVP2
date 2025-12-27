@@ -54,7 +54,7 @@ export default function CommunityScreen() {
 
           {/* 최근검색어 */}
           {!value && recentSearchKeywords && recentSearchKeywords.length > 0 && !isSubmitted && (
-            <RecentSearches data={recentSearchKeywords || []} onSubmit={handleSubmitAutoComplete} />
+            <RecentSearches data={recentSearchKeywords} onSubmit={handleSubmitAutoComplete} />
           )}
 
           {/* 자동완성 */}
