@@ -1,7 +1,7 @@
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
-import { useMemo, useRef, useState } from 'react';
-import { Keyboard, TextInput as RNTextInput } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Keyboard, TextInput as RNTextInput } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../../shared/constants/error';
 import { Comment, SortParam } from '../../types';
@@ -17,6 +17,7 @@ export function useCommentManager(postId: number, sort: SortParam) {
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [value, setValue] = useState('');
   const inputRef = useRef<RNTextInput | null>(null);
+  const isSubmitting = useRef(false);
 
   // 대댓글 정렬 위해서 댓글들을 트리구조로 변환
   const organizedComments: CommentNode[] = useMemo(() => {
@@ -33,6 +34,9 @@ export function useCommentManager(postId: number, sort: SortParam) {
 
   // 대댓글 작성 취소
   const onCancelReplyToComment = () => {
+    // 대댓글 작성 중이 아니면 아무것도 하지 않음
+    if (!replyToCommentId) return;
+    setValue('');
     setReplyToCommentId(null);
     Keyboard.dismiss();
   };
@@ -41,6 +45,9 @@ export function useCommentManager(postId: number, sort: SortParam) {
   const handleSubmitComment = (value: string, anonymous: boolean) => {
     const text = value.trim();
     if (!text || !Number.isFinite(postId)) return;
+
+    isSubmitting.current = true;
+
     createCommentMutation.mutate(
       {
         parentId: replyToCommentId ?? null,
@@ -52,6 +59,10 @@ export function useCommentManager(postId: number, sort: SortParam) {
           setReplyToCommentId(null);
           setValue('');
           Keyboard.dismiss();
+          Toast.show({ type: 'success', text1: 'Comment posted' });
+          setTimeout(() => {
+            isSubmitting.current = false;
+          }, 400);
         },
         onError: (error) => {
           const errorCode = getAxiosErrorCode(error);
@@ -63,6 +74,33 @@ export function useCommentManager(postId: number, sort: SortParam) {
       },
     );
   };
+
+  // 키보드 숨김 시 대댓글 작성 취소 처리
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      if (!replyToCommentId || isSubmitting.current) return;
+
+      // 입력창에 내용이 없으면 바로 취소
+      if (!value.trim()) {
+        onCancelReplyToComment();
+        return;
+      }
+
+      // 입력창에 내용이 있으면 취소 여부 묻기
+      Alert.alert('Cancel Reply', 'Are you sure you want to cancel replying to this comment?', [
+        { text: 'No', style: 'cancel', onPress: () => inputRef.current?.focus() },
+        {
+          text: 'Yes',
+          style: 'destructive',
+          onPress: () => onCancelReplyToComment(),
+        },
+      ]);
+    });
+
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, [replyToCommentId, value]);
 
   // 댓글 좋아요 토글 핸들러
   const toggleCommentLike = (comment: Comment) => {

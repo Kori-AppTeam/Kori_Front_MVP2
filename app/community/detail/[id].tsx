@@ -120,7 +120,6 @@ export default function PostDetailScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
           style={{ backgroundColor: theme.colors.gray.darkBlack_1 }}
-          onTouchStart={manage.onCancelReplyToComment}
           ListHeaderComponent={
             <>
               {/* 게시글카드 */}
@@ -148,6 +147,7 @@ export default function PostDetailScreen() {
           isAnonymous={anonymous}
           setAnonymous={setAnonymous}
           category={postDetailData.boardCategory}
+          placeholder={manage.replyToCommentId ? 'Write a reply...' : 'Write Your Text'}
         />
       </KeyboardAvoidingView>
 
