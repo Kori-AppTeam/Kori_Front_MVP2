@@ -62,8 +62,8 @@ const InputContainer = styled.View`
   justify-content: center;
   background-color: ${theme.colors.gray.darkGray_1};
   border-radius: 4px;
-  padding: 10px 12px;
-  max-height: 44px;
+  padding: 0 12px;
+  height: 44px;
   gap: 6px;
 `;
 const Input = styled.TextInput`
