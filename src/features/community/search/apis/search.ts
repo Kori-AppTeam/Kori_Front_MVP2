@@ -24,9 +24,7 @@ export const getAutoCompleteSuggestions = async (boardId: BoardId, q: string): P
 };
 
 export const getRecentSearchKeywords = async (): Promise<string[]> => {
-  console.log('[getRecentSearchKeywords] Request');
   const res = await api.get<string[]>(`/api/v1/search/recent`);
-  console.log('[getRecentSearchKeywords] Response:', res.data);
   return res.data;
 };
 
