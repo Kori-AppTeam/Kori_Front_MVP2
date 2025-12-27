@@ -74,6 +74,7 @@ export const useCommentActions = () => {
         ],
         { cancelable: true },
       );
+      // 대댓글 있는 댓글 삭제 시 뜨는 Alert과 바텀시트 숨김처리가 겹치지 않도록 약간의 딜레이 추가
     }, 500);
   };
 
