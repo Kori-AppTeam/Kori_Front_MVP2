@@ -8,9 +8,10 @@ import { useClearRecentSearchKeywords, useDeleteRecentSearchKeyword } from '../h
 
 type RecentSearchesProps = {
   data: string[];
+  onSubmit: (text: string) => void;
 };
 
-const RecentSearches = ({ data }: RecentSearchesProps) => {
+const RecentSearches = ({ data, onSubmit }: RecentSearchesProps) => {
   const { mutate: deleteRecentSearchKeyword } = useDeleteRecentSearchKeyword();
   const { mutate: clearRecentSearchKeywords } = useClearRecentSearchKeywords();
 
@@ -25,14 +26,13 @@ const RecentSearches = ({ data }: RecentSearchesProps) => {
         data={data}
         keyExtractor={(item, index) => `${item}-${index}`}
         renderItem={({ item }) => (
-          <SearchedItem>
+          <SearchedItem onPress={() => onSubmit(item)}>
             <SearchedItemText>{item}</SearchedItemText>
             <IconBtn onPress={() => deleteRecentSearchKeyword(item)}>
               <Icon type="cancel" size={16} color={theme.colors.gray.lightGray_2} />
             </IconBtn>
           </SearchedItem>
         )}
-        contentContainerStyle={{ flexGrow: 1 }}
       />
     </Container>
   );
@@ -41,6 +41,7 @@ const RecentSearches = ({ data }: RecentSearchesProps) => {
 export default RecentSearches;
 
 const Container = styled.View`
+  flex: 1;
   margin-top: 10px;
   padding: 0 20px;
 `;
