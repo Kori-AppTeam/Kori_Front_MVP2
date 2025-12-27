@@ -55,7 +55,7 @@ import ThumbsUpNonSelected from '@/assets/icons/thumbs-up-non-selected.svg';
 import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
 import TranslateOn from '@/assets/icons/translate-on.svg';
 import TranslateOff from '@/assets/icons/translate.svg';
-import TrashCan from '@/assets/icons/trash can.svg';
+import TrashCan from '@/assets/icons/trash_can.svg';
 import Write from '@/assets/icons/write.svg';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
