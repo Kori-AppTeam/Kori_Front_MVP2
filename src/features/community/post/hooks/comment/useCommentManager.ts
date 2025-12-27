@@ -1,6 +1,6 @@
 import { useCreateComment } from '@/hooks/mutations/useCreateComment';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Keyboard, TextInput as RNTextInput } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../../shared/constants/error';
@@ -33,13 +33,13 @@ export function useCommentManager(postId: number, sort: SortParam) {
   };
 
   // 대댓글 작성 취소
-  const onCancelReplyToComment = () => {
+  const onCancelReplyToComment = useCallback(() => {
     // 대댓글 작성 중이 아니면 아무것도 하지 않음
     if (!replyToCommentId) return;
     setValue('');
     setReplyToCommentId(null);
     Keyboard.dismiss();
-  };
+  }, [replyToCommentId]);
 
   // 댓글 제출 핸들러
   const handleSubmitComment = (value: string, anonymous: boolean) => {
@@ -104,7 +104,7 @@ export function useCommentManager(postId: number, sort: SortParam) {
     return () => {
       keyboardDidHideListener.remove();
     };
-  }, [replyToCommentId, value]);
+  }, [replyToCommentId, value, onCancelReplyToComment]);
 
   // 댓글 좋아요 토글 핸들러
   const toggleCommentLike = (comment: Comment) => {
