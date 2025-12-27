@@ -17,7 +17,7 @@ const PostListCard = ({ data }: { data: PostsListItem }) => {
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
   const { handleBlockVisitor } = useVisitor();
-  const { showMoreSheet } = useMoreSheetStore();
+  const { showPostMoreSheet } = useMoreSheetStore();
 
   return (
     <Container>
@@ -57,7 +57,7 @@ const PostListCard = ({ data }: { data: PostsListItem }) => {
           onToggleLike={() => handleBlockVisitor(() => handleToggleLike(data.postId, data.isLiked))}
           onToggleComment={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId)))}
           commentCount={data.commentCount}
-          onOpenModal={() => handleBlockVisitor(() => showMoreSheet('post', data.postId, data.authorId))}
+          onOpenModal={() => handleBlockVisitor(() => showPostMoreSheet(data.postId, data.authorId))}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />
