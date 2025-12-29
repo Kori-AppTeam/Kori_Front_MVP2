@@ -115,9 +115,9 @@ export default function RootLayout() {
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
                 </ProfileProvider>
-                {/* 커뮤니티 관련 모달 - 전역에서 사용 */}
-                <MoreBottomSheet />
-                <ReportModal />
+                {/* 커뮤니티 관련 모달 - 전역에서 사용, 로그인 상태에 따라 조건부 렌더링*/}
+                {isLoggedIn && <MoreBottomSheet />}
+                {isLoggedIn && <ReportModal />}
               </AppLayout>
             </BottomSheetModalProvider>
           </SafeAreaProvider>
