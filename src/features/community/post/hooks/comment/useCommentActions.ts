@@ -17,7 +17,13 @@ export const useCommentActions = () => {
   const deleteCommentMutation = useDeleteComment();
   const blockCommentMutation = useBlockComment();
   const updateCommentMutation = useUpdateComment();
-  const { hideMoreSheet, selectedCommentId, selectedPostId, resetData: resetMoreSheetData } = useMoreSheetStore();
+  const {
+    hideMoreSheet,
+    selectedCommentId,
+    selectedPostId,
+    hasReplies,
+    resetData: resetMoreSheetData,
+  } = useMoreSheetStore();
   const {
     showEditCommentSheet,
     hideEditCommentSheet,
@@ -32,6 +38,13 @@ export const useCommentActions = () => {
     hideMoreSheet();
 
     setTimeout(() => {
+      // 대댓글이 있는 댓글은 삭제 불가
+      if (hasReplies) {
+        Alert.alert('Cannot Delete', 'Comments with replies cannot be deleted.', [{ text: 'OK' }]);
+        resetMoreSheetData();
+        return;
+      }
+
       Alert.alert(
         'Delete Comment',
         'Are you sure you want to delete this comment?\nAfter deleting it, you cannot restore it.',
@@ -61,7 +74,8 @@ export const useCommentActions = () => {
         ],
         { cancelable: true },
       );
-    }, 400);
+      // 대댓글 있는 댓글 삭제 시 뜨는 Alert과 바텀시트 숨김처리가 겹치지 않도록 약간의 딜레이 추가
+    }, 500);
   };
 
   // 댓글 차단 핸들러

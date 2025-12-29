@@ -18,7 +18,7 @@ interface PostDetailCardProps {
 
 const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
-  const { showMoreSheet } = useMoreSheetStore();
+  const { showPostMoreSheet } = useMoreSheetStore();
 
   return (
     <Container>
@@ -66,7 +66,7 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
         likeCount={data.likeCount}
         commentCount={data.commentCount}
         onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
-        onOpenModal={() => showMoreSheet('post', data.postId, data.authorId)}
+        onOpenModal={() => showPostMoreSheet(data.postId, data.authorId)}
       />
     </Container>
   );

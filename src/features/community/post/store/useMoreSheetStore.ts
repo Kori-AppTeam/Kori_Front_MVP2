@@ -10,12 +10,14 @@ interface UseMoreSheetStore {
   selectedCommentId: number | null;
   commentContent: string | null;
   authorId: number | null;
-  showMoreSheet: (
-    type: SheetType,
+  hasReplies: boolean;
+  showPostMoreSheet: (postId: number, authorId: number) => void;
+  showCommentMoreSheet: (
     postId: number,
     authorId: number,
-    commentId?: number,
-    commentContent?: string,
+    commentId: number,
+    content: string,
+    hasReplies: boolean,
   ) => void;
   hideMoreSheet: () => void;
   resetData: () => void;
@@ -28,17 +30,33 @@ export const useMoreSheetStore = create<UseMoreSheetStore>((set) => ({
   commentContent: null,
   authorId: null,
   type: null,
+  hasReplies: false,
 
-  showMoreSheet: (type: SheetType, postId: number, authorId: number, commentId?: number, commentContent?: string) => {
+  showPostMoreSheet: (postId: number, authorId: number) => {
     if (!postId || !authorId) return;
 
     set(() => ({
-      type: type,
+      type: 'post',
+      isMoreSheetVisible: true,
+      selectedPostId: postId,
+      selectedCommentId: null,
+      commentContent: null,
+      authorId: authorId,
+      hasReplies: false,
+    }));
+  },
+
+  showCommentMoreSheet: (postId: number, authorId: number, commentId: number, content: string, hasReplies: boolean) => {
+    if (!postId || !authorId || !commentId) return;
+
+    set(() => ({
+      type: 'comment',
       isMoreSheetVisible: true,
       selectedPostId: postId,
       selectedCommentId: commentId,
-      commentContent: commentContent || null,
+      commentContent: content,
       authorId: authorId,
+      hasReplies: hasReplies,
     }));
   },
   hideMoreSheet: () =>

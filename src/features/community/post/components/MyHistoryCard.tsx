@@ -16,7 +16,7 @@ type MyHistoryCardProps = {
 };
 
 const MyHistoryCard = ({ authorId, data }: MyHistoryCardProps) => {
-  const { showMoreSheet } = useMoreSheetStore();
+  const { showPostMoreSheet } = useMoreSheetStore();
   const { handleToggleLike } = useHandleLikeBookmark();
 
   return (
@@ -34,7 +34,7 @@ const MyHistoryCard = ({ authorId, data }: MyHistoryCardProps) => {
           likeCount={data.likeCount}
           onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
           onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}
-          onOpenModal={() => authorId && showMoreSheet('post', data.postId, authorId)}
+          onOpenModal={() => authorId && showPostMoreSheet(data.postId, authorId)}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />

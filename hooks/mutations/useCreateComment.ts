@@ -14,7 +14,7 @@ export function useCreateComment(postId: number) {
     onSuccess: () => {
       if (postId) {
         qc.invalidateQueries({ queryKey: ['post', postId] });
-        qc.invalidateQueries({ queryKey: ['comments'] });
+        qc.invalidateQueries({ queryKey: ['comments', 'post', postId] });
       }
     },
   });

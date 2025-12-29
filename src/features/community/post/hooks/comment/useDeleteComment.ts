@@ -44,6 +44,7 @@ export function useDeleteComment() {
     onSettled: () => {
       // 성공/실패와 관계없이 쿼리 무효화
       qc.invalidateQueries({ queryKey: ['comments'] });
+      qc.invalidateQueries({ queryKey: ['post'] });
     },
   });
 }

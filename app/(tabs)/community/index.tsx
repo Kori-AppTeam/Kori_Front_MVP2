@@ -6,7 +6,6 @@ import CategoryChips from '@/src/features/community/post/components/CategoryChip
 import PostList from '@/src/features/community/post/components/PostList';
 import { useHandleCommunityList } from '@/src/features/community/post/hooks/useHandleList';
 import useVisitor from '@/src/features/community/post/hooks/useVisitor';
-import { CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/constants/constants';
 import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { textStyle, theme } from '@/src/styles/theme';
 import { router, useFocusEffect } from 'expo-router';
@@ -43,7 +42,7 @@ export default function CommunityScreen() {
               router.push({
                 pathname: COMMUNITY_ROUTER.SEARCH,
                 params: {
-                  qs: `?boardId=${encodeURIComponent(String(CATEGORY_TO_BOARD_ID[category]))}&cat=${encodeURIComponent(category)}`,
+                  category: category,
                 },
               });
             }}

@@ -32,7 +32,7 @@ export default function PostDetailScreen() {
   const selectedUser = useUserProfileQuery(targetUserId);
 
   const { postDetailData, isLoading, isError } = useGetPostDetail(Number.isFinite(postId) ? postId : undefined);
-  const { showMoreSheet } = useMoreSheetStore();
+  const { showCommentMoreSheet } = useMoreSheetStore();
 
   const listRef = useRef<RNFlatList<CommentNode>>(null);
   const manage = useCommentManager(postId, sort);
@@ -100,7 +100,15 @@ export default function PostDetailScreen() {
                 data={item}
                 onShowProfileModal={() => handleSetSelectedUser(item.authorId)}
                 onToggleLike={() => manage.toggleCommentLike(item)}
-                onOpenModal={() => showMoreSheet('comment', postId, item.authorId, item.commentId, item.content)}
+                onOpenModal={() =>
+                  showCommentMoreSheet(
+                    postId,
+                    item.authorId,
+                    item.commentId,
+                    item.content,
+                    !!(item.replies && item.replies.length > 0),
+                  )
+                }
                 onClickReply={() => manage.onClickReplyToComment(item.commentId)}
               />
               {/* 대댓글 */}
@@ -111,7 +119,9 @@ export default function PostDetailScreen() {
                     data={reply}
                     onShowProfileModal={() => handleSetSelectedUser(reply.authorId)}
                     onToggleLike={() => manage.toggleCommentLike(reply)}
-                    onOpenModal={() => showMoreSheet('comment', postId, reply.authorId, reply.commentId, reply.content)}
+                    onOpenModal={() =>
+                      showCommentMoreSheet(postId, reply.authorId, reply.commentId, reply.content, false)
+                    }
                   />
                 ))}
             </>
@@ -120,7 +130,6 @@ export default function PostDetailScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
           style={{ backgroundColor: theme.colors.gray.darkBlack_1 }}
-          onTouchStart={manage.onCancelReplyToComment}
           ListHeaderComponent={
             <>
               {/* 게시글카드 */}
@@ -148,6 +157,7 @@ export default function PostDetailScreen() {
           isAnonymous={anonymous}
           setAnonymous={setAnonymous}
           category={postDetailData.boardCategory}
+          placeholder={manage.replyToCommentId ? 'Write a reply...' : 'Write Your Text'}
         />
       </KeyboardAvoidingView>
 

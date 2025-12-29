@@ -13,7 +13,7 @@ import PostCommonHeader from './elements/header/PostCommonHeader';
 const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
-  const { showMoreSheet } = useMoreSheetStore();
+  const { showPostMoreSheet } = useMoreSheetStore();
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
 
   return (
@@ -40,7 +40,7 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
           onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
           onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}
           commentCount={data.commentCount}
-          onOpenModal={() => showMoreSheet('post', data.postId, data.authorId)}
+          onOpenModal={() => showPostMoreSheet(data.postId, data.authorId)}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />

@@ -13,6 +13,7 @@ type PostCommentInputProps = {
   isAnonymous: boolean;
   setAnonymous: React.Dispatch<React.SetStateAction<boolean>>;
   category?: AllowedCategory;
+  placeholder: string;
 };
 
 const PostCommentInput = ({
@@ -23,6 +24,7 @@ const PostCommentInput = ({
   isAnonymous,
   setAnonymous,
   category,
+  placeholder,
 }: PostCommentInputProps) => {
   const canSend = text.trim().length > 0;
   return (
@@ -32,7 +34,7 @@ const PostCommentInput = ({
           ref={inputRef}
           value={text}
           onChangeText={onChangeText}
-          placeholder="Write Your Text"
+          placeholder={placeholder}
           placeholderTextColor={theme.colors.gray.darkGray_2}
           returnKeyType="send"
           onSubmitEditing={onSubmit}
