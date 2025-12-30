@@ -10,32 +10,31 @@ import {
 import { theme } from '@/src/styles/theme';
 import React from 'react';
 
-const OthersPostModal = ({
-  closeModal,
-  postId,
-  authorId,
-}: {
-  closeModal: () => void;
-  postId: number;
-  authorId: number;
-}) => {
+interface OthersPostModalProps {
+  onSuccessNavigate?: () => void;
+  onReport: () => void;
+  onBlock: (callback?: () => void) => void;
+  onClose: () => void;
+}
+
+const OthersPostModal = ({ onSuccessNavigate, onReport, onBlock, onClose }: OthersPostModalProps) => {
   return (
     <BottomSheetContent>
       <HandleWrap>
         <Handle />
       </HandleWrap>
       <ButtonWrap>
-        <ButtonContainer onPress={() => console.log('게시글 신고')}>
+        <ButtonContainer onPress={() => onReport()}>
           <Icon type="alert" color={theme.colors.secondary.red} size={24} />
           <ButtonText color={theme.colors.secondary.red}>Report This Post</ButtonText>
         </ButtonContainer>
 
-        <ButtonContainer onPress={() => console.log('유저 신고')}>
+        <ButtonContainer onPress={() => onBlock(onSuccessNavigate)}>
           <Icon type="person" color={theme.colors.secondary.red} size={24} />
-          <ButtonText color={theme.colors.secondary.red}>Report This User</ButtonText>
+          <ButtonText color={theme.colors.secondary.red}>Block This User</ButtonText>
         </ButtonContainer>
 
-        <ButtonContainer onPress={() => closeModal()}>
+        <ButtonContainer onPress={() => onClose()}>
           <Icon type="close" size={24} />
           <ButtonText>Cancel</ButtonText>
         </ButtonContainer>

@@ -18,7 +18,9 @@ function shortUrl(base: string, url?: string) {
 
 export const doRefresh = async (): Promise<string | null> => {
   const rt = await SecureStore.getItemAsync(REFRESH_KEY);
-  if (!rt) return null;
+  if (!rt) {
+    return null;
+  }
 
   try {
     const res = await api.post('/api/v1/member/refresh', { refreshToken: rt });

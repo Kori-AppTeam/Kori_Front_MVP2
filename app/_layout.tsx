@@ -1,6 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 import queryClient from '@/api/queryClient';
+import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
+import MoreBottomSheet from '@/src/features/community/post/components/elements/footer/MoreBottomSheet';
+import ReportModal from '@/src/features/community/post/components/ReportModal';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
@@ -29,7 +32,6 @@ import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
 import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
-import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -123,6 +125,9 @@ export default function RootLayout() {
                   </Stack>
                   <Toast config={toastConfig} topOffset={80} />
                 </ProfileProvider>
+                {/* 커뮤니티 관련 모달 - 전역에서 사용, 로그인 상태에 따라 조건부 렌더링*/}
+                {isLoggedIn && <MoreBottomSheet />}
+                {isLoggedIn && <ReportModal />}
               </AppLayout>
             </BottomSheetModalProvider>
           </SafeAreaProvider>

@@ -26,8 +26,8 @@ export default function SortTabs({ value, onPress }: Props) {
 const Bar = styled.View`
   flex-direction: row;
   align-items: center;
-  padding: 4px 12px 12px 12px;
-
+  padding-top: 20px;
+  padding-left: 20px;
   gap: 8px;
 `;
 const SortBy = styled.Text`

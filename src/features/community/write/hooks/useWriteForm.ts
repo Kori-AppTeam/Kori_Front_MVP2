@@ -1,9 +1,12 @@
 import { AllowedClientCategory } from '@/src/features/community/post/types';
 import { ANONYMOUS_ALLOWED_CATEGORIES } from '@/src/features/community/shared/constants/constants';
 import { CLIENT_CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/utils/categoryMapper';
+import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
+import Toast from 'react-native-toast-message';
+import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../shared/constants/error';
 import { ImageAsset, UseWriteFormProps } from '../types';
 import { useCreatePostWithImages } from './useCreatePost';
 import { useUpdatePostWithImages } from './useUpdatePost';
@@ -70,7 +73,13 @@ export function useWriteForm({
 
       router.back();
     } catch (e: any) {
-      Alert.alert('Error', isEdit ? 'Failed to update post.' : 'Failed to create post.');
+      const errorCode = getAxiosErrorCode(e);
+      const errorMessage =
+        COMMUNITY_ERROR_MESSAGE[errorCode] ||
+        COMMON_ERROR_MESSAGE[errorCode] ||
+        (isEdit ? 'Failed to update post.' : 'Failed to create post.');
+
+      Toast.show({ type: 'error', text1: errorMessage });
     } finally {
       savingRef.current.current = false;
       setSaving(false);

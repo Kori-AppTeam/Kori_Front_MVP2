@@ -11,6 +11,7 @@ import Business from '@/assets/icons/business.svg';
 import CameraColored from '@/assets/icons/camera-colored.svg';
 import CameraDefault from '@/assets/icons/camera-default.svg';
 import Cancel from '@/assets/icons/cancel.svg';
+import CancelDark from '@/assets/icons/cancel_dark.svg';
 import Chat from '@/assets/icons/chat.svg';
 import CheckGrayBox from '@/assets/icons/check-gray-box.svg';
 import CheckMintBox from '@/assets/icons/check-mint-box.svg';
@@ -55,7 +56,7 @@ import ThumbsUpNonSelected from '@/assets/icons/thumbs-up-non-selected.svg';
 import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
 import TranslateOn from '@/assets/icons/translate-on.svg';
 import TranslateOff from '@/assets/icons/translate.svg';
-import TrashCan from '@/assets/icons/trash can.svg';
+import TrashCan from '@/assets/icons/trash_can.svg';
 import Write from '@/assets/icons/write.svg';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
@@ -71,6 +72,7 @@ const iconMap = {
   bookmarkNonSelected: Bookmark,
   bookmarkSelected: SelectedBookmark,
   cancel: Cancel,
+  cancelDark: CancelDark,
   cameraColored: CameraColored,
   cameraDefault: CameraDefault,
   check: Check,

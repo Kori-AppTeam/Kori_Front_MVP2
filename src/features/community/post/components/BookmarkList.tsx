@@ -7,14 +7,11 @@ import { useGetBookmarkedPosts } from '../hooks/useGetBookmarks';
 import { BookmarkedPostItem } from '../types';
 import BookmarkedPost from './BookmarkedPost';
 
-const BookmarkList = ({ openModal }: { openModal: (postId: number, authorId: number) => void }) => {
+const BookmarkList = () => {
   const bookmarkQuery = useGetBookmarkedPosts();
-  const renderPost: ListRenderItem<BookmarkedPostItem> = useCallback(
-    ({ item }) => {
-      return <BookmarkedPost data={item} onOpenModal={openModal} />;
-    },
-    [openModal],
-  );
+  const renderPost: ListRenderItem<BookmarkedPostItem> = useCallback(({ item }) => {
+    return <BookmarkedPost data={item} />;
+  }, []);
 
   const listEmpty = useMemo(
     () => (

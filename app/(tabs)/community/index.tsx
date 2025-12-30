@@ -3,14 +3,9 @@ import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import SortTabs from '@/components/SortTabs';
 import WriteFab from '@/components/WriteFab';
 import CategoryChips from '@/src/features/community/post/components/CategoryChips';
-import MyPostModal from '@/src/features/community/post/components/elements/footer/MyPostModal';
-import OthersPostModal from '@/src/features/community/post/components/elements/footer/OthersPostModal';
 import PostList from '@/src/features/community/post/components/PostList';
 import { useHandleCommunityList } from '@/src/features/community/post/hooks/useHandleList';
 import useVisitor from '@/src/features/community/post/hooks/useVisitor';
-import { CATEGORY_TO_BOARD_ID } from '@/src/features/community/shared/constants/constants';
-import { useOpenMoreSheet } from '@/src/features/community/shared/hooks/useOpenMoreSheet';
-import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { textStyle, theme } from '@/src/styles/theme';
 import { router, useFocusEffect } from 'expo-router';
@@ -20,8 +15,6 @@ import styled from 'styled-components/native';
 const ICON = require('@/assets/images/IsolationMode.png');
 
 export default function CommunityScreen() {
-  const { selectedPost, openModal, closeModal, isMine, authorId, bottomSheetRef } = useOpenMoreSheet();
-
   const { sort, category, handleSortChange, handleCategoryChange, scrollRef, scrollToTop } = useHandleCommunityList();
 
   const { refetch, handleBlockVisitor, profileModalVisible, setProfileModalVisible } = useVisitor();
@@ -34,73 +27,60 @@ export default function CommunityScreen() {
   );
 
   return (
-    <>
-      <Safe>
-        <Header>
-          <Left>
-            <TextButton onPress={() => scrollToTop(true)} activeOpacity={0.6}>
-              <Title>Community</Title>
-            </TextButton>
-            <IconImage source={ICON} resizeMode="contain" />
-          </Left>
+    <Safe>
+      <Header>
+        <Left>
+          <TextButton onPress={() => scrollToTop(true)} activeOpacity={0.6}>
+            <Title>Community</Title>
+          </TextButton>
+          <IconImage source={ICON} resizeMode="contain" />
+        </Left>
 
-          <Right>
-            <IconBtn
-              onPress={() => {
-                router.push({
-                  pathname: COMMUNITY_ROUTER.SEARCH,
-                  params: {
-                    qs: `?boardId=${encodeURIComponent(String(CATEGORY_TO_BOARD_ID[category]))}&cat=${encodeURIComponent(category)}`,
-                  },
-                });
-              }}
-            >
-              <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
-            </IconBtn>
+        <Right>
+          <IconBtn
+            onPress={() => {
+              router.push({
+                pathname: COMMUNITY_ROUTER.SEARCH,
+                params: {
+                  category: category,
+                },
+              });
+            }}
+          >
+            <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
+          </IconBtn>
 
-            <IconBtn
-              onPress={() => {
-                handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.BOOKMARK));
-              }}
-            >
-              <Icon type="bookmarkNonSelected" size={24} color={theme.colors.gray.lightGray_1} />
-            </IconBtn>
+          <IconBtn
+            onPress={() => {
+              handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.BOOKMARK));
+            }}
+          >
+            <Icon type="bookmarkNonSelected" size={24} color={theme.colors.gray.lightGray_1} />
+          </IconBtn>
 
-            <IconBtn
-              onPress={() => {
-                handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.MY_HISTORY));
-              }}
-            >
-              <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
-            </IconBtn>
-          </Right>
-        </Header>
+          <IconBtn
+            onPress={() => {
+              handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.MY_HISTORY));
+            }}
+          >
+            <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
+          </IconBtn>
+        </Right>
+      </Header>
 
-        <ChipsWrap>
-          <CategoryChips value={category} onPress={handleCategoryChange} />
-        </ChipsWrap>
+      <ChipsWrap>
+        <CategoryChips value={category} onPress={handleCategoryChange} />
+      </ChipsWrap>
 
-        <SortWrap>
-          <SortTabs value={sort} onPress={handleSortChange} />
-        </SortWrap>
+      <SortWrap>
+        <SortTabs value={sort} onPress={handleSortChange} />
+      </SortWrap>
 
-        <PostList sort={sort} category={category} openModal={openModal} scrollRef={scrollRef} />
+      <PostList sort={sort} category={category} scrollRef={scrollRef} />
 
-        <WriteFab onHandleWritePress={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.WRITE))} />
-        <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
-      </Safe>
-      <CustomBottomSheet ref={bottomSheetRef} backgroundColor="transparent">
-        {selectedPost && authorId ? (
-          isMine ? (
-            <MyPostModal closeModal={closeModal} postId={selectedPost} />
-          ) : (
-            <OthersPostModal closeModal={closeModal} postId={selectedPost} authorId={authorId} />
-          )
-        ) : (
-          <></>
-        )}
-      </CustomBottomSheet>
-    </>
+      <WriteFab onHandleWritePress={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.WRITE))} />
+      <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
+    </Safe>
   );
 }
 
@@ -142,6 +122,6 @@ const ChipsWrap = styled.View`
   margin-top: 12px;
 `;
 const SortWrap = styled.View`
-  margin-top: 20px;
-  margin-left: 10px;
+  margin-top: 12px;
+  margin-bottom: 8px;
 `;

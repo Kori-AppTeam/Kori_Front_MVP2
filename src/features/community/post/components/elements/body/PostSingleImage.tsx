@@ -50,8 +50,7 @@ const CountContainer = styled.View`
   border-radius: 100px;
 `;
 const ImageCount = styled.Text`
-  color: #cccfd0;
+  color: ${({ theme }) => theme.colors.gray.lightGray_1};
   text-align: center;
   ${({ theme }) => theme.fonts.small.small_M}
-  line-height: 20px;
 `;

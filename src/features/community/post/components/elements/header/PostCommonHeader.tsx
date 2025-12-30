@@ -3,11 +3,15 @@ import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/
 import { timeToAgo } from '@/src/features/community/shared/utils/indexUtils';
 import { textStyle, theme } from '@/src/styles/theme';
 import React, { memo } from 'react';
+import { Pressable } from 'react-native';
 import styled from 'styled-components/native';
 import { PostCommonHeaderProps } from '../../../types';
 import PostUserProfileImg from './PostUserProfileImg';
 
 const PostCommonHeader = ({
+  showProfileModal = false,
+  onShowProfileModal,
+  authorId,
   isAnonymous,
   userImageUrl,
   authorName,
@@ -21,12 +25,12 @@ const PostCommonHeader = ({
     <PostHeader>
       {/* 나의 게시글 조회 시에는 필요 없으므로 분기처리 */}
       {isAnonymous !== undefined && userImageUrl !== undefined && (
-        <AuthorImageContainer>
+        <AuthorImageContainer disabled={!showProfileModal || isAnonymous} onPress={onShowProfileModal}>
           <PostUserProfileImg isAnonymous={isAnonymous} userImageUrl={userImageUrl} />
         </AuthorImageContainer>
       )}
 
-      <Meta>
+      <Meta author={authorName}>
         {authorName !== undefined && <Author>{authorName}</Author>}
         <SubRow>
           <TimeText>{timeToAgo(createdAt)}</TimeText>
@@ -58,13 +62,15 @@ export default memo(PostCommonHeader);
 const PostHeader = styled.View`
   flex-direction: row;
   align-items: center;
+  padding: 0 20px;
+  width: 100%;
 `;
-const AuthorImageContainer = styled.View`
+const AuthorImageContainer = styled(Pressable)`
   width: 44px;
   height: 44px;
 `;
-const Meta = styled.View`
-  margin-left: 8px;
+const Meta = styled.View<{ author?: string | null }>`
+  margin-left: ${({ author }) => (author ? '8px' : '0')};
   flex: 1;
   gap: 4px;
   flex-direction: column;

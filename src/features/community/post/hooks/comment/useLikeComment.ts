@@ -1,5 +1,5 @@
-import { addCommentLike, removeCommentLike } from '@/api/community/commentLikes';
 import type { SortKey } from '@/components/SortTabs';
+import { addCommentLike, removeCommentLike } from '@/src/features/community/post/apis/commentLikes';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
