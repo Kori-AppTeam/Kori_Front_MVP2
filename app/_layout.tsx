@@ -48,9 +48,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   return (
     // eslint-disable-next-line react-native/no-color-literals
-    <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: '#1D1E1F' }}>
-      {children}
-    </View>
+    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#1D1E1F' }}>{children}</View>
   );
 }
 
@@ -69,7 +67,6 @@ export default function RootLayout() {
   const router = useRouter();
   const { isLoggedIn, isLoading: isAutoLoginLoading } = useAutoLogin(loaded);
   const { isLoading: isVersionCheckLoading, isAppUpToDate } = useCheckAppVersion();
-  const isOnboardingVisited = AsyncStorage.getItem('onboardingVisited');
   const navigationRef = useNavigationContainerRef();
   useScreenChangeTracker(navigationRef); // 화면 전환 시 Analytics 트래킹
 
@@ -95,9 +92,9 @@ export default function RootLayout() {
         initializeStomp();
         router.replace('/(tabs)');
       } else {
-        const isOnboardingVisited = await AsyncStorage.getItem('onboardingVisited');
+        const isOnboardingVisited = await AsyncStorage.getItem('ONBOARDING_VISITED');
         if (isOnboardingVisited) {
-          router.replace('/(auth)');
+          router.replace(AUTH_ROUTE);
         } else {
           router.replace('/onboarding');
         }
@@ -110,10 +107,10 @@ export default function RootLayout() {
   if (!loaded || isAutoLoginLoading || isVersionCheckLoading || !isAppUpToDate) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.primary.black }}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
-          <SafeAreaProvider>
+          <SafeAreaProvider style={{ flex: 1, backgroundColor: theme.colors.primary.black }}>
             <BottomSheetModalProvider>
               <AppLayout>
                 <ProfileProvider>
