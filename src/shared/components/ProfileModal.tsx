@@ -34,7 +34,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ visible, userData, onClose,
     createChatRoom.mutate({
       otherUserId: userData.userId,
       userName: `${userData.firstname} ${userData.lastname}`,
-      routeType: 'replace',
+      routeType: 'push',
       closeProfile: onClose,
     });
   };
