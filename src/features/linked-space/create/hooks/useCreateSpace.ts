@@ -18,9 +18,9 @@ export const useCreateSpace = () => {
       let finalImageUrl: string;
 
       // 커스텀 이미지인 경우 업로드
-      if (formData.isCustomImage && formData.imageUri) {
+      if (formData.customPhotoUri) {
         try {
-          finalImageUrl = await uploadCustomSpaceImage(formData.imageUri);
+          finalImageUrl = await uploadCustomSpaceImage(formData.customPhotoUri);
         } catch (error) {
           throw new Error('Image upload failed');
         }
@@ -36,7 +36,7 @@ export const useCreateSpace = () => {
         roomImageUrl: finalImageUrl,
       });
 
-      return { ...response, finalImageUrl };
+      return { ...response };
     },
     onSuccess: () => {
       // 채팅방 목록 쿼리들을 무효화하여 최신 데이터 refetch
