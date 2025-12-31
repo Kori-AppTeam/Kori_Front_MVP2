@@ -93,7 +93,7 @@ export function notificationRouterReplace(data: { [key: string]: string | number
 
     case 'chat':
       // 채팅 관련 네비게이션을 공통 유틸로 위임
-      if (handleChatNotificationNavigation({ router, pathname, data })) return;
+      if (handleChatNotificationNavigation({ pathname, data })) return;
       break;
 
     case 'follow':

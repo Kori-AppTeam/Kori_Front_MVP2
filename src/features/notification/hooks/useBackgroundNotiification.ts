@@ -2,7 +2,7 @@ import { getNotificationDeeplink } from '@/src/features/notification/lib/getNoti
 import { handleChatNotificationNavigation } from '@/src/features/notification/lib/notificationNavigator';
 import messaging from '@react-native-firebase/messaging';
 import * as Linking from 'expo-linking';
-import { usePathname, useRouter } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect } from 'react';
 
@@ -10,7 +10,6 @@ const PENDING_KEY = 'PENDING_NOTIFICATION_URL';
 
 /* ------------ Background 또는 Quit 메시지 수신 및 클릭 핸들링 ------------ */
 export const useBackgroundNotification = (isLoggedIn: boolean, checkingToken: boolean) => {
-  const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -27,7 +26,7 @@ export const useBackgroundNotification = (isLoggedIn: boolean, checkingToken: bo
       }
 
       // chat 전용 네비게이션은 공통 유틸로 처리하고, 처리되지 않으면 deeplink 열기
-      const handled = handleChatNotificationNavigation({ router, pathname, data, pushDelay: 0, dismissDelay: 300 });
+      const handled = handleChatNotificationNavigation({ pathname, data, pushDelay: 0, dismissDelay: 300 });
       if (handled) return;
 
       // chat 이외는 deeplink 열기(기존 행동 유지)
