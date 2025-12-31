@@ -8,6 +8,7 @@ type CreateRoomVars = {
   otherUserId: number;
   userName: string;
   routeType?: 'push' | 'replace';
+  dissMissCount?: number;
   closeProfile?: () => void;
 };
 
@@ -35,6 +36,10 @@ export function useCreateOneToOneRoom() {
         variables.closeProfile();
       }
 
+      if (variables.dissMissCount !== undefined && router.canDismiss()) {
+        router.dismiss(variables.dissMissCount);
+      }
+
       // 채팅방으로 이동
       const navigation = variables.routeType === 'replace' ? router.replace : router.push;
       navigation({
@@ -43,8 +48,6 @@ export function useCreateOneToOneRoom() {
           roomName: variables.userName,
         },
       });
-
-      console.log('채팅방 생성 및 이동 완료 - roomId:', roomId);
     },
   });
 }
