@@ -1,5 +1,6 @@
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { usePathname } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components/native';
 import { useLinkedSpaceRecommend } from '../hooks/useLinkedSpaceRecommend';
@@ -14,6 +15,9 @@ interface Props {
 export const LinkedSpaceRecommendModal = ({ visible, onJoin, onDontShowToday, onClose }: Props) => {
   const bottomSheetRef = useRef<BottomSheetModal | null>(null);
   const { data } = useLinkedSpaceRecommend(visible);
+  const pathname = usePathname();
+
+  console.info('pathname in LinkedSpaceRecommendModal:', pathname);
 
   // visible이 변경될 때 모달을 열거나 닫음
   useEffect(() => {
@@ -25,7 +29,7 @@ export const LinkedSpaceRecommendModal = ({ visible, onJoin, onDontShowToday, on
   }, [visible, data]);
 
   // data가 없으면 모달을 렌더링하지 않음
-  if (!visible || !data) {
+  if (!visible || !data || !pathname.endsWith('/')) {
     return null;
   }
 
