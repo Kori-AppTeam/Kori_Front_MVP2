@@ -17,8 +17,6 @@ export const LinkedSpaceRecommendModal = ({ visible, onJoin, onDontShowToday, on
   const { data } = useLinkedSpaceRecommend(visible);
   const pathname = usePathname();
 
-  console.info('pathname in LinkedSpaceRecommendModal:', pathname);
-
   // visible이 변경될 때 모달을 열거나 닫음
   useEffect(() => {
     if (visible && data) {
