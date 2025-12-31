@@ -37,7 +37,6 @@ export const useBackgroundNotification = (isLoggedIn: boolean, checkingToken: bo
       .getInitialNotification()
       .then((message) => {
         if (message) {
-          console.info('[INFO] 앱 종료 상태에서 알림 클릭으로 앱 실행됨:', message);
           navigateOrStore(message.data);
         } else {
           // no initial notification
