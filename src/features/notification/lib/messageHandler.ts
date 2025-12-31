@@ -93,10 +93,11 @@ export function notificationRouterReplace(data: { [key: string]: string | number
 
     case 'chat':
       if (!pathname.includes('chat')) router.replace('/chat');
+      console.info('data.roomId', data);
       setTimeout(() => {
         router.push({
           pathname: CHAT_ROUTE(String(data.roomId)) as RelativePathString,
-          params: { myId: String(data.myId) },
+          params: { roomName: String(data.roomName) },
         });
       }, 500);
       break;
