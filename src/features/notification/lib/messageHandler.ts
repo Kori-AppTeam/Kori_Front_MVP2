@@ -1,4 +1,4 @@
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import { handleChatNotificationNavigation } from '@/src/features/notification/lib/notificationNavigator';
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { Href, router } from 'expo-router';
@@ -92,38 +92,8 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       break;
 
     case 'chat':
-      // 경로가 `/chat/:roomId` 또는 `/chat/:roomId/members` 인지 검사
-      const isChatRoomPath = /^\/chat\/[^\/]+$/.test(pathname);
-      const isChatMembersPath = /^\/chat\/[^\/]+\/members$/.test(pathname);
-
-      if (isChatRoomPath) {
-        // 같은 채팅방 화면에서 들어온 알림은 replace
-        router.replace({
-          pathname: CHAT_ROUTE(String(data.roomId)),
-          params: { roomName: String(data.roomName) },
-        });
-        return;
-      }
-
-      if (isChatMembersPath) {
-        // 멤버 목록 화면이면 뒤로 한 단계(dismiss)한 뒤 replace
-        router.dismiss(1);
-        setTimeout(() => {
-          router.replace({
-            pathname: CHAT_ROUTE(String(data.roomId)),
-            params: { roomName: String(data.roomName) },
-          });
-        }, 500);
-        return;
-      }
-
-      // 그 외 화면에서는 push
-      setTimeout(() => {
-        router.navigate({
-          pathname: CHAT_ROUTE(String(data.roomId)),
-          params: { roomName: String(data.roomName) },
-        });
-      }, 500);
+      // 채팅 관련 네비게이션을 공통 유틸로 위임
+      if (handleChatNotificationNavigation({ router, pathname, data })) return;
       break;
 
     case 'follow':
