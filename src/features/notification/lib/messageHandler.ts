@@ -92,7 +92,6 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       break;
 
     case 'chat':
-      console.info('pathname', pathname);
       // 경로가 `/chat/:roomId` 또는 `/chat/:roomId/members` 인지 검사
       const isChatRoomPath = /^\/chat\/[^\/]+$/.test(pathname);
       const isChatMembersPath = /^\/chat\/[^\/]+\/members$/.test(pathname);
@@ -108,7 +107,7 @@ export function notificationRouterReplace(data: { [key: string]: string | number
 
       if (isChatMembersPath) {
         // 멤버 목록 화면이면 뒤로 한 단계(dismiss)한 뒤 replace
-        router.back();
+        router.dismiss(1);
         setTimeout(() => {
           router.replace({
             pathname: CHAT_ROUTE(String(data.roomId)),
