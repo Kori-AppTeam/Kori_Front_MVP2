@@ -93,7 +93,12 @@ const ChattingRoomScreen = () => {
             )}
 
             {/* 프로필 모달 */}
-            <ProfileModal visible={profileVisible} userData={selectedUser} onClose={() => setProfileVisible(false)} />
+            <ProfileModal
+              visible={profileVisible}
+              userData={selectedUser}
+              onClose={() => setProfileVisible(false)}
+              routeType="replace"
+            />
 
             {/* 번역 버튼 추후 변경 혹은 삭제 예정 */}
             {/* <TranslateButton /> */}

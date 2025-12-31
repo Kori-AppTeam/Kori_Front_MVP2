@@ -1,7 +1,7 @@
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import { Href, RelativePathString, router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import { Platform } from 'react-native';
 
 /* --------------- push를 notifee로 표시 --------------- */
@@ -92,11 +92,36 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       break;
 
     case 'chat':
-      if (!pathname.includes('chat')) router.replace('/chat');
-      console.info('data.roomId', data);
+      console.info('pathname', pathname);
+      // 경로가 `/chat/:roomId` 또는 `/chat/:roomId/members` 인지 검사
+      const isChatRoomPath = /^\/chat\/[^\/]+$/.test(pathname);
+      const isChatMembersPath = /^\/chat\/[^\/]+\/members$/.test(pathname);
+
+      if (isChatRoomPath) {
+        // 같은 채팅방 화면에서 들어온 알림은 replace
+        router.replace({
+          pathname: CHAT_ROUTE(String(data.roomId)),
+          params: { roomName: String(data.roomName) },
+        });
+        return;
+      }
+
+      if (isChatMembersPath) {
+        // 멤버 목록 화면이면 뒤로 한 단계(dismiss)한 뒤 replace
+        router.back();
+        setTimeout(() => {
+          router.replace({
+            pathname: CHAT_ROUTE(String(data.roomId)),
+            params: { roomName: String(data.roomName) },
+          });
+        }, 500);
+        return;
+      }
+
+      // 그 외 화면에서는 push
       setTimeout(() => {
-        router.push({
-          pathname: CHAT_ROUTE(String(data.roomId)) as RelativePathString,
+        router.navigate({
+          pathname: CHAT_ROUTE(String(data.roomId)),
           params: { roomName: String(data.roomName) },
         });
       }, 500);
