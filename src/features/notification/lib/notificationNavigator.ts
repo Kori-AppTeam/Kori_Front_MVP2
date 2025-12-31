@@ -1,8 +1,6 @@
 import { CHAT_ROUTE } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
 
-type RouterLike = any;
-
 /**
  * Handle chat-specific navigation for notifications.
  * Returns true if the data was handled as a chat notification.
