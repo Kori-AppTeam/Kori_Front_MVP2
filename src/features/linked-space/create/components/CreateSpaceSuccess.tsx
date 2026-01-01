@@ -1,19 +1,21 @@
 import React from 'react';
 import styled from 'styled-components/native';
+import { getDefaultAvatarSource } from '../constants';
 
 interface CreateSpaceSuccessProps {
   spaceImageUrl?: string;
+  avatarIndex: number;
   onDone: () => void;
 }
 
 /**
  * 스페이스 생성 성공 화면
  */
-export const CreateSpaceSuccess: React.FC<CreateSpaceSuccessProps> = ({ spaceImageUrl, onDone }) => {
+export const CreateSpaceSuccess: React.FC<CreateSpaceSuccessProps> = ({ spaceImageUrl, avatarIndex, onDone }) => {
   return (
     <Background source={require('@/assets/images/background2.png')} resizeMode="cover">
       <ProfileBox>
-        <ProfileImage source={{ uri: spaceImageUrl }} />
+        <ProfileImage source={spaceImageUrl ? { uri: spaceImageUrl } : getDefaultAvatarSource(avatarIndex)} />
       </ProfileBox>
 
       <TextBox>
