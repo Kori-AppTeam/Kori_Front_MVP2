@@ -28,7 +28,7 @@ export default function CommunityScreen() {
 
   return (
     <Safe>
-      <Header>
+      <HeaderRow>
         <Left>
           <TextButton onPress={() => scrollToTop(true)} activeOpacity={0.6}>
             <Title>Community</Title>
@@ -66,7 +66,7 @@ export default function CommunityScreen() {
             <Icon type="person" size={24} color={theme.colors.gray.lightGray_1} />
           </IconBtn>
         </Right>
-      </Header>
+      </HeaderRow>
 
       <ChipsWrap>
         <CategoryChips value={category} onPress={handleCategoryChange} />
@@ -88,8 +88,8 @@ const Safe = styled.SafeAreaView`
   flex: 1;
   background: #1d1e1f;
 `;
-const Header = styled.View`
-  padding: 0 12px;
+const HeaderRow = styled.View`
+  padding: 0 20px;
   margin-top: 12px;
   flex-direction: row;
   align-items: center;
@@ -98,7 +98,6 @@ const Header = styled.View`
 const Left = styled.View`
   flex-direction: row;
   align-items: center;
-  margin-left: 10px;
 `;
 const TextButton = styled.TouchableOpacity``;
 const Title = styled.Text`
