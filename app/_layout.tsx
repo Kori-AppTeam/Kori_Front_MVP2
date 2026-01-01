@@ -19,6 +19,7 @@ import {
   PlusJakartaSans_500Medium,
   PlusJakartaSans_600SemiBold,
   PlusJakartaSans_700Bold,
+  PlusJakartaSans_700Bold_Italic,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -62,6 +63,7 @@ export default function RootLayout() {
     PlusJakartaSans_500Medium,
     PlusJakartaSans_600SemiBold,
     PlusJakartaSans_700Bold,
+    PlusJakartaSans_700Bold_Italic,
   });
 
   const pathname = usePathname();

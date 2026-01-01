@@ -32,3 +32,11 @@ export const COMMUNITY_ROUTER = {
 
 // 마이페이지 route 경로
 export const MYPAGE_SUPPORT_ROUTE = toRoute('/mypage/support');
+
+// k-culture route 경로
+export const K_CULTURE_ROUTER = {
+  HOME: '/k-culture',
+  K_NEWS: '/k-culture/k-news',
+  DETAIL: (newsId: number | string) => toRoute(`/k-culture/detail/${newsId}`),
+  SEARCH: '/k-culture/search',
+} as const;
