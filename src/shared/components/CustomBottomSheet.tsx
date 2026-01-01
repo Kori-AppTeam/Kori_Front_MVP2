@@ -20,6 +20,7 @@ const CustomBottomSheet = ({
   handleComponent = () => null,
 }: CustomBottomSheetProps) => {
   const { bottom } = useSafeAreaInsets();
+  const isAndroidButtonNav = Platform.OS === 'android' && bottom > 25;
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -39,7 +40,7 @@ const CustomBottomSheet = ({
   const bottomSheetViewStyle = {
     flex: 1,
     backgroundColor: backgroundColor,
-    paddingBottom: Platform.OS === 'android' ? bottom : 0,
+    paddingBottom: isAndroidButtonNav ? bottom : 0,
   } as const;
 
   return (
