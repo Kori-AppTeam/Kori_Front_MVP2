@@ -1,6 +1,7 @@
 import { theme } from '@/src/styles/theme';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import React, { ReactElement, useCallback } from 'react';
+import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface CustomBottomSheetProps {
@@ -38,7 +39,7 @@ const CustomBottomSheet = ({
   const bottomSheetViewStyle = {
     flex: 1,
     backgroundColor: backgroundColor,
-    paddingBottom: bottom,
+    paddingBottom: Platform.OS === 'android' ? bottom : 0,
   } as const;
 
   return (
