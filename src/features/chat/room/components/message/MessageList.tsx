@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { useChatStore } from '../../stores/useChatStore';
@@ -14,6 +14,8 @@ const MessageList: React.FC<MessageListProps> = ({
   flatListRef,
 }) => {
   const messages = useChatStore((state) => state.messages);
+  const [maintainPosition, setMaintainPosition] = useState(false);
+
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => (
     <MessageItem
       item={item}
@@ -29,8 +31,15 @@ const MessageList: React.FC<MessageListProps> = ({
       <FlatList
         ref={flatListRef}
         data={messages}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item) => item.id.toString()}
         inverted
+        // 스크롤 이벤트로 사용자가 위로 스크롤 중인지 감지
+        onScroll={useCallback((e: { nativeEvent: { contentOffset: { y: number } } }) => {
+          const y = e.nativeEvent.contentOffset.y;
+          // inverted FlatList 기준: y > threshold면 사용자가 위(이전 메시지)를 보고 있음
+          setMaintainPosition(y > 20);
+        }, [])}
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={LIST_CONFIG.CONTENT_CONTAINER_STYLE}
         onEndReached={onLoadMore}
@@ -40,6 +49,8 @@ const MessageList: React.FC<MessageListProps> = ({
         maxToRenderPerBatch={LIST_CONFIG.MAX_TO_RENDER_PER_BATCH}
         windowSize={LIST_CONFIG.WINDOW_SIZE}
         getItemLayout={LIST_CONFIG.GET_ITEM_LAYOUT}
+        // 사용자가 위로 스크롤해 있을 때만 위치 유지 적용
+        maintainVisibleContentPosition={maintainPosition ? { minIndexForVisible: 0 } : undefined}
       />
     </ListContainer>
   );
