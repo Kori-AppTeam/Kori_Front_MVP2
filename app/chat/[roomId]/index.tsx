@@ -90,7 +90,7 @@ const ChattingRoomScreen = () => {
                 onNavigateDown={() => messageSearch.navigateToDown()}
               />
             ) : (
-              <MessageInput onSendMessage={() => messageActions.sendMessage(roomId)} paddingBottom={insets.bottom} />
+              <MessageInput onSendMessage={() => messageActions.sendMessage(roomId)} />
             )}
 
             {/* 프로필 모달 */}

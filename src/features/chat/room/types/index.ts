@@ -65,7 +65,6 @@ export interface SearchHeaderProps {
 // ============= Input Components =============
 export interface MessageInputProps {
   onSendMessage: () => void;
-  paddingBottom?: number;
 }
 
 // ============= Search Components =============
