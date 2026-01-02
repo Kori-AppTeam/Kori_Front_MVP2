@@ -9,12 +9,12 @@ export const fetchUserProfile = async (userId: number): Promise<User> => {
 
 /** 사용자 팔로우 */
 export const followUser = async (userId: number) => {
-  const response = await api.post(`/api/v1/home/follow/${userId}`);
+  const response = await api.post(`/api/v1/mypage/follow/${userId}`);
   return response.data;
 };
 
 /** 사용자 언팔로우 */
 export const unfollowUser = async (userId: number) => {
-  const response = await api.delete(`/api/v1/home/follow/${userId}`);
+  const response = await api.delete(`/api/v1/mypage/follow/${userId}`);
   return response.data;
 };

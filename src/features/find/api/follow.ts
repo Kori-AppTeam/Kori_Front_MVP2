@@ -22,7 +22,7 @@ function mapDummyToReal(userId: number) {
  */
 export async function postFollow(userId: number): Promise<FollowResponse> {
   const targetId = mapDummyToReal(userId);
-  const { data } = await api.post<FollowResponse>(`/api/v1/home/follow/${targetId}`, {});
+  const { data } = await api.post<FollowResponse>(`/api/v1/mypage/follow/${targetId}`, {});
   return data;
 }
 
