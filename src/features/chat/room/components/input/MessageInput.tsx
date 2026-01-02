@@ -1,16 +1,30 @@
 import Icon from '@/components/common/Icon';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
+import { useMediaPicker } from '../../hooks/useMediaPicker';
+import { useMediaUpload } from '../../hooks/useMediaUpload';
 import { useChatStore } from '../../stores/useChatStore';
 import { MessageInputProps } from '../../types';
 
 const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
+  const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const { currentMessage, setCurrentMessage } = useChatStore();
+  const { pickMedia } = useMediaPicker();
+  const { uploadMedia } = useMediaUpload();
   const isSendEnabled = currentMessage.trim().length > 0;
+
+  // 사진/동영상 선택 핸들러
+  const handlePhotoPress = async () => {
+    const result = await pickMedia();
+    if (result && roomId) {
+      await uploadMedia(roomId, result.type, result.uri);
+    }
+  };
 
   return (
     <InputContainer>
-      <IconWrapper>
+      <IconWrapper onPress={handlePhotoPress}>
         <Icon type="photo" size={32} />
       </IconWrapper>
       <InputBox
@@ -68,7 +82,7 @@ const InputContainer = styled(BaseContainer)`
   height: ${INPUT_CONFIG.HEIGHT}px;
 `;
 
-const IconWrapper = styled.View`
+const IconWrapper = styled.TouchableOpacity`
   margin-right: 8px;
 `;
 

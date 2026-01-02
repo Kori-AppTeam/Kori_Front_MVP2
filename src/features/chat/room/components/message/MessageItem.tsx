@@ -4,10 +4,12 @@ import { theme } from '@/src/styles/theme';
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/native';
+import { useMediaUpload } from '../../hooks/useMediaUpload';
 import { useChatStore } from '../../stores/useChatStore';
 import { useSearchStore } from '../../stores/useSearchStore';
 import { MessageItemProps } from '../../types';
 import { displayMessageItem } from '../../utils/displayMessageItem';
+import MediaMessage from './MediaMessage';
 import MessageMenu from './MessageMenu';
 import MyMessageBubble from './MyMessageBubble';
 import OtherMessageBubble from './OtherMessageBubble';
@@ -16,6 +18,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onD
   // Store에서 직접 가져오기
   const { isActive, searchResults, currentIndex, searchText } = useSearchStore();
   const isTranslating = useChatStore((state) => state.isTranslating);
+  const { retryUpload } = useMediaUpload();
 
   // 컨텍스트 메뉴 상태 관리
   const [menuVisible, setMenuVisible] = useState(false);
@@ -32,6 +35,16 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onD
   // 메시지 강조 표시 여부
   const shouldHighlight = isActive && searchResults.length > 0 && searchResults[currentIndex]?.id === item.id;
 
+  // 미디어 메시지 여부
+  const isMediaMessage = item.messageType === 'IMAGE' || item.messageType === 'VIDEO';
+
+  // 재시도 핸들러
+  const handleRetry = () => {
+    if (item.tempId) {
+      retryUpload(item.tempId);
+    }
+  };
+
   // 길게 누르기 핸들러
   const handleLongPress = () => {
     bubbleRef.current?.measure((x, y, width, height, pageX, pageY) => {
@@ -44,7 +57,22 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onD
   return (
     <>
       {/* 메시지 */}
-      {isMyMessage ? (
+      {isMediaMessage ? (
+        // 미디어 메시지 (IMAGE/VIDEO)
+        <MediaMessageContainer isMyMessage={isMyMessage}>
+          <MediaMessage
+            type={item.messageType as 'IMAGE' | 'VIDEO'}
+            localUrl={item.localUrl}
+            mediaUrl={item.mediaUrl}
+            thumbnailUrl={item.thumbnailUrl || undefined}
+            uploadStatus={item.uploadStatus}
+            errorMessage={item.errorMessage}
+            onRetry={handleRetry}
+            maxWidth={250}
+          />
+        </MediaMessageContainer>
+      ) : isMyMessage ? (
+        // 텍스트 메시지 (내 메시지)
         <MyMessageBubble
           ref={bubbleRef}
           content={messageContent}
@@ -55,6 +83,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, index, isMyMessage, onD
           onLongPress={handleLongPress}
         />
       ) : (
+        // 텍스트 메시지 (상대 메시지)
         <OtherMessageBubble
           ref={bubbleRef}
           content={messageContent}
@@ -103,4 +132,12 @@ const DateSeparator = styled.View`
 const DateText = styled.Text`
   color: ${theme.colors.gray.gray_1};
   ${theme.fonts.small.small_SB};
+`;
+
+const MediaMessageContainer = styled.View<{ isMyMessage: boolean }>`
+  flex-direction: row;
+  align-items: flex-end;
+  align-self: ${({ isMyMessage }) => (isMyMessage ? 'flex-end' : 'flex-start')};
+  margin: 5px 8px;
+  gap: 4px;
 `;
