@@ -6,7 +6,7 @@ import { LinkedSpaceRecommendModal } from '@/src/features/find/components/Linked
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import { useFollowUserMutation } from '@/src/shared/hooks/useUserProfileQuery';
+import { useCancelFollowUserMutation, useFollowUserMutation } from '@/src/shared/hooks/useUserProfileQuery';
 import { Text } from '@react-navigation/elements';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react';
@@ -23,6 +23,7 @@ export default function index() {
 
   const createChatRoom = useCreateOneToOneRoom();
   const followMutation = useFollowUserMutation();
+  const cancelFollowMutation = useCancelFollowUserMutation();
 
   const {
     visible: recommendVisible,
@@ -46,11 +47,11 @@ export default function index() {
   // Define card actions based on follow status
   const getCardActions = (item: NonNullable<typeof friends>[0]) => {
     return {
-      ...(item.followStatus === 'PENDING'
+      ...(item.followStatus === 'PENDING' || item.followStatus === 'FOLLOWING'
         ? {
             secondary: {
               label: 'Following',
-              onPress: () => {},
+              onPress: () => cancelFollowMutation.mutate(item.userId),
             },
           }
         : {
