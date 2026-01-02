@@ -93,7 +93,15 @@ export interface ChatMessage {
   originContent: string;
   targetContent: string;
   sentAt: string;
-  messageType: string;
+  messageType: 'TEXT' | 'IMAGE' | 'VIDEO';
+  mediaUrl: string | null;
+  thumbnailUrl: string | null;
+
+  // 낙관적 업데이트용 (프론트엔드 전용)
+  localUrl?: string;
+  uploadStatus?: 'pending' | 'uploading' | 'success' | 'failed';
+  tempId?: string;
+  errorMessage?: string;
 }
 
 // Room 메시지 상태
