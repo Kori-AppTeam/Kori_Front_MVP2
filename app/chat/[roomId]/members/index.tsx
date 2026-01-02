@@ -57,7 +57,13 @@ const ChatInsideMember = () => {
         />
 
         {/* Profile Modal */}
-        <ProfileModal visible={profileVisible} userData={selectedUser} onClose={() => setProfileVisible(false)} />
+        <ProfileModal
+          visible={profileVisible}
+          userData={selectedUser}
+          onClose={() => setProfileVisible(false)}
+          routeType="replace"
+          dissMissCount={1}
+        />
 
         {/* Leave Chat Button */}
         <LeaveChatButton onPress={handleLeaveChat} />

@@ -12,9 +12,19 @@ type ProfileModalProps = {
   onClose: () => void;
   isLoadingFollow?: boolean;
   isLoadingChat?: boolean;
+  routeType?: 'push' | 'replace';
+  dissMissCount?: number;
 };
 
-const ProfileModal: React.FC<ProfileModalProps> = ({ visible, userData, onClose, isLoadingFollow, isLoadingChat }) => {
+const ProfileModal: React.FC<ProfileModalProps> = ({
+  visible,
+  userData,
+  onClose,
+  isLoadingFollow,
+  isLoadingChat,
+  routeType = 'push',
+  dissMissCount,
+}) => {
   const followUserMutation = useFollowUserMutation();
   const unfollowUserMutation = useUnfollowUserMutation();
   const createChatRoom = useCreateOneToOneRoom();
@@ -34,7 +44,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ visible, userData, onClose,
     createChatRoom.mutate({
       otherUserId: userData.userId,
       userName: `${userData.firstname} ${userData.lastname}`,
-      routeType: 'replace',
+      routeType: routeType,
+      dissMissCount: dissMissCount,
       closeProfile: onClose,
     });
   };

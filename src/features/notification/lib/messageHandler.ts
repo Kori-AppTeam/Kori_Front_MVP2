@@ -1,7 +1,7 @@
-import { CHAT_ROUTE } from '@/src/shared/constants/route';
+import { handleChatNotificationNavigation } from '@/src/features/notification/lib/notificationNavigator';
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import { Href, RelativePathString, router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import { Platform } from 'react-native';
 
 /* --------------- push를 notifee로 표시 --------------- */
@@ -92,13 +92,8 @@ export function notificationRouterReplace(data: { [key: string]: string | number
       break;
 
     case 'chat':
-      if (!pathname.includes('chat')) router.replace('/chat');
-      setTimeout(() => {
-        router.push({
-          pathname: CHAT_ROUTE(String(data.roomId)) as RelativePathString,
-          params: { myId: String(data.myId) },
-        });
-      }, 500);
+      // 채팅 관련 네비게이션을 공통 유틸로 위임
+      if (handleChatNotificationNavigation({ pathname, data })) return;
       break;
 
     case 'follow':
