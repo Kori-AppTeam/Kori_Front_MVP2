@@ -42,14 +42,15 @@ export function useRequestFeedback() {
 
     await AsyncStorage.setItem('START_COUNT', String(startCount + 1));
 
-    /* NOTE 테스트용 코드, 테스트 시 주석을 풀고 실행해 주세요 */
-    // await AsyncStorage.setItem('START_COUNT', '2');
-    // await AsyncStorage.setItem('HAS_REQUESTED_FEEDBACK', 'false');
-
     // 이전에 피드백을 요청한 적이 있는지 확인
     const hasRequested = await AsyncStorage.getItem('HAS_REQUESTED_FEEDBACK').then((value) => {
       return value === 'true';
     });
+
+    /* NOTE 테스트용 코드, 테스트 시 주석을 풀고 실행해주세요z */
+    // await showFeedbackAlert(onPressHandler);
+    // return;
+    /* ------------------------------------------ */
 
     // 앱 시작 횟수가 2회 이상일 때, 아직 피드백 요청을 한 적이 없으면 요청 실행
     if (startCount < 2 || hasRequested) {
