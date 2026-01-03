@@ -4,11 +4,11 @@ import { router } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
 import { BottomRow, CategoryBadge, DateText, Description, Dot, NewsTitle } from '../styles/styles';
-import { KNewsItemType } from '../types';
+import { KNewsItemType, KNewsListData } from '../types';
 import { timeStampToAgo } from '../utils/timeStampToAgo';
 
 type KNewsItemProps = {
-  data: KNewsItemType;
+  data: KNewsItemType | KNewsListData;
 };
 
 const KNewsItem = ({ data }: KNewsItemProps) => {
@@ -36,6 +36,7 @@ const Container = styled.Pressable`
   flex-direction: row;
   align-items: center;
   gap: 16px;
+  padding: 0 20px;
 `;
 
 const ImageContainer = styled.View`
