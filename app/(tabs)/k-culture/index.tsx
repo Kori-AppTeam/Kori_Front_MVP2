@@ -57,7 +57,7 @@ const HeaderContainer = styled(LinearGradient)`
   width: 100%;
   /* 노치 문제 해결되면 사용 */
   /* aspect-ratio: ${375 / 440}; */
-  aspect-ratio: ${375 / 389};
+  min-height: 440px;
   position: relative;
   align-items: center;
   justify-content: center;
