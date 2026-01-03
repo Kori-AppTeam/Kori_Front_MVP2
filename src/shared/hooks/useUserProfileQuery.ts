@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchUserProfile, followUser, unfollowUser } from '../api/userProfile';
+import { cancelFollowUser, fetchUserProfile, followUser, unfollowUser } from '../api/userProfile';
 
 /** 쿼리 키 */
 export const USER_PROFILE_QK = (userId: number) => ['chat', 'userProfile', userId] as const;
@@ -36,6 +36,21 @@ export const useUnfollowUserMutation = () => {
 
   return useMutation({
     mutationFn: (userId: number) => unfollowUser(userId),
+    onSuccess: (_, userId) => {
+      // 해당 사용자 프로필 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: USER_PROFILE_QK(userId),
+      });
+    },
+  });
+};
+
+/** 팔로우 취소 Mutation */
+export const useCancelFollowUserMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: number) => cancelFollowUser(userId),
     onSuccess: (_, userId) => {
       // 해당 사용자 프로필 캐시 무효화
       queryClient.invalidateQueries({

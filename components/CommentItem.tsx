@@ -173,7 +173,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
     setIsFollowLoading(true);
 
     try {
-      await api.post(`/api/v1/home/follow/${targetUserId}`);
+      await api.post(`/api/v1/mypage/follow/${targetUserId}`);
       setSelectedUser((prevUser) => ({
         ...(prevUser as any),
         followStatus: 'PENDING',
