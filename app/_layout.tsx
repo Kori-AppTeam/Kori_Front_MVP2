@@ -4,6 +4,8 @@ import { useAutoLogin } from '@/src/features/auth/hooks/useAutoLogin';
 import { initGoogleAuth } from '@/src/features/auth/lib/oauth/google';
 import MoreBottomSheet from '@/src/features/community/post/components/elements/footer/MoreBottomSheet';
 import ReportModal from '@/src/features/community/post/components/ReportModal';
+import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSheetStore';
+import { useReportSheetStore } from '@/src/features/community/post/store/useReportSheetStore';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
@@ -22,6 +24,7 @@ import {
   PlusJakartaSans_700Bold_Italic,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { PortalProvider } from '@gorhom/portal';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
@@ -99,6 +102,14 @@ export default function RootLayout() {
     }
   }, [loaded, isAutoLoginLoading, isLoggedIn, isVersionCheckLoading, isAppUpToDate, router]);
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      // 로그아웃 시 커뮤니티 모달 상태 초기화
+      useMoreSheetStore.getState().resetData();
+      useReportSheetStore.getState().resetData();
+    }
+  }, [isLoggedIn]);
+
   if (!loaded || isAutoLoginLoading || isVersionCheckLoading || !isAppUpToDate) return null;
 
   return (
@@ -107,20 +118,22 @@ export default function RootLayout() {
         <ThemeProvider theme={theme}>
           <SafeAreaProvider>
             <BottomSheetModalProvider>
-              <AppLayout>
-                <ProfileProvider>
-                  {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
-                  <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="(tabs)" />
-                    <Stack.Screen name="(auth)" />
-                    <Stack.Screen name="+not-found" />
-                  </Stack>
-                  <Toast config={toastConfig} topOffset={80} />
-                </ProfileProvider>
-                {/* 커뮤니티 관련 모달 - 전역에서 사용, 로그인 상태에 따라 조건부 렌더링*/}
-                {isLoggedIn && <MoreBottomSheet />}
-                {isLoggedIn && <ReportModal />}
-              </AppLayout>
+              <PortalProvider>
+                <AppLayout>
+                  <ProfileProvider>
+                    {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
+                    <Stack screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="(tabs)" />
+                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="+not-found" />
+                    </Stack>
+                    <Toast config={toastConfig} topOffset={80} />
+                  </ProfileProvider>
+                  {/* 커뮤니티 관련 모달 - 전역에서 사용, 로그인 상태에 따라 조건부 렌더링*/}
+                  {isLoggedIn && <MoreBottomSheet />}
+                  {isLoggedIn && <ReportModal />}
+                </AppLayout>
+              </PortalProvider>
             </BottomSheetModalProvider>
           </SafeAreaProvider>
         </ThemeProvider>
