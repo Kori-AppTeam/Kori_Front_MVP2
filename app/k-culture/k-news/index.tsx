@@ -13,7 +13,7 @@ import styled from 'styled-components/native';
 
 const Index = () => {
   // const insets = useSafeAreaInsets(); 노치까지 고려한 헤더 높이
-  const [selectedCategory, setSelectedCategory] = useState<NewsType>('K_POP');
+  const [selectedCategory, setSelectedCategory] = useState<NewsType>('K-POP');
   const [sort, setSort] = useState<NewsSortType>('TRENDING');
 
   const staticHeader = React.memo(() => {
