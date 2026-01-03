@@ -3,7 +3,6 @@ import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
-import { NEW_CATEGORY_MAPPER_NO_EMOJI } from '../constants/categoryMapper';
 import { BottomRow, CategoryBadge, DateText, Description, Dot, NewsTitle } from '../styles/styles';
 import { KNewsItemType } from '../types';
 import { timeStampToAgo } from '../utils/timeStampToAgo';
@@ -22,7 +21,7 @@ const KNewsItem = ({ data }: KNewsItemProps) => {
       <Description>
         <NewsTitle numberOfLines={2}>{data.title}</NewsTitle>
         <BottomRow>
-          <CategoryBadge>{NEW_CATEGORY_MAPPER_NO_EMOJI[data.type]}</CategoryBadge>
+          <CategoryBadge>{data.type ?? 'K-news'}</CategoryBadge>
           <Dot>•</Dot>
           <DateText>{timeStampToAgo(data.ago)}</DateText>
         </BottomRow>

@@ -1,6 +1,5 @@
 import Icon from '@/components/common/Icon';
 import { IconBtn } from '@/src/features/community/shared/styles/styles';
-import { NEW_CATEGORY_MAPPER_NO_EMOJI } from '@/src/features/k-culture/constants/categoryMapper';
 import { useGetNewsDetail } from '@/src/features/k-culture/hooks/useGetNewsDetail';
 import { CategoryBadge, DateText, Dot } from '@/src/features/k-culture/styles/styles';
 import { NewsType } from '@/src/features/k-culture/types';
@@ -18,11 +17,11 @@ import styled from 'styled-components/native';
 const NewsId = () => {
   const {
     newsId,
-    type = 'K_POP' as NewsType,
+    type = 'K-news',
     ago = '0',
   } = useLocalSearchParams<{
     newsId: string;
-    type?: NewsType;
+    type?: NewsType | 'K-news';
     ago?: string;
   }>();
   const { data, isLoading, isError } = useGetNewsDetail(Number(newsId));
@@ -62,7 +61,7 @@ const NewsId = () => {
         <Description>
           <NewsTitle>{data.title}</NewsTitle>
           <BottomRow>
-            <CategoryBadge>{NEW_CATEGORY_MAPPER_NO_EMOJI[type]}</CategoryBadge>
+            <CategoryBadge>{type}</CategoryBadge>
             <Dot>•</Dot>
             <DateText>{timeStampToAgo(Number(ago))}</DateText>
           </BottomRow>
