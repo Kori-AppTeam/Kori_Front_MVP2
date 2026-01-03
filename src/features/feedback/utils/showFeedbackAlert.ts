@@ -1,4 +1,5 @@
-import { Alert } from 'react-native';
+import { getSupportLinks } from '@/src/shared/api/support';
+import { Alert, Linking } from 'react-native';
 
 export async function showFeedbackAlert(onPressHandler: (satisfied: string) => Promise<void>) {
   Alert.alert(
@@ -12,6 +13,26 @@ export async function showFeedbackAlert(onPressHandler: (satisfied: string) => P
       {
         text: 'Good',
         onPress: async () => onPressHandler('Satisfied'),
+      },
+    ],
+  );
+}
+
+export async function showGoogleFormAlert() {
+  Alert.alert(
+    'Would you like to share more details about what you liked or what could be improved?',
+    'You can fill out a quick Google Form to help us make Kori better.',
+    [
+      {
+        text: 'Not now',
+        style: 'cancel',
+      },
+      {
+        text: 'Go to Form',
+        onPress: async () => {
+          const googleFormURL = await getSupportLinks().then((res) => res.feedbackUrl);
+          Linking.openURL(googleFormURL).catch((err) => console.error('Failed to open Google Form URL:', err));
+        },
       },
     ],
   );
