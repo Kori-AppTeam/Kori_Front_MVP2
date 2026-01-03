@@ -9,3 +9,8 @@ export const NEWS_CATEGORY_MAPPER = {
 } as const;
 
 export const NEWS_CATEGORIES = Object.keys(NEWS_CATEGORY_MAPPER) as NewsType[];
+
+export const NEWS_SORT_MAPPER = {
+  TRENDING: 'Trending',
+  NEW: 'New',
+} as const;
