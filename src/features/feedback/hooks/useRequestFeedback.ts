@@ -46,9 +46,8 @@ export function useRequestFeedback() {
       return value === 'true';
     });
 
-    // 앱 시작 횟수가 2회일 때, 아직 피드백 요청을 한 적이 없으면 요청 실행
-    // 앱 실행 50회마다 추가 요청
-    if (startCount % 50 !== 2 || hasRequested) {
+    // 앱 시작 횟수가 2회 이상일 때, 아직 피드백 요청을 한 적이 없으면 요청 실행
+    if (startCount < 2 || hasRequested) {
       return;
     }
 
