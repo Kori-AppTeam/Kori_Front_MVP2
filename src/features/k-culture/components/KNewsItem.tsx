@@ -6,6 +6,7 @@ import styled from 'styled-components/native';
 import { NEW_CATEGORY_MAPPER_NO_EMOJI } from '../constants/categoryMapper';
 import { BottomRow, CategoryBadge, DateText, Description, Dot, NewsTitle } from '../styles/styles';
 import { KNewsItemType } from '../types';
+import { timeStampToAgo } from '../utils/timeStampToAgo';
 
 type KNewsItemProps = {
   data: KNewsItemType;
@@ -13,7 +14,7 @@ type KNewsItemProps = {
 
 const KNewsItem = ({ data }: KNewsItemProps) => {
   return (
-    <Container onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(data.contentId))}>
+    <Container onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(data.contentId, data.type, data.ago))}>
       <ImageContainer>
         <Image source={{ uri: data.thumbImageUrl }} resizeMode="cover" />
       </ImageContainer>
@@ -23,7 +24,7 @@ const KNewsItem = ({ data }: KNewsItemProps) => {
         <BottomRow>
           <CategoryBadge>{NEW_CATEGORY_MAPPER_NO_EMOJI[data.type]}</CategoryBadge>
           <Dot>•</Dot>
-          <DateText>{data.ago}</DateText>
+          <DateText>{timeStampToAgo(data.ago)}</DateText>
         </BottomRow>
       </Description>
     </Container>

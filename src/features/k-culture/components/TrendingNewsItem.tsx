@@ -8,6 +8,7 @@ import styled from 'styled-components/native';
 import { NEW_CATEGORY_MAPPER_NO_EMOJI } from '../constants/categoryMapper';
 import { BottomRow, CategoryBadge, DateText, Description, Dot, NewsTitle } from '../styles/styles';
 import { NewsPreviewItem } from '../types';
+import { timeStampToAgo } from '../utils/timeStampToAgo';
 
 type TrendingNewsItemProps = {
   item: NewsPreviewItem;
@@ -18,7 +19,10 @@ const TrendingNewsItem = ({ item, index }: TrendingNewsItemProps) => {
   const imageContainerWidth = SCREEN_WIDTH * (160 / 375);
 
   return (
-    <NewsItemContainer width={imageContainerWidth} onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(item.contentId))}>
+    <NewsItemContainer
+      width={imageContainerWidth}
+      onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(item.contentId, item.type, item.ago))}
+    >
       <NewsImageContainer>
         <NewsImage source={{ uri: item.thumbImageUrl }} resizeMode="cover" />
         <LinearGradient
@@ -43,7 +47,7 @@ const TrendingNewsItem = ({ item, index }: TrendingNewsItemProps) => {
         <BottomRow>
           <CategoryBadge>{NEW_CATEGORY_MAPPER_NO_EMOJI[item.type] ?? 'K-News'}</CategoryBadge>
           <Dot>•</Dot>
-          <DateText>{item.ago}</DateText>
+          <DateText>{timeStampToAgo(item.ago)}</DateText>
         </BottomRow>
       </Description>
     </NewsItemContainer>
