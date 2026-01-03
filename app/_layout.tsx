@@ -24,7 +24,7 @@ import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -46,9 +46,19 @@ initGoogleAuth(); // 앱 시작 시 구글 인증 초기화
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
+
   return (
     // eslint-disable-next-line react-native/no-color-literals
-    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#1D1E1F' }}>{children}</View>
+    <View
+      style={{
+        flex: 1,
+        paddingTop: insets.top,
+        paddingBottom: Platform.OS === 'android' ? insets.bottom : 0,
+        backgroundColor: '#1D1E1F',
+      }}
+    >
+      {children}
+    </View>
   );
 }
 
@@ -92,7 +102,11 @@ export default function RootLayout() {
         initializeStomp();
         router.replace('/(tabs)');
       } else {
-        const isOnboardingVisited = await AsyncStorage.getItem('ONBOARDING_VISITED');
+        const ONBOARDING_VISITED = await AsyncStorage.getItem('ONBOARDING_VISITED');
+        const isOnboardingVisited = ONBOARDING_VISITED === 'true';
+        console.log(`[Onboarding] Visited status: ${isOnboardingVisited}`);
+
+        // await AsyncStorage.removeItem('ONBOARDING_VISITED'); // --- TESTING PURPOSES ONLY ---
         if (isOnboardingVisited) {
           router.replace(AUTH_ROUTE);
         } else {
