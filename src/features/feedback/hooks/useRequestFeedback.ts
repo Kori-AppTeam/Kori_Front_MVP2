@@ -25,7 +25,7 @@ export function useRequestFeedback() {
       await postFeedback(satisfied, 'no contents'); // 추가 의견은 현재 'no contents'로 전송
       showGoogleFormAlert();
       // showFeedbackDoneAlert();
-      await AsyncStorage.setItem('hasRequestedFeedback', 'true'); // 영구 저장
+      await AsyncStorage.setItem('HAS_REQUESTED_FEEDBACK', 'true'); // 영구 저장
       return;
     } catch (error) {
       console.error('[Feedback] Failed to send feedback:', error);
@@ -36,18 +36,19 @@ export function useRequestFeedback() {
   // 피드백 요청 함수
   const requestFeedback = useCallback(async () => {
     // 앱 시작 횟수를 storage에서 가져온 후 +1
-    const startCount = await AsyncStorage.getItem('startCount').then((value) => {
+    const startCount = await AsyncStorage.getItem('START_COUNT').then((value) => {
       return value ? Number(value) : 0;
     });
-    await AsyncStorage.setItem('startCount', String(startCount + 1));
 
+    await AsyncStorage.setItem('START_COUNT', String(startCount + 1));
     // 이전에 피드백을 요청한 적이 있는지 확인
-    const hasRequested = await AsyncStorage.getItem('hasRequestedFeedback').then((value) => {
+    const hasRequested = await AsyncStorage.getItem('HAS_REQUESTED_FEEDBACK').then((value) => {
       return value === 'true';
     });
 
-    // 앱 시작 횟수가 5회이거나 요청된 적이 없는 경우에만 피드백 요청
-    if (startCount !== 5 || hasRequested) {
+    // 앱 시작 횟수가 2회일 때, 아직 피드백 요청을 한 적이 없으면 요청 실행
+    // 앱 실행 50회마다 추가 요청
+    if (startCount % 50 !== 2 || hasRequested) {
       return;
     }
 
