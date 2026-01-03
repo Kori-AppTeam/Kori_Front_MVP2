@@ -20,7 +20,7 @@ export async function showFeedbackAlert(onPressHandler: (satisfied: string) => P
 
 export async function showGoogleFormAlert() {
   Alert.alert(
-    'Would you like to share more details about what you liked or what could be improved?',
+    'Please share more details about your experience',
     'You can fill out a quick Google Form to help us make Kori better.',
     [
       {
