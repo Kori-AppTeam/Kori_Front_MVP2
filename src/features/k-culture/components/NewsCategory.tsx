@@ -33,6 +33,7 @@ export default NewsCategory;
 const Container = styled.ScrollView`
   width: 100%;
   flex-direction: row;
+  max-height: 40px;
 `;
 
 const CategoryButton = styled.Pressable<{ active?: boolean }>`
