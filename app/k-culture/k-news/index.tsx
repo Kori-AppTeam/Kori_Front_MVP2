@@ -1,13 +1,22 @@
 import Icon from '@/components/common/Icon';
 import { IconBtn } from '@/src/features/community/shared/styles/styles';
+import NewsCategory from '@/src/features/k-culture/components/NewsCategory';
 import TrendingNews from '@/src/features/k-culture/components/TrendingNews';
+import { NewsType } from '@/src/features/k-culture/types';
 import { textStyle, theme } from '@/src/styles/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import styled from 'styled-components/native';
 
 const Index = () => {
   // const insets = useSafeAreaInsets(); 노치까지 고려한 헤더 높이
+  const [selectedCategory, setSelectedCategory] = useState<NewsType>('K_POP');
+  const [sort, setSort] = useState<'RECENT' | 'POPULAR'>('RECENT');
+
+  const handleCategoryPress = (category: NewsType) => {
+    setSelectedCategory(category);
+  };
 
   return (
     <Container>
@@ -36,10 +45,10 @@ const Index = () => {
             </IconBtn> */}
             <RightPlaceholder />
           </HeaderNav>
-
           <TrendingNews />
         </LinearGradient>
       </Header>
+      <NewsCategory value={selectedCategory} onPress={handleCategoryPress} />
     </Container>
   );
 };
