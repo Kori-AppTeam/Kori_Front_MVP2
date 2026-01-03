@@ -1,7 +1,6 @@
 import AIChatHeader from '@/src/features/k-culture/components/AIChatHeader';
 import CharacterLoopCarousel from '@/src/features/k-culture/components/CharacterLoopCarousel';
 import MainPageKNews from '@/src/features/k-culture/components/MainPageKNews';
-import QuizAndVote from '@/src/features/k-culture/components/QuizAndVote';
 import TrendingNews from '@/src/features/k-culture/components/TrendingNews';
 import { textStyle, theme } from '@/src/styles/theme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -43,7 +42,7 @@ export default function KcultureScreen() {
 
       <TrendingNews title="Trending K-News" />
 
-      <QuizAndVote />
+      {/* <QuizAndVote /> */}
 
       <MainPageKNews />
     </Container>
