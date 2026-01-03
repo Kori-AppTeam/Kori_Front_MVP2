@@ -78,7 +78,6 @@ const Header = styled.ImageBackground`
   width: 100%;
   /* 노치 문제 해결되면 사용 */
   /* aspect-ratio: ${375 / 360}; */
-  aspect-ratio: ${375 / 309};
 `;
 
 const HeaderNav = styled.View`
