@@ -4,6 +4,7 @@ import {
   showFeedbackAlert,
   showFeedbackDoneAlert,
   showFeedbackFailedAlert,
+  showGoogleFormAlert,
 } from '@/src/features/feedback/utils/showFeedbackAlert';
 import { postFeedback } from '@/src/features/feedback/api/postFeedback';
 
@@ -11,8 +12,8 @@ import { postFeedback } from '@/src/features/feedback/api/postFeedback';
  * 앱 시작 횟수가 5회일 때 사용자에게 피드백을 요청하고, 응답을 서버로 전송합니다.
  *
  * - 피드백 요청은 한 번만 수행됩니다.
- * - 사용자가 만족도를 선택하면 해당 정보와 추가 의견을 서버에 전송합니다.
- * - 추가 의견의 경우, Alert로 text input을 받지 못해 현재는 'no contents'로 전송됩니다.
+ * - 사용자가 만족도를 선택하면 해당 정보를 서버로 전송합니다.
+ * - 추가 의견의 경우, 구글폼으로 이동해 작성할 수 있도록 유도합니다.
  * - 추후 앱이 안정되면 피드백 요청 로직이 크게 변경될 수 있습니다.
  * - (앱스토어 이동, text input Modal UI 추가 등)
  */
@@ -22,7 +23,8 @@ export function useRequestFeedback() {
   const onPressHandler = useCallback(async (satisfied: string) => {
     try {
       await postFeedback(satisfied, 'no contents'); // 추가 의견은 현재 'no contents'로 전송
-      showFeedbackDoneAlert();
+      showGoogleFormAlert();
+      // showFeedbackDoneAlert();
       await AsyncStorage.setItem('hasRequestedFeedback', 'true'); // 영구 저장
       return;
     } catch (error) {
