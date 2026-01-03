@@ -47,7 +47,7 @@ export function useRequestFeedback() {
       return value === 'true';
     });
 
-    /* NOTE 테스트용 코드, 테스트 시 주석을 풀고 실행해주세요z */
+    /* NOTE 테스트용 코드, 테스트 시 주석을 풀고 실행해주세요 */
     // await showFeedbackAlert(onPressHandler);
     // return;
     /* ------------------------------------------ */
