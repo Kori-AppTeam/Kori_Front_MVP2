@@ -1,5 +1,5 @@
 import api from '@/api/axiosInstance';
-import { NewsSortType, NewsType } from '../types';
+import { NewsPageParams, NewsType } from '../types';
 
 export const getNewsDetail = async (contentId: number) => {
   const res = await api.get(`/api/v2/main-contents/${contentId}`);
@@ -18,13 +18,15 @@ export const getTrendingNews = async () => {
   return res.data;
 };
 
-// k-news 리스트 조회 (무한 스크롤용)
-export const getKNews = async (type: NewsType, sort: NewsSortType, page: number, size: number) => {
+// k-news 리스트 조회 (무한 스크롤용, cursor 기반)
+export const getKNews = async (type: NewsType, params: NewsPageParams) => {
+  const { sort, size = 20, cursor } = params;
+
   const res = await api.get(`/api/v2/main-contents/${type}/list`, {
     params: {
       sort,
-      page,
       size,
+      cursor,
     },
   });
   return res.data;

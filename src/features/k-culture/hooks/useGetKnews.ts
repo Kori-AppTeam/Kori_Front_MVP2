@@ -1,16 +1,21 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { getKNews } from '../apis/news';
-import { KNewsListData, KNewsListResp, NewsSortType, NewsType } from '../types';
+import { KNewsListCursorPage, KNewsListData, KNewsListResp, NewsSortType, NewsType } from '../types';
 
 export const useGetKnews = (type: NewsType, sort: NewsSortType) => {
   const query = useInfiniteQuery<KNewsListResp>({
-    queryKey: ['knews', type, sort],
-    initialPageParam: 0,
-    queryFn: ({ pageParam }) => getKNews(type, sort, pageParam as number, 20),
+    queryKey: ['knews', 'list', type, sort],
+    initialPageParam: undefined,
+    queryFn: ({ pageParam }) =>
+      getKNews(type, {
+        sort: sort,
+        size: 20,
+        cursor: pageParam as string | undefined,
+      }),
     getNextPageParam: (lastPage) => {
-      const { currentPage, totalPages } = lastPage.data;
-      return currentPage < totalPages - 1 ? currentPage + 1 : undefined;
+      const page: KNewsListCursorPage = lastPage.data;
+      return page.hasNext ? (page.nextCursor ?? undefined) : undefined;
     },
   });
 
