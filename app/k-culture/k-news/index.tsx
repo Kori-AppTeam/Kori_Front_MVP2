@@ -1,54 +1,68 @@
 import Icon from '@/components/common/Icon';
 import { IconBtn } from '@/src/features/community/shared/styles/styles';
+import KNewsList from '@/src/features/k-culture/components/KNewsList';
 import NewsCategory from '@/src/features/k-culture/components/NewsCategory';
+import SortDropDown from '@/src/features/k-culture/components/SortDropdown';
 import TrendingNews from '@/src/features/k-culture/components/TrendingNews';
-import { NewsType } from '@/src/features/k-culture/types';
+import { NewsSortType, NewsType } from '@/src/features/k-culture/types';
 import { textStyle, theme } from '@/src/styles/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components/native';
 
 const Index = () => {
   // const insets = useSafeAreaInsets(); 노치까지 고려한 헤더 높이
   const [selectedCategory, setSelectedCategory] = useState<NewsType>('K_POP');
-  const [sort, setSort] = useState<'RECENT' | 'POPULAR'>('RECENT');
+  const [sort, setSort] = useState<NewsSortType>('TRENDING');
 
-  const handleCategoryPress = (category: NewsType) => {
-    setSelectedCategory(category);
-  };
+  const staticHeader = React.memo(() => {
+    return <></>;
+  });
+
+  const renderHeader = useMemo(
+    () => (
+      <>
+        {/* <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" /> */}
+        <Header source={require('@/assets/images/k_news_bg.png')} resizeMode="cover">
+          <LinearGradient
+            colors={[
+              `${theme.colors.primary.mint}33`,
+              `${theme.colors.secondary.blue}33`,
+              `${theme.colors.primary.purple}33`,
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              flex: 1,
+              // paddingTop: insets.top
+            }}
+          >
+            <HeaderNav>
+              <Back onPress={() => router.back()}>
+                <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
+              </Back>
+              <HeaderTitle>K-News</HeaderTitle>
+              {/* <IconBtn onPress={() => router.push(K_CULTURE_ROUTER.SEARCH)}>
+              <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
+            </IconBtn> */}
+              <RightPlaceholder />
+            </HeaderNav>
+            <TrendingNews />
+          </LinearGradient>
+        </Header>
+        <HeaderWrapper>
+          <NewsCategory value={selectedCategory} onPress={setSelectedCategory} />
+          <SortDropDown value={sort} onPress={setSort} />
+        </HeaderWrapper>
+      </>
+    ),
+    [selectedCategory, sort],
+  );
 
   return (
     <Container>
-      {/* <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" /> */}
-      <Header source={require('@/assets/images/k_news_bg.png')} resizeMode="cover">
-        <LinearGradient
-          colors={[
-            `${theme.colors.primary.mint}33`,
-            `${theme.colors.secondary.blue}33`,
-            `${theme.colors.primary.purple}33`,
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{
-            flex: 1,
-            // paddingTop: insets.top
-          }}
-        >
-          <HeaderNav>
-            <Back onPress={() => router.back()}>
-              <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
-            </Back>
-            <HeaderTitle>K-News</HeaderTitle>
-            {/* <IconBtn onPress={() => router.push(K_CULTURE_ROUTER.SEARCH)}>
-              <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
-            </IconBtn> */}
-            <RightPlaceholder />
-          </HeaderNav>
-          <TrendingNews />
-        </LinearGradient>
-      </Header>
-      <NewsCategory value={selectedCategory} onPress={handleCategoryPress} />
+      <KNewsList category={selectedCategory} sort={sort} renderHeader={renderHeader} />
     </Container>
   );
 };
@@ -88,4 +102,9 @@ const HeaderTitle = styled.Text`
 
 const RightPlaceholder = styled.View`
   width: 40px;
+`;
+
+const HeaderWrapper = styled.View`
+  padding: 24px 0;
+  gap: 24px;
 `;
