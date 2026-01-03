@@ -42,17 +42,24 @@ export interface KNewsResp {
 // k-news 리스트 서버 응답 타입
 export interface KNewsListResp {
   message: string;
-  data: {
-    items: KNewsListData[];
-    totalItems: number;
-    totalPages: number;
-    currentPage: number;
-  };
+  data: KNewsListCursorPage;
   timestamp: string;
+}
+
+export interface KNewsListCursorPage {
+  items: KNewsListData[];
+  hasNext: boolean;
+  nextCursor?: string | null;
 }
 
 // k-news 리스트 데이터 타입
 export interface KNewsListData extends NewsPreviewItem {
   createdAt: string;
   score: number;
+}
+
+export interface NewsPageParams {
+  sort: NewsSortType;
+  size: number;
+  cursor?: string;
 }
