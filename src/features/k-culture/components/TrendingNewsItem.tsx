@@ -57,7 +57,6 @@ export default memo(TrendingNewsItem);
 
 const NewsItemContainer = styled.Pressable<{ width: number }>`
   width: ${({ width }) => width}px;
-  min-height: ${160 / 199}px;
 `;
 
 const NewsImageContainer = styled.View`

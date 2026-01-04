@@ -83,7 +83,6 @@ const Title = styled.Text`
 `;
 
 const NewsList = styled.View`
-  padding: 0 20px;
   width: 100%;
   gap: 10px;
 `;

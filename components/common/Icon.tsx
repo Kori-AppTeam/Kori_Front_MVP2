@@ -20,6 +20,7 @@ import CloseBox from '@/assets/icons/close-box.svg';
 import Close from '@/assets/icons/close.svg';
 import Comment from '@/assets/icons/comment.svg';
 import CommentArrow from '@/assets/icons/comment_arrow.svg';
+import DropDown from '@/assets/icons/drop-down.svg';
 import Edit from '@/assets/icons/edit.svg';
 import Eclipsis from '@/assets/icons/ellipsis.svg';
 import EclipsisGaro from '@/assets/icons/ellipsis_garo.svg';
@@ -68,6 +69,7 @@ const iconMap = {
   alert: Alert,
   arrowUp: ArrowUp,
   arrowDown: ArrowDown,
+  dropDown: DropDown,
   arrowTransparent: ArrowTransparent,
   business: Business,
   bookmarkNonSelected: Bookmark,
