@@ -1,7 +1,6 @@
 import Icon from '@/components/common/Icon';
 import { IconBtn } from '@/src/features/community/shared/styles/styles';
 import TrendingNews from '@/src/features/k-culture/components/TrendingNews';
-import { K_CULTURE_ROUTER } from '@/src/shared/constants/route';
 import { textStyle, theme } from '@/src/styles/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -28,13 +27,14 @@ const Index = () => {
           }}
         >
           <HeaderNav>
-            <IconBtn onPress={() => router.back()}>
+            <Back onPress={() => router.back()}>
               <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
-            </IconBtn>
+            </Back>
             <HeaderTitle>K-News</HeaderTitle>
-            <IconBtn onPress={() => router.push(K_CULTURE_ROUTER.SEARCH)}>
+            {/* <IconBtn onPress={() => router.push(K_CULTURE_ROUTER.SEARCH)}>
               <Icon type="search" size={24} color={theme.colors.gray.lightGray_1} />
-            </IconBtn>
+            </IconBtn> */}
+            <RightPlaceholder />
           </HeaderNav>
 
           <TrendingNews />
@@ -64,12 +64,19 @@ const HeaderNav = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  max-height: 24px;
+`;
+
+const Back = styled(IconBtn)`
+  width: 40px;
 `;
 
 const HeaderTitle = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.body.B2_M)};
   color: ${({ theme }) => theme.colors.primary.white};
-  text-align: center;
   flex: 1;
+  text-align: center;
+`;
+
+const RightPlaceholder = styled.View`
+  width: 40px;
 `;

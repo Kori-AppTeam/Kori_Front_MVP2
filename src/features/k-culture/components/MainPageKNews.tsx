@@ -13,7 +13,7 @@ import MoreButton from './MoreButton';
 import NewsCategory from './NewsCategory';
 
 const MainPageKNews = () => {
-  const [selectedCategory, setSelectedCategory] = useState<NewsType>('K_POP');
+  const [selectedCategory, setSelectedCategory] = useState<NewsType>('K-POP');
   const { items, isError, refetch, isLoading } = useGetRecentKnews(selectedCategory);
 
   const handleCategoryPress = (category: NewsType) => {
