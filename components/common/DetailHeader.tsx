@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, Text } from 'react-native';
 import styled from 'styled-components/native';
 import Icon, { IconType } from './Icon';
-import { theme } from '@/src/styles/theme';
+import { textStyle, theme } from '@/src/styles/theme';
 
 interface DetailHeaderProps {
   title: string;
@@ -10,6 +10,7 @@ interface DetailHeaderProps {
   buttonText?: string;
   buttonIconType?: IconType;
   onButtonPress?: () => void;
+  isBackButtonVisible?: boolean;
 }
 
 export default function DetailHeader({
@@ -18,8 +19,9 @@ export default function DetailHeader({
   buttonText,
   buttonIconType,
   onButtonPress,
+  isBackButtonVisible = true,
 }: DetailHeaderProps) {
-  const TextButton = <Text onPress={onButtonPress}>{buttonText}</Text>;
+  const TextButton = <TextBtn onPress={onButtonPress}>{buttonText}</TextBtn>;
   const IconButton = buttonIconType && (
     <Pressable onPress={onButtonPress}>
       <Icon type={buttonIconType} size={20} />
@@ -28,9 +30,11 @@ export default function DetailHeader({
 
   return (
     <Header>
-      <BackBtn onPress={() => router.back()}>
-        <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
-      </BackBtn>
+      {isBackButtonVisible && (
+        <BackBtn onPress={() => router.back()}>
+          <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
+        </BackBtn>
+      )}
 
       <TitleWrap pointerEvents="none">
         <Title>
@@ -71,7 +75,15 @@ const TitleWrap = styled.View`
   align-items: center;
 `;
 
-const RightBtn = styled.Pressable`
+const RightBtn = styled.View`
+  position: absolute;
+  top: 8px;
+  right: 20px;
   width: 40px;
   align-items: flex-end;
+`;
+
+const TextBtn = styled.Text`
+  ${({ theme }) => textStyle(theme.fonts.body.B3_M)}
+  color: ${({ theme }) => theme.colors.primary.white};
 `;
