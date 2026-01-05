@@ -21,11 +21,11 @@ const TranslateButton = () => {
     );
   }
 
-  return (
-    <TranslateButtonBox onPress={onToggle} position="fixed">
-      <TranslateImage source={require('@/assets/images/translate.png')} />
-    </TranslateButtonBox>
-  );
+  return null;
+  // 떠다니는 번역 버튼
+  // <TranslateButtonBox onPress={onToggle} position="fixed">
+  //   <TranslateImage source={require('@/assets/images/translate.png')} />
+  // </TranslateButtonBox>
 };
 
 export default TranslateButton;

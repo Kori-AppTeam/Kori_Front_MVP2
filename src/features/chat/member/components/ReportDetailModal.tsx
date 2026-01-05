@@ -1,18 +1,18 @@
+import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { useState } from 'react';
-import { Modal } from 'react-native';
 import styled from 'styled-components/native';
 
 interface ReportDetailModalProps {
-  visible: boolean;
-  onClose: () => void;
+  bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   onSubmit: (details: string) => void;
 }
 
 /**
  * 신고 상세 내용 입력 모달
- * 독립적인 Modal 구조 (BottomSheetBase 미사용)
+ * CustomBottomSheet를 활용한 세 번째 단계 모달
  */
-export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ visible, onClose, onSubmit }) => {
+export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ bottomSheetRef, onSubmit }) => {
   const [details, setDetails] = useState('');
 
   const handleSubmit = () => {
@@ -21,46 +21,33 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ visible, o
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <ModalOverlay activeOpacity={1} onPress={onClose}>
-        <ModalContent onStartShouldSetResponder={() => true}>
-          <ModalTitle>Provide Additional Details (Optional)</ModalTitle>
+    <CustomBottomSheet ref={bottomSheetRef}>
+      <Container>
+        <ModalTitle>Provide Additional Details (Optional)</ModalTitle>
 
-          <ModalSubTitle>Help us understand what's happening</ModalSubTitle>
+        <ModalSubTitle>Help us understand what's happening</ModalSubTitle>
 
-          <TextInput
-            multiline
-            placeholder="Share additional details..."
-            placeholderTextColor="#949899"
-            value={details}
-            onChangeText={setDetails}
-            maxLength={500}
-          />
+        <TextInput
+          multiline
+          placeholder="Share additional details..."
+          placeholderTextColor="#949899"
+          value={details}
+          onChangeText={setDetails}
+          maxLength={500}
+        />
 
-          <CharCount>{details.length}/500</CharCount>
+        <CharCount>{details.length}/500</CharCount>
 
-          <SubmitButton onPress={handleSubmit}>
-            <SubmitButtonText>Submit Report</SubmitButtonText>
-          </SubmitButton>
-        </ModalContent>
-      </ModalOverlay>
-    </Modal>
+        <SubmitButton onPress={handleSubmit}>
+          <SubmitButtonText>Submit Report</SubmitButtonText>
+        </SubmitButton>
+      </Container>
+    </CustomBottomSheet>
   );
 };
 
-const ModalOverlay = styled.TouchableOpacity`
-  flex: 1;
-  background-color: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-`;
-
-const ModalContent = styled.View`
-  background-color: #353637;
-  border-radius: 12px;
-  padding: 24px;
-  width: 90%;
-  max-width: 400px;
+const Container = styled.View`
+  padding: 20px 20px 40px 20px;
 `;
 
 const ModalTitle = styled.Text`

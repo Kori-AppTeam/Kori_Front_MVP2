@@ -1,6 +1,6 @@
-import styled from 'styled-components/native';
 import Icon from '@/components/common/Icon';
 import { textStyle, theme } from '@/src/styles/theme';
+import styled from 'styled-components/native';
 
 /**
  * 스낵바 공용 컴포넌트(Toast)
@@ -13,7 +13,7 @@ import { textStyle, theme } from '@/src/styles/theme';
  */
 
 interface SnackBarProps {
-  type: 'success' | 'error';
+  type: 'success' | 'error' | 'info';
   message: string;
   message2?: string;
 }

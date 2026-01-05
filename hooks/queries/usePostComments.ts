@@ -1,5 +1,5 @@
-import { getPostComments, RawComment } from '@/api/community/comments';
 import { Comment } from '@/components/CommentItem';
+import { getPostComments, RawComment } from '@/src/features/community/post/apis/comments';
 import { SortParam } from '@/src/features/community/post/types';
 import { useQuery } from '@tanstack/react-query';
 

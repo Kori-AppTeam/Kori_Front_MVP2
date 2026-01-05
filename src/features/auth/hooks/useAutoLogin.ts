@@ -7,13 +7,8 @@ export function useAutoLogin(isFontLoaded: boolean) {
 
   const autoLogin = useCallback(async () => {
     try {
-      const accessToken = doRefresh(); // 백그라운드에서 토큰 갱신 시도
-      if (!accessToken) {
-        setIsLoggedIn(false);
-        return;
-      }
-
-      setIsLoggedIn(true);
+      const accessToken = await doRefresh(); // 토큰 갱신 시도
+      setIsLoggedIn(!!accessToken);
     } catch (error) {
       console.error('자동 로그인 실패:', error);
       setIsLoggedIn(false);

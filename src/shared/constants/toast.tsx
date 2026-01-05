@@ -9,4 +9,7 @@ export const toastConfig = {
   error: ({ text1, text2, props }: ToastConfigParams<{}>) => (
     <SnackBar type="error" message={text1 || ''} message2={text2 || ''} />
   ),
+  info: ({ text1, text2, props }: ToastConfigParams<{}>) => (
+    <SnackBar type="info" message={text1 || ''} message2={text2 || ''} />
+  ),
 };

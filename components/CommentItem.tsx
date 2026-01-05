@@ -9,8 +9,8 @@ import React, { useMemo, useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import { Alert } from 'react-native';
 import styled from 'styled-components/native';
+import ProfileModal from '../src/shared/components/ProfileModal';
 import ProfileSetupModal from './common/ProfileSetupModal';
-import ProfileModal from './ProfileModal';
 
 export type Comment = {
   id: string | number;
@@ -173,7 +173,7 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
     setIsFollowLoading(true);
 
     try {
-      await api.post(`/api/v1/home/follow/${targetUserId}`);
+      await api.post(`/api/v1/mypage/follow/${targetUserId}`);
       setSelectedUser((prevUser) => ({
         ...(prevUser as any),
         followStatus: 'PENDING',
@@ -262,8 +262,6 @@ export default function CommentItem({ data, onPressLike, isFirst, onPressMore, o
         visible={isProfileVisible}
         onClose={() => setIsProfileVisible(false)}
         userData={selectedUser}
-        onChat={handleStartChat}
-        onFollow={handleFollow}
         isLoadingChat={isChatLoading}
         isLoadingFollow={isFollowLoading}
       />

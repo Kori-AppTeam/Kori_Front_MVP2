@@ -9,14 +9,13 @@ import { CreateSpaceFormData } from '@/src/features/linked-space/create/types';
 import { theme } from '@/src/styles/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StatusBar, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StatusBar, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 const CreateSpaceScreen = () => {
   const [spaceName, setSpaceName] = useState('');
   const [description, setDescription] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
-  const [finalImageUrl, setFinalImageUrl] = useState<string>();
   const router = useRouter();
 
   // 이미지 선택 Hook
@@ -29,15 +28,12 @@ const CreateSpaceScreen = () => {
     const formData: CreateSpaceFormData = {
       spaceName,
       description,
-      imageUrl: imagePicker.avatarUrl,
-      imageUri: imagePicker.customPhotoUri,
-      isCustomImage: imagePicker.selectedAvatarIdx === -1,
+      customPhotoUri: imagePicker.customPhotoUri,
       avatarIndex: imagePicker.selectedAvatarIdx,
     };
 
     createSpaceMutation.mutate(formData, {
-      onSuccess: (data) => {
-        setFinalImageUrl(data.finalImageUrl);
+      onSuccess: () => {
         setShowSuccess(true);
       },
     });
@@ -49,7 +45,13 @@ const CreateSpaceScreen = () => {
 
   // 성공 화면 렌더링
   if (showSuccess) {
-    return <CreateSpaceSuccess spaceImageUrl={finalImageUrl} onDone={handleDone} />;
+    return (
+      <CreateSpaceSuccess
+        spaceImageUrl={imagePicker.customPhotoUri}
+        avatarIndex={imagePicker.selectedAvatarIdx}
+        onDone={handleDone}
+      />
+    );
   }
 
   // 폼 화면 렌더링
@@ -63,7 +65,7 @@ const CreateSpaceScreen = () => {
           </TouchableOpacity>
           <HeaderTitleText>Create Space</HeaderTitleText>
           <TouchableOpacity onPress={handleSave} disabled={createSpaceMutation.isPending}>
-            <SaveText>Save</SaveText>
+            {createSpaceMutation.isPending ? <ActivityIndicator color="#02f59b" /> : <SaveText>Save</SaveText>}
           </TouchableOpacity>
         </HeaderContainer>
 

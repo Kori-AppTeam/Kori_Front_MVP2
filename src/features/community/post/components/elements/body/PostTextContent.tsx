@@ -19,7 +19,7 @@ const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) 
 
   const handleMorePress = useCallback(() => {
     if (!postId) return;
-    handleBlockVisitor(() => router.push({ pathname: COMMUNITY_ROUTER.DETAIL, params: { id: postId } }));
+    handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.DETAIL(postId)));
   }, [postId, handleBlockVisitor]);
 
   if (isTruncate === true) {
@@ -77,6 +77,7 @@ export default memo(PostTextContent);
 const ContentText = styled.View`
   flex-direction: column;
   width: 100%;
+  padding: 0 20px;
   align-items: flex-start;
   gap: 4px;
 `;

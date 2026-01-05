@@ -1,3 +1,4 @@
+import { ImageSourcePropType } from 'react-native';
 import { DefaultAvatar } from './types';
 
 /**
@@ -26,6 +27,16 @@ export const getDefaultAvatarUrl = (index: number): string => {
     return DEFAULT_AVATARS[index].url;
   }
   return DEFAULT_AVATARS[0].url;
+};
+
+/**
+ * 기본 아바타 인덱스로 소스 가져오기
+ */
+export const getDefaultAvatarSource = (index: number): ImageSourcePropType => {
+  if (index >= 0 && index < DEFAULT_AVATARS.length) {
+    return DEFAULT_AVATARS[index].source;
+  }
+  return DEFAULT_AVATARS[0].source;
 };
 
 /**

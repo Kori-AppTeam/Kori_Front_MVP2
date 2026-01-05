@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getSupportLinks } from '../api/support';
+import { getSupportLinks } from '../../../shared/api/support';
 
 export const useGetSupportUrl = () => {
   const { data, isLoading, isError, refetch } = useQuery({

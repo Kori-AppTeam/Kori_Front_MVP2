@@ -97,3 +97,54 @@ export const EmptyText = styled.Text`
   color: #cfd4da;
   font-size: 14px;
 `;
+
+// 게시글 카드 공통 스타일
+export const Container = styled.View`
+  width: 100%;
+  align-items: center;
+`;
+export const Wrap = styled.Pressable<{ width: number }>`
+  width: ${({ width }) => (width ? width : 335)}px;
+  padding: 20px 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+export const ContentBox = styled.View`
+  width: 100%;
+  padding: 20px 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+`;
+export const BorderLine = styled.View<{ width: number }>`
+  width: ${({ width }) => (width ? width - 20 * 2 : 335)}px;
+  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
+  border-bottom-width: 1px;
+`;
+
+// 게시글 푸터
+export const FooterRow = styled.View`
+  width: 100%;
+  padding: 0 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+export const LeftFooter = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+`;
+export const IconBtn = styled.Pressable`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2px;
+`;
+export const Count = styled.Text`
+  color: #cfd4da;
+  margin-left: 6px;
+  ${({ theme }) => textStyle(theme.fonts.body.B4_M)}
+`;

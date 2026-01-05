@@ -1,6 +1,13 @@
 import api from '@/api/axiosInstance';
 
-export type FollowStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+export type FollowStatus =
+  | 'PENDING'
+  | 'ACCEPTED'
+  | 'REJECTED' //이전 상태
+  | 'FRIEND'
+  | 'FOLLOWING'
+  | 'FOLLOWED'
+  | 'NONE';
 
 export type Profile = {
   firstname?: string;

@@ -56,6 +56,7 @@ export default index;
 const SafeArea = styled.SafeAreaView`
   flex: 1;
   height: 100%;
+  background-color: ${({ theme }) => theme.colors.primary.black};
 `;
 
 const Container = styled.View`

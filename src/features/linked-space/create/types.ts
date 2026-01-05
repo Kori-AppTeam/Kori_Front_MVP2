@@ -7,8 +7,7 @@ export interface CreateSpaceFormData {
   spaceName: string;
   description: string;
   imageUrl?: string;
-  imageUri?: string; // 로컬 URI (커스텀 이미지인 경우)
-  isCustomImage: boolean; // 커스텀 이미지 여부
+  customPhotoUri?: string;
   avatarIndex: number; // -1: 커스텀, 0-2: 기본 아바타
 }
 

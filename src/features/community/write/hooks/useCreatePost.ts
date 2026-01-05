@@ -27,9 +27,7 @@ export function useCreatePostWithImages(boardId?: number) {
     },
     onSuccess: () => {
       if (!boardId) return;
-      qc.invalidateQueries({ queryKey: ['post-list'] });
-      qc.invalidateQueries({ queryKey: ['bookmarked-posts'] });
-      qc.invalidateQueries({ queryKey: ['my-posts'] });
+      qc.invalidateQueries({ queryKey: ['post'] });
     },
   });
 }

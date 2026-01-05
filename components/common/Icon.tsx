@@ -11,6 +11,7 @@ import Business from '@/assets/icons/business.svg';
 import CameraColored from '@/assets/icons/camera-colored.svg';
 import CameraDefault from '@/assets/icons/camera-default.svg';
 import Cancel from '@/assets/icons/cancel.svg';
+import CancelDark from '@/assets/icons/cancel_dark.svg';
 import Chat from '@/assets/icons/chat.svg';
 import CheckGrayBox from '@/assets/icons/check-gray-box.svg';
 import CheckMintBox from '@/assets/icons/check-mint-box.svg';
@@ -19,6 +20,7 @@ import CloseBox from '@/assets/icons/close-box.svg';
 import Close from '@/assets/icons/close.svg';
 import Comment from '@/assets/icons/comment.svg';
 import CommentArrow from '@/assets/icons/comment_arrow.svg';
+import DropDown from '@/assets/icons/drop-down.svg';
 import Edit from '@/assets/icons/edit.svg';
 import Eclipsis from '@/assets/icons/ellipsis.svg';
 import EclipsisGaro from '@/assets/icons/ellipsis_garo.svg';
@@ -51,11 +53,12 @@ import Send from '@/assets/icons/send.svg';
 import Setting from '@/assets/icons/setting.svg';
 import Share from '@/assets/icons/share.svg';
 import StatusOn from '@/assets/icons/status=on.svg';
+import TabKCulture from '@/assets/icons/tab_kCulture_click.svg';
 import ThumbsUpNonSelected from '@/assets/icons/thumbs-up-non-selected.svg';
 import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
 import TranslateOn from '@/assets/icons/translate-on.svg';
 import TranslateOff from '@/assets/icons/translate.svg';
-import TrashCan from '@/assets/icons/trash can.svg';
+import TrashCan from '@/assets/icons/trash_can.svg';
 import Write from '@/assets/icons/write.svg';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
@@ -66,11 +69,13 @@ const iconMap = {
   alert: Alert,
   arrowUp: ArrowUp,
   arrowDown: ArrowDown,
+  dropDown: DropDown,
   arrowTransparent: ArrowTransparent,
   business: Business,
   bookmarkNonSelected: Bookmark,
   bookmarkSelected: SelectedBookmark,
   cancel: Cancel,
+  cancelDark: CancelDark,
   cameraColored: CameraColored,
   cameraDefault: CameraDefault,
   check: Check,
@@ -121,6 +126,8 @@ const iconMap = {
   checkGrayBox: CheckGrayBox,
   closeBox: CloseBox,
   write: Write,
+
+  kCulture: TabKCulture,
 };
 
 /**

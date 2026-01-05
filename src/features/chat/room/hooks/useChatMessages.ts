@@ -13,7 +13,7 @@ interface ChatMessagesHook {
 
 export const useChatMessages = (roomId: string): ChatMessagesHook => {
   const myUserIdRef = useRef<string>('');
-
+  const currentRoomIdRef = useRef<string>(roomId);
   const stompConnection = useStompStore((state) => state);
 
   // Chat Store에서 필요한 상태와 액션 가져오기
@@ -31,13 +31,13 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
   useEffect(() => {
     const init = async () => {
       initialize();
-
       // 번역 상태 설정
       await updateTranslateStateAPI(roomId, true);
+      // 현재 Room ID 업데이트
+      currentRoomIdRef.current = roomId;
     };
 
     init();
-
     return () => {
       reset();
     };
@@ -45,7 +45,7 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
 
   /** 메시지 로드(+무한 스크롤) */
   const loadMessages = useCallback(async () => {
-    if (!state.hasMore || state.isFetchingMore) return;
+    if (!state.hasMore || state.isFetchingMore || currentRoomIdRef.current !== roomId) return;
 
     setFetchingMore(true);
 

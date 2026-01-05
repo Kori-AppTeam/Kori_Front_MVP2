@@ -58,7 +58,7 @@ export const useChatStore = create<ChatStoreState>()(
     // 메시지 추가 (실시간)
     addMessage: (message: ChatMessage) => {
       set((state) => {
-        state.messages.unshift(message);
+        state.messages = [message, ...state.messages];
       });
     },
 

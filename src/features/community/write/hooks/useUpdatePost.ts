@@ -50,11 +50,8 @@ export function useUpdatePostWithImages() {
         removedImages: removedKeys,
       });
     },
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ['post-list'] });
-      qc.invalidateQueries({ queryKey: ['bookmarked-posts'] });
-      qc.invalidateQueries({ queryKey: ['my-posts'] });
-      qc.invalidateQueries({ queryKey: ['post-detail', vars.postId] });
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['post'] });
     },
   });
 }
