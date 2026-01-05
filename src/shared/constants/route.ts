@@ -42,3 +42,5 @@ export const K_CULTURE_ROUTER = {
     toRoute(`/k-culture/detail/${newsId}?type=${type}&ago=${ago}`),
   SEARCH: '/k-culture/search',
 } as const;
+
+export const ONBOARDING_ROUTE = toRoute('/onboarding');

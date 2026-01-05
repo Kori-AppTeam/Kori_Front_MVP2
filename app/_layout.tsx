@@ -8,7 +8,7 @@ import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSh
 import { useReportSheetStore } from '@/src/features/community/post/store/useReportSheetStore';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
-import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { AUTH_ROUTE, ONBOARDING_ROUTE } from '@/src/shared/constants/route';
 import { toastConfig } from '@/src/shared/constants/toast';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
@@ -115,7 +115,7 @@ export default function RootLayout() {
         if (isOnboardingVisited) {
           router.replace(AUTH_ROUTE);
         } else {
-          router.replace('/onboarding');
+          router.replace(ONBOARDING_ROUTE);
         }
       }
     };
