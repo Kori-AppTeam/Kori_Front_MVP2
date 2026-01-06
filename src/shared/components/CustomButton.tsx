@@ -74,7 +74,7 @@ export default function CustomButton({
 }
 
 const Btn = styled.Pressable<{ tone: Tone; filled: boolean; disabled?: boolean; width?: number }>`
-  ${({ width }) => (width ? `width: ${width}px;` : 'flex: 1;')}
+  ${({ width }) => (width ? `width: ${width}px;` : 'width: 100%;')}
   height: 48px;
   min-height: 50px;
   border-radius: ${({ width }) => (width && width < 100 ? `4px` : '8px')};
