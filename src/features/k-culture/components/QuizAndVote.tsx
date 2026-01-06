@@ -1,11 +1,21 @@
 import { textStyle, theme } from '@/src/styles/theme';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
 const QuizAndVote = () => {
+  const [tab, setTab] = useState<'QUIZ' | 'VOTE'>('QUIZ');
+
   return (
     <Container>
       <Title>Quiz&Vote</Title>
+      <TabRow>
+        <TabButton isActive={tab === 'QUIZ'} onPress={() => setTab('QUIZ')}>
+          <TabButtonText isActive={tab === 'QUIZ'}>Quiz</TabButtonText>
+        </TabButton>
+        <TabButton isActive={tab === 'VOTE'} onPress={() => setTab('VOTE')}>
+          <TabButtonText isActive={tab === 'VOTE'}>Vote</TabButtonText>
+        </TabButton>
+      </TabRow>
     </Container>
   );
 };
@@ -13,7 +23,7 @@ const QuizAndVote = () => {
 export default QuizAndVote;
 
 const Container = styled.View`
-  padding: 30px 20px;
+  padding: 30px 0;
   background-color: ${theme.colors.primary.black};
   align-items: center;
   gap: 24px;
@@ -21,6 +31,28 @@ const Container = styled.View`
 
 const Title = styled.Text`
   width: 100%;
+  padding: 0 20px;
   color: ${theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.headline.H4_SB)};
+`;
+
+const TabRow = styled.View`
+  flex-direction: row;
+  gap: 8px;
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
+`;
+
+const TabButton = styled.Pressable<{ isActive: boolean }>`
+  flex: 1;
+  margin: 0 20px;
+  padding: 12px 0;
+  border-bottom-width: 2px;
+  border-color: ${({ isActive, theme }) => (isActive ? theme.colors.primary.mint : 'transparent')};
+  align-items: center;
+`;
+
+const TabButtonText = styled.Text<{ isActive: boolean }>`
+  color: ${({ isActive, theme }) => (isActive ? theme.colors.primary.mint : theme.colors.gray.darkGray_2)};
+  ${({ isActive, theme }) => (isActive ? textStyle(theme.fonts.body.B4_SB) : textStyle(theme.fonts.body.B4_M))};
 `;
