@@ -1,12 +1,16 @@
+import QuizCharacter from '@/assets/images/character_quiz.svg';
+import VoteCharacter from '@/assets/images/character_vote.svg';
 import { textStyle, theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
+import QuizAndVoteHeader from './QuizAndVoteHeader';
 
 const QuizAndVote = () => {
   const [tab, setTab] = useState<'QUIZ' | 'VOTE'>('QUIZ');
 
   return (
     <Container>
+      {/* 탭 */}
       <Title>Quiz&Vote</Title>
       <TabRow>
         <TabButton isActive={tab === 'QUIZ'} onPress={() => setTab('QUIZ')}>
@@ -16,6 +20,13 @@ const QuizAndVote = () => {
           <TabButtonText isActive={tab === 'VOTE'}>Vote</TabButtonText>
         </TabButton>
       </TabRow>
+
+      {/* 헤더 */}
+      {tab === 'QUIZ' ? (
+        <QuizAndVoteHeader title="Today's Quiz" subTitle="Take today's Korean quiz" Character={QuizCharacter} />
+      ) : (
+        <QuizAndVoteHeader title="Today's Vote" subTitle="Take Korean favorites poll" Character={VoteCharacter} />
+      )}
     </Container>
   );
 };
