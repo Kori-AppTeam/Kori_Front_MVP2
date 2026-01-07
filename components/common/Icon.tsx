@@ -21,6 +21,8 @@ import Close from '@/assets/icons/close.svg';
 import Comment from '@/assets/icons/comment.svg';
 import CommentArrow from '@/assets/icons/comment_arrow.svg';
 import DropDown from '@/assets/icons/drop-down.svg';
+import DropdownArrowDown from '@/assets/icons/dropdown-arrow-down.svg';
+import DropdownArrowUp from '@/assets/icons/dropdown-arrow-up.svg';
 import Edit from '@/assets/icons/edit.svg';
 import Eclipsis from '@/assets/icons/ellipsis.svg';
 import EclipsisGaro from '@/assets/icons/ellipsis_garo.svg';
@@ -83,6 +85,8 @@ const iconMap = {
   chat: Chat,
   comment: Comment,
   commentArrow: CommentArrow,
+  dropdownArrowDown: DropdownArrowDown,
+  dropdownArrowUp: DropdownArrowUp,
   edit: Edit,
   eclipsis: Eclipsis,
   eclipsisGaro: EclipsisGaro,
