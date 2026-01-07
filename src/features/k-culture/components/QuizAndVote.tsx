@@ -27,6 +27,8 @@ const QuizAndVote = () => {
       ) : (
         <QuizAndVoteHeader title="Today's Vote" subTitle="Take Korean favorites poll" Character={VoteCharacter} />
       )}
+
+      {/* 퀴즈 or 투표 */}
     </Container>
   );
 };
