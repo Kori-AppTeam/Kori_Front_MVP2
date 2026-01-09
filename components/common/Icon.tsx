@@ -20,6 +20,7 @@ import CloseBox from '@/assets/icons/close-box.svg';
 import Close from '@/assets/icons/close.svg';
 import Comment from '@/assets/icons/comment.svg';
 import CommentArrow from '@/assets/icons/comment_arrow.svg';
+import DropDown from '@/assets/icons/drop-down.svg';
 import Edit from '@/assets/icons/edit.svg';
 import Eclipsis from '@/assets/icons/ellipsis.svg';
 import EclipsisGaro from '@/assets/icons/ellipsis_garo.svg';
@@ -52,6 +53,7 @@ import Send from '@/assets/icons/send.svg';
 import Setting from '@/assets/icons/setting.svg';
 import Share from '@/assets/icons/share.svg';
 import StatusOn from '@/assets/icons/status=on.svg';
+import TabKCulture from '@/assets/icons/tab_kCulture_click.svg';
 import ThumbsUpNonSelected from '@/assets/icons/thumbs-up-non-selected.svg';
 import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
 import TranslateOn from '@/assets/icons/translate-on.svg';
@@ -67,6 +69,7 @@ const iconMap = {
   alert: Alert,
   arrowUp: ArrowUp,
   arrowDown: ArrowDown,
+  dropDown: DropDown,
   arrowTransparent: ArrowTransparent,
   business: Business,
   bookmarkNonSelected: Bookmark,
@@ -123,6 +126,8 @@ const iconMap = {
   checkGrayBox: CheckGrayBox,
   closeBox: CloseBox,
   write: Write,
+
+  kCulture: TabKCulture,
 };
 
 /**

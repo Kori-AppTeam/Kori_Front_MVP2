@@ -44,6 +44,7 @@ const FONT_FAMILY = {
     Medium: 'PlusJakartaSans_500Medium',
     SemiBold: 'PlusJakartaSans_600SemiBold',
     Bold: 'PlusJakartaSans_700Bold',
+    BoldItalic: 'PlusJakartaSans_700Bold_Italic',
   },
 
   InstrumentSerif: {
@@ -72,6 +73,7 @@ const FONT = ({ fontFamily, size, weight, lineHeight }: Font) => {
 const fonts = {
   headline: {
     H1_B: FONT({ fontFamily: 'PlusJakartaSans', size: 36, weight: 'Bold', lineHeight: 43 }),
+    H1_BI: FONT({ fontFamily: 'PlusJakartaSans', size: 36, weight: 'BoldItalic', lineHeight: 43 }),
     H1_SB: FONT({ fontFamily: 'PlusJakartaSans', size: 36, weight: 'SemiBold', lineHeight: 43 }),
     H2_B: FONT({ fontFamily: 'PlusJakartaSans', size: 28, weight: 'Bold', lineHeight: 34 }),
     H2_SB: FONT({ fontFamily: 'PlusJakartaSans', size: 28, weight: 'SemiBold', lineHeight: 34 }),
