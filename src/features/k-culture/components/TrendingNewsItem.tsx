@@ -41,14 +41,14 @@ const TrendingNewsItem = ({ item, index }: TrendingNewsItemProps) => {
         <RankBadge>{index + 1}</RankBadge>
       </NewsImageContainer>
 
-      <Description>
+      <NewsDescription>
         <Title numberOfLines={2}>{item.title}</Title>
         <BottomRow>
           <CategoryBadge>{item.type ?? 'K-News'}</CategoryBadge>
           <Dot>•</Dot>
           <DateText>{timeStampToAgo(item.ago)}</DateText>
         </BottomRow>
-      </Description>
+      </NewsDescription>
     </NewsItemContainer>
   );
 };
@@ -83,4 +83,9 @@ const RankBadge = styled.Text`
 
 const Title = styled(NewsTitle)`
   margin-top: 26px;
+`;
+
+const NewsDescription = styled(Description)`
+  flex: none; /* 높이 유지 */
+  min-height: 53px;
 `;
