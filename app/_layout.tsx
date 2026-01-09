@@ -22,7 +22,7 @@ import {
   PlusJakartaSans_700Bold_Italic,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { PortalProvider } from '@gorhom/portal';
+import { PortalHost, PortalProvider } from '@gorhom/portal';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
@@ -138,8 +138,8 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
           <SafeAreaProvider style={{ flex: 1, backgroundColor: theme.colors.primary.black }}>
-            <BottomSheetModalProvider>
-              <PortalProvider>
+            <PortalProvider>
+              <BottomSheetModalProvider>
                 <AppLayout>
                   <ProfileProvider>
                     {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
@@ -153,9 +153,10 @@ export default function RootLayout() {
                   {/* 커뮤니티 관련 모달 - 전역에서 사용, 로그인 상태에 따라 조건부 렌더링*/}
                   {isLoggedIn && <MoreBottomSheet />}
                   {isLoggedIn && <ReportModal />}
+                  <PortalHost name="dropdown" />
                 </AppLayout>
-              </PortalProvider>
-            </BottomSheetModalProvider>
+              </BottomSheetModalProvider>
+            </PortalProvider>
           </SafeAreaProvider>
         </ThemeProvider>
       </QueryClientProvider>
