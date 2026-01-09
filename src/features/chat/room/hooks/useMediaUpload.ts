@@ -78,18 +78,18 @@ export const useMediaUpload = (): MediaUploadHook => {
         const mediaPresigned = await getPresignedUrlAPI(roomId, mediaFileName, mimeType);
 
         // 6️⃣ Presigned URL 요청 (썸네일)
-        let thumbnailPresigned: { putUrl: string; key: string; headers: Record<string, string> } | null = null;
+        let thumbnailPresigned: { presignedUrl: string; fileKey: string } | null = null;
         if (thumbnailUri && thumbnailFileName) {
           thumbnailPresigned = await getPresignedUrlAPI(roomId, thumbnailFileName, 'image/jpeg');
         }
 
         // 7️⃣ S3 업로드 (미디어)
-        await uploadToS3API(mediaPresigned.putUrl, localUri, mimeType, mediaPresigned.headers);
+        await uploadToS3API(mediaPresigned.presignedUrl, localUri, mimeType);
 
         // 8️⃣ S3 업로드 (썸네일)
         if (thumbnailUri && thumbnailPresigned) {
           try {
-            await uploadToS3API(thumbnailPresigned.putUrl, thumbnailUri, 'image/jpeg');
+            await uploadToS3API(thumbnailPresigned.presignedUrl, thumbnailUri, 'image/jpeg');
           } catch (error) {
             console.error('썸네일 업로드 실패:', error);
             // 썸네일 실패 시 전체 실패
@@ -102,8 +102,8 @@ export const useMediaUpload = (): MediaUploadHook => {
           roomId,
           senderId: myUserId,
           messageType: mediaType,
-          mediaKey: mediaPresigned.key,
-          thumbnailKey: thumbnailPresigned?.key || null,
+          mediaKey: mediaPresigned.fileKey,
+          thumbnailKey: thumbnailPresigned?.fileKey || null,
         };
 
         await stompConnection.publish('/app/chat.sendMedia', messageBody);

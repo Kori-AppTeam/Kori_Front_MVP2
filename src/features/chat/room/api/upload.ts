@@ -1,15 +1,13 @@
 import api from '@/api/axiosInstance';
 import axios from 'axios';
 import { Buffer } from 'buffer';
-import * as Crypto from 'expo-crypto';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
 // ============= Presigned URL 응답 타입 =============
 interface PresignedUrlResponse {
-  putUrl: string;
-  key: string;
-  headers: Record<string, string>;
+  presignedUrl: string;
+  fileKey: string;
 }
 
 // ============= 1️⃣ 동영상 썸네일 생성 =============
@@ -32,20 +30,9 @@ export const getPresignedUrlAPI = async (
   contentType: string,
 ): Promise<PresignedUrlResponse> => {
   try {
-    const uploadSessionId = Crypto.randomUUID();
+    const res = await api.post(`/api/v1/chat/presigned-url/chat/${roomId}`, { fileName });
 
-    const res = await api.post(`/api/v1/images/presign`, {
-      imageType: 'POST', // 채팅용
-      uploadSessionId,
-      files: [
-        {
-          filename: fileName,
-          contentType,
-        },
-      ],
-    });
-
-    return res.data.data[0];
+    return res.data.data;
   } catch (error) {
     console.error('Presigned URL 요청 실패:', error);
     throw new Error('업로드 URL을 받아오는데 실패했습니다');
