@@ -1,7 +1,7 @@
 // components/UserProfileCard/UserProfileCardDetails.tsx
 
 import Icon from '@/components/common/Icon';
-import Tag from '@/components/Tag';
+import Tag from '@/src/shared/components/Tag';
 import { getEmojiFor } from '@/src/lib/interests';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
