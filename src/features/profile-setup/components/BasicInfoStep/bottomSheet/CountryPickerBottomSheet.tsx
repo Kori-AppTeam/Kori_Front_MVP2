@@ -6,7 +6,7 @@ import { theme } from '@/src/styles/theme';
 import { COUNTRIES } from '@/src/utils/countries';
 import { Dimensions, FlatList } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import SearchInput from '@/src/features/profile-setup/components/bottomSheet/SearchInput';
+import SearchInput from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/SearchInput';
 import {
   NoResultText,
   PickerBottomSheetContent,
@@ -15,7 +15,7 @@ import {
   PickerListItem,
   PickerListText,
   PickerListWrapper,
-} from '@/src/features/profile-setup/components/bottomSheet/styles';
+} from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/styles';
 
 interface CountryPickerBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;

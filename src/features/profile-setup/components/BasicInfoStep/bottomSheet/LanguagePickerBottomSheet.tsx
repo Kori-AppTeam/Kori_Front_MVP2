@@ -13,9 +13,9 @@ import {
   PickerListItem,
   PickerListText,
   PickerListWrapper,
-} from '@/src/features/profile-setup/components/bottomSheet/styles';
+} from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/styles';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
-import SearchInput from '@/src/features/profile-setup/components/bottomSheet/SearchInput';
+import SearchInput from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/SearchInput';
 
 interface LanguagePickerBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;

@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { FieldLabel, Field, StepContainer } from '@/src/features/profile-setup/styles/styles';
 import DropdownInput from '@/src/shared/components/DropdownInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import CountryPickerBottomSheet from '@/src/features/profile-setup/components/bottomSheet/CountryPickerBottomSheet';
 import { useDropdownBottomSheet } from '@/src/features/profile-setup/hooks/useDropdownBottomSheet';
-import LanguagePickerBottomSheet from '@/src/features/profile-setup/components/bottomSheet/LanguagePickerBottomSheet';
-import GenderSelect from '@/src/features/profile-setup/components/GenderSelect';
+import GenderSelect from '@/src/features/profile-setup/components/BasicInfoStep/GenderSelect';
+import CountryPickerBottomSheet from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/CountryPickerBottomSheet';
+import LanguagePickerBottomSheet from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/LanguagePickerBottomSheet';
 
 const BasicInfoStep = () => {
   const {
