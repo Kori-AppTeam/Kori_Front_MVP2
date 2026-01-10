@@ -8,6 +8,7 @@ interface CustomBottomSheetProps {
   children: ReactElement;
   ref: React.RefObject<BottomSheetModal | null>;
   onChange?: (index: number) => void;
+  onAnimate?: (fromIndex: number, toIndex: number) => void;
   backgroundColor?: string;
   handleComponent?: () => null;
 }
@@ -16,6 +17,7 @@ const CustomBottomSheet = ({
   children,
   ref,
   onChange,
+  onAnimate,
   backgroundColor = theme.colors.gray.darkGray_1,
   handleComponent = () => null,
 }: CustomBottomSheetProps) => {
@@ -41,12 +43,14 @@ const CustomBottomSheet = ({
     flex: 1,
     backgroundColor: backgroundColor,
     paddingBottom: isAndroidButtonNav ? bottom : 0,
+    borderRadius: 22,
   } as const;
 
   return (
     <BottomSheetModal
       ref={ref}
       onChange={onChange}
+      onAnimate={onAnimate}
       backgroundStyle={bottomSheetModalStyle}
       handleIndicatorStyle={bottomSheetHandleStyle}
       backdropComponent={renderBackdrop}
