@@ -1,6 +1,4 @@
 import api from '@/api/axiosInstance';
-import axios from 'axios';
-import { Buffer } from 'buffer';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
@@ -40,28 +38,20 @@ export const getPresignedUrlAPI = async (
 };
 
 // ============= 3️⃣ S3 업로드 =============
-export const uploadToS3API = async (
-  presignedUrl: string,
-  fileUri: string,
-  mimeType: string,
-  headers?: Record<string, string>,
-): Promise<void> => {
+export const uploadToS3API = async (presignedUrl: string, fileUri: string, mimeType: string): Promise<void> => {
   try {
-    // 1️⃣ Base64 인코딩된 파일 읽기
-    const fileData = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    // 2️⃣ Base64 → Buffer 변환
-    const buffer = Buffer.from(fileData, 'base64');
-
-    // 3️⃣ PUT 요청
-    await axios.put(presignedUrl, buffer, {
+    // expo-file-system의 uploadAsync 사용 (바이너리 직접 전송)
+    const uploadResult = await FileSystem.uploadAsync(presignedUrl, fileUri, {
+      httpMethod: 'PUT',
       headers: {
-        ...headers,
         'Content-Type': mimeType,
       },
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
     });
+
+    if (uploadResult.status !== 200) {
+      throw new Error(`업로드 실패: ${uploadResult.status}`);
+    }
   } catch (error) {
     console.error('S3 업로드 실패:', error);
     throw new Error('파일 업로드에 실패했습니다');
