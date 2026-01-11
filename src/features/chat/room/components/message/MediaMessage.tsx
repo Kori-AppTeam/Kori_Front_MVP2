@@ -1,10 +1,10 @@
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
-import { ResizeMode, Video } from 'expo-av';
 import { Image } from 'expo-image';
-import React from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
+import MediaViewer from './MediaViewer';
 
 interface MediaMessageProps {
   type: 'IMAGE' | 'VIDEO';
@@ -27,6 +27,8 @@ const MediaMessage: React.FC<MediaMessageProps> = ({
   onRetry,
   maxWidth = 250,
 }) => {
+  const [viewerVisible, setViewerVisible] = useState(false);
+
   // 표시할 URL 결정 (localUrl 우선)
   const displayUrl = localUrl || mediaUrl;
 
@@ -34,24 +36,37 @@ const MediaMessage: React.FC<MediaMessageProps> = ({
     return <ErrorText>미디어를 불러올 수 없습니다</ErrorText>;
   }
 
+  // 클릭 핸들러
+  const handlePress = () => {
+    // 업로드 중이거나 실패한 경우 뷰어 열지 않음
+    if (uploadStatus !== 'success') return;
+    setViewerVisible(true);
+  };
+
   // 미디어 렌더링 (공통)
   const renderMedia = () => {
     if (type === 'IMAGE') {
-      return <MediaImage source={{ uri: displayUrl }} />;
+      return (
+        <TouchableContainer onPress={handlePress} disabled={uploadStatus !== 'success'}>
+          <MediaImage source={{ uri: displayUrl }} />
+        </TouchableContainer>
+      );
     }
 
+    // VIDEO: 썸네일 + 재생 아이콘
     return (
-      <VideoContainer>
-        <MediaVideo
-          source={{ uri: displayUrl }}
-          resizeMode={ResizeMode.COVER}
-          shouldPlay={uploadStatus === 'success'}
-          useNativeControls={uploadStatus === 'success'}
-          usePoster={!!thumbnailUrl}
-          posterSource={thumbnailUrl ? { uri: thumbnailUrl } : undefined}
-          posterStyle={{ resizeMode: 'cover' }}
-        />
-      </VideoContainer>
+      <TouchableContainer onPress={handlePress} disabled={uploadStatus !== 'success'}>
+        <VideoThumbnailContainer>
+          <MediaImage source={{ uri: thumbnailUrl || displayUrl }} />
+          {uploadStatus === 'success' && (
+            <PlayIconOverlay>
+              <PlayIconBackground>
+                <PlayIconText>▶</PlayIconText>
+              </PlayIconBackground>
+            </PlayIconOverlay>
+          )}
+        </VideoThumbnailContainer>
+      </TouchableContainer>
     );
   };
 
@@ -81,10 +96,23 @@ const MediaMessage: React.FC<MediaMessageProps> = ({
   };
 
   return (
-    <MediaContainer maxWidth={maxWidth}>
-      {renderMedia()}
-      {renderOverlay()}
-    </MediaContainer>
+    <>
+      <MediaContainer maxWidth={maxWidth}>
+        {renderMedia()}
+        {renderOverlay()}
+      </MediaContainer>
+
+      {/* 전체화면 뷰어 */}
+      {uploadStatus === 'success' && mediaUrl && (
+        <MediaViewer
+          visible={viewerVisible}
+          type={type}
+          mediaUrl={mediaUrl}
+          thumbnailUrl={thumbnailUrl || undefined}
+          onClose={() => setViewerVisible(false)}
+        />
+      )}
+    </>
   );
 };
 
@@ -98,22 +126,45 @@ const MediaContainer = styled.View<{ maxWidth: number }>`
   position: relative;
 `;
 
+const TouchableContainer = styled.TouchableOpacity`
+  width: 100%;
+`;
+
 const MediaImage = styled(Image)`
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 12px;
 `;
 
-const VideoContainer = styled.View`
+const VideoThumbnailContainer = styled.View`
   width: 100%;
   aspect-ratio: 16 / 9;
   position: relative;
+  border-radius: 12px;
+  overflow: hidden;
 `;
 
-const MediaVideo = styled(Video)`
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
+const PlayIconOverlay = styled.View`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -30px;
+  margin-left: -30px;
+`;
+
+const PlayIconBackground = styled.View`
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+`;
+
+const PlayIconText = styled.Text`
+  color: #ffffff;
+  font-size: 24px;
+  margin-left: 4px;
 `;
 
 const LoadingOverlay = styled.View`
