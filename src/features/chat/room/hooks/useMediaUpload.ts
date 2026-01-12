@@ -53,7 +53,7 @@ export const useMediaUpload = (): MediaUploadHook => {
           senderFirstName: '',
           senderLastName: '',
           senderImageUrl: '',
-          originContent: mediaType === 'IMAGE' ? '사진' : '동영상',
+          originContent: mediaType === 'IMAGE' ? 'picture' : 'video',
           targetContent: '',
           sentAt: `${Date.now() / 1000}`,
           messageType: mediaType,
@@ -68,28 +68,21 @@ export const useMediaUpload = (): MediaUploadHook => {
 
         // 3️⃣ 파일명 생성
         const mediaFileName = generateFileName(localUri);
-        const thumbnailFileName = thumbnailUri ? `${Crypto.randomUUID()}_thumb.jpg` : null;
 
         // 4️⃣ 상태 업데이트 (uploading)
         updateMessageStatus(tempId, 'uploading');
 
         // 5️⃣ Presigned URL 요청 (미디어)
         const mimeType = getMimeType(localUri, mediaType);
-        const mediaPresigned = await getPresignedUrlAPI(roomId, mediaFileName, mimeType);
+        const mediaPresigned = await getPresignedUrlAPI(roomId, mediaFileName, mediaType);
 
-        // 6️⃣ Presigned URL 요청 (썸네일)
-        let thumbnailPresigned: { presignedUrl: string; fileKey: string } | null = null;
-        if (thumbnailUri && thumbnailFileName) {
-          thumbnailPresigned = await getPresignedUrlAPI(roomId, thumbnailFileName, 'image/jpeg');
-        }
-
-        // 7️⃣ S3 업로드 (미디어)
+        // 6️⃣ S3 업로드 (미디어)
         await uploadToS3API(mediaPresigned.presignedUrl, localUri, mimeType);
 
-        // 8️⃣ S3 업로드 (썸네일)
-        if (thumbnailUri && thumbnailPresigned) {
+        // 7️⃣ S3 업로드 (썸네일)
+        if (mediaPresigned.thumbnailKey && mediaPresigned.thumbnailUrl && thumbnailUri) {
           try {
-            await uploadToS3API(thumbnailPresigned.presignedUrl, thumbnailUri, 'image/jpeg');
+            await uploadToS3API(mediaPresigned.thumbnailUrl, thumbnailUri, 'image/jpeg');
           } catch (error) {
             console.error('썸네일 업로드 실패:', error);
             // 썸네일 실패 시 전체 실패
@@ -97,18 +90,18 @@ export const useMediaUpload = (): MediaUploadHook => {
           }
         }
 
-        // 9️⃣ 웹소켓 메시지 전송
+        // 8️⃣ 웹소켓 메시지 전송
         const messageBody = {
           roomId,
           senderId: myUserId,
           messageType: mediaType,
           mediaKey: mediaPresigned.fileKey,
-          thumbnailKey: thumbnailPresigned?.fileKey || null,
+          thumbnailKey: mediaPresigned.thumbnailKey,
         };
 
         await stompConnection.publish('/app/chat.sendMedia', messageBody);
 
-        // 🔟 상태 업데이트 (success) - 소켓 응답에서 실제 교체됨
+        // 9️⃣ 상태 업데이트 (success) - 소켓 응답에서 실제 교체됨
         updateMessageStatus(tempId, 'success');
       } catch (error) {
         console.error('미디어 업로드 실패:', error);

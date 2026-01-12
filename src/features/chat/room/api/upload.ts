@@ -6,6 +6,8 @@ import * as VideoThumbnails from 'expo-video-thumbnails';
 interface PresignedUrlResponse {
   presignedUrl: string;
   fileKey: string;
+  thumbnailUrl?: string;
+  thumbnailKey?: string;
 }
 
 // ============= 1️⃣ 동영상 썸네일 생성 =============
@@ -25,10 +27,10 @@ export const generateVideoThumbnailAPI = async (videoUri: string): Promise<strin
 export const getPresignedUrlAPI = async (
   roomId: string,
   fileName: string,
-  contentType: string,
+  fileType: 'IMAGE' | 'VIDEO',
 ): Promise<PresignedUrlResponse> => {
   try {
-    const res = await api.post(`/api/v1/chat/presigned-url/chat/${roomId}`, { fileName });
+    const res = await api.post(`/api/v1/chat/presigned-url/chat/${roomId}`, { fileName, fileType });
 
     return res.data.data;
   } catch (error) {
