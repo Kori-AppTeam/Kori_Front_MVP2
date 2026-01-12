@@ -39,7 +39,7 @@ const SortDropDown = ({ value, onPress }: SortDropDownProps) => {
       </SortContainer>
 
       {isOpen && (
-        <Portal>
+        <Portal hostName="dropdown">
           <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
             <Overlay />
           </TouchableWithoutFeedback>
