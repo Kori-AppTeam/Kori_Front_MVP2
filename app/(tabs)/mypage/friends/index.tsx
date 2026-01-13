@@ -67,7 +67,7 @@ export default function FriendsOnlyScreen() {
       <HList
         ref={listRef}
         data={data}
-        keyExtractor={(item) => String(item.id)}
+        keyExtractor={(item) => String(item.userId)}
         horizontal
         pagingEnabled
         decelerationRate="fast"
@@ -94,7 +94,7 @@ export default function FriendsOnlyScreen() {
                 actions={{
                   primary: {
                     label: 'Unfollow',
-                    onPress: () => confirmUnfollow(item.id),
+                    onPress: () => confirmUnfollow(item.userId),
                   },
                   chat: {
                     label: 'Chat',
