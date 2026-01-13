@@ -15,7 +15,7 @@ export const followUser = async (userId: number) => {
 
 /** 사용자 언팔로우 */
 export const unfollowUser = async (userId: number) => {
-  const response = await api.delete(`/api/v1/mypage/follow/${userId}`);
+  const response = await api.delete(`/api/v1/mypage/users/follow/accepted/${userId}`);
   return response.data;
 };
 
