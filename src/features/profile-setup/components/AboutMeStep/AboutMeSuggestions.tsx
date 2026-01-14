@@ -1,8 +1,10 @@
 import Icon from '@/components/common/Icon';
 import { textStyle, theme } from '@/src/styles/theme';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
+import { useRandomIndices } from '@/src/features/profile-setup/hooks/useRandomIndices';
 
+// TODO api 연동 후 삭제
 const DUMMY_SUGGESTION_LIST = [
   'Hi! Open to conversations 😊',
   'Hello! Let’s talk and connect.',
@@ -11,29 +13,12 @@ const DUMMY_SUGGESTION_LIST = [
   'Animal lover who volunteers at local shelters.',
 ] as const;
 
-const pickRandomIndices = (count: number, max: number) => {
-  const safeCount = Math.min(count, max);
-  const indices = new Set<number>();
-
-  while (indices.size < safeCount) {
-    indices.add(Math.floor(Math.random() * max));
-  }
-
-  return [...indices];
-};
-
 interface AboutMeSuggestionsProps {
   onPressSuggestion?: (suggestion: string) => void;
 }
 
 const AboutMeSuggestions = ({ onPressSuggestion }: AboutMeSuggestionsProps) => {
-  const [selectedIndices, setSelectedIndices] = useState<number[]>(() =>
-    pickRandomIndices(3, DUMMY_SUGGESTION_LIST.length),
-  );
-
-  const refreshSuggestions = useCallback(() => {
-    setSelectedIndices(pickRandomIndices(3, DUMMY_SUGGESTION_LIST.length));
-  }, []);
+  const { indices: selectedIndices, refresh: refreshSuggestions } = useRandomIndices(3, DUMMY_SUGGESTION_LIST.length);
 
   return (
     <Container>
