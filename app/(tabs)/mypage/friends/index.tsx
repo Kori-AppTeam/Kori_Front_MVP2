@@ -1,7 +1,7 @@
 import Icon from '@/components/common/Icon';
-import useUnfollowAccepted from '@/hooks/mutations/useUnfollowAccepted'; // ✅ 변경
 import { useAcceptedFollowing } from '@/hooks/queries/useFollowing';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import { useUnfollowUserMutation } from '@/src/shared/hooks/useFollowQuery';
 
 import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import { theme } from '@/src/styles/theme';
@@ -21,7 +21,7 @@ export default function FriendsOnlyScreen() {
   const [page, setPage] = useState(1);
   const listRef = useRef<import('react-native').FlatList>(null);
 
-  const unfollowMutation = useUnfollowAccepted(); // ✅ 변경
+  const unfollowMutation = useUnfollowUserMutation();
 
   const confirmUnfollow = (userId: number) => {
     Alert.alert(

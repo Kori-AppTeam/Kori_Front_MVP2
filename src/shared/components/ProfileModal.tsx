@@ -4,7 +4,7 @@ import {
   useCancelFollowUserMutation,
   useFollowUserMutation,
   useUnfollowUserMutation,
-} from '@/src/shared/hooks/useUserProfileQuery';
+} from '@/src/shared/hooks/useFollowQuery';
 import React from 'react';
 import { ActivityIndicator, Modal, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
@@ -69,11 +69,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               <UserProfileCard
                 user={userData}
                 defaultExpanded={true}
-                // BE 작업 동기화를 위해 이전 상태(ACCEPTED, PENDING) 유지
                 actions={{
-                  ...(userData.followStatus === 'ACCEPTED' || userData.followStatus === 'FRIEND'
+                  ...(userData.followStatus === 'FOLLOWED'
                     ? { decline: { label: 'Unfollow', onPress: handleUnfollow } }
-                    : userData.followStatus === 'PENDING' || userData.followStatus === 'FOLLOWING'
+                    : userData.followStatus === 'FOLLOWING'
                       ? { secondary: { label: 'Pending', onPress: handleCancelFollow } }
                       : { primary: { label: 'Follow', onPress: handleFollow } }),
                   chat: { label: 'Chat', onPress: handleChat },
