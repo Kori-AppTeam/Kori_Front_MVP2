@@ -103,11 +103,11 @@ const MediaMessage: React.FC<MediaMessageProps> = ({
       </MediaContainer>
 
       {/* 전체화면 뷰어 */}
-      {uploadStatus === 'success' && mediaUrl && (
+      {uploadStatus === 'success' && displayUrl && (
         <MediaViewer
           visible={viewerVisible}
           type={type}
-          mediaUrl={mediaUrl}
+          mediaUrl={displayUrl}
           thumbnailUrl={thumbnailUrl || undefined}
           onClose={() => setViewerVisible(false)}
         />
