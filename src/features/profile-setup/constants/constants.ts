@@ -1,0 +1,103 @@
+export const PROFILE_SETUP_TITLES = {
+  basicInfo: {
+    title: 'Please set the basic\ninformation',
+    subtitle: 'This is how it’ll appear on your profile card.',
+  },
+  interests: {
+    title: 'Tell us about\nyour interest',
+    subtitle: 'You can choose up to 5 interests.',
+  },
+  profilePhoto: {
+    title: 'Let’s add\nyour photo',
+    subtitle: 'This is how it’ll appear on your profile.',
+  },
+  aboutMe: {
+    title: 'About Me',
+    subtitle: 'Tell us about your short story.',
+  },
+};
+
+export const DUMMY_KPOP_TAG_LIST: string[] = [
+  '🎤 K-Pop',
+  '💿 Idol Music',
+  '🕺 Choreography',
+  '🎧 Music Shows',
+  '🌟 Fan Culture',
+  '👑 BTS',
+  '💖 BLACKPINK',
+  '🔥 Stray Kids',
+  '✨ SEVENTEEN',
+  '🎀 TWICE',
+  '🌙 IU',
+  '⚡ ATEEZ',
+  '🧊 EXO',
+  '🎶 Ballad',
+  '🎛️ Hip-Hop',
+  '🎼 R&B',
+  '🎹 Indie',
+  '🎧 EDM',
+  '📸 Fancam',
+  '🗳️ Music Awards',
+  '🎫 Concerts',
+  '📀 Albums & Comebacks',
+];
+
+export const DUMMY_KDRAMA_AND_MOVIES_TAG_LIST: string[] = [
+  '📺 K-Drama',
+  '🎬 Korean Movies',
+  '💔 Romance',
+  '🕵️ Thriller',
+  '😂 Comedy',
+  '😭 Melodrama',
+  '👑 Historical (Sageuk)',
+  '🧠 Psychological',
+  '💼 Office Drama',
+  '🏥 Medical Drama',
+  '👮 Crime & Investigation',
+  '💞 Crash Landing on You',
+  '🌸 Goblin',
+  '🕯️ Itaewon Class',
+  '👩‍⚖️ Extraordinary Attorney Woo',
+  '🎭 Reply 1988',
+  '🧟 Kingdom',
+  '🎬 Parasite',
+  '🧠 Oldboy',
+  '🎥 Train to Busan',
+  '🏆 Award-winning Films',
+  '🍿 Movie Marathons',
+  '📽️ Cinematography',
+];
+
+export const DUMMY_LIFESTYLE_TAG_LIST: string[] = [
+  '🎵  Music',
+  '🎬  Movies',
+  '📚  Reading',
+  '🎬  Anime',
+  '🎮  Gaming',
+
+  '🍺  Drinking',
+  '☕️  Exploring Cafes',
+  '✈️  Traveling',
+  '🧩  Board Games',
+  '🛍️  Shopping',
+  '💄  Beauty',
+  '🛏️  Doing Nothing',
+
+  '🧘  Yoga',
+  '🏃  Running',
+  '🏋️  Fitness',
+  '🥾  Camping',
+  '💃  Dancing',
+  '⛰️  Hiking',
+
+  '🎨  Exhibition',
+  '🎤  Singing',
+  '🍳  Cooking',
+  '🐶  Pets',
+  '💼  Career',
+  '📸  Photography',
+
+  '💖  K-Pop Lover',
+  '💖  K-Drama Lover',
+  '🍚  K-Food Lover',
+];
