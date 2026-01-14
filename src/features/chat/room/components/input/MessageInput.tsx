@@ -1,8 +1,8 @@
 import Icon from '@/components/common/Icon';
+import { useMediaPicker } from '@/src/shared/hooks/useMediaPicker';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import styled from 'styled-components/native';
-import { useMediaPicker } from '../../hooks/useMediaPicker';
 import { useMediaUpload } from '../../hooks/useMediaUpload';
 import { useChatStore } from '../../stores/useChatStore';
 import { MessageInputProps } from '../../types';

@@ -1,3 +1,4 @@
+import { generateFileName, getMimeType } from '@/src/shared/utils/mediaUtils';
 import { useStompStore } from '@/src/store/useStompStore';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
@@ -5,7 +6,6 @@ import { useCallback } from 'react';
 import { generateVideoThumbnailAPI, getPresignedUrlAPI, uploadToS3API } from '../api/upload';
 import { useChatStore } from '../stores/useChatStore';
 import { ChatMessage } from '../types';
-import { generateFileName, getMimeType } from '../utils/mediaUtils';
 
 interface MediaUploadHook {
   uploadMedia: (roomId: string, mediaType: 'IMAGE' | 'VIDEO', localUri: string) => Promise<void>;
