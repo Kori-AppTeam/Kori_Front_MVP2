@@ -1,6 +1,5 @@
 import UploadProfileImageButton from '@/src/features/profile-setup/components/ProfilePhotoStep/UploadProfileImageButton';
 import { profileSetupImageAssets } from '@/src/features/profile-setup/constants/assets';
-import { StepContainer } from '@/src/features/profile-setup/styles/styles';
 import { usePreloadAssets } from '@/src/shared/hooks/usePreloadAssets';
 import React, { useState } from 'react';
 import { Dimensions } from 'react-native';
@@ -13,20 +12,27 @@ const ProfilePhotoStep = () => {
   usePreloadAssets(profileSetupImageAssets);
 
   return (
-    <StepContainer>
+    <StepContent>
       <ImageBackground source={profileSetupImageAssets[0]} deviceWidth={deviceWidth}>
         <UploadProfileImageButton imageUri={imageUri} onUploaded={(result) => setImageUri(result.uri)} />
       </ImageBackground>
-    </StepContainer>
+    </StepContent>
   );
 };
 
 export default ProfilePhotoStep;
 
+const StepContent = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 24px;
+  margin-bottom: 48px;
+`;
+
 const ImageBackground = styled.ImageBackground.attrs<{ deviceWidth: number }>({
   resizeMode: 'cover',
 })`
-  margin-left: -20px;
   flex: 1;
   width: ${({ deviceWidth }) => deviceWidth}px;
   height: 100%;

@@ -29,7 +29,7 @@ export default SelectedTagsList;
 
 const Wrapper = styled.View`
   position: absolute;
-  bottom: 8px;
+  bottom: 0px;
   width: 100%;
   height: 54px;
   flex: 1;

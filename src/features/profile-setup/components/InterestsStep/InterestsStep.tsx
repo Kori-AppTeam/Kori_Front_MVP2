@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { StepContainer } from '@/src/features/profile-setup/styles/styles';
 import InterestsTap from '@/src/features/profile-setup/components/InterestsStep/InterestsTap';
 import styled from 'styled-components/native';
 import {
@@ -60,7 +59,15 @@ const InterestsStep = () => {
 
 export default InterestsStep;
 
-const TagListScrollView = styled.ScrollView`
+export const StepContainer = styled.View`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-bottom: 12px;
+`;
+
+const TagListScrollView = styled.ScrollView.attrs({ contentContainerStyle: { paddingBottom: 60 } })`
   height: 100%;
 `;
 
