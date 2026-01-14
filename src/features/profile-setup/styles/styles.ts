@@ -6,7 +6,6 @@ export const StepContainer = styled.View`
   display: flex;
   flex-direction: column;
   gap: 30px;
-  padding-bottom: 40px;
 `;
 
 export const Field = styled.View`
@@ -18,4 +17,30 @@ export const Field = styled.View`
 export const FieldLabel = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.body.B5_SB)};
   color: ${({ theme }) => theme.colors.primary.white};
+`;
+
+export const SafeArea = styled.SafeAreaView`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.primary.black};
+`;
+
+export const Contents = styled.View`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+  margin: 12px 0 20px 0;
+`;
+
+export const Title = styled.Text`
+  margin-top: 30px;
+  ${({ theme }) => textStyle(theme.fonts.Serif.H1_R)};
+  color: ${({ theme }) => theme.colors.primary.white};
+`;
+
+export const SubTitle = styled.Text`
+  margin-top: 8px;
+  margin-bottom: 40px;
+  ${({ theme }) => textStyle(theme.fonts.body.B3_L)};
+  color: ${({ theme }) => theme.colors.gray.gray_2};
 `;
