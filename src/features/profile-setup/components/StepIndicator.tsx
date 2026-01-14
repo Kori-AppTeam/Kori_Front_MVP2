@@ -1,10 +1,18 @@
 import React from 'react';
 import styled from 'styled-components/native';
+import { ProfileSetupStep } from '@/src/features/profile-setup/types';
 
-const StepIndicator = ({ step }: { step: number }) => {
+const StepIndicator = ({ step }: { step: ProfileSetupStep }) => {
+  const stepNumberMap: Record<ProfileSetupStep, number> = {
+    basicInfo: 1,
+    interests: 2,
+    profilePhoto: 3,
+    aboutMe: 4,
+  };
+
   return (
     <Background>
-      <Progress step={step} />
+      <Progress step={stepNumberMap[step]} />
     </Background>
   );
 };
@@ -23,7 +31,7 @@ const Progress = styled.View<{ step: number }>`
   position: absolute;
   left: 0;
   top: 0;
-  width: ${({ step }) => (step / 4) * 100}%;
+  width: ${({ step }) => (step / 4) * 99}%;
   height: 4px;
   background-color: ${({ theme }) => theme.colors.primary.mint};
   border-radius: 40px;
