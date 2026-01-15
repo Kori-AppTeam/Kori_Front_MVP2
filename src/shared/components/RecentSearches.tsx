@@ -3,32 +3,33 @@ import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
-import { IconBtn } from '../../shared/styles/styles';
-import { useClearRecentSearchKeywords, useDeleteRecentSearchKeyword } from '../hooks/useRecentSearch';
+import { IconBtn } from '../../features/community/shared/styles/styles';
 
-type RecentSearchesProps = {
+type RecentSearchListProps = {
   data: string[];
-  onSubmit: (text: string) => void;
+  onPressKeyword: (text: string) => void; // 검색 실행
+  onDeleteKeyword: (text: string) => void; // 단건 삭제
+  onClearAll: () => void; // 전체 삭제
 };
 
-const RecentSearches = ({ data, onSubmit }: RecentSearchesProps) => {
-  const { mutate: deleteRecentSearchKeyword } = useDeleteRecentSearchKeyword();
-  const { mutate: clearRecentSearchKeywords } = useClearRecentSearchKeywords();
+const RecentSearches = ({ data, onPressKeyword, onDeleteKeyword, onClearAll }: RecentSearchListProps) => {
+  // 데이터 없으면 렌더링하지 않도록 처리
+  if (!data || data.length === 0) return null;
 
   return (
     <Container>
       <HeaderRow>
         <SectionTitle>Recent Searches</SectionTitle>
-        <ClearAllText onPress={() => clearRecentSearchKeywords()}>Clear All</ClearAllText>
+        <ClearAllText onPress={onClearAll}>Clear All</ClearAllText>
       </HeaderRow>
 
       <FlatList
         data={data}
         keyExtractor={(item, index) => `${item}-${index}`}
         renderItem={({ item }) => (
-          <SearchedItem onPress={() => onSubmit(item)}>
+          <SearchedItem onPress={() => onPressKeyword(item)}>
             <SearchedItemText>{item}</SearchedItemText>
-            <IconBtn onPress={() => deleteRecentSearchKeyword(item)}>
+            <IconBtn onPress={() => onDeleteKeyword(item)}>
               <Icon type="cancelDark" size={16} color={theme.colors.gray.darkGray_1_5} />
             </IconBtn>
           </SearchedItem>
