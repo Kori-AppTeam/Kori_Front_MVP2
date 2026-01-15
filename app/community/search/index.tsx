@@ -1,10 +1,14 @@
 import { useDebounce } from '@/src/features/chat/search/hooks/useDebounce';
 import { AllowedCategory } from '@/src/features/community/post/types';
 import CommunityAutoComplete from '@/src/features/community/search/components/CommunityAutoComplete';
-import RecentSearches from '@/src/features/community/search/components/RecentSearches';
 import SearchedPostsResult from '@/src/features/community/search/components/SearchedPostsResult';
-import { useGetRecentSearch } from '@/src/features/community/search/hooks/useRecentSearch';
+import {
+  useClearRecentSearchKeywords,
+  useDeleteRecentSearchKeyword,
+  useGetRecentSearch,
+} from '@/src/features/community/search/hooks/useRecentSearch';
 import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/constants';
+import RecentSearches from '@/src/shared/components/RecentSearches';
 import SearchInput from '@/src/shared/components/SearchInput';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
@@ -17,6 +21,8 @@ export default function CommunityScreen() {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   const { data: recentSearchKeywords } = useGetRecentSearch();
+  const { mutate: deleteRecentSearchKeyword } = useDeleteRecentSearchKeyword();
+  const { mutate: clearRecentSearchKeywords } = useClearRecentSearchKeywords();
   const debouncedValue = useDebounce(value);
   const effectiveQ = debouncedValue.trim().toLowerCase();
 
@@ -54,7 +60,12 @@ export default function CommunityScreen() {
 
           {/* 최근검색어 */}
           {!value && recentSearchKeywords && recentSearchKeywords.length > 0 && !isSubmitted && (
-            <RecentSearches data={recentSearchKeywords} onSubmit={handleSubmitAutoComplete} />
+            <RecentSearches
+              data={recentSearchKeywords}
+              onPressKeyword={handleSubmitAutoComplete}
+              onDeleteKeyword={deleteRecentSearchKeyword}
+              onClearAll={clearRecentSearchKeywords}
+            />
           )}
 
           {/* 자동완성 */}
