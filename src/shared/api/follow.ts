@@ -17,3 +17,15 @@ export const cancelFollowUser = async (userId: number) => {
   const response = await api.delete(`/api/v1/mypage/users/follow/${userId}`);
   return response.data;
 };
+
+/** 팔로우 요청 수락 */
+export const acceptFollowUser = async (userId: number) => {
+  const response = await api.patch(`/api/v1/mypage/accept-follow/${userId}`);
+  return response.data;
+};
+
+/** 팔로우 요청 거절 */
+export const declineFollowUser = async (userId: number) => {
+  const response = await await api.delete(`/api/v1/mypage/decline-follow/${userId}`);
+  return response.data;
+};
