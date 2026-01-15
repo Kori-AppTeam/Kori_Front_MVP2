@@ -55,7 +55,7 @@ export const useMediaUpload = (): MediaUploadHook => {
           senderImageUrl: '',
           originContent: mediaType === 'IMAGE' ? 'picture' : 'video',
           targetContent: '',
-          sentAt: `${Date.now() / 1000}`,
+          sentAt: Date.now() / 1000,
           messageType: mediaType,
           mediaUrl: null,
           thumbnailUrl: null,

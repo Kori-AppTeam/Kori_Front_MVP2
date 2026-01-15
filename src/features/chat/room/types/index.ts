@@ -92,7 +92,7 @@ export interface ChatMessage {
   senderImageUrl: string;
   originContent: string;
   targetContent: string;
-  sentAt: string;
+  sentAt: number;
   messageType: 'TEXT' | 'IMAGE' | 'VIDEO';
   mediaUrl: string | null;
   thumbnailUrl: string | null;
