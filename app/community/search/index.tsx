@@ -1,6 +1,6 @@
 import { useDebounce } from '@/src/features/chat/search/hooks/useDebounce';
 import { AllowedCategory } from '@/src/features/community/post/types';
-import AutoComplete from '@/src/features/community/search/components/AutoComplete';
+import CommunityAutoComplete from '@/src/features/community/search/components/CommunityAutoComplete';
 import RecentSearches from '@/src/features/community/search/components/RecentSearches';
 import SearchedPostsResult from '@/src/features/community/search/components/SearchedPostsResult';
 import SearchInput from '@/src/features/community/search/components/SearchInput';
@@ -59,7 +59,7 @@ export default function CommunityScreen() {
 
           {/* 자동완성 */}
           {value.trim().length > 0 && !isSubmitted && (
-            <AutoComplete category={category} value={effectiveQ} onSubmitEditing={handleSubmitAutoComplete} />
+            <CommunityAutoComplete category={category} value={effectiveQ} onSubmitEditing={handleSubmitAutoComplete} />
           )}
 
           {/* 검색 결과 */}
