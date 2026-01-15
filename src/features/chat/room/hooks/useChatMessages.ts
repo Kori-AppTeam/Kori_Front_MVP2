@@ -133,7 +133,7 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
       unsubscribeMessages?.();
       unsubscribeDeletes?.();
     };
-  }, [stompConnection.connected, roomId, removeMessage, state.messages]);
+  }, [stompConnection.connected, roomId, removeMessage]);
 
   return {
     loadMessages,
