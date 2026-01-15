@@ -100,8 +100,9 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
 
         // 실시간 메시지 구독
         unsubscribeMessages = stompConnection.subscribe(`/topic/user/${myId}/${roomId}/messages`, (message) => {
-          // 낙관적 업데이트된 메시지 찾기 (senderId로 매칭)
-          const optimisticMessage = state.messages.find(
+          // 최신 상태에서 낙관적 업데이트된 메시지 찾기 (클로저 문제 방지)
+          const currentMessages = useChatStore.getState().messages;
+          const optimisticMessage = currentMessages.find(
             (m) =>
               m.tempId &&
               m.senderId === Number(myId) &&
