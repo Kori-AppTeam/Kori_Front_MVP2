@@ -1,18 +1,20 @@
-import { useState } from 'react';
 import styled from 'styled-components/native';
 
-type Gender = 'Male' | 'Female';
+type Gender = 'Male' | 'Female' | 'Other';
 
-const GenderSelect = ({ gender }: { gender: Gender }) => {
-  const [selectedGender, setSelectedGender] = useState<Gender>(gender); // TODO hook form으로 제어하도록 수정
+type GenderSelectProps = {
+  value?: Gender;
+  onChange: (gender: Gender) => void;
+};
 
+const GenderSelect = ({ value, onChange }: GenderSelectProps) => {
   return (
     <SelectWrapper>
-      <Select selected={selectedGender === 'Male'} onPress={() => setSelectedGender('Male')}>
-        <Text selected={selectedGender === 'Male'}>Male</Text>
+      <Select selected={value === 'Male'} onPress={() => onChange('Male')}>
+        <Text selected={value === 'Male'}>Male</Text>
       </Select>
-      <Select selected={selectedGender === 'Female'} onPress={() => setSelectedGender('Female')}>
-        <Text selected={selectedGender === 'Female'}>Female</Text>
+      <Select selected={value === 'Female'} onPress={() => onChange('Female')}>
+        <Text selected={value === 'Female'}>Female</Text>
       </Select>
     </SelectWrapper>
   );

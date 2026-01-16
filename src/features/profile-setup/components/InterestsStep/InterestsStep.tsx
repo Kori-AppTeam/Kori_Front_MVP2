@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import InterestsTap from '@/src/features/profile-setup/components/InterestsStep/InterestsTap';
 import styled from 'styled-components/native';
 import {
@@ -8,16 +8,25 @@ import {
 } from '@/src/features/profile-setup/constants/constants';
 import Tag from '@/src/shared/components/Tag';
 import SelectedTagsList from '@/src/features/profile-setup/components/InterestsStep/SelectedTagsList';
+import { useFormContext } from 'react-hook-form';
+import { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
+
+type InterestTap = 'K-Pop' | 'K-Drama & Movie' | 'Lifestyle';
 
 const InterestsStep = () => {
-  const [selectedTap, setSelectedTap] = useState<'K-Pop' | 'K-Drama & Movie' | 'Lifestyle'>('K-Pop');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTap, setSelectedTap] = useState<InterestTap>('K-Pop');
+
+  const { watch, setValue } = useFormContext<ProfileSetupFormValues>();
+  const selectedTags = watch('hobby') ?? [];
 
   const handleTagPress = (tag: string) => {
     if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag));
+      const next = selectedTags.filter((t) => t !== tag);
+      setValue('hobby', next, { shouldDirty: true, shouldValidate: true });
     } else {
-      setSelectedTags([...selectedTags, tag]);
+      if (selectedTags.length >= 5) return;
+      const next = [...selectedTags, tag];
+      setValue('hobby', next, { shouldDirty: true, shouldValidate: true });
     }
   };
 

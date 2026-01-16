@@ -1,13 +1,10 @@
-import React from 'react';
+import React, { use } from 'react';
 import { Stack } from 'expo-router';
 import { FormProvider, useForm } from 'react-hook-form';
-import StepPageLayout from '@/src/features/profile-setup/components/StepPageLayout';
+import { useProfileSetupForm } from '@/src/features/profile-setup/hooks/useProfileSetupForm';
 
 export default function ProfileSetupStackLayout() {
-  const methods = useForm({
-    mode: 'onChange',
-    shouldUnregister: false,
-  });
+  const methods = useProfileSetupForm();
 
   return (
     <FormProvider {...methods}>

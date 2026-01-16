@@ -1,5 +1,5 @@
+import React from 'react';
 import Input from '@/src/shared/components/Input';
-import React, { useEffect, useState } from 'react';
 import { FieldLabel, Field, StepContainer } from '@/src/features/profile-setup/styles/styles';
 import DropdownInput from '@/src/shared/components/DropdownInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -7,8 +7,25 @@ import { useDropdownBottomSheet } from '@/src/features/profile-setup/hooks/useDr
 import GenderSelect from '@/src/features/profile-setup/components/BasicInfoStep/GenderSelect';
 import CountryPickerBottomSheet from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/CountryPickerBottomSheet';
 import LanguagePickerBottomSheet from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/LanguagePickerBottomSheet';
+import styled from 'styled-components/native';
+import { Controller, useFormContext } from 'react-hook-form';
+import { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
 
 const BasicInfoStep = () => {
+  const { control, watch, setValue, getValues } = useFormContext<ProfileSetupFormValues>();
+
+  const selectedCountry = watch('country');
+  const selectedLanguages = watch('language') ?? [];
+  const selectedLanguagesLabel = selectedLanguages.map((lang) => lang).join(', ');
+
+  const handleSelectedCountry = (country: string) => {
+    setValue('country', country, { shouldDirty: true, shouldValidate: true });
+  };
+
+  const handleSelectedLanguages = (languages: string[]) => {
+    setValue('language', languages, { shouldDirty: true, shouldValidate: true });
+  };
+
   const {
     bottomSheetRef: countryBottomSheetRef,
     isPickerOpen: isCountryPickerOpen,
@@ -26,22 +43,26 @@ const BasicInfoStep = () => {
   return (
     <>
       <KeyboardAwareScrollView enableOnAndroid keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <StepContainer>
+        <BasicInfoStepContainer>
           <Field>
             <FieldLabel>Name</FieldLabel>
-            <Input placeholder="First Name" />
-            <Input placeholder="Last Name" />
+            <Input placeholder="First Name" registerField="firstname" />
+            <Input placeholder="Last Name" registerField="lastname" />
           </Field>
           <Field>
             <FieldLabel>Gender</FieldLabel>
-            <GenderSelect gender="Male" />
+            <Controller
+              control={control}
+              name="gender"
+              render={({ field: { value, onChange } }) => <GenderSelect value={value} onChange={onChange} />}
+            />
           </Field>
           <Field>
             <FieldLabel>Country</FieldLabel>
             <DropdownInput
               label="Select Country"
               isOpen={isCountryPickerOpen}
-              value={undefined}
+              value={selectedCountry || undefined}
               onPress={() => handleCountryDropdown()}
             />
           </Field>
@@ -50,28 +71,32 @@ const BasicInfoStep = () => {
             <DropdownInput
               label="Select Language"
               isOpen={isLanguagePickerOpen}
-              value={undefined}
-              selectedCount={0}
+              value={selectedLanguagesLabel || undefined}
+              selectedCount={selectedLanguages.length}
               maxCount={5}
               onPress={() => handleLanguageDropdown()}
             />
           </Field>
-        </StepContainer>
+        </BasicInfoStepContainer>
       </KeyboardAwareScrollView>
       <CountryPickerBottomSheet
         bottomSheetRef={countryBottomSheetRef}
         onBottomSheetClose={() => setIsCountryPickerOpen(false)}
-        selectedCountry={''}
-        onSelectCountry={() => null}
+        selectedCountry={selectedCountry}
+        onSelectCountry={(country) => handleSelectedCountry(country)}
       />
       <LanguagePickerBottomSheet
         bottomSheetRef={languageBottomSheetRef}
         onBottomSheetClose={() => setIsLanguagePickerOpen(false)}
-        selectedLanguages={[]}
-        onSelectLanguage={() => null}
+        selectedLanguages={selectedLanguages}
+        onSelectLanguage={(languages) => handleSelectedLanguages(languages)}
       />
     </>
   );
 };
 
 export default BasicInfoStep;
+
+const BasicInfoStepContainer = styled(StepContainer)`
+  padding-bottom: 40px;
+`;

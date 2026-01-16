@@ -6,9 +6,15 @@ import StepIndicator from '@/src/features/profile-setup/components/StepIndicator
 import { PROFILE_SETUP_TITLES } from '@/src/features/profile-setup/constants/constants';
 import { Contents, SafeArea, StepContainer, SubTitle, Title } from '@/src/features/profile-setup/styles/styles';
 import CustomButton from '@/src/shared/components/CustomButton';
+import { useWatch } from 'react-hook-form';
+import type { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
+import { profileSetupStepSchemas } from '@/src/features/profile-setup/utils/schema';
 
 const index = () => {
   const step = 'interests';
+  const values = useWatch<ProfileSetupFormValues>() ?? ({} as ProfileSetupFormValues);
+  const nextDisabled = !profileSetupStepSchemas[step].safeParse(values).success;
+
   return (
     <SafeArea>
       <DetailHeader title="" />
@@ -21,7 +27,11 @@ const index = () => {
           <InterestsStep />
         </StepContainer>
 
-        <CustomButton label={'next'} disabled={false} onPress={() => router.push('/profile-setup/profile-photo')} />
+        <CustomButton
+          label={'Next'}
+          disabled={nextDisabled}
+          onPress={() => router.push('/profile-setup/profile-photo')}
+        />
       </Contents>
     </SafeArea>
   );
