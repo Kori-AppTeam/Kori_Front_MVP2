@@ -20,7 +20,7 @@ const RecentSearches = ({ data, onPressKeyword, onDeleteKeyword, onClearAll }: R
     <Container>
       <HeaderRow>
         <SectionTitle>Recent Searches</SectionTitle>
-        <ClearAllText onPress={onClearAll}>Clear All</ClearAllText>
+        <ClearAllText onPress={onClearAll}>Delete All</ClearAllText>
       </HeaderRow>
 
       <FlatList
@@ -45,6 +45,7 @@ const Container = styled.View`
   flex: 1;
   margin-top: 10px;
   padding: 0 20px;
+  margin-bottom: 10px;
 `;
 
 const HeaderRow = styled.View`
