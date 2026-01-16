@@ -1,19 +1,22 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, ListRenderItem } from 'react-native';
 import styled from 'styled-components/native';
 import { useGetKnews } from '../hooks/useGetKnews';
 import { KNewsListData, NewsSortType, NewsType } from '../types';
+import KNewsHeader from './KNewsHeader';
 import KNewsItem from './KNewsItem';
 
-type KNewsListProps = {
-  category: NewsType;
-  sort: NewsSortType;
-  renderHeader: React.ReactElement;
-};
+const KNewsList = () => {
+  const [category, setCategory] = useState<NewsType>('K-POP');
+  const [sort, setSort] = useState<NewsSortType>('TRENDING');
 
-const KNewsList = ({ category, sort, renderHeader }: KNewsListProps) => {
   const { items, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
     useGetKnews(category, sort);
+
+  const renderHeaderItem = useMemo(
+    () => <KNewsHeader selectedCategory={category} setSelectedCategory={setCategory} sort={sort} setSort={setSort} />,
+    [category, sort],
+  );
 
   const renderItem: ListRenderItem<KNewsListData> = useCallback(({ item }) => <KNewsItem data={item} />, []);
 
@@ -32,15 +35,6 @@ const KNewsList = ({ category, sort, renderHeader }: KNewsListProps) => {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // 초기 로딩 중이면서 데이터가 없을 때만 로딩 표시
-  if (isLoading && !items?.length) {
-    return (
-      <LoadingContainer>
-        <ActivityIndicator />
-      </LoadingContainer>
-    );
-  }
-
   if (isError) {
     return (
       <ErrorContainer>
@@ -58,8 +52,16 @@ const KNewsList = ({ category, sort, renderHeader }: KNewsListProps) => {
       keyExtractor={(item: KNewsListData) => String(item.contentId)}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={renderHeader}
-      ListEmptyComponent={listEmpty}
+      ListHeaderComponent={renderHeaderItem}
+      ListEmptyComponent={
+        isLoading && !items?.length ? (
+          <LoadingContainer>
+            <ActivityIndicator />
+          </LoadingContainer>
+        ) : (
+          listEmpty
+        )
+      }
       refreshing={isRefetching}
       onRefresh={() => refetch()}
       onEndReachedThreshold={0.4}
