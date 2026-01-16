@@ -9,11 +9,14 @@ import { timeStampToAgo } from '../utils/timeStampToAgo';
 
 type KNewsItemProps = {
   data: KNewsItemType | KNewsListData;
+  routeFromSearch?: boolean;
 };
 
-const KNewsItem = ({ data }: KNewsItemProps) => {
+const KNewsItem = ({ data, routeFromSearch = false }: KNewsItemProps) => {
   return (
-    <Container onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(data.contentId, data.type, data.ago))}>
+    <Container
+      onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(data.contentId, data.type, data.ago, routeFromSearch))}
+    >
       <ImageContainer>
         <Image source={{ uri: data.thumbImageUrl }} resizeMode="cover" />
       </ImageContainer>

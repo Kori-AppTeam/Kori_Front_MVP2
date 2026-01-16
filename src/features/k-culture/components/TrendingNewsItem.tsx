@@ -20,7 +20,7 @@ const TrendingNewsItem = ({ item, index }: TrendingNewsItemProps) => {
   return (
     <NewsItemContainer
       width={imageContainerWidth}
-      onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(item.contentId, item.type, item.ago))}
+      onPress={() => router.push(K_CULTURE_ROUTER.DETAIL(item.contentId, item.type, item.ago, false))}
     >
       <NewsImageContainer>
         <NewsImage source={{ uri: item.thumbImageUrl }} resizeMode="cover" />
