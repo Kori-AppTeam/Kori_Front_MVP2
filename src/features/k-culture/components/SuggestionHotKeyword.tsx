@@ -1,5 +1,5 @@
 import Icon from '@/components/common/Icon';
-import HotKeywordChip from '@/src/shared/components/HotKeywordChip';
+import HotKeywordChip from '@/src/shared/components/Chip';
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
