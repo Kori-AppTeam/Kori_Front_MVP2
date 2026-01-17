@@ -1,7 +1,6 @@
 import Icon from '@/components/common/Icon';
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
-import { FlatList } from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 import { IconBtn } from '../../features/community/shared/styles/styles';
 
@@ -23,18 +22,14 @@ const RecentSearches = ({ data, onPressKeyword, onDeleteKeyword, onClearAll }: R
         <ClearAllText onPress={onClearAll}>Delete All</ClearAllText>
       </HeaderRow>
 
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => `${item}-${index}`}
-        renderItem={({ item }) => (
-          <SearchedItem onPress={() => onPressKeyword(item)}>
-            <SearchedItemText>{item}</SearchedItemText>
-            <IconBtn onPress={() => onDeleteKeyword(item)}>
-              <Icon type="cancelDark" size={16} color={theme.colors.gray.darkGray_1_5} />
-            </IconBtn>
-          </SearchedItem>
-        )}
-      />
+      {data.map((item, index) => (
+        <SearchedItem key={`${item}-${index}`} onPress={() => onPressKeyword(item)}>
+          <SearchedItemText>{item}</SearchedItemText>
+          <IconBtn onPress={() => onDeleteKeyword(item)}>
+            <Icon type="cancelDark" size={16} color={theme.colors.gray.darkGray_1_5} />
+          </IconBtn>
+        </SearchedItem>
+      ))}
     </Container>
   );
 };
@@ -65,7 +60,7 @@ const ClearAllText = styled.Text`
 `;
 
 const SearchedItem = styled.Pressable`
-  padding: 10px 0;
+  padding: 14px 0;
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
