@@ -1,3 +1,5 @@
+import NoResult from '@/src/shared/components/NoResult';
+import { theme } from '@/src/styles/theme';
 import React, { useCallback } from 'react';
 import { FlatList, ListRenderItem } from 'react-native';
 import styled from 'styled-components/native';
@@ -29,9 +31,11 @@ const SearchedNewsResult = ({ value }: SearchedNewsResultProps) => {
         data={items}
         keyExtractor={(item) => item.contentId.toString()}
         renderItem={renderItem}
+        ListEmptyComponent={<NoResult />}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
         ItemSeparatorComponent={() => <Separator />}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
       />
     </Container>
   );
@@ -42,6 +46,7 @@ export default SearchedNewsResult;
 const Container = styled.View`
   flex: 1;
   padding: 10px 0;
+  background-color: ${theme.colors.primary.black};
 `;
 
 const Separator = styled.View`
