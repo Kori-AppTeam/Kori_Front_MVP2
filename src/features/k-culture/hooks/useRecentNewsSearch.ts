@@ -7,6 +7,7 @@ export const useGetRecentNewsSearch = () => {
     queryKey: ['recentNewsSearches'],
     queryFn: () => getRecentNewsSearches(),
     staleTime: 0,
+    select: (data) => data.slice(0, 10), // 최대 10개까지만 반환
   });
 };
 
