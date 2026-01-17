@@ -1,9 +1,10 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import Toast from 'react-native-toast-message';
 import { useNavigation, useRouter } from 'expo-router';
+import React from 'react';
+import Toast from 'react-native-toast-message';
+import styled from 'styled-components/native';
 
 import DetailHeader from '@/components/common/DetailHeader';
+import { EMAIL_LOGIN_ERROR } from '@/src/features/auth/constants/error';
 import { useEmailLogin } from '@/src/features/auth/hooks/useEmailLogin';
 import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
 import CustomButton from '@/src/shared/components/CustomButton';
@@ -11,8 +12,8 @@ import Input from '@/src/shared/components/Input';
 import TextButton from '@/src/shared/components/TextButton';
 import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
+import { initializeStomp } from '@/src/store/useStompStore';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { EMAIL_LOGIN_ERROR } from '@/src/features/auth/constants/error';
 
 const index = () => {
   const router = useRouter();
@@ -27,6 +28,8 @@ const index = () => {
       if (isNewUser) {
         router.push('/screens/makeprofile/NameStepScreen');
       } else {
+        // 기존 사용자 로그인 시 소켓 연결 초기화
+        initializeStomp();
         resetToTabsScreen(navigation);
       }
     } catch (error: unknown) {

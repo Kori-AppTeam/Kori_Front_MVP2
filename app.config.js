@@ -84,6 +84,7 @@ export default {
       'expo-secure-store',
       'expo-web-browser',
       'expo-font',
+      'expo-video',
 
       // Firebase 관련
       '@react-native-firebase/app',

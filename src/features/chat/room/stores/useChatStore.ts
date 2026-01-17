@@ -16,6 +16,13 @@ interface ChatStoreState extends RoomMessagesState {
   setIsTranslating: (isTranslating: boolean) => void;
   mergeMessages: (newMessages: ChatMessage[]) => void;
 
+  // 낙관적 업데이트
+  addOptimisticMessage: (message: ChatMessage) => void;
+  updateMessageStatus: (tempId: string, status: 'pending' | 'uploading' | 'success' | 'failed') => void;
+  updateMessageError: (tempId: string, errorMessage: string) => void;
+  replaceOptimisticMessage: (tempId: string, realMessage: ChatMessage) => void;
+  removeOptimisticMessage: (tempId: string) => void;
+
   // 입력 상태
   setCurrentMessage: (text: string) => void;
   clearCurrentMessage: () => void;
@@ -150,5 +157,52 @@ export const useChatStore = create<ChatStoreState>()(
 
         return { messages: merged };
       }),
+
+    // ============= 낙관적 업데이트 =============
+
+    // 임시 메시지 추가 (업로드 시작)
+    addOptimisticMessage: (message: ChatMessage) => {
+      set((state) => {
+        state.messages = [message, ...state.messages];
+      });
+    },
+
+    // 메시지 상태 업데이트
+    updateMessageStatus: (tempId: string, status: 'pending' | 'uploading' | 'success' | 'failed') => {
+      set((state) => {
+        const msg = state.messages.find((m) => m.tempId === tempId);
+        if (msg) {
+          msg.uploadStatus = status;
+        }
+      });
+    },
+
+    // 에러 메시지 업데이트
+    updateMessageError: (tempId: string, errorMessage: string) => {
+      set((state) => {
+        const msg = state.messages.find((m) => m.tempId === tempId);
+        if (msg) {
+          msg.uploadStatus = 'failed';
+          msg.errorMessage = errorMessage;
+        }
+      });
+    },
+
+    // 임시 메시지를 실제 메시지로 교체
+    replaceOptimisticMessage: (tempId: string, realMessage: ChatMessage) => {
+      set((state) => {
+        const index = state.messages.findIndex((m) => m.tempId === tempId);
+        if (index !== -1) {
+          state.messages[index] = realMessage;
+        }
+      });
+    },
+
+    // 임시 메시지 제거 (에러 후 삭제 등)
+    removeOptimisticMessage: (tempId: string) => {
+      set((state) => {
+        state.messages = state.messages.filter((m) => m.tempId !== tempId);
+      });
+    },
   })),
 );
