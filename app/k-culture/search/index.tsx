@@ -12,7 +12,7 @@ import RecentSearches from '@/src/shared/components/RecentSearches';
 import SearchInput from '@/src/shared/components/SearchInput';
 import { theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, Pressable, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
 
 const Index = () => {
@@ -56,7 +56,7 @@ const Index = () => {
 
   return (
     <Safe>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
         <Container>
           <SearchInput
             value={value}
@@ -65,42 +65,52 @@ const Index = () => {
             onSubmitEditing={handleSubmit}
           />
 
-          {/* 최근검색어 */}
-          {!value && recentNewsSearches && recentNewsSearches.length > 0 && !isSubmitted && (
-            <RecentSearches
-              data={recentNewsSearches}
-              onPressKeyword={handleSubmitAutoComplete}
-              onDeleteKeyword={deleteRecentNewsSearch}
-              onClearAll={clearRecentNewsSearches}
-            />
-          )}
+          {/* 검색 결과가 없을 때: ScrollView로 최근검색어, Hot Keyword, 자동완성 표시 */}
+          {!(value.trim().length > 0 && isSubmitted) && (
+            <ScrollView
+              style={{ flex: 1 }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+            >
+              {/* 최근검색어 */}
+              {!value && recentNewsSearches && recentNewsSearches.length > 0 && !isSubmitted && (
+                <RecentSearches
+                  data={recentNewsSearches}
+                  onPressKeyword={handleSubmitAutoComplete}
+                  onDeleteKeyword={deleteRecentNewsSearch}
+                  onClearAll={clearRecentNewsSearches}
+                />
+              )}
 
-          {/* Divider - 최근검색어와 Hot Keyword가 둘 다 있을 때만 표시 */}
-          {!value &&
-            recentNewsSearches &&
-            recentNewsSearches.length > 0 &&
-            newsHotKeywords &&
-            newsHotKeywords.length > 0 &&
-            !isSubmitted && <Divider />}
+              {/* Divider - 최근검색어와 Hot Keyword가 둘 다 있을 때만 표시 */}
+              {!value &&
+                recentNewsSearches &&
+                recentNewsSearches.length > 0 &&
+                newsHotKeywords &&
+                newsHotKeywords.length > 0 &&
+                !isSubmitted && <Divider />}
 
-          {/* Hot Keyword */}
-          {!value && !isSubmitted && (
-            <SuggestionHotKeyword
-              data={newsHotKeywords || []}
-              onPress={handleHotKeywordClick}
-              onRefresh={refetchNewsHotKeywords}
-            />
-          )}
+              {/* Hot Keyword */}
+              {!value && !isSubmitted && (
+                <SuggestionHotKeyword
+                  data={newsHotKeywords || []}
+                  onPress={handleHotKeywordClick}
+                  onRefresh={refetchNewsHotKeywords}
+                />
+              )}
 
-          {/* 자동완성 */}
-          {value.trim().length > 0 && !isSubmitted && (
-            <KNewsAutoComplete value={effectiveQ} onSubmitEditing={handleSubmitAutoComplete} />
+              {/* 자동완성 */}
+              {value.trim().length > 0 && !isSubmitted && (
+                <KNewsAutoComplete value={effectiveQ} onSubmitEditing={handleSubmitAutoComplete} />
+              )}
+            </ScrollView>
           )}
 
           {/* 검색 결과 */}
           {value.trim().length > 0 && isSubmitted && <SearchedNewsResult value={value.trim().toLowerCase()} />}
         </Container>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </Safe>
   );
 };
