@@ -39,7 +39,7 @@ export default RecentSearches;
 const Container = styled.View`
   margin-top: 10px;
   padding: 0 20px;
-  margin-bottom: 10px;
+  margin-bottom: 24px;
 `;
 
 const HeaderRow = styled.View`
