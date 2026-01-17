@@ -1,5 +1,5 @@
+import Icon from '@/components/common/Icon';
 import HotKeywordChip from '@/src/shared/components/HotKeywordChip';
-import RefreshButton from '@/src/shared/components/RefreshButton';
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
@@ -19,7 +19,10 @@ const SuggestionHotKeyword = ({ data, onPress, onRefresh }: SuggestionHotKeyword
         {data.map((keyword, index) => (
           <HotKeywordChip key={index} value={keyword} onPress={() => onPress?.(keyword)} />
         ))}
-        <RefreshButton onPress={onRefresh} />
+        <RefreshButtonContainer onPress={() => onRefresh && onRefresh()}>
+          <Icon type="refresh" size={20} color={theme.colors.primary.mint} />
+          <RefreshButtonText>Refresh</RefreshButtonText>
+        </RefreshButtonContainer>
       </KeywordsContainer>
     </Container>
   );
@@ -44,4 +47,21 @@ const KeywordsContainer = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
   gap: 8px;
+`;
+
+const RefreshButtonContainer = styled.Pressable`
+  border-radius: 100px;
+  background-color: transparent;
+  border: 1px solid ${theme.colors.primary.mint};
+  gap: 4px;
+  padding: 9px 11px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  max-height: 44px;
+  align-self: flex-start;
+`;
+
+const RefreshButtonText = styled.Text`
+  color: ${theme.colors.primary.mint};
 `;
