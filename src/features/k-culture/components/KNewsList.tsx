@@ -75,7 +75,7 @@ const KNewsList = () => {
           </FooterLoading>
         ) : null
       }
-      contentContainerStyle={{ paddingBottom: 80 }}
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
     />
   );
 };
