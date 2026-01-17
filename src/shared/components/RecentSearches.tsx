@@ -42,7 +42,6 @@ const RecentSearches = ({ data, onPressKeyword, onDeleteKeyword, onClearAll }: R
 export default RecentSearches;
 
 const Container = styled.View`
-  flex: 1;
   margin-top: 10px;
   padding: 0 20px;
   margin-bottom: 10px;
