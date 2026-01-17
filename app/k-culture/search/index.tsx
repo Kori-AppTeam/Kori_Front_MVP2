@@ -1,6 +1,8 @@
 import { useDebounce } from '@/src/features/chat/search/hooks/useDebounce';
 import KNewsAutoComplete from '@/src/features/k-culture/components/KNewsAutoComplete';
 import SearchedNewsResult from '@/src/features/k-culture/components/SearchedNewsResult';
+import SuggestionHotKeyword from '@/src/features/k-culture/components/SuggestionHotKeyword';
+import { useGetNewsHotKeyword } from '@/src/features/k-culture/hooks/useNewsHotKeyword';
 import {
   useClearRecentNewsSearches,
   useDeleteRecentNewsSearch,
@@ -8,6 +10,7 @@ import {
 } from '@/src/features/k-culture/hooks/useRecentNewsSearch';
 import RecentSearches from '@/src/shared/components/RecentSearches';
 import SearchInput from '@/src/shared/components/SearchInput';
+import { theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/native';
@@ -17,6 +20,7 @@ const Index = () => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   const { data: recentNewsSearches } = useGetRecentNewsSearch();
+  const { data: newsHotKeywords, refetch: refetchNewsHotKeywords } = useGetNewsHotKeyword();
   const { mutate: deleteRecentNewsSearch } = useDeleteRecentNewsSearch();
   const { mutate: clearRecentNewsSearches } = useClearRecentNewsSearches();
   const debouncedValue = useDebounce(value);
@@ -43,6 +47,13 @@ const Index = () => {
     Keyboard.dismiss();
   };
 
+  // Hot Keyword 클릭 처리
+  const handleHotKeywordClick = (keyword: string) => {
+    setValue(keyword);
+    setIsSubmitted(true);
+    Keyboard.dismiss();
+  };
+
   return (
     <Safe>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -61,6 +72,15 @@ const Index = () => {
               onPressKeyword={handleSubmitAutoComplete}
               onDeleteKeyword={deleteRecentNewsSearch}
               onClearAll={clearRecentNewsSearches}
+            />
+          )}
+
+          {/* Hot Keyword */}
+          {!value && !isSubmitted && (
+            <SuggestionHotKeyword
+              data={newsHotKeywords || []}
+              onPress={handleHotKeywordClick}
+              onRefresh={refetchNewsHotKeywords}
             />
           )}
 
@@ -85,5 +105,5 @@ const Container = styled.View`
 
 const Safe = styled.SafeAreaView`
   flex: 1;
-  background: #1d1e1f;
+  background: ${theme.colors.primary.black};
 `;
