@@ -75,6 +75,14 @@ const Index = () => {
             />
           )}
 
+          {/* Divider - 최근검색어와 Hot Keyword가 둘 다 있을 때만 표시 */}
+          {!value &&
+            recentNewsSearches &&
+            recentNewsSearches.length > 0 &&
+            newsHotKeywords &&
+            newsHotKeywords.length > 0 &&
+            !isSubmitted && <Divider />}
+
           {/* Hot Keyword */}
           {!value && !isSubmitted && (
             <SuggestionHotKeyword
@@ -106,4 +114,9 @@ const Container = styled.View`
 const Safe = styled.SafeAreaView`
   flex: 1;
   background: ${theme.colors.primary.black};
+`;
+
+const Divider = styled.View`
+  height: 10px;
+  background-color: ${theme.colors.gray.darkBlack_1};
 `;
