@@ -28,7 +28,7 @@ const SuggestionHotKeyword = ({ data, onPress, onRefresh }: SuggestionHotKeyword
 export default SuggestionHotKeyword;
 
 const Container = styled.View`
-  padding: 24px 20px;
+  padding: 10px 20px;
   gap: 24px;
 `;
 
