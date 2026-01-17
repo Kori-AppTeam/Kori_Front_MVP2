@@ -34,7 +34,7 @@ export const getAutoNewsSuggestions = async (q: string) => {
 // 뉴스 추천 키워드 조회
 export const getHotKeywords = async () => {
   const res = await api.get(`/api/v2/main-contents/search/hot-keywords`);
-  return res.data;
+  return res.data.data;
 };
 
 // 뉴스 상세 조회 (검색 전용)
