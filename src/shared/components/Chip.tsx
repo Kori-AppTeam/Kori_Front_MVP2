@@ -2,12 +2,12 @@ import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 
-type HotKeywordChipProps = {
+type ChipProps = {
   value: string;
   onPress?: (keyword: string) => void;
 };
 
-const Chip = ({ value, onPress }: HotKeywordChipProps) => {
+const Chip = ({ value, onPress }: ChipProps) => {
   return (
     <ChipContainer onPress={() => onPress && onPress(value)}>
       <ChipText>{value}</ChipText>
