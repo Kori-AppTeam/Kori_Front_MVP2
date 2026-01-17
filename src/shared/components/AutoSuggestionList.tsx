@@ -30,13 +30,12 @@ export default AutoSuggestionList;
 
 const Container = styled.View`
   flex: 1;
-  margin-top: 10px;
   padding: 0 20px;
 `;
 
 const SuggestionItem = styled.Pressable`
   width: 100%;
-  padding: 10px 0;
+  padding: 14px 0;
   flex-direction: row;
   align-items: flex-start;
   gap: 8px;
