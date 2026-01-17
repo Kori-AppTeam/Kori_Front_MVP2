@@ -129,4 +129,5 @@ const Safe = styled.SafeAreaView`
 const Divider = styled.View`
   height: 10px;
   background-color: ${theme.colors.gray.darkBlack_1};
+  margin-bottom: 14px;
 `;
