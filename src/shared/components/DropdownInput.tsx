@@ -13,6 +13,8 @@ interface DropdownInputProps {
 }
 
 const DropdownInput = ({ label, value, selectedCount, maxCount, isOpen, onPress }: DropdownInputProps) => {
+  const hasValue = !!value || (selectedCount ?? 0) > 0;
+
   return (
     <>
       <DropdownInputContainer isOpen={isOpen} onPress={onPress}>
@@ -24,7 +26,9 @@ const DropdownInput = ({ label, value, selectedCount, maxCount, isOpen, onPress 
         />
       </DropdownInputContainer>
       {maxCount && (
-        <DropdownSelectedCount hasValue={!!value}>{`${selectedCount} / ${maxCount} selected`}</DropdownSelectedCount>
+        <DropdownSelectedCount
+          hasValue={hasValue}
+        >{`${selectedCount ?? 0} / ${maxCount} selected`}</DropdownSelectedCount>
       )}
     </>
   );
@@ -45,7 +49,12 @@ const DropdownInputContainer = styled.Pressable<{ isOpen: boolean }>`
   border-radius: 4px;
 `;
 
-const DropdownInputPlaceholder = styled.Text`
+const DropdownInputPlaceholder = styled.Text.attrs({
+  numberOfLines: 1,
+  ellipsizeMode: 'tail',
+})`
+  flex: 1;
+  margin-right: 8px;
   ${({ theme }) => textStyle(theme.fonts.body.B2_R)};
   color: ${({ theme }) => theme.colors.primary.white};
 `;
