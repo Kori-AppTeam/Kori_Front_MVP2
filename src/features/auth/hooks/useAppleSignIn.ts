@@ -3,6 +3,7 @@ import { getAppleCredential } from '@/src/features/auth/lib/oauth/apple';
 import { postAppleAppLogin } from '@/src/features/auth/api/postAppleAppLogin';
 import { saveAuthToken } from '@/src/features/auth/lib/saveAuthToken';
 import { getIsAppleUser } from '@/src/features/auth/api/getIsAppleUser';
+import { savePrefill } from '@/src/features/profile-setup/lib/prefill';
 
 /**
  * 1. 신규 유저인 경우 === 회원가입
@@ -21,6 +22,22 @@ export function useAppleSignIn() {
 
       const { accessToken, refreshToken, userId, isNewUser } = await postAppleAppLogin(credential, rawNonce); // 서버에 애플 로그인 정보 전송
       await saveAuthToken(accessToken, refreshToken, userId); // 토큰 저장
+
+      // 프로필 셋업 prefill
+      const firstname = credential.fullName?.givenName;
+      const lastname = credential.fullName?.familyName;
+      const email = credential.email;
+
+      if (firstname || lastname || email) {
+        await savePrefill({
+          userId,
+          prefill: {
+            firstname: firstname ?? undefined,
+            lastname: lastname ?? undefined,
+            email: email ?? undefined,
+          },
+        });
+      }
 
       if (isNewUser) {
         const { isRejoiningWithoutFullName } = await getIsAppleUser(userId.toString());

@@ -19,3 +19,5 @@ export type ProfileSetupFormValues = {
   hobby: string[];
   imageKey: string;
 };
+
+export type ProfileSetupPrefill = Partial<Pick<ProfileSetupFormValues, 'firstname' | 'lastname' | 'email' | 'gender'>>;
