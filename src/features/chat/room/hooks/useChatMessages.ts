@@ -100,7 +100,23 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
 
         // 실시간 메시지 구독
         unsubscribeMessages = stompConnection.subscribe(`/topic/user/${myId}/${roomId}/messages`, (message) => {
-          addMessageToStore(message);
+          // 최신 상태에서 낙관적 업데이트된 메시지 찾기 (클로저 문제 방지)
+          const currentMessages = useChatStore.getState().messages;
+          const optimisticMessage = currentMessages.find(
+            (m) =>
+              m.tempId &&
+              m.senderId === Number(myId) &&
+              m.uploadStatus === 'success' &&
+              m.messageType === message.messageType,
+          );
+
+          if (optimisticMessage && optimisticMessage.tempId) {
+            // 임시 메시지를 실제 메시지로 교체
+            useChatStore.getState().replaceOptimisticMessage(optimisticMessage.tempId, message);
+          } else {
+            // 일반 메시지 추가
+            addMessageToStore(message);
+          }
         });
 
         // 메시지 삭제 구독

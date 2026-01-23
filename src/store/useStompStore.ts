@@ -43,7 +43,8 @@ export const useStompStore = create<StompStore>((set, get) => ({
       }
 
       const newClient = new Client({
-        webSocketFactory: () => new WebSocket('wss://dev.ko-ri.cloud/ws'),
+        webSocketFactory: () =>
+          new WebSocket(__DEV__ ? process.env.EXPO_PUBLIC_WSS_URL_DEV! : process.env.EXPO_PUBLIC_WSS_URL_PROD!),
         connectHeaders: { Authorization: `Bearer ${token}` },
         forceBinaryWSFrames: true,
         reconnectDelay: 5000,
