@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 import { StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { textStyle } from '@/src/styles/theme';
+import { PROFILE_SETUP_ROUTE } from '@/src/shared/constants/route';
 
-// TODO 이미지 상하단 노치까지 확대
-// TODO _layout.tsx View paddingBottom 제거
-
-const SignUpDoneScreen = () => {
+const index = () => {
   const router = useRouter();
   const goMakeProfile = () => {
-    router.dismissAll(); // 네비게이션 스택 다 비움
-    router.replace('/screens/makeprofile/NameStepScreen'); // 프로필 생성 화면으로 이동
+    router.dismissAll();
+    router.replace(PROFILE_SETUP_ROUTE.BASIC_INFO);
   };
 
   return (
@@ -29,7 +26,7 @@ const SignUpDoneScreen = () => {
   );
 };
 
-export default SignUpDoneScreen;
+export default index;
 
 const SafeArea = styled.SafeAreaView`
   flex: 1;

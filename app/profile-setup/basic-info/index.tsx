@@ -9,21 +9,12 @@ import React, { useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 import type { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
 import { profileSetupStepSchemas } from '@/src/features/profile-setup/utils/schema';
-import { getProfileOptions } from '@/src/features/profile-setup/api/options';
+import { PROFILE_SETUP_ROUTE } from '@/src/shared/constants/route';
 
 const index = () => {
   const step = 'basicInfo';
   const values = useWatch<ProfileSetupFormValues>() ?? ({} as ProfileSetupFormValues);
   const nextDisabled = !profileSetupStepSchemas[step].safeParse(values).success;
-
-  // useEffect(() => {
-  //   const getOptions = async () => {
-  //     const response = await getProfileOptions();
-  //     console.log('Profile Options:', response);
-  //   };
-
-  //   getOptions();
-  // }, []);
 
   return (
     <SafeArea>
@@ -37,7 +28,11 @@ const index = () => {
           <BasicInfoStep />
         </StepContainer>
 
-        <CustomButton label={'Next'} disabled={nextDisabled} onPress={() => router.push('/profile-setup/interests')} />
+        <CustomButton
+          label={'Next'}
+          disabled={nextDisabled}
+          onPress={() => router.push(PROFILE_SETUP_ROUTE.INTERESTS)}
+        />
       </Contents>
     </SafeArea>
   );

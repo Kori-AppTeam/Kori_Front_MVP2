@@ -9,6 +9,7 @@ import CustomButton from '@/src/shared/components/CustomButton';
 import { useWatch } from 'react-hook-form';
 import type { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
 import { profileSetupStepSchemas } from '@/src/features/profile-setup/utils/schema';
+import { PROFILE_SETUP_ROUTE } from '@/src/shared/constants/route';
 
 const index = () => {
   const step = 'interests';
@@ -30,7 +31,7 @@ const index = () => {
         <CustomButton
           label={'Next'}
           disabled={nextDisabled}
-          onPress={() => router.push('/profile-setup/profile-photo')}
+          onPress={() => router.push(PROFILE_SETUP_ROUTE.PROFILE_PHOTO)}
         />
       </Contents>
     </SafeArea>

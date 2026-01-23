@@ -8,7 +8,11 @@ import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import Icon from '@/components/common/Icon';
 import { useConfirmTerms } from '@/src/features/auth/hooks/useConfirmTerms';
 import { textStyle, theme } from '@/src/styles/theme';
-import { SIGNUP_PRIVACY_POLICY_ROUTE, SIGNUP_TERMS_AND_CONDITIONS_ROUTE } from '@/src/shared/constants/route';
+import {
+  PROFILE_SETUP_ROUTE,
+  SIGNUP_PRIVACY_POLICY_ROUTE,
+  SIGNUP_TERMS_AND_CONDITIONS_ROUTE,
+} from '@/src/shared/constants/route';
 import CustomButton from '@/src/shared/components/CustomButton';
 import Checkbox, { CheckboxProps } from '@/src/shared/components/Checkbox';
 import { requestLocationPermission } from '@/src/features/auth/lib/requestLocationPermission';
@@ -37,11 +41,7 @@ const ConfirmTermsBottomSheet = ({
       await patchLocation(latitude, longitude);
 
       bottomSheetClose();
-      if (loginProvider === 'apple') {
-        router.push('/screens/makeprofile/GenderStepScreen');
-      } else {
-        router.push('/screens/makeprofile/NameStepScreen');
-      }
+      router.push(PROFILE_SETUP_ROUTE.BASIC_INFO);
     } catch (error) {
       console.error('Error obtaining location or patching location:', error);
     }

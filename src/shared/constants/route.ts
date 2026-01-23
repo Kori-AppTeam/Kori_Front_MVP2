@@ -43,4 +43,13 @@ export const K_CULTURE_ROUTER = {
   SEARCH: '/k-culture/search',
 } as const;
 
+// 프로필 셋업 route 경로
+export const PROFILE_SETUP_ROUTE = {
+  BASIC_INFO: toRoute('/profile-setup/basic-info'),
+  INTERESTS: toRoute('/profile-setup/interests'),
+  PROFILE_PHOTO: toRoute('/profile-setup/profile-photo'),
+  ABOUT_ME: toRoute('/profile-setup/about-me'),
+  DONE: toRoute('/profile-setup/done'),
+} as const;
+
 export const ONBOARDING_ROUTE = toRoute('/onboarding');

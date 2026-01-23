@@ -10,6 +10,7 @@ import ProfilePhotoStep from '@/src/features/profile-setup/components/ProfilePho
 import { useWatch } from 'react-hook-form';
 import type { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
 import { profileSetupStepSchemas } from '@/src/features/profile-setup/utils/schema';
+import { PROFILE_SETUP_ROUTE } from '@/src/shared/constants/route';
 
 const index = () => {
   const step = 'profilePhoto';
@@ -28,7 +29,11 @@ const index = () => {
           <ProfilePhotoStep />
         </StepContainer>
 
-        <CustomButton label={'Next'} disabled={nextDisabled} onPress={() => router.push('/profile-setup/about-me')} />
+        <CustomButton
+          label={'Next'}
+          disabled={nextDisabled}
+          onPress={() => router.push(PROFILE_SETUP_ROUTE.ABOUT_ME)}
+        />
       </Contents>
     </SafeArea>
   );

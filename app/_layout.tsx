@@ -144,8 +144,9 @@ export default function RootLayout() {
                   <ProfileProvider>
                     {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
                     <Stack screenOptions={{ headerShown: false }}>
-                      <Stack.Screen name="(tabs)" />
-                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="/profile-setup" />
+                      <Stack.Screen name="/(tabs)" />
+                      <Stack.Screen name="/(auth)" />
                       <Stack.Screen name="+not-found" />
                     </Stack>
                     <Toast config={toastConfig} topOffset={80} />
