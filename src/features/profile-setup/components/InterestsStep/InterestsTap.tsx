@@ -2,17 +2,16 @@ import Tap from '@/src/shared/components/Tap';
 import React from 'react';
 import styled from 'styled-components/native';
 
-const INTERESTS_TAP = ['K-Pop', 'K-Drama & Movie', 'Lifestyle'] as const;
-
 interface InterestsTapProps {
-  selectedTap: (typeof INTERESTS_TAP)[number];
-  onSelectTap: (tap: (typeof INTERESTS_TAP)[number]) => void;
+  tabs: string[];
+  selectedTap: string;
+  onSelectTap: (tap: string) => void;
 }
 
-const InterestsTap = ({ selectedTap, onSelectTap }: InterestsTapProps) => {
+const InterestsTap = ({ tabs, selectedTap, onSelectTap }: InterestsTapProps) => {
   return (
     <TapWrapper>
-      {INTERESTS_TAP.map((tap) => (
+      {tabs.map((tap) => (
         <Tap key={tap} text={tap} selected={selectedTap === tap} onPress={() => onSelectTap(tap)} />
       ))}
     </TapWrapper>

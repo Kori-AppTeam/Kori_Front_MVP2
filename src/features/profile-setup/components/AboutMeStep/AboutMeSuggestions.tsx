@@ -3,33 +3,24 @@ import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 import { useRandomIndices } from '@/src/features/profile-setup/hooks/useRandomIndices';
-
-// TODO api 연동 후 삭제
-const DUMMY_SUGGESTION_LIST = [
-  'Hi! Open to conversations 😊',
-  'Hello! Let’s talk and connect.',
-  'Hey! Nice to meet you 👋',
-  'Tech nerd curious about apps.',
-  'Animal lover who volunteers at local shelters.',
-] as const;
+import { useProfileOptionsStore } from '@/src/features/profile-setup/store/useProfileOptions';
 
 interface AboutMeSuggestionsProps {
   onPressSuggestion?: (suggestion: string) => void;
 }
 
 const AboutMeSuggestions = ({ onPressSuggestion }: AboutMeSuggestionsProps) => {
-  const { indices: selectedIndices, refresh: refreshSuggestions } = useRandomIndices(3, DUMMY_SUGGESTION_LIST.length);
+  const introductions = useProfileOptionsStore((s) => s.introductions);
+  const count = Math.min(3, introductions.length);
+  const { indices: selectedIndices, refresh: refreshSuggestions } = useRandomIndices(count, introductions.length);
 
   return (
     <Container>
       <SuggestionLabel>✨ ‘About Me’ Suggestions</SuggestionLabel>
       <SuggestionWrapper>
         {selectedIndices.map((index) => (
-          <SuggestionText
-            key={index}
-            onPress={() => onPressSuggestion && onPressSuggestion(DUMMY_SUGGESTION_LIST[index])}
-          >
-            {DUMMY_SUGGESTION_LIST[index]}
+          <SuggestionText key={index} onPress={() => onPressSuggestion && onPressSuggestion(introductions[index])}>
+            {introductions[index]}
           </SuggestionText>
         ))}
       </SuggestionWrapper>
