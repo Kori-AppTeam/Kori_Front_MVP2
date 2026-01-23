@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import { StatusBar } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { CommonActions } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const index = () => {
   const navigation = useNavigation();
@@ -19,8 +20,10 @@ const index = () => {
     <SafeArea>
       <StatusBar barStyle="light-content" />
       <Container source={require('@/assets/images/ProfileSetUpDone.png')} resizeMode="cover">
-        <TitleText>Profile set up Done!</TitleText>
-        <SubTitleText>Now,you can use Kori</SubTitleText>
+        <TitleWrapper>
+          <TitleText>Profile set up Done!</TitleText>
+          <SubTitleText>Now,you can use Kori</SubTitleText>
+        </TitleWrapper>
         <Button onPress={startKori}>
           <ButtonText>Start Kori!</ButtonText>
         </Button>
@@ -31,7 +34,7 @@ const index = () => {
 
 export default index;
 
-const SafeArea = styled.SafeAreaView`
+const SafeArea = styled(SafeAreaView).attrs({ edges: [] })`
   flex: 1;
 `;
 
@@ -39,36 +42,45 @@ const Container = styled.ImageBackground`
   flex: 1;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
 `;
 
+const TitleWrapper = styled.View`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 80px;
+`;
+
 const TitleText = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.primary.white};
+
   font-size: 50px;
   font-family: InstrumentSerif_400Regular;
-  position: absolute;
-  top: 100;
 `;
+
 const SubTitleText = styled.Text`
-  color: #cccfd0;
+  color: ${({ theme }) => theme.colors.primary.white};
   font-size: 17px;
   font-family: PlusJakartaSans_300Light;
-  position: absolute;
-  top: 170;
 `;
+
 const Button = styled.TouchableOpacity`
-  position: absolute;
   align-self: center;
-  bottom: 50;
-  background-color: #02f59b;
+  background-color: ${({ theme }) => theme.colors.primary.mint};
   width: 90%;
   height: 50px;
   border-radius: 8px;
   align-items: center;
   justify-content: center;
+  margin-bottom: 64px;
 `;
+
 const ButtonText = styled.Text`
-  color: #1d1e1f;
+  color: ${({ theme }) => theme.colors.primary.black};
   font-size: 16px;
   font-family: PlusJakartaSans_500Medium;
 `;
