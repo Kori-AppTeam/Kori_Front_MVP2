@@ -1,10 +1,14 @@
 import { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
+import { patchProfileSetup } from '@/src/features/profile-setup/api/profile';
 import { profileSetupSchema } from '@/src/features/profile-setup/utils/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export const useProfileSetupForm = () => {
-  return useForm<ProfileSetupFormValues>({
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+
+  const methods = useForm<ProfileSetupFormValues>({
     mode: 'onChange',
     resolver: zodResolver(profileSetupSchema),
     shouldUnregister: false,
@@ -22,4 +26,22 @@ export const useProfileSetupForm = () => {
       imageKey: '',
     },
   });
+
+  const submitForm = useCallback(async () => {
+    setIsSubmitLoading(true);
+    try {
+      return await methods.handleSubmit(
+        async (values) => {
+          await patchProfileSetup(values);
+        },
+        () => {
+          throw new Error('PROFILE_SETUP_FORM_INVALID');
+        },
+      )();
+    } finally {
+      setIsSubmitLoading(false);
+    }
+  }, [methods]);
+
+  return Object.assign(methods, { submitForm, isSubmitLoading });
 };
