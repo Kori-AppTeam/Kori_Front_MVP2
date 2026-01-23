@@ -1,7 +1,7 @@
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
-import { QuizAndVoteItem } from '../types';
+import { QuizAndVoteItem } from '../../k-culture/types';
 
 const QuizBox = ({ data }: { data: QuizAndVoteItem }) => {
   return (
