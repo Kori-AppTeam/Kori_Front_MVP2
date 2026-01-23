@@ -3,9 +3,9 @@ import VoteCharacter from '@/assets/images/character_vote.svg';
 import { textStyle, theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import QuizAndVoteHeader from '../../k-culture/components/QuizAndVoteHeader';
-import QuizBox from '../../k-culture/components/QuizBox';
-import { useGetQuizAndVote } from '../../k-culture/hooks/useGetQuizAndVote';
+import { useGetQuizAndVote } from '../hooks/useGetQuizAndVote';
+import QuizAndVoteHeader from './QuizAndVoteHeader';
+import QuizBox from './QuizBox';
 
 const QuizAndVote = () => {
   const [tab, setTab] = useState<'QUIZ' | 'VOTE'>('QUIZ');
@@ -40,7 +40,7 @@ const QuizAndVote = () => {
       )}
 
       {/* 퀴즈 or 투표 */}
-      <QuizBox data={} />
+      <QuizBox data={data} />
     </Container>
   );
 };
