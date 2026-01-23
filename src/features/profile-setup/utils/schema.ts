@@ -19,7 +19,7 @@ export type ProfileSetupSchema = z.infer<typeof profileSetupSchema>;
 
 // 각 스텝별 필드 매핑
 export const PROFILE_SETUP_STEP_FIELDS = {
-  basicInfo: ['firstname', 'lastname', 'gender', 'country', 'language'] as const,
+  basicInfo: ['firstname', 'lastname', 'gender', 'birthday', 'country', 'language'] as const,
   interests: ['hobby'] as const,
   profilePhoto: ['imageKey'] as const,
   aboutMe: ['introduction'] as const,
@@ -31,6 +31,7 @@ export const profileSetupStepSchemas = {
     firstname: true,
     lastname: true,
     gender: true,
+    birthday: true,
     country: true,
     language: true,
   }),
