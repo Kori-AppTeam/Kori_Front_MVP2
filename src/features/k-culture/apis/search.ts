@@ -37,12 +37,6 @@ export const getHotKeywords = async () => {
   return res.data.data;
 };
 
-// 뉴스 상세 조회 (검색 전용)
-export const getNewsDetailForSearch = async (contentId: number) => {
-  const res = await api.get(`/api/v2/main-contents/search/posts/${contentId}`);
-  return res.data.data;
-};
-
 // 뉴스 자동완성 검색어 클릭 기록 등록
 export const postClickedAutoNewsSuggestion = async (text: string) => {
   const res = await api.post(`/api/v2/main-contents/search/clicked`, {
