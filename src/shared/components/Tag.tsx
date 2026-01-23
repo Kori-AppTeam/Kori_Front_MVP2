@@ -33,5 +33,4 @@ const TagContainer = styled.TouchableOpacity<{ selected: boolean }>`
 const TagText = styled.Text<{ selected: boolean }>`
   ${({ theme }) => textStyle(theme.fonts.body.B5_M)};
   color: ${({ theme, selected }) => (selected ? theme.colors.primary.mint : theme.colors.primary.white)};
-  margin-top: 2px;
 `;
