@@ -19,14 +19,12 @@ const NewsId = () => {
     newsId,
     type = 'K-news',
     ago = '0',
-    fromSearch,
   } = useLocalSearchParams<{
     newsId: string;
     type?: NewsType | 'K-news';
     ago?: string;
-    fromSearch?: string;
   }>();
-  const { data, isLoading, isError } = useGetNewsDetail(Number(newsId), fromSearch === 'true');
+  const { data, isLoading, isError } = useGetNewsDetail(Number(newsId));
 
   const finalHtmlContent = useMemo(() => {
     if (!data) return '';

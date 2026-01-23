@@ -38,7 +38,7 @@ export const MYPAGE_SUPPORT_ROUTE = toRoute('/mypage/support');
 export const K_CULTURE_ROUTER = {
   HOME: '/k-culture',
   K_NEWS: '/k-culture/k-news',
-  DETAIL: (newsId: number | string, type: NewsType, ago: number, fromSearch: boolean) =>
-    toRoute(`/k-culture/detail/${newsId}?type=${type}&ago=${ago}&fromSearch=${fromSearch}`),
+  DETAIL: (newsId: number | string, type: NewsType, ago: number) =>
+    toRoute(`/k-culture/detail/${newsId}?type=${type}&ago=${ago}`),
   SEARCH: '/k-culture/search',
 } as const;
