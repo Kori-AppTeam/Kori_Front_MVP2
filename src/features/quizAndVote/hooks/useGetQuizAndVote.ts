@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTodayQuizAndVote } from '../apis/quizAndVote';
+import { getTodayQuizAndVote } from '../../k-culture/apis/quizAndVote';
 import { QuizAndVoteItem } from '../types';
 
 export const useGetQuizAndVote = (type: 'QUIZ' | 'VOTE') => {
