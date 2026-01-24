@@ -15,3 +15,12 @@ export interface OptionType {
   content: string;
   voteCount: number;
 }
+
+// 투표 생성 API 파라미터
+export interface MakeVoteParams {
+  content: string;
+  title: string;
+  description: string;
+  isAnonymous: boolean;
+  options: string[];
+}
