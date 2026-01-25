@@ -45,7 +45,9 @@ export const ParticipantsInfo = ({ participantCount, participantsImageUrls }: Pa
             )}
           />
         </ParticipantsImagesBox>
-        <ParticipantsTotalText>+{participantCount - 5}</ParticipantsTotalText>
+        <ParticipantsTotalText>
+          {participantCount - 5 <= 0 ? participantCount : `+${participantCount - 5}`}
+        </ParticipantsTotalText>
       </ParticipantsImageContainer>
     </ParticipantsContainer>
   );
