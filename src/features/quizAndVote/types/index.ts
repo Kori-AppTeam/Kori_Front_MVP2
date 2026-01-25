@@ -7,13 +7,26 @@ export interface QuizAndVoteItem {
   closeAt: string;
   totalVoteCount: number;
   options: OptionType[];
-  selectedOptionId: number | null;
+  selectedOptionId: number | null; // 사용자가 선택한 옵션 ID, 선택하지 않았으면 null
 }
 
 export interface OptionType {
   id: number;
   content: string;
   voteCount: number;
+}
+
+// 퀴즈/투표 참여 후 응답 타입
+export interface QuizAndVoteResponse {
+  pollId: number;
+  type: 'QUIZ' | 'VOTE';
+  isCorrect?: boolean;
+  correctOptionId?: number;
+  results: {
+    optionId: number | null;
+    voteCount: number;
+    percentage: number;
+  }[];
 }
 
 // 투표 생성 API 파라미터
