@@ -16,7 +16,11 @@ const QuizAndVoteHeader = ({ title, subTitle, Character }: QuizAndVoteHeaderProp
         <Title>{title}</Title>
         {subTitle && <SubTitle>{subTitle}</SubTitle>}
       </TextContainer>
-      {Character && <Character width={100} height={100} />}
+      {Character && (
+        <CharacterContainer>
+          <Character />
+        </CharacterContainer>
+      )}
     </Container>
   );
 };
@@ -24,15 +28,17 @@ const QuizAndVoteHeader = ({ title, subTitle, Character }: QuizAndVoteHeaderProp
 export default QuizAndVoteHeader;
 
 const Container = styled.View`
-  margin-top: 10px;
-  padding: 0 20px;
+  width: 100%;
+  padding: 0 15px;
   flex-direction: row;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  gap: 13px;
   height: 86px;
 `;
 
 const TextContainer = styled.View`
+  flex: 1;
   align-items: center;
   gap: 8px;
 `;
@@ -49,4 +55,11 @@ const SubTitle = styled.Text`
   text-align: center;
   color: ${theme.colors.gray.lightGray_1};
   ${({ theme }) => textStyle(theme.fonts.body.B4_L)};
+`;
+
+const CharacterContainer = styled.View`
+  width: 100px;
+  height: 86px;
+  align-items: center;
+  justify-content: center;
 `;
