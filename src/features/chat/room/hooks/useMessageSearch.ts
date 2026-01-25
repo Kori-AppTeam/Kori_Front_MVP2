@@ -1,5 +1,5 @@
 // src/features/chat/room/hooks/useMessageSearch.ts
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { loadMessagesAroundAPI, searchMessagesAPI } from '../api/messages';
 import { useChatStore } from '../stores/useChatStore';
@@ -21,7 +21,6 @@ interface MessageSearchHook {
   performSearch: () => Promise<void>;
   navigateToUp: () => void;
   navigateToDown: () => void;
-  clearSearch: () => void;
   isCurrentMessage: (messageId: number) => boolean;
 }
 
@@ -49,8 +48,15 @@ export const useMessageSearch = ({ roomId, flatListRef }: MessageSearchParams): 
     incrementIndex,
     decrementIndex,
     setError,
-    clearSearch,
+    deactivateSearch,
   } = useSearchStore();
+
+  // 컴포넌트 언마운트 시 검색 상태 초기화
+  useEffect(() => {
+    return () => {
+      deactivateSearch();
+    };
+  }, [deactivateSearch]);
 
   /**
    * 메시지로 스크롤하는 내부 함수
@@ -164,7 +170,6 @@ export const useMessageSearch = ({ roomId, flatListRef }: MessageSearchParams): 
     performSearch,
     navigateToUp,
     navigateToDown,
-    clearSearch,
     isCurrentMessage,
   };
 };
