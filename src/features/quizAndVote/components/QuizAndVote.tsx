@@ -3,26 +3,20 @@ import VoteCharacter from '@/assets/images/character_vote.svg';
 import { textStyle, theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import { useGetQuizAndVote } from '../hooks/useGetQuizAndVote';
+import MoreButton from '../../k-culture/components/MoreButton';
+import { useGetTodayPoll } from '../hooks/useGetTodayPoll';
 import QuizAndVoteHeader from './QuizAndVoteHeader';
 import QuizBox from './QuizBox';
+import VoteBox from './VoteBox';
 
 const QuizAndVote = () => {
   const [tab, setTab] = useState<'QUIZ' | 'VOTE'>('QUIZ');
-  const { data, isError, isLoading } = useGetQuizAndVote(tab);
-
-  if (isLoading) {
-    return <Container />;
-  }
-
-  if (isError || !data) {
-    return <Container />;
-  }
+  const { data, isError, isLoading } = useGetTodayPoll(tab);
 
   return (
     <Container>
       {/* 탭 */}
-      <Title>Quiz&Vote</Title>
+      <Title>Quiz&nbsp;&&nbsp;Vote</Title>
       <TabRow>
         <TabButton isActive={tab === 'QUIZ'} onPress={() => setTab('QUIZ')}>
           <TabButtonText isActive={tab === 'QUIZ'}>Quiz</TabButtonText>
@@ -32,15 +26,31 @@ const QuizAndVote = () => {
         </TabButton>
       </TabRow>
 
-      {/* 헤더 */}
-      {tab === 'QUIZ' ? (
-        <QuizAndVoteHeader title="Today's Quiz" subTitle="Take today's Korean quiz" Character={QuizCharacter} />
-      ) : (
-        <QuizAndVoteHeader title="Today's Vote" subTitle="Take Korean favorites poll" Character={VoteCharacter} />
-      )}
-
-      {/* 퀴즈 or 투표 */}
-      <QuizBox data={data} />
+      <PollContainer>
+        {/* 퀴즈 or 투표 */}
+        {isLoading || isError || !data ? (
+          <EmptyMessage>No Poll available</EmptyMessage>
+        ) : (
+          <>
+            {tab === 'QUIZ' ? (
+              <>
+                <QuizAndVoteHeader title="Today's Quiz" subTitle="Take today's Korean quiz" Character={QuizCharacter} />
+                <QuizBox data={data} />
+              </>
+            ) : (
+              <>
+                <QuizAndVoteHeader
+                  title="Today's Vote"
+                  subTitle="Take Korean favorites poll"
+                  Character={VoteCharacter}
+                />
+                <VoteBox data={data} />
+              </>
+            )}
+          </>
+        )}
+      </PollContainer>
+      <MoreButton buttonText={tab === 'QUIZ' ? 'More Quiz' : 'More Vote'} onPress={() => {}} />
     </Container>
   );
 };
@@ -51,7 +61,6 @@ const Container = styled.View`
   padding: 30px 0;
   background-color: ${theme.colors.primary.black};
   align-items: center;
-  gap: 24px;
 `;
 
 const Title = styled.Text`
@@ -59,6 +68,7 @@ const Title = styled.Text`
   padding: 0 20px;
   color: ${theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.headline.H4_SB)};
+  margin-bottom: 20px;
 `;
 
 const TabRow = styled.View`
@@ -66,6 +76,7 @@ const TabRow = styled.View`
   gap: 8px;
   border-bottom-width: 1px;
   border-bottom-color: ${({ theme }) => theme.colors.gray.darkGray_1};
+  margin-bottom: 10px;
 `;
 
 const TabButton = styled.Pressable<{ isActive: boolean }>`
@@ -80,4 +91,18 @@ const TabButton = styled.Pressable<{ isActive: boolean }>`
 const TabButtonText = styled.Text<{ isActive: boolean }>`
   color: ${({ isActive, theme }) => (isActive ? theme.colors.primary.mint : theme.colors.gray.darkGray_2)};
   ${({ isActive, theme }) => (isActive ? textStyle(theme.fonts.body.B4_SB) : textStyle(theme.fonts.body.B4_M))};
+`;
+
+const EmptyMessage = styled.Text`
+  color: ${({ theme }) => theme.colors.gray.darkGray_2};
+  ${({ theme }) => textStyle(theme.fonts.body.B4_M)};
+  text-align: center;
+  padding: 20px;
+`;
+
+const PollContainer = styled.View`
+  padding: 0 20px;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 24px;
 `;
