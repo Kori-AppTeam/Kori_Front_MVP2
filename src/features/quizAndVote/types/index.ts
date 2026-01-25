@@ -8,6 +8,7 @@ export interface QuizAndVoteItem {
   totalVoteCount: number;
   options: OptionType[];
   selectedOptionId: number | null; // 사용자가 선택한 옵션 ID, 선택하지 않았으면 null
+  correctOptionId?: number | null; // 퀴즈인 경우 정답 옵션 ID
 }
 
 export interface OptionType {
