@@ -1,34 +1,69 @@
-import { textStyle, theme } from '@/src/styles/theme';
-import React from 'react';
+import { formatDate } from '@/src/shared/utils/dateUtils';
+import { textStyle } from '@/src/styles/theme';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import { QuizAndVoteItem } from '../../k-culture/types';
+import { usePostPoll } from '../hooks/usePostPoll';
+import { QuizAndVoteItem } from '../types';
+import PollBox, { BoxContainer, OptionRow } from './PollBox';
+import QuizOption from './QuizOption';
 
 const QuizBox = ({ data }: { data: QuizAndVoteItem }) => {
+  const [isSelectedOption, setIsSelectedOption] = useState<number | null>(data.selectedOptionId ?? null);
+  const [showResult, setShowResult] = useState(data.selectedOptionId ? true : false);
+
+  const { mutate: postPoll, data: pollResult } = usePostPoll();
+
+  const handleSelectOption = (optionId: number) => {
+    if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(퀴즈 참여 한 번만 가능)
+
+    setIsSelectedOption(optionId);
+    postPoll(
+      { pollId: data.id, optionId: optionId },
+      {
+        onSuccess: () => {
+          setShowResult(true);
+        },
+      },
+    );
+  };
+
   return (
-    <Container>
-      <Title>{data.title}</Title>
-      <Description>{data.description}</Description>
-    </Container>
+    <BoxContainer>
+      <ClosedDateContainer>
+        <ClosedDateText>Close&nbsp;:&nbsp;{formatDate(data.closeAt, true)}</ClosedDateText>
+      </ClosedDateContainer>
+
+      <PollBox title={data.title} subTitle={data.description} />
+
+      <OptionRow>
+        {data.options.map((option) => (
+          <QuizOption
+            key={option.id}
+            optionId={option.id}
+            content={option.content}
+            isSelected={isSelectedOption === option.id}
+            isResult={showResult}
+            onPress={() => handleSelectOption(option.id)}
+            correctOptionId={showResult ? data.correctOptionId : null}
+          />
+        ))}
+      </OptionRow>
+    </BoxContainer>
   );
 };
 
 export default QuizBox;
 
-const Container = styled.View`
-  padding: 20px;
-  background-color: ${theme.colors.gray.darkBlack_1};
-  border-radius: 10px;
+const ClosedDateContainer = styled.View`
+  align-self: flex-start;
+  justify-content: center;
+  background-color: #1a4634;
+  padding: 6px;
+  border-radius: 4px;
+  margin-bottom: 24px;
 `;
 
-const Title = styled.Text`
-  width: 100%;
-  color: ${theme.colors.primary.white};
-  ${({ theme }) => textStyle(theme.fonts.body.B2_SB)};
-`;
-
-const Description = styled.Text`
-  width: 100%;
-  margin-top: 16px;
-  color: ${theme.colors.gray.lightGray_2};
-  ${({ theme }) => textStyle(theme.fonts.body.B3_M)};
+const ClosedDateText = styled.Text`
+  color: ${({ theme }) => theme.colors.primary.mint};
+  ${({ theme }) => textStyle(theme.fonts.body.B5_M)};
 `;
