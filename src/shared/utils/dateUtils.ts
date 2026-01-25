@@ -32,7 +32,7 @@ export const formatTime = (sentAt: string | number): string => {
 /**
  * UTC 초를 YYYY.MM.DD (Weekday) 형식으로 변환
  */
-export const formatDate = (utcSeconds: string | number): string => {
+export const formatDate = (utcSeconds: string | number, noWeekday?: boolean): string => {
   const date = new Date(Number(utcSeconds) * 1000);
   const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -41,7 +41,7 @@ export const formatDate = (utcSeconds: string | number): string => {
   const day = String(date.getUTCDate()).padStart(2, '0');
   const weekday = weekdays[date.getUTCDay()];
 
-  return `${year}.${month}.${day} (${weekday})`;
+  return noWeekday ? `${year}.${month}.${day}` : `${year}.${month}.${day} (${weekday})`;
 };
 
 /**
