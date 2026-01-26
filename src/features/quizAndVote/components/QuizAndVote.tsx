@@ -1,6 +1,7 @@
 import QuizCharacter from '@/assets/images/character_quiz.svg';
 import VoteCharacter from '@/assets/images/character_vote.svg';
 import { textStyle, theme } from '@/src/styles/theme';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
@@ -13,6 +14,11 @@ import VoteBox from './VoteBox';
 const QuizAndVote = () => {
   const [tab, setTab] = useState<'QUIZ' | 'VOTE'>('QUIZ');
   const { data, isError, isLoading } = useGetTodayPoll(tab);
+
+  const handleMorePress = () => {
+    const targetCategory = tab === 'QUIZ' ? 'QUIZ' : 'VOTE';
+    router.push(`/(tabs)/community?category=${targetCategory}`);
+  };
 
   return (
     <Container>
@@ -57,7 +63,7 @@ const QuizAndVote = () => {
           </>
         )}
       </PollContainer>
-      <MoreButton buttonText={tab === 'QUIZ' ? 'More Quiz' : 'More Vote'} onPress={() => {}} />
+      <MoreButton buttonText={tab === 'QUIZ' ? 'More Quiz' : 'More Vote'} onPress={handleMorePress} />
     </Container>
   );
 };
