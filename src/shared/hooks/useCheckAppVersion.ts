@@ -3,10 +3,11 @@ import Constants from 'expo-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { getAppVersion } from '@/src/shared/api/getAppVersion';
 import { showUpdateAlert, showUpdateErrorAlert } from '@/src/shared/utils/showUpdateAlert';
+import { current } from 'immer';
 
 export function useCheckAppVersion() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isAppUpToDate, setIsAppUpToDate] = useState<boolean>(true);
+  const [isAppUpToDate, setIsAppUpToDate] = useState<boolean>(false);
 
   const currentVersion = Constants.expoConfig?.version;
   const platform = Platform.OS;
@@ -17,7 +18,7 @@ export function useCheckAppVersion() {
       if (!currentVersion) {
         throw new Error('APP_VERSION_NOT_FOUND'); // 앱 버전 정보를 찾을 수 없는 경우 error 처리
       }
-      const { status, title, message, storeUrl } = await getAppVersion(platform, '1.2.8');
+      const { status, title, message, storeUrl } = await getAppVersion(platform, currentVersion);
       switch (status) {
         // 강제 업데이트 Alert
         case 'FORCE_UPDATE':
@@ -28,8 +29,7 @@ export function useCheckAppVersion() {
         // 권장 업데이트 Alert
         case 'RECOMMEND_UPDATE':
           showUpdateAlert(title, message, storeUrl, false);
-          // 권장 업데이트는 앱 사용을 허용
-          setIsAppUpToDate(true);
+          setIsAppUpToDate(false);
           return;
 
         // 업데이트 필요 없음
