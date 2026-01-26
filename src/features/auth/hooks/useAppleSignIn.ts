@@ -34,7 +34,8 @@ export function useAppleSignIn() {
         return 'normal';
       }
     } catch (error) {
-      Alert.alert('Apple Sign-In Error', (error as Error).message);
+      Alert.alert('Error', `${error as any}`);
+
       throw error;
     } finally {
       setIsLoading(false);

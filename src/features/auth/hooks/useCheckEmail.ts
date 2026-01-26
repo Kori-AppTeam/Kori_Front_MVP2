@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { postEmailCheck } from '@/src/features/auth/api/postEmailCheck';
+import { Alert } from 'react-native';
 
 export function useCheckEmail(email: string, emailError?: string) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -36,6 +37,7 @@ export function useCheckEmail(email: string, emailError?: string) {
         setError('');
         setIsChecked(true);
       } catch (error) {
+        Alert.alert('Error', `${error as any}`);
         setError('Failed to check email. Please try again later.');
       } finally {
         const elapsed = Date.now() - startTime;
