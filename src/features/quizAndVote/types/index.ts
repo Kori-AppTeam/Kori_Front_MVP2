@@ -21,6 +21,13 @@ export interface OptionType {
   voteCount: number;
 }
 
+// 퀴즈/투표 참여 파라미터
+export interface PostPollParams {
+  pollId: number;
+  optionId: number;
+  pollType: 'QUIZ' | 'VOTE';
+}
+
 // 퀴즈/투표 참여 후 응답 타입
 export interface QuizAndVoteResponse {
   pollId: number;
