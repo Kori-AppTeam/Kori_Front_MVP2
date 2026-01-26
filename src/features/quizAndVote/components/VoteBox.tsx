@@ -1,5 +1,5 @@
 import { textStyle, theme } from '@/src/styles/theme';
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components/native';
 import { usePostPoll } from '../hooks/usePostPoll';
 import { TodayPollType } from '../types';
@@ -8,24 +8,30 @@ import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import VoteOption from './VoteOption';
 
 const VoteBox = ({ data }: { data: TodayPollType }) => {
-  const [isSelectedOption, setIsSelectedOption] = useState<number | null>(data.selectedOptionId ?? null);
-  const [showResult, setShowResult] = useState(!!data.selectedOptionId); // 이미 선택된 옵션이 있으면 결과 보여주기
-
   const { mutate: postPoll, data: pollResult } = usePostPoll();
+
+  const isSelectedOption = data.selectedOptionId;
+  const showResult = !!data.selectedOptionId;
 
   const handleSelectOption = (optionId: number) => {
     if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(투표 참여 한 번만 가능)
 
-    setIsSelectedOption(optionId);
-    postPoll(
-      { pollId: data.id, optionId: optionId },
-      {
-        onSuccess: () => {
-          setShowResult(true);
-        },
-      },
-    );
+    postPoll({
+      pollId: data.id,
+      optionId: optionId,
+      pollType: 'VOTE',
+    });
   };
+
+  const currentVoteCount = useMemo(() => {
+    // 투표 직후(반환 데이터에서 투표율 계산)
+    if (pollResult) {
+      return pollResult.results.reduce((acc, curr) => acc + curr.voteCount, 0);
+    }
+
+    // 이미 투표한 상태(바로 투표율 조회)
+    return data.totalVoteCount;
+  }, [data.totalVoteCount, pollResult]);
 
   const showVotePercentage = (optionId: number, initialVoteCount: number) => {
     // 투표 전
@@ -59,7 +65,7 @@ const VoteBox = ({ data }: { data: TodayPollType }) => {
       </OptionRow>
 
       <VoteCountRow>
-        <VoteCountText color={theme.colors.primary.mint}>{data.totalVoteCount}</VoteCountText>
+        <VoteCountText color={theme.colors.primary.mint}>{currentVoteCount}</VoteCountText>
         <VoteCountText>votes</VoteCountText>
       </VoteCountRow>
     </BoxContainer>
