@@ -3,6 +3,7 @@ import { getAppleCredential } from '@/src/features/auth/lib/oauth/apple';
 import { postAppleAppLogin } from '@/src/features/auth/api/postAppleAppLogin';
 import { saveAuthToken } from '@/src/features/auth/lib/saveAuthToken';
 import { getIsAppleUser } from '@/src/features/auth/api/getIsAppleUser';
+import { Alert } from 'react-native';
 
 /**
  * 1. 신규 유저인 경우 === 회원가입
@@ -33,6 +34,7 @@ export function useAppleSignIn() {
         return 'normal';
       }
     } catch (error) {
+      Alert.alert('Apple Sign-In Error', (error as Error).message);
       throw error;
     } finally {
       setIsLoading(false);
