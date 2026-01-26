@@ -2,12 +2,12 @@ import { textStyle, theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { usePostPoll } from '../hooks/usePostPoll';
-import { QuizAndVoteItem } from '../types';
+import { TodayPollType } from '../types';
 import { calculateVoteRatio } from '../utils/calculateVoteRatio';
 import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import VoteOption from './VoteOption';
 
-const VoteBox = ({ data }: { data: QuizAndVoteItem }) => {
+const VoteBox = ({ data }: { data: TodayPollType }) => {
   const [isSelectedOption, setIsSelectedOption] = useState<number | null>(data.selectedOptionId ?? null);
   const [showResult, setShowResult] = useState(data.selectedOptionId ? true : false);
 

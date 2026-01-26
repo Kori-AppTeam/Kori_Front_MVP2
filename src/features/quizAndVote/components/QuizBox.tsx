@@ -3,11 +3,11 @@ import { textStyle } from '@/src/styles/theme';
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { usePostPoll } from '../hooks/usePostPoll';
-import { QuizAndVoteItem } from '../types';
+import { TodayPollType } from '../types';
 import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import QuizOption from './QuizOption';
 
-const QuizBox = ({ data }: { data: QuizAndVoteItem }) => {
+const QuizBox = ({ data }: { data: TodayPollType }) => {
   const [isSelectedOption, setIsSelectedOption] = useState<number | null>(data.selectedOptionId ?? null);
   const [showResult, setShowResult] = useState(data.selectedOptionId ? true : false);
 
