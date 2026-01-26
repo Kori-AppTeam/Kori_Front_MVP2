@@ -2,12 +2,12 @@ import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
 import { usePostPoll } from '../hooks/usePostPoll';
-import { TodayPollType } from '../types';
+import { PollBaseType, TodayPollType } from '../types';
 import { calculateVoteRatio } from '../utils/calculateVoteRatio';
 import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import VoteOption from './VoteOption';
 
-const VoteBox = ({ data }: { data: TodayPollType }) => {
+const VoteBox = ({ data }: { data: TodayPollType | PollBaseType }) => {
   const { mutate: postPoll } = usePostPoll();
 
   const showResult = !!data.selectedOptionId;

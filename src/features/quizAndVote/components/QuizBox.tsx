@@ -1,12 +1,12 @@
 import { formatDate } from '@/src/shared/utils/dateUtils';
 import React from 'react';
 import { usePostPoll } from '../hooks/usePostPoll';
-import { TodayPollType } from '../types';
+import { PollBaseType, TodayPollType } from '../types';
 import { ClosedDateContainer, ClosedDateText } from './BaseOption';
 import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import QuizOption from './QuizOption';
 
-const QuizBox = ({ data }: { data: TodayPollType }) => {
+const QuizBox = ({ data }: { data: TodayPollType | PollBaseType }) => {
   const { mutate: postPoll } = usePostPoll();
 
   const isSelectedOption = data.selectedOptionId;

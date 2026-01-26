@@ -1,5 +1,6 @@
 // 퀴즈, 투표 Base 타입
 export interface PollBaseType {
+  id: number;
   title: string;
   description?: string;
   closeAt: string;
@@ -11,7 +12,6 @@ export interface PollBaseType {
 
 // 퀴즈, 투표
 export interface TodayPollType extends PollBaseType {
-  id: number;
   type: 'QUIZ' | 'VOTE';
 }
 
