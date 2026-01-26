@@ -21,9 +21,26 @@ export const usePostPoll = () => {
 
       // 낙관적 업데이트: 캐시를 즉시 업데이트
       if (previousData) {
-        queryClient.setQueryData<TodayPollType>(['todayPoll', pollType], {
-          ...previousData,
-          selectedOptionId: optionId,
+        queryClient.setQueryData<TodayPollType>(['todayPoll', pollType], (old) => {
+          if (!old) return previousData;
+
+          const commonUpdates = {
+            ...old,
+            selectedOptionId: optionId,
+          };
+
+          if (pollType === 'VOTE') {
+            return {
+              ...commonUpdates,
+              totalVoteCount: old.totalVoteCount + 1,
+              options: old.options.map((option) =>
+                option.id === optionId ? { ...option, voteCount: option.voteCount + 1 } : option,
+              ),
+            };
+          }
+
+          // 퀴즈(QUIZ)는 투표 수 반영하지 않음
+          return commonUpdates;
         });
       }
 
