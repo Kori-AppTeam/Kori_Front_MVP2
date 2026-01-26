@@ -92,18 +92,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     // DEBUG ONLY: 서버 URL 환경변수 누락 여부 즉시 확인용 (확인 후 반드시 삭제)
-    if (didShowMissingServerUrlAlert.current) return;
-    const url = (Config as any)?.SERVER_URL as unknown;
-    const urlStr = typeof url === 'string' ? url.trim() : '';
-    if (!urlStr) {
-      didShowMissingServerUrlAlert.current = true;
-      Alert.alert(
-        '[DEBUG] SERVER_URL is missing',
-        `__DEV__=${String(__DEV__)}\nEXPO_PUBLIC_SERVER_URL_DEV=${String(
-          (process as any)?.env?.EXPO_PUBLIC_SERVER_URL_DEV,
-        )}\nEXPO_PUBLIC_SERVER_URL_PROD=${String((process as any)?.env?.EXPO_PUBLIC_SERVER_URL_PROD)}`,
-      );
-    }
+    Alert.alert('Environment Variables', `server_url: ${Config.SERVER_URL}`);
   }, []);
 
   useEffect(() => {
