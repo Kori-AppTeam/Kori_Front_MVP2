@@ -36,6 +36,9 @@ export const CLIENT_SORT_NAME: Record<SortParam, ClientSortParam> = {
   POPULAR: 'Hot',
 };
 
+// 카테고리 목록 (All 포함)
+export const CATS: AllowedCategory[] = ['ALL', 'QUIZ', 'VOTE', 'NEWS', 'TIP', 'QNA', 'EVENT', 'FREE_TALK', 'ACTIVITY'];
+
 // Write 화면용 카테고리 목록 (All 제외)
 export const WRITE_CATEGORIES: AllowedClientCategory[] = ['News', 'Tip', 'Q&A', 'Event', 'Free talk', 'Activity'];
 

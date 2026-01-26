@@ -1,9 +1,7 @@
 import { AllowedCategory } from '@/src/features/community/post/types';
-import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/constants';
+import { CATS, CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/constants';
 import React from 'react';
 import styled from 'styled-components/native';
-
-const CATS: AllowedCategory[] = ['ALL', 'QUIZ', 'VOTE', 'NEWS', 'TIP', 'QNA', 'EVENT', 'FREE_TALK', 'ACTIVITY'];
 
 type Props = {
   value: AllowedCategory;
