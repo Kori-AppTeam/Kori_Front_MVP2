@@ -2,6 +2,7 @@ import QuizCharacter from '@/assets/images/character_quiz.svg';
 import VoteCharacter from '@/assets/images/character_vote.svg';
 import { textStyle, theme } from '@/src/styles/theme';
 import React, { useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 import MoreButton from '../../k-culture/components/MoreButton';
 import { useGetTodayPoll } from '../hooks/useGetTodayPoll';
@@ -28,7 +29,13 @@ const QuizAndVote = () => {
 
       <PollContainer>
         {/* 퀴즈 or 투표 */}
-        {isLoading || isError || !data ? (
+        {isLoading ? (
+          <LoadingContainer>
+            <ActivityIndicator />
+          </LoadingContainer>
+        ) : isError ? (
+          <ErrorMessage>Failed to load poll data</ErrorMessage>
+        ) : !data ? (
           <EmptyMessage>No Poll available</EmptyMessage>
         ) : (
           <>
@@ -100,9 +107,25 @@ const EmptyMessage = styled.Text`
   padding: 20px;
 `;
 
+const ErrorMessage = styled.Text`
+  color: ${({ theme }) => theme.colors.secondary.red};
+  ${({ theme }) => textStyle(theme.fonts.body.B4_M)};
+  text-align: center;
+  padding: 20px;
+`;
+
+const LoadingContainer = styled.View`
+  padding: 50px 0;
+  justify-content: center;
+  align-items: center;
+`;
+
 const PollContainer = styled.View`
   padding: 0 20px;
   width: 100%;
   align-items: center;
   margin-bottom: 24px;
+  min-height: 200px;
+  justify-content: center;
+  flex: none;
 `;
