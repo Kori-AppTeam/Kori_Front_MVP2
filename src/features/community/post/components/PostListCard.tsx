@@ -1,3 +1,5 @@
+import QuizBox from '@/src/features/quizAndVote/components/QuizBox';
+import VoteBox from '@/src/features/quizAndVote/components/VoteBox';
 import { COMMUNITY_ROUTER } from '@/src/shared/constants/route';
 import { router } from 'expo-router';
 import React, { memo } from 'react';
@@ -40,7 +42,7 @@ const PostListCard = ({ data }: { data: PostsListItemType }) => {
         />
 
         <ContentBox>
-          {/* 퀴즈, 투표가 아닐 때만 이미지 노출 */}
+          {/* 퀴즈, 투표가 아닌 게시글에만 이미지 존재 */}
           {data.boardCategory !== 'QUIZ' &&
             data.boardCategory !== 'VOTE' &&
             'postInfo' in data &&
@@ -51,6 +53,12 @@ const PostListCard = ({ data }: { data: PostsListItemType }) => {
                 pageWidth={SCREEN_WIDTH - 20 * 2}
               />
             )}
+
+          {/* 퀴즈 게시글 */}
+          {data.boardCategory === 'QUIZ' && 'pollInfo' in data && data.pollInfo && <QuizBox data={data.pollInfo} />}
+
+          {/* 투표 게시글 */}
+          {data.boardCategory === 'VOTE' && 'pollInfo' in data && data.pollInfo && <VoteBox data={data.pollInfo} />}
 
           <PostTextContent isTruncate={true} postId={data.postId} content={data.contentPreview} />
         </ContentBox>
