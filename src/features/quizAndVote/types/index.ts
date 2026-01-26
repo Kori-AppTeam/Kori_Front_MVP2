@@ -1,7 +1,5 @@
-// 퀴즈, 투표
-export interface QuizAndVoteItem {
-  id: number;
-  type: 'QUIZ' | 'VOTE';
+// 퀴즈, 투표 Base 타입
+export interface PollBaseType {
   title: string;
   description: string;
   closeAt: string;
@@ -9,6 +7,12 @@ export interface QuizAndVoteItem {
   options: OptionType[];
   selectedOptionId: number | null; // 사용자가 선택한 옵션 ID, 선택하지 않았으면 null
   correctOptionId?: number | null; // 퀴즈인 경우 정답 옵션 ID
+}
+
+// 퀴즈, 투표
+export interface TodayPollType extends PollBaseType {
+  id: number;
+  type: 'QUIZ' | 'VOTE';
 }
 
 export interface OptionType {
