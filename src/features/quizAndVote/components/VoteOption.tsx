@@ -2,7 +2,7 @@ import Icon from '@/components/common/Icon';
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
-import { BaseOptionComponent } from './BaseOption';
+import { BaseOptionComponent, SelectCircle } from './BaseOption';
 
 interface VoteOptionProps {
   optionId: number;
@@ -43,7 +43,11 @@ const VoteOption = ({ optionId, content, isSelected, isResult, votePercentage, o
     }
 
     // 선택 전 상태
-    return isSelected ? <Icon type="check" size={24} color={theme.colors.primary.mint} /> : null;
+    return isSelected ? (
+      <Icon type="check" size={24} color={theme.colors.primary.mint} />
+    ) : (
+      <SelectCircle pointerEvents="none" />
+    );
   };
 
   return (
