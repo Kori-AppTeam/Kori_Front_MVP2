@@ -15,6 +15,8 @@ export const CLIENT_CATEGORY_NAME: Record<AllowedCategory, AllowedClientCategory
   EVENT: 'Event',
   FREE_TALK: 'Free talk',
   ACTIVITY: 'Activity',
+  QUIZ: 'Quiz',
+  VOTE: 'Vote',
 };
 
 export const CATEGORY_TO_BOARD_ID: Record<AllowedCategory, BoardId> = {
@@ -25,6 +27,8 @@ export const CATEGORY_TO_BOARD_ID: Record<AllowedCategory, BoardId> = {
   EVENT: 5,
   FREE_TALK: 6,
   ACTIVITY: 7,
+  QUIZ: 8,
+  VOTE: 9,
 };
 
 export const CLIENT_SORT_NAME: Record<SortParam, ClientSortParam> = {

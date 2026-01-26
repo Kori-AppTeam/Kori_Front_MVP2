@@ -3,7 +3,7 @@ import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/
 import React from 'react';
 import styled from 'styled-components/native';
 
-const CATS: AllowedCategory[] = ['ALL', 'NEWS', 'TIP', 'QNA', 'EVENT', 'FREE_TALK', 'ACTIVITY'];
+const CATS: AllowedCategory[] = ['ALL', 'QUIZ', 'VOTE', 'NEWS', 'TIP', 'QNA', 'EVENT', 'FREE_TALK', 'ACTIVITY'];
 
 type Props = {
   value: AllowedCategory;
