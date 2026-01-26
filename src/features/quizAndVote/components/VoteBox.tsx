@@ -1,5 +1,5 @@
 import { textStyle, theme } from '@/src/styles/theme';
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 import { usePostPoll } from '../hooks/usePostPoll';
 import { TodayPollType } from '../types';
@@ -8,9 +8,8 @@ import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import VoteOption from './VoteOption';
 
 const VoteBox = ({ data }: { data: TodayPollType }) => {
-  const { mutate: postPoll, data: pollResult } = usePostPoll();
+  const { mutate: postPoll } = usePostPoll();
 
-  const isSelectedOption = data.selectedOptionId;
   const showResult = !!data.selectedOptionId;
 
   const handleSelectOption = (optionId: number) => {
@@ -23,29 +22,6 @@ const VoteBox = ({ data }: { data: TodayPollType }) => {
     });
   };
 
-  const currentVoteCount = useMemo(() => {
-    // 투표 직후(반환 데이터에서 투표율 계산)
-    if (pollResult) {
-      return pollResult.results.reduce((acc, curr) => acc + curr.voteCount, 0);
-    }
-
-    // 이미 투표한 상태(바로 투표율 조회)
-    return data.totalVoteCount;
-  }, [data.totalVoteCount, pollResult]);
-
-  const showVotePercentage = (optionId: number, initialVoteCount: number) => {
-    // 투표 전
-    if (!showResult) return 0;
-
-    // 투표 직후
-    if (pollResult) {
-      return pollResult.results.find((r) => r.optionId === optionId)?.percentage ?? 0;
-    }
-
-    // 이미 투표한 상태(바로 투표율 조회)
-    return calculateVoteRatio(data.totalVoteCount, initialVoteCount);
-  };
-
   return (
     <BoxContainer>
       <PollBox title={data.title} subTitle={data.description} />
@@ -56,16 +32,16 @@ const VoteBox = ({ data }: { data: TodayPollType }) => {
             key={option.id}
             optionId={option.id}
             content={option.content}
-            isSelected={isSelectedOption === option.id}
+            isSelected={data.selectedOptionId === option.id}
             isResult={showResult}
-            onPress={() => !isSelectedOption && handleSelectOption(option.id)}
-            votePercentage={showVotePercentage(option.id, option.voteCount)}
+            onPress={() => !data.selectedOptionId && handleSelectOption(option.id)}
+            votePercentage={showResult ? calculateVoteRatio(data.totalVoteCount, option.voteCount) : 0}
           />
         ))}
       </OptionRow>
 
       <VoteCountRow>
-        <VoteCountText color={theme.colors.primary.mint}>{currentVoteCount}</VoteCountText>
+        <VoteCountText color={theme.colors.primary.mint}>{data.totalVoteCount}</VoteCountText>
         <VoteCountText>votes</VoteCountText>
       </VoteCountRow>
     </BoxContainer>

@@ -7,11 +7,10 @@ import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import QuizOption from './QuizOption';
 
 const QuizBox = ({ data }: { data: TodayPollType }) => {
-  const { mutate: postPoll, data: pollResult } = usePostPoll();
+  const { mutate: postPoll } = usePostPoll();
 
   const isSelectedOption = data.selectedOptionId;
   const showResult = !!data.selectedOptionId;
-  const answerOptionId = pollResult?.correctOptionId ?? data.correctOptionId;
 
   const handleSelectOption = (optionId: number) => {
     if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(퀴즈 참여 한 번만 가능)
@@ -40,7 +39,7 @@ const QuizBox = ({ data }: { data: TodayPollType }) => {
             isSelected={isSelectedOption === option.id}
             isResult={showResult}
             onPress={() => handleSelectOption(option.id)}
-            correctOptionId={showResult ? answerOptionId : null}
+            correctOptionId={showResult ? data.correctOptionId : null}
           />
         ))}
       </OptionRow>
