@@ -65,3 +65,17 @@ export const SelectCircle = styled.View`
   border-width: 1px;
   border-color: ${({ theme }) => theme.colors.gray.gray_2};
 `;
+
+export const ClosedDateContainer = styled.View`
+  align-self: flex-start;
+  justify-content: center;
+  background-color: #1a4634;
+  padding: 6px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+`;
+
+export const ClosedDateText = styled.Text`
+  color: ${({ theme }) => theme.colors.primary.mint};
+  ${({ theme }) => textStyle(theme.fonts.body.B5_M)};
+`;
