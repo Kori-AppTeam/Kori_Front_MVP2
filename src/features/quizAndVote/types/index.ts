@@ -1,7 +1,7 @@
 // 퀴즈, 투표 Base 타입
 export interface PollBaseType {
   title: string;
-  description: string;
+  description?: string;
   closeAt: string;
   totalVoteCount: number;
   options: OptionType[];
@@ -43,9 +43,9 @@ export interface QuizAndVoteResponse {
 
 // 투표 생성 API 파라미터
 export interface MakeVoteParams {
-  content: string;
+  content?: string;
   title: string;
-  description: string;
+  description?: string;
   isAnonymous: boolean;
   options: string[];
 }
