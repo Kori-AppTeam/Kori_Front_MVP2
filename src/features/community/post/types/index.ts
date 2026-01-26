@@ -1,8 +1,21 @@
-export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+import { PollBaseType } from '@/src/features/quizAndVote/types';
+
+export type BoardId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type SortParam = 'LATEST' | 'POPULAR';
 export type ClientSortParam = 'New' | 'Hot';
-export type AllowedCategory = 'ALL' | 'NEWS' | 'TIP' | 'QNA' | 'EVENT' | 'FREE_TALK' | 'ACTIVITY';
-export type AllowedClientCategory = 'All' | 'News' | 'Tip' | 'Q&A' | 'Event' | 'Free talk' | 'Activity';
+export type AllowedCategory = 'ALL' | 'NEWS' | 'TIP' | 'QNA' | 'EVENT' | 'FREE_TALK' | 'ACTIVITY' | 'QUIZ' | 'VOTE';
+export type GeneralCategory = 'NEWS' | 'TIP' | 'QNA' | 'EVENT' | 'FREE_TALK' | 'ACTIVITY';
+export type PollCategory = 'QUIZ' | 'VOTE';
+export type AllowedClientCategory =
+  | 'All'
+  | 'News'
+  | 'Tip'
+  | 'Q&A'
+  | 'Event'
+  | 'Free talk'
+  | 'Activity'
+  | 'Quiz'
+  | 'Vote';
 
 // 게시글 상세
 export interface PostDetail {
@@ -39,14 +52,29 @@ export interface PostsListItem {
   commentCount: number;
   viewCount: number;
   userImageUrl: string | null;
-  contentImageUrl: string | null;
-  imageCount: number;
   score: number | null;
 }
 
+// 일반 게시글 타입
+export interface GeneralPostItem extends PostsListItem {
+  category: GeneralCategory;
+  postInfo: {
+    contentImageUrl: string | null;
+    imageCount: number;
+  };
+}
+
+// 투표/퀴즈 게시글 타입
+export interface PostPollItem extends PostsListItem {
+  category: PollCategory;
+  pollInfo: PollBaseType;
+}
+
+export type PostsListItemType = GeneralPostItem | PostPollItem;
+
 // page별 post 호출
 export interface PostsCursorPage {
-  items: PostsListItem[];
+  items: PostsListItemType[];
   hasNext: boolean;
   nextCursor?: string | null;
 }
