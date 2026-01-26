@@ -4,20 +4,20 @@ import { ActivityIndicator, FlatList, ListRenderItem } from 'react-native';
 import styled from 'styled-components/native';
 import { Empty, EmptyText, ErrorContainer, ErrorText, RetryButton, RetryButtonText } from '../../shared/styles/styles';
 import { useGetPosts } from '../hooks/useGetPosts';
-import { AllowedCategory, PostsListItem, SortParam } from '../types';
+import { AllowedCategory, PostsListItemType, SortParam } from '../types';
 import PostListCard from './PostListCard';
 
 type Props = {
   category: AllowedCategory;
   sort: SortParam;
-  scrollRef: RefObject<FlatList<PostsListItem> | null>;
+  scrollRef: RefObject<FlatList<PostsListItemType> | null>;
 };
 
 const PostList = ({ category, sort, scrollRef }: Props) => {
   const { posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
     useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
 
-  const renderPost: ListRenderItem<PostsListItem> = useCallback(({ item }) => <PostListCard data={item} />, []);
+  const renderPost: ListRenderItem<PostsListItemType> = useCallback(({ item }) => <PostListCard data={item} />, []);
 
   const listEmpty = useMemo(
     () => (
@@ -58,7 +58,7 @@ const PostList = ({ category, sort, scrollRef }: Props) => {
     <FlatList
       data={posts ?? []}
       ref={scrollRef}
-      keyExtractor={(item: PostsListItem) => String(item.postId)}
+      keyExtractor={(item: PostsListItemType) => String(item.postId)}
       renderItem={renderPost}
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={listEmpty}

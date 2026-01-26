@@ -6,13 +6,13 @@ import { BorderLine, Container, ContentBox, Wrap } from '../../shared/styles/sty
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import useVisitor from '../hooks/useVisitor';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
-import { PostsListItem } from '../types';
+import { PostsListItemType } from '../types';
 import PostSingleImage from './elements/body/PostSingleImage';
 import PostTextContent from './elements/body/PostTextContent';
 import PostCommonFooter from './elements/footer/PostCommonFooter';
 import PostCommonHeader from './elements/header/PostCommonHeader';
 
-const PostListCard = ({ data }: { data: PostsListItem }) => {
+const PostListCard = ({ data }: { data: PostsListItemType }) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
@@ -40,13 +40,17 @@ const PostListCard = ({ data }: { data: PostsListItem }) => {
         />
 
         <ContentBox>
-          {data.contentImageUrl && (
-            <PostSingleImage
-              imageUrl={data.contentImageUrl}
-              imageCount={data.imageCount}
-              pageWidth={SCREEN_WIDTH - 20 * 2}
-            />
-          )}
+          {/* 퀴즈, 투표가 아닐 때만 이미지 노출 */}
+          {data.boardCategory !== 'QUIZ' &&
+            data.boardCategory !== 'VOTE' &&
+            'postInfo' in data &&
+            data.postInfo.contentImageUrl && (
+              <PostSingleImage
+                imageUrl={data.postInfo.contentImageUrl}
+                imageCount={data.postInfo.imageCount}
+                pageWidth={SCREEN_WIDTH - 20 * 2}
+              />
+            )}
 
           <PostTextContent isTruncate={true} postId={data.postId} content={data.contentPreview} />
         </ContentBox>
