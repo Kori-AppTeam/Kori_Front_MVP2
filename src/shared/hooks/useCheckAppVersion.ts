@@ -7,7 +7,8 @@ import { current } from 'immer';
 
 export function useCheckAppVersion() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isAppUpToDate, setIsAppUpToDate] = useState<boolean>(false);
+  // NOTE: 강제 업데이트(Force)만 앱 진입을 막고, 그 외(권장/에러)는 앱 진입을 허용합니다.
+  const [isAppUpToDate, setIsAppUpToDate] = useState<boolean>(true);
 
   const currentVersion = Constants.expoConfig?.version;
   const platform = Platform.OS;
@@ -18,7 +19,8 @@ export function useCheckAppVersion() {
       if (!currentVersion) {
         throw new Error('APP_VERSION_NOT_FOUND'); // 앱 버전 정보를 찾을 수 없는 경우 error 처리
       }
-      const { status, title, message, storeUrl } = await getAppVersion(platform, currentVersion);
+      //const { status, title, message, storeUrl } = await getAppVersion(platform, currentVersion);
+      const { status, title, message, storeUrl } = await getAppVersion(platform, '1.2.8');
       switch (status) {
         // 강제 업데이트 Alert
         case 'FORCE_UPDATE':
@@ -29,7 +31,8 @@ export function useCheckAppVersion() {
         // 권장 업데이트 Alert
         case 'RECOMMEND_UPDATE':
           showUpdateAlert(title, message, storeUrl, false);
-          setIsAppUpToDate(false);
+          // 권장 업데이트는 앱 사용을 허용
+          setIsAppUpToDate(true);
           return;
 
         // 업데이트 필요 없음
@@ -42,6 +45,8 @@ export function useCheckAppVersion() {
       }
     } catch (error: unknown) {
       showUpdateErrorAlert(error); // 에러 Alert 표시
+      // 버전 체크 실패 시에도 앱이 스플래시에서 멈추지 않도록 진입 허용
+      setIsAppUpToDate(true);
     } finally {
       setIsLoading(false);
     }
