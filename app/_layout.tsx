@@ -9,6 +9,7 @@ import { useReportSheetStore } from '@/src/features/community/post/store/useRepo
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { Config } from '@/src/shared/constants/config';
 import { toastConfig } from '@/src/shared/constants/toast';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
@@ -27,8 +28,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
-import { Platform, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Alert, Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -67,6 +68,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  const didShowMissingServerUrlAlert = useRef(false);
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     PlusJakartaSans_300Light,
@@ -87,6 +89,22 @@ export default function RootLayout() {
 
   useForegroundNotification(isLoggedIn, pathname); // 포그라운드 알림 수신
   useBackgroundNotification(isLoggedIn, isAutoLoginLoading); // 백그라운드 알림 수신
+
+  useEffect(() => {
+    // DEBUG ONLY: 서버 URL 환경변수 누락 여부 즉시 확인용 (확인 후 반드시 삭제)
+    if (didShowMissingServerUrlAlert.current) return;
+    const url = (Config as any)?.SERVER_URL as unknown;
+    const urlStr = typeof url === 'string' ? url.trim() : '';
+    if (!urlStr) {
+      didShowMissingServerUrlAlert.current = true;
+      Alert.alert(
+        '[DEBUG] SERVER_URL is missing',
+        `__DEV__=${String(__DEV__)}\nEXPO_PUBLIC_SERVER_URL_DEV=${String(
+          (process as any)?.env?.EXPO_PUBLIC_SERVER_URL_DEV,
+        )}\nEXPO_PUBLIC_SERVER_URL_PROD=${String((process as any)?.env?.EXPO_PUBLIC_SERVER_URL_PROD)}`,
+      );
+    }
+  }, []);
 
   useEffect(() => {
     if (
