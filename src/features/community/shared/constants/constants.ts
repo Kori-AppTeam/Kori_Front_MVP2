@@ -21,14 +21,14 @@ export const CLIENT_CATEGORY_NAME: Record<AllowedCategory, AllowedClientCategory
 
 export const CATEGORY_TO_BOARD_ID: Record<AllowedCategory, BoardId> = {
   ALL: 1,
-  NEWS: 2,
-  TIP: 3,
-  QNA: 4,
-  EVENT: 5,
-  FREE_TALK: 6,
-  ACTIVITY: 7,
-  QUIZ: 8,
-  VOTE: 9,
+  QUIZ: 2,
+  VOTE: 3,
+  NEWS: 4,
+  TIP: 5,
+  QNA: 6,
+  EVENT: 7,
+  FREE_TALK: 8,
+  ACTIVITY: 9,
 };
 
 export const CLIENT_SORT_NAME: Record<SortParam, ClientSortParam> = {
