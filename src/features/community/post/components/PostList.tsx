@@ -58,7 +58,7 @@ const PostList = ({ category, sort, scrollRef }: Props) => {
     <FlatList
       data={posts ?? []}
       ref={scrollRef}
-      keyExtractor={(item: PostsListItemType) => String(item.postId)}
+      keyExtractor={(item: PostsListItemType, index) => (item.postId ? String(item.postId) : `post-${index}`)}
       renderItem={renderPost}
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={listEmpty}
