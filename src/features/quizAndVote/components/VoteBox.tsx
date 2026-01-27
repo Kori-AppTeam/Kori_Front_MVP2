@@ -7,7 +7,12 @@ import { calculateVoteRatio } from '../utils/calculateVoteRatio';
 import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import VoteOption from './VoteOption';
 
-const VoteBox = ({ data }: { data: TodayPollType | PollBaseType }) => {
+interface VoteBoxProps {
+  pollId: number;
+  data: TodayPollType | PollBaseType;
+}
+
+const VoteBox = ({ pollId, data }: VoteBoxProps) => {
   const { mutate: postPoll } = usePostPoll();
 
   const showResult = !!data.selectedOptionId;
@@ -16,7 +21,7 @@ const VoteBox = ({ data }: { data: TodayPollType | PollBaseType }) => {
     if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(투표 참여 한 번만 가능)
 
     postPoll({
-      pollId: data.id,
+      pollId: pollId,
       optionId: optionId,
       pollType: 'VOTE',
     });

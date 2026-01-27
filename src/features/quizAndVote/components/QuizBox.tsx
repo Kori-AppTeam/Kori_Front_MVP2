@@ -6,7 +6,12 @@ import { ClosedDateContainer, ClosedDateText } from './BaseOption';
 import PollBox, { BoxContainer, OptionRow } from './PollBox';
 import QuizOption from './QuizOption';
 
-const QuizBox = ({ data }: { data: TodayPollType | PollBaseType }) => {
+interface QuizBoxProps {
+  pollId: number;
+  data: TodayPollType | PollBaseType;
+}
+
+const QuizBox = ({ pollId, data }: QuizBoxProps) => {
   const { mutate: postPoll } = usePostPoll();
 
   const isSelectedOption = data.selectedOptionId;
@@ -16,7 +21,7 @@ const QuizBox = ({ data }: { data: TodayPollType | PollBaseType }) => {
     if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(퀴즈 참여 한 번만 가능)
 
     postPoll({
-      pollId: data.id,
+      pollId: pollId,
       optionId: optionId,
       pollType: 'QUIZ',
     });
