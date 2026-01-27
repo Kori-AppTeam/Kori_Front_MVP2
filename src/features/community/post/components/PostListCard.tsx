@@ -55,10 +55,14 @@ const PostListCard = ({ data }: { data: PostsListItemType }) => {
             )}
 
           {/* 퀴즈 게시글 */}
-          {data.boardCategory === 'QUIZ' && 'pollInfo' in data && data.pollInfo && <QuizBox data={data.pollInfo} />}
+          {data.boardCategory === 'QUIZ' && 'pollInfo' in data && data.pollInfo && (
+            <QuizBox pollId={data.postId} data={data.pollInfo} />
+          )}
 
           {/* 투표 게시글 */}
-          {data.boardCategory === 'VOTE' && 'pollInfo' in data && data.pollInfo && <VoteBox data={data.pollInfo} />}
+          {data.boardCategory === 'VOTE' && 'pollInfo' in data && data.pollInfo && (
+            <VoteBox pollId={data.postId} data={data.pollInfo} />
+          )}
 
           <PostTextContent isTruncate={true} postId={data.postId} content={data.contentPreview} />
         </ContentBox>

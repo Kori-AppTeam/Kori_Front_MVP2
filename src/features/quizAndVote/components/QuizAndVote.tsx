@@ -48,7 +48,7 @@ const QuizAndVote = () => {
             {tab === 'QUIZ' ? (
               <>
                 <QuizAndVoteHeader title="Today's Quiz" subTitle="Take today's Korean quiz" Character={QuizCharacter} />
-                <QuizBox data={data} />
+                <QuizBox pollId={data.id} data={data} />
               </>
             ) : (
               <>
@@ -57,7 +57,7 @@ const QuizAndVote = () => {
                   subTitle="Take Korean favorites poll"
                   Character={VoteCharacter}
                 />
-                <VoteBox data={data} />
+                <VoteBox pollId={data.id} data={data} />
               </>
             )}
           </>
