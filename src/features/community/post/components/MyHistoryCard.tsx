@@ -21,20 +21,20 @@ const MyHistoryCard = ({ authorId, data }: MyHistoryCardProps) => {
 
   return (
     <Container>
-      <Wrap width={SCREEN_WIDTH} onPress={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}>
-        <PostCommonHeader postId={data.postId} createdAt={data.createdAt} viewCount={data.viewCount} />
+      <Wrap width={SCREEN_WIDTH} onPress={() => router.push(COMMUNITY_ROUTER.DETAIL(data.id))}>
+        <PostCommonHeader postId={data.id} createdAt={data.createdAt} viewCount={data.viewCount} />
 
         <ContentBox>
-          <PostTextContent isTruncate={true} postId={data.postId} content={data.content} />
+          <PostTextContent isTruncate={true} postId={data.id} content={data.content} />
         </ContentBox>
 
         <PostCommonFooter
           commentCount={data.commentCount}
           isLiked={data.isLiked}
           likeCount={data.likeCount}
-          onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
-          onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}
-          onOpenModal={() => authorId && showPostMoreSheet(data.postId, authorId)}
+          onToggleLike={() => handleToggleLike(data.id, data.isLiked)}
+          onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.id))}
+          onOpenModal={() => authorId && showPostMoreSheet(data.id, authorId)}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />

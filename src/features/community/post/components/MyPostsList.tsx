@@ -54,7 +54,7 @@ const MyPostsList = ({ authorId }: MyPostsListProps) => {
   return (
     <FlatList
       data={myPostsQuery.items ?? []}
-      keyExtractor={(it: MyHistoryPost) => String(it.postId)}
+      keyExtractor={(it: MyHistoryPost) => String(it.id)}
       renderItem={renderPost}
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={listEmpty}

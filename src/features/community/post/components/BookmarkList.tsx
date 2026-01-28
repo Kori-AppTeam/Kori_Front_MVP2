@@ -58,7 +58,7 @@ const BookmarkList = () => {
   return (
     <FlatList
       data={bookmarkQuery.bookmarkedPosts ?? []}
-      keyExtractor={(it: BookmarkedPostItem) => String(it.postId)}
+      keyExtractor={(it: BookmarkedPostItem) => String(it.id)}
       renderItem={renderPost}
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={listEmpty}
