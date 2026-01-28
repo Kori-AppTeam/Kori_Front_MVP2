@@ -18,6 +18,7 @@ export const parsePostMediaInfo = (data: PostDetailType | PostsListItemType) => 
   return { MediaType, pollInfo, postInfo };
 };
 
+// 이미지 유효성 검사 함수
 export const hasValidImages = (images: string[] | string | null | undefined): boolean => {
   if (!images) return false;
   if (Array.isArray(images)) {

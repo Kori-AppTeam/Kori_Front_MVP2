@@ -46,7 +46,7 @@ const PostListCard = ({ data }: { data: PostsListItemType }) => {
           {/* 이미지, 퀴즈/투표 컨텐츠 */}
           <PostCommonMedia
             type={parsedMediaInfo.MediaType}
-            images={parsedMediaInfo.postInfo?.contentImageUrl || null}
+            images={parsedMediaInfo.postInfo?.contentImageUrl}
             imageCount={parsedMediaInfo.postInfo?.imageCount}
             pollInfo={parsedMediaInfo.pollInfo}
             pollId={data.boardCategory === 'QUIZ' || data.boardCategory === 'VOTE' ? data.id : undefined}

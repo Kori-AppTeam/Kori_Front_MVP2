@@ -33,14 +33,13 @@ export interface PostDetail {
   commentCount: number;
   viewCount: number;
   userImageUrl: string;
-  contentImageUrls?: string[];
 }
 
 // 일반 게시글 상세
 export interface GeneralPostDetail extends PostDetail {
   category: GeneralCategory;
   postInfo: {
-    contentImageUrl: string[] | null;
+    contentImageUrl: string[] | string | null;
     imageCount: number;
   };
 }
