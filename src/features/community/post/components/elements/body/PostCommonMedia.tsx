@@ -3,6 +3,7 @@ import QuizBox from '@/src/features/quizAndVote/components/QuizBox';
 import VoteBox from '@/src/features/quizAndVote/components/VoteBox';
 import { PollBaseType } from '@/src/features/quizAndVote/types';
 import React from 'react';
+import styled from 'styled-components/native';
 import { hasValidImages } from '../../../utils/postUtils';
 import PostCarousel from './PostCarousel';
 import PostSingleImage from './PostSingleImage';
@@ -18,10 +19,10 @@ interface PostCommonMediaProps {
 const PostCommonMedia = ({ type, images, imageCount, pollInfo, pollId }: PostCommonMediaProps) => {
   if (pollId && pollInfo) {
     return (
-      <>
+      <PollContainer>
         {type === 'QUIZ' && <QuizBox pollId={pollId} data={pollInfo} />}
         {type === 'VOTE' && <VoteBox pollId={pollId} data={pollInfo} />}
-      </>
+      </PollContainer>
     );
   }
 
@@ -54,3 +55,8 @@ const PostCommonMedia = ({ type, images, imageCount, pollInfo, pollId }: PostCom
 };
 
 export default PostCommonMedia;
+
+const PollContainer = styled.View`
+  width: 100%;
+  padding: 0 20px;
+`;
