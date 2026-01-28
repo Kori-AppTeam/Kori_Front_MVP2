@@ -12,7 +12,7 @@ interface BaseOptionProps {
   textColor?: string;
 }
 
-// 공통 베이스 옵션 컴포넌트 - isSelected 상태까지 관리
+// 공통 베이스 옵션 컴포넌트
 export const BaseOptionComponent = ({
   content,
   onPress,
