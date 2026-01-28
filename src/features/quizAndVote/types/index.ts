@@ -17,6 +17,7 @@ export interface TodayPollType extends PollBaseType {
 
 export interface OptionType {
   id: number;
+  optionId?: number;
   content: string;
   voteCount: number;
 }

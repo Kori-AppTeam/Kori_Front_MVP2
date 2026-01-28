@@ -14,6 +14,8 @@ interface QuizBoxProps {
 const QuizBox = ({ pollId, data }: QuizBoxProps) => {
   const { mutate: postPoll } = usePostPoll();
 
+  console.log('QuizBox data:', data);
+
   const isSelectedOption = data.selectedOptionId;
   const showResult = !!data.selectedOptionId;
 
@@ -38,12 +40,12 @@ const QuizBox = ({ pollId, data }: QuizBoxProps) => {
       <OptionRow>
         {data.options.map((option) => (
           <QuizOption
-            key={option.id}
-            optionId={option.id}
+            key={option.id ?? option.optionId}
+            optionId={option.id ?? option.optionId}
             content={option.content}
-            isSelected={isSelectedOption === option.id}
+            isSelected={isSelectedOption === (option.id ?? option.optionId)}
             isResult={showResult}
-            onPress={() => handleSelectOption(option.id)}
+            onPress={() => handleSelectOption(option.id ?? option.optionId)}
             correctOptionId={showResult ? data.correctOptionId : null}
           />
         ))}

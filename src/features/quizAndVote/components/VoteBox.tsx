@@ -34,12 +34,12 @@ const VoteBox = ({ pollId, data }: VoteBoxProps) => {
       <OptionRow>
         {data.options.map((option) => (
           <VoteOption
-            key={option.id}
-            optionId={option.id}
+            key={option.id ?? option.optionId}
+            optionId={option.id ?? option.optionId}
             content={option.content}
-            isSelected={data.selectedOptionId === option.id}
+            isSelected={data.selectedOptionId === (option.id ?? option.optionId)}
             isResult={showResult}
-            onPress={() => !data.selectedOptionId && handleSelectOption(option.id)}
+            onPress={() => !data.selectedOptionId && handleSelectOption(option.id ?? option.optionId)}
             votePercentage={showResult ? calculateVoteRatio(data.totalVoteCount, option.voteCount) : 0}
           />
         ))}
