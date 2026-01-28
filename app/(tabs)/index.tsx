@@ -6,7 +6,7 @@ import { LinkedSpaceRecommendModal } from '@/src/features/find/components/Linked
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
 import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import { useCancelFollowUserMutation, useFollowUserMutation } from '@/src/shared/hooks/useUserProfileQuery';
+import { useCancelFollowUserMutation, useFollowUserMutation } from '@/src/shared/hooks/useFollowQuery';
 import { Text } from '@react-navigation/elements';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react';
