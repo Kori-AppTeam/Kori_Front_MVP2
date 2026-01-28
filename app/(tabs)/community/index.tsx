@@ -33,11 +33,14 @@ export default function CommunityScreen() {
     }
   }, [urlCategory]);
 
-  // community 화면 보일 때마다 visitor 검사
+  // community 화면 보일 때마다 visitor 검사 (URL 파라미터 처리 후에 실행)
   useFocusEffect(
     useCallback(() => {
+      // URL 파라미터가 처리되지 않은 상태면 실행하지 않음
+      if (urlCategory && typeof urlCategory === 'string') return;
+
       refetch();
-    }, [refetch]),
+    }, [refetch, urlCategory]),
   );
 
   return (
