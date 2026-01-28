@@ -45,7 +45,7 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
           images={parsedMediaInfo.postInfo?.contentImageUrl}
           imageCount={parsedMediaInfo.postInfo?.imageCount}
           pollInfo={parsedMediaInfo.pollInfo}
-          pollId={data.boardCategory === 'QUIZ' || data.boardCategory === 'VOTE' ? data.id : undefined}
+          pollId={data.id}
         />
 
         {/* 텍스트 컨텐츠 */}

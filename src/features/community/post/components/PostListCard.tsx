@@ -49,7 +49,7 @@ const PostListCard = ({ data }: { data: PostsListItemType }) => {
             images={parsedMediaInfo.postInfo?.contentImageUrl}
             imageCount={parsedMediaInfo.postInfo?.imageCount}
             pollInfo={parsedMediaInfo.pollInfo}
-            pollId={data.boardCategory === 'QUIZ' || data.boardCategory === 'VOTE' ? data.id : undefined}
+            pollId={data.id}
           />
 
           <PostTextContent isTruncate={true} postId={data.id} content={data.contentPreview} />
