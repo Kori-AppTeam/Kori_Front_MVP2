@@ -32,17 +32,21 @@ const VoteBox = ({ pollId, data }: VoteBoxProps) => {
       <PollBox title={data.title} subTitle={data.description} />
 
       <OptionRow>
-        {data.options.map((option) => (
-          <VoteOption
-            key={option.id ?? option.optionId}
-            optionId={option.id ?? option.optionId}
-            content={option.content}
-            isSelected={data.selectedOptionId === (option.id ?? option.optionId)}
-            isResult={showResult}
-            onPress={() => !data.selectedOptionId && handleSelectOption(option.id ?? option.optionId)}
-            votePercentage={showResult ? calculateVoteRatio(data.totalVoteCount, option.voteCount) : 0}
-          />
-        ))}
+        {data.options.map((option) => {
+          const optionId = option.id ?? option.optionId;
+
+          return (
+            <VoteOption
+              key={optionId}
+              optionId={optionId}
+              content={option.content}
+              isSelected={data.selectedOptionId === optionId}
+              isResult={showResult}
+              onPress={() => !data.selectedOptionId && handleSelectOption(optionId)}
+              votePercentage={showResult ? calculateVoteRatio(data.totalVoteCount, option.voteCount) : 0}
+            />
+          );
+        })}
       </OptionRow>
 
       <VoteCountRow>

@@ -36,17 +36,21 @@ const QuizBox = ({ pollId, data }: QuizBoxProps) => {
       <PollBox title={data.title} subTitle={data.description} />
 
       <OptionRow>
-        {data.options.map((option) => (
-          <QuizOption
-            key={option.id ?? option.optionId}
-            optionId={option.id ?? option.optionId}
-            content={option.content}
-            isSelected={isSelectedOption === (option.id ?? option.optionId)}
-            isResult={showResult}
-            onPress={() => handleSelectOption(option.id ?? option.optionId)}
-            correctOptionId={showResult ? data.correctOptionId : null}
-          />
-        ))}
+        {data.options.map((option) => {
+          const optionId = option.id ?? option.optionId;
+
+          return (
+            <QuizOption
+              key={optionId}
+              optionId={optionId}
+              content={option.content}
+              isSelected={isSelectedOption === optionId}
+              isResult={showResult}
+              onPress={() => handleSelectOption(optionId)}
+              correctOptionId={showResult ? data.correctOptionId : null}
+            />
+          );
+        })}
       </OptionRow>
     </BoxContainer>
   );
