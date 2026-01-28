@@ -14,8 +14,6 @@ interface QuizBoxProps {
 const QuizBox = ({ pollId, data }: QuizBoxProps) => {
   const { mutate: postPoll } = usePostPoll();
 
-  console.log('QuizBox data:', data);
-
   const isSelectedOption = data.selectedOptionId;
   const showResult = !!data.selectedOptionId;
 
