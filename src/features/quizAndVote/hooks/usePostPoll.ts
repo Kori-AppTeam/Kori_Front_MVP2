@@ -34,7 +34,7 @@ export const usePostPoll = () => {
               ...commonUpdates,
               totalVoteCount: old.totalVoteCount + 1,
               options: old.options.map((option) =>
-                option.id === optionId ? { ...option, voteCount: option.voteCount + 1 } : option,
+                (option.id ?? option.optionId) === optionId ? { ...option, voteCount: option.voteCount + 1 } : option,
               ),
             };
           }
