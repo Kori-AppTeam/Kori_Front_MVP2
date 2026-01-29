@@ -73,6 +73,10 @@ const SaveText = styled.Text<{ $enabled: boolean }>`
   ${({ theme }) => textStyle(theme.fonts.body.B3_M)};
 `;
 
+export const BodyWrap = styled.Pressable`
+  margin: 24px 20px;
+`;
+
 export const BottomBar = styled.View`
   padding: 16px 20px;
   border-top-width: 1px;

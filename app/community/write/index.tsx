@@ -8,20 +8,21 @@ import WriteCommonLayout, {
   BarIcon,
   BarLeft,
   BarRight,
+  BodyWrap,
   BottomBar,
 } from '@/src/features/community/write/components/WriteCommonLayout';
+import WriteContentInput from '@/src/features/community/write/components/WriteContentInput';
 import WritePolicy from '@/src/features/community/write/components/WritePolicy';
 import { useBoardWriteOptions } from '@/src/features/community/write/hooks/useBoardWriteOptions';
 import { useImagePicker } from '@/src/features/community/write/hooks/useImagePicker';
 import { useWriteForm } from '@/src/features/community/write/hooks/useWriteForm';
 import { InitialEditData } from '@/src/features/community/write/types';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
-import { textStyle, theme } from '@/src/styles/theme';
+import { theme } from '@/src/styles/theme';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { TextInput as RNTextInput, ScrollView } from 'react-native';
-import styled from 'styled-components/native';
 
 export default function WriteScreen() {
   const params = useLocalSearchParams<{ mode?: string; postId?: string; initialData?: string }>();
@@ -132,19 +133,14 @@ export default function WriteScreen() {
           }}
         >
           <BodyWrap onPress={() => inputRef.current?.focus()}>
-            <Input
+            <WriteContentInput
               ref={inputRef}
               pointerEvents={isFocused ? 'auto' : 'none'}
               value={body}
               onChangeText={setBody}
-              multiline
-              scrollEnabled={false}
-              textAlignVertical="top"
-              placeholder="Feel free to talk about anything you’d like to share with the community."
-              placeholderTextColor={theme.colors.gray.gray_1}
-              returnKeyType="default"
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
+              placeholder="Feel free to talk about anything you’d like to share with the community."
             />
           </BodyWrap>
 
@@ -159,17 +155,3 @@ export default function WriteScreen() {
     </>
   );
 }
-
-const BodyWrap = styled.Pressable`
-  margin: 24px 20px;
-`;
-
-const StyledRNInput = styled(RNTextInput)`
-  min-height: 200px;
-  color: ${({ theme }) => theme.colors.primary.white};
-  ${({ theme }) => textStyle(theme.fonts.body.B3_L)};
-  padding: 0;
-`;
-
-const Input = React.forwardRef<RNTextInput, any>((p, ref) => <StyledRNInput ref={ref} {...p} />);
-Input.displayName = 'Input';
