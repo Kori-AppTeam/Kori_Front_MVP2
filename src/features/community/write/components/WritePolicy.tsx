@@ -60,7 +60,7 @@ const PolicyText = styled(BaseText)`
 const WarnWrap = styled.View`
   flex-direction: row;
   align-items: flex-start;
-  gap: 11px;
+  gap: 8px;
   border-radius: 4px;
   background-color: ${({ theme }) => `${theme.colors.secondary.red}1A`};
   padding: 10px 12px;
