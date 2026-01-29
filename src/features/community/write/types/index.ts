@@ -77,3 +77,10 @@ export interface CreatePostBody {
   isAnonymous: boolean;
   imageUrls?: string[];
 }
+
+// 투표 게시글 작성 Request Body
+export interface CreateVotePostBody extends CreatePostBody {
+  title: string;
+  description: string;
+  options: string[];
+}
