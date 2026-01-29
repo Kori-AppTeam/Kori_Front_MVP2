@@ -1,10 +1,12 @@
 import { AnonymousToggle } from '@/src/features/community/write/components/AnonymousToggle';
 import WriteCommonLayout, {
+  BarLeft,
   BarRight,
   BodyWrap,
   BottomBar,
 } from '@/src/features/community/write/components/WriteCommonLayout';
 import WriteContentInput from '@/src/features/community/write/components/WriteContentInput';
+import WritePolicy from '@/src/features/community/write/components/WritePolicy';
 import { useWriteVoteForm } from '@/src/features/community/write/hooks/useWriteVoteForm';
 import { InitialVoteEditData } from '@/src/features/community/write/types';
 import { useLocalSearchParams } from 'expo-router';
@@ -47,6 +49,7 @@ const Index = () => {
 
   const bottomBar = (
     <BottomBar pointerEvents="box-none">
+      <BarLeft></BarLeft>
       <BarRight pointerEvents="box-only">
         <AnonymousToggle active={anonymous} canToggle={!isEdit} onPress={handleToggleAnonymous} />
       </BarRight>
@@ -80,6 +83,7 @@ const Index = () => {
             placeholder="Feel free to talk about anything you’d like to share with the community."
           />
         </BodyWrap>
+        {isFocused === false ? <WritePolicy /> : null}
       </ScrollView>
     </WriteCommonLayout>
   );
