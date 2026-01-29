@@ -84,3 +84,12 @@ export interface CreateVotePostBody extends CreatePostBody {
   description: string;
   options: string[];
 }
+
+// 투표 게시글 수정 초기 데이터타입
+export interface InitialVoteEditData {
+  title: string;
+  description?: string;
+  content?: string;
+  isAnonymous: boolean;
+  options: string[];
+}
