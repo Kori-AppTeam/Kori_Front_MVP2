@@ -26,14 +26,24 @@ export default function WriteFab({ onHandleWritePress, onHandleVotePress, disabl
           <OptionContainer>
             <SubButton>
               <Label>Vote</Label>
-              <SubFab onPress={onHandleVotePress}>
+              <SubFab
+                onPress={() => {
+                  onHandleVotePress();
+                  setIsOpen(false);
+                }}
+              >
                 <Icon type="write" size={20} color={theme.colors.primary.white} />
               </SubFab>
             </SubButton>
 
             <SubButton>
               <Label>Post</Label>
-              <SubFab onPress={onHandleWritePress}>
+              <SubFab
+                onPress={() => {
+                  onHandleWritePress();
+                  setIsOpen(false);
+                }}
+              >
                 <Icon type="write" size={20} color={theme.colors.primary.white} />
               </SubFab>
             </SubButton>
