@@ -55,7 +55,6 @@ export default function WriteScreen() {
     anonymous,
     canSave,
     canToggleAnon,
-    saving,
     isCreating,
     isUpdating,
     isFocused,
@@ -84,7 +83,7 @@ export default function WriteScreen() {
 
   const onSave = () => handleSave(images);
   const headerTitle = isEdit ? 'Edit Post' : 'Write';
-  const disabled = !canSave || saving || isUpdating || isCreating;
+  const disabled = !canSave || isUpdating || isCreating;
   const saveText = isEdit ? (isUpdating ? 'Saving...' : 'Save') : isCreating ? 'Saving...' : 'Save';
 
   const openCategorySheet = () => {

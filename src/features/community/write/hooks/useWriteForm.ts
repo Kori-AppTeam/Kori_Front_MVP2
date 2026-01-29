@@ -21,7 +21,6 @@ export function useWriteForm({
 }: UseWriteFormProps) {
   const savingRef = useRef({ current: false });
   const initialImagesRef = useRef<string[]>(initialImages); // 초기 이미지 저장 (수정 모드용)
-  const [saving, setSaving] = useState(false);
   const [category, setCategory] = useState<AllowedClientCategory>(initialCategory);
   const [body, setBody] = useState<string>(initialContent);
   const [anonymous, setAnonymous] = useState(initialAnonymous);
@@ -50,7 +49,6 @@ export function useWriteForm({
     if (!canSave || savingRef.current.current || createMutation.isPending || updateMutation.isPending) return;
 
     savingRef.current.current = true;
-    setSaving(true);
     const content = body.trim();
 
     try {
@@ -61,14 +59,14 @@ export function useWriteForm({
           images,
           initialImages: initialImagesRef.current,
         });
-        Alert.alert('Saved', 'Post updated successfully.');
+        Toast.show({ type: 'success', text1: 'Post updated successfully!' });
       } else {
         await createMutation.mutateAsync({
           content,
           isAnonymous: anonymous,
           images,
         });
-        Alert.alert('Success', 'Post created successfully!');
+        Toast.show({ type: 'success', text1: 'Post created successfully!' });
       }
 
       router.back();
@@ -82,7 +80,6 @@ export function useWriteForm({
       Toast.show({ type: 'error', text1: errorMessage });
     } finally {
       savingRef.current.current = false;
-      setSaving(false);
     }
   };
 
@@ -106,7 +103,6 @@ export function useWriteForm({
     anonymous,
     canSave,
     canToggleAnon: canToggleAnonInEdit,
-    saving,
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isFocused,
