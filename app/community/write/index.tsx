@@ -4,6 +4,12 @@ import { AnonymousToggle } from '@/src/features/community/write/components/Anony
 import { CategoryBottomSheetContent } from '@/src/features/community/write/components/CategoryBottomSheetContent';
 import { CategorySelector } from '@/src/features/community/write/components/CategoryPicker';
 import { ImagePreviewList } from '@/src/features/community/write/components/ImagePreviewList';
+import WriteCommonLayout, {
+  BarIcon,
+  BarLeft,
+  BarRight,
+  BottomBar,
+} from '@/src/features/community/write/components/WriteCommonLayout';
 import WritePolicy from '@/src/features/community/write/components/WritePolicy';
 import { useBoardWriteOptions } from '@/src/features/community/write/hooks/useBoardWriteOptions';
 import { useImagePicker } from '@/src/features/community/write/hooks/useImagePicker';
@@ -12,10 +18,9 @@ import { InitialEditData } from '@/src/features/community/write/types';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import { textStyle, theme } from '@/src/styles/theme';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { KeyboardAvoidingView, Platform, TextInput as RNTextInput } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { TextInput as RNTextInput, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
 
 export default function WriteScreen() {
@@ -77,6 +82,9 @@ export default function WriteScreen() {
   const { isFetching: loadingOpt } = useBoardWriteOptions(boardId);
 
   const onSave = () => handleSave(images);
+  const headerTitle = isEdit ? 'Edit Post' : 'Write';
+  const disabled = !canSave || saving || isUpdating || isCreating;
+  const saveText = isEdit ? (isUpdating ? 'Saving...' : 'Save') : isCreating ? 'Saving...' : 'Save';
 
   const openCategorySheet = () => {
     categoryBottomSheetRef.current?.present();
@@ -86,30 +94,36 @@ export default function WriteScreen() {
     categoryBottomSheetRef.current?.dismiss();
   };
 
-  return (
-    <Safe>
-      <Header>
-        <IconBtn onPress={() => router.back()}>
-          <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
-        </IconBtn>
-        <HeaderTitle>{isEdit ? 'Edit Post' : 'Write'}</HeaderTitle>
-        <SaveBtn onPress={onSave} disabled={!canSave || saving || isUpdating || isCreating}>
-          <SaveText $enabled={canSave && !isUpdating && !isCreating}>
-            {isEdit ? (isUpdating ? 'Saving...' : 'Save') : isCreating ? 'Saving...' : 'Save'}
-          </SaveText>
-        </SaveBtn>
-      </Header>
+  const bottomBar = (
+    <BottomBar pointerEvents="box-none">
+      <BarLeft pointerEvents="box-only">
+        <BarIcon onPress={pickImage}>
+          <Icon type="photo" size={24} color={theme.colors.gray.lightGray_1} />
+        </BarIcon>
+      </BarLeft>
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 56 : 26}
+      <BarRight pointerEvents="box-only">
+        <AnonymousToggle
+          active={anonymous}
+          canToggle={canToggleAnon}
+          loading={loadingOpt}
+          onPress={handleToggleAnonymous}
+        />
+      </BarRight>
+    </BottomBar>
+  );
+
+  return (
+    <>
+      <WriteCommonLayout
+        headerTitle={headerTitle}
+        onSave={onSave}
+        disabled={disabled}
+        saveText={saveText}
+        bottomBar={bottomBar}
       >
         <CategorySelector category={category} onPress={() => !isEdit && openCategorySheet()} disabled={isEdit} />
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          enableAutomaticScroll={false}
-          enableResetScrollToCoords={false}
+        <ScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -136,87 +150,26 @@ export default function WriteScreen() {
 
           <ImagePreviewList images={images} onRemove={removeImage} />
           {isFocused === false ? <WritePolicy /> : null}
-        </KeyboardAwareScrollView>
-
-        <BottomBar pointerEvents="box-none">
-          <BarLeft pointerEvents="box-only">
-            <BarIcon onPress={pickImage}>
-              <Icon type="photo" size={24} color={theme.colors.gray.lightGray_1} />
-            </BarIcon>
-          </BarLeft>
-
-          <BarRight pointerEvents="box-only">
-            <AnonymousToggle
-              active={anonymous}
-              canToggle={canToggleAnon}
-              loading={loadingOpt}
-              onPress={handleToggleAnonymous}
-            />
-          </BarRight>
-        </BottomBar>
-      </KeyboardAvoidingView>
+        </ScrollView>
+      </WriteCommonLayout>
 
       <CustomBottomSheet ref={categoryBottomSheetRef} backgroundColor="transparent">
         <CategoryBottomSheetContent selectedCategory={category} onSelect={setCategory} onClose={closeCategorySheet} />
       </CustomBottomSheet>
-    </Safe>
+    </>
   );
 }
 
-const Safe = styled.SafeAreaView`
-  flex: 1;
-  background: ${({ theme }) => theme.colors.primary.black};
-`;
-const Header = styled.View`
-  padding: 5px 14px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-const IconBtn = styled.Pressable`
-  padding: 6px;
-`;
-const HeaderTitle = styled.Text`
-  color: ${({ theme }) => theme.colors.primary.white};
-  ${({ theme }) => textStyle(theme.fonts.body.B2_M)};
-`;
-const SaveBtn = styled.Pressable<{ disabled?: boolean }>`
-  padding: 6px;
-`;
-const SaveText = styled.Text<{ $enabled: boolean }>`
-  color: ${({ theme, $enabled }) => ($enabled ? theme.colors.primary.mint : theme.colors.gray.gray_1)};
-  ${({ theme }) => textStyle(theme.fonts.body.B3_M)};
-`;
 const BodyWrap = styled.Pressable`
   margin: 24px 20px;
 `;
+
 const StyledRNInput = styled(RNTextInput)`
   min-height: 200px;
   color: ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.body.B3_L)};
   padding: 0;
 `;
+
 const Input = React.forwardRef<RNTextInput, any>((p, ref) => <StyledRNInput ref={ref} {...p} />);
 Input.displayName = 'Input';
-const BottomBar = styled.View`
-  padding: 16px 20px;
-  border-top-width: 1px;
-  border-top-color: ${({ theme }) => theme.colors.gray.darkGray_1};
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-const BarLeft = styled.View`
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-`;
-const BarRight = styled.View`
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-`;
-const BarIcon = styled.Pressable`
-  align-items: center;
-  justify-content: center;
-`;
