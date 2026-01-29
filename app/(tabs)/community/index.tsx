@@ -95,7 +95,10 @@ export default function CommunityScreen() {
 
       <PostList sort={sort} category={category} scrollRef={scrollRef} />
 
-      <WriteFab onHandleWritePress={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.WRITE))} />
+      <WriteFab
+        onHandleWritePress={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.WRITE))}
+        onHandleVotePress={() => handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.VOTE_WRITE))}
+      />
       <ProfileSetupModal visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} />
     </Safe>
   );
