@@ -20,7 +20,6 @@ const WriteContentInput = forwardRef<TextInput, TextInputProps>((props, ref) => 
 export default WriteContentInput;
 
 const StyledInput = styled(TextInput)`
-  min-height: 200px;
   color: ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.body.B3_L)};
   padding: 0;
