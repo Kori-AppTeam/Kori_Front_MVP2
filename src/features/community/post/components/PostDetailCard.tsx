@@ -46,6 +46,7 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
           imageCount={parsedMediaInfo.postInfo?.imageCount}
           pollInfo={parsedMediaInfo.pollInfo}
           pollId={data.id}
+          queryKey={['post', 'detail', data.id]}
         />
 
         {/* 텍스트 컨텐츠 */}

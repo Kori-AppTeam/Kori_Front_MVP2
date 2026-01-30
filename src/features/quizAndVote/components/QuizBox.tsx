@@ -1,4 +1,5 @@
 import { formatDate } from '@/src/shared/utils/dateUtils';
+import { QueryKey } from '@tanstack/react-query';
 import React from 'react';
 import { usePostPoll } from '../hooks/usePostPoll';
 import { PollBaseType, TodayPollType } from '../types';
@@ -9,11 +10,11 @@ import QuizOption from './QuizOption';
 interface QuizBoxProps {
   pollId: number;
   data: TodayPollType | PollBaseType;
+  queryKey?: QueryKey;
 }
 
-const QuizBox = ({ pollId, data }: QuizBoxProps) => {
-  const { mutate: postPoll } = usePostPoll();
-
+const QuizBox = ({ pollId, data, queryKey }: QuizBoxProps) => {
+  const { mutate: postPoll } = usePostPoll(queryKey);
   const isExpired = new Date() > new Date(data.closeAt);
   const isSelectedOption = data.selectedOptionId;
   const showResult = !!data.selectedOptionId || isExpired;

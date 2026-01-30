@@ -2,6 +2,7 @@ import { SCREEN_WIDTH } from '@/src/features/community/shared/constants/constant
 import QuizBox from '@/src/features/quizAndVote/components/QuizBox';
 import VoteBox from '@/src/features/quizAndVote/components/VoteBox';
 import { PollBaseType } from '@/src/features/quizAndVote/types';
+import { QueryKey } from '@tanstack/react-query';
 import React from 'react';
 import styled from 'styled-components/native';
 import { hasValidImages } from '../../../utils/postUtils';
@@ -14,14 +15,16 @@ interface PostCommonMediaProps {
   imageCount?: number;
   pollInfo?: PollBaseType;
   pollId?: number;
+  queryKey?: QueryKey;
 }
 
-const PostCommonMedia = ({ type, images, imageCount, pollInfo, pollId }: PostCommonMediaProps) => {
+const PostCommonMedia = ({ type, images, imageCount, pollInfo, pollId, queryKey }: PostCommonMediaProps) => {
   if (pollId && pollInfo) {
+    console.log('[PostCommonMedia] Rendering poll component:', type);
     return (
       <PollContainer>
-        {type === 'QUIZ' && <QuizBox pollId={pollId} data={pollInfo} />}
-        {type === 'VOTE' && <VoteBox pollId={pollId} data={pollInfo} />}
+        {type === 'QUIZ' && <QuizBox pollId={pollId} data={pollInfo} queryKey={queryKey} />}
+        {type === 'VOTE' && <VoteBox pollId={pollId} data={pollInfo} queryKey={queryKey} />}
       </PollContainer>
     );
   }

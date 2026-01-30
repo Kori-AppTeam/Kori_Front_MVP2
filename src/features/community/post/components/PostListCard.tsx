@@ -6,15 +6,23 @@ import { BorderLine, Container, ContentBox, Wrap } from '../../shared/styles/sty
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import useVisitor from '../hooks/useVisitor';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
-import { PostsListItemType } from '../types';
+import { BoardId, PostsListItemType, SortParam } from '../types';
 import { parsePostMediaInfo } from '../utils/postUtils';
 import PostCommonMedia from './elements/body/PostCommonMedia';
 import PostTextContent from './elements/body/PostTextContent';
 import PostCommonFooter from './elements/footer/PostCommonFooter';
 import PostCommonHeader from './elements/header/PostCommonHeader';
 
-const PostListCard = ({ data }: { data: PostsListItemType }) => {
+interface PostListCardProps {
+  data: PostsListItemType;
+  boardId: BoardId;
+  sort: SortParam;
+}
+
+const PostListCard = ({ data, boardId, sort }: PostListCardProps) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
+
+  console.log('[PostListCard Debug]', data);
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
   const { handleBlockVisitor } = useVisitor();
@@ -50,6 +58,7 @@ const PostListCard = ({ data }: { data: PostsListItemType }) => {
             imageCount={parsedMediaInfo.postInfo?.imageCount}
             pollInfo={parsedMediaInfo.pollInfo}
             pollId={data.id}
+            queryKey={['post', 'list', boardId, sort]}
           />
 
           <PostTextContent isTruncate={true} postId={data.id} content={data.contentPreview} />
