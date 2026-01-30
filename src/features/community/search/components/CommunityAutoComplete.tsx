@@ -1,4 +1,4 @@
-import Icon from '@/components/common/Icon';
+import AutoSuggestionList from '@/src/shared/components/AutoSuggestionList';
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
@@ -12,34 +12,19 @@ type AutoCompleteProps = {
   onSubmitEditing: (suggestion: string) => void;
 };
 
-const AutoComplete = ({ category, value, onSubmitEditing }: AutoCompleteProps) => {
+const CommunityAutoComplete = ({ category, value, onSubmitEditing }: AutoCompleteProps) => {
   const { data: autoSuggestions } = useGetAutoSuggestions(CATEGORY_TO_BOARD_ID[category], value);
   const { mutate: postClickedKeyword } = usePostClickedKeyword();
 
-  // 자동완성 결과가 없으면 아무것도 렌더링하지 않음
-  if (!autoSuggestions || autoSuggestions.length === 0) {
-    return null;
-  }
+  const handlePressItem = (suggestion: string) => {
+    onSubmitEditing(suggestion);
+    postClickedKeyword(suggestion);
+  };
 
-  return (
-    <Container>
-      {autoSuggestions?.map((suggestion, index) => (
-        <SuggestionItem
-          key={`${index}-${suggestion}`}
-          onPress={() => {
-            postClickedKeyword(suggestion);
-            onSubmitEditing(suggestion);
-          }}
-        >
-          <Icon type="search" size={20} color={theme.colors.gray.lightGray_1} />
-          <SuggestionText>{suggestion}</SuggestionText>
-        </SuggestionItem>
-      ))}
-    </Container>
-  );
+  return <AutoSuggestionList suggestions={autoSuggestions} onPressItem={handlePressItem} />;
 };
 
-export default AutoComplete;
+export default CommunityAutoComplete;
 
 const Container = styled.View`
   flex: 1;
