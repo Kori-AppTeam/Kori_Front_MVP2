@@ -19,12 +19,14 @@ interface UseWriteVoteFormProps {
 export const useWriteVoteForm = ({
   postId,
   isEdit = false,
-  initialTitle,
+  initialTitle = '',
   initialDescription = '',
   initialContent = '',
   initialAnonymous = false,
   initialOptions = ['', ''],
 }: UseWriteVoteFormProps) => {
+  const [title, setTitle] = useState<string>(initialTitle);
+  const [description, setDescription] = useState<string>(initialDescription);
   const [body, setBody] = useState<string>(initialContent);
   const [options, setOptions] = useState<string[]>(initialOptions);
   const [anonymous, setAnonymous] = useState(initialAnonymous);
@@ -33,7 +35,13 @@ export const useWriteVoteForm = ({
   const createMutation = useWriteVote();
 
   const savingRef = useRef({ current: false });
-  const canSave = useMemo(() => body.trim().length > 0, [body]);
+  const canSave = useMemo(() => {
+    const hasTitle = title.trim().length > 0;
+    const validOptions = options.filter((option) => option.trim().length > 0);
+    const hasEnoughOptions = validOptions.length >= 2;
+
+    return hasTitle && hasEnoughOptions;
+  }, [title, options]);
 
   // 수정 모드일 때는 익명 토글 불가 (isAnonymous 변경을 지원하지 않음)
   // const canToggleAnonInEdit = isEdit ? false : true;
@@ -51,8 +59,8 @@ export const useWriteVoteForm = ({
       }
 
       await createMutation.mutateAsync({
-        title: initialTitle,
-        description: initialDescription,
+        title,
+        description,
         content,
         isAnonymous: anonymous,
         options,
@@ -81,6 +89,10 @@ export const useWriteVoteForm = ({
   };
 
   return {
+    title,
+    setTitle,
+    description,
+    setDescription,
     body,
     setBody,
     options,
