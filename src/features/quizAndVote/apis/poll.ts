@@ -15,5 +15,5 @@ export const postPoll = async (pollId: number, optionId: number) => {
   const res = await api.post(`/api/v2/poll/${pollId}/participate`, {
     optionId: optionId,
   });
-  return res.data.data;
+  return res.data;
 };
