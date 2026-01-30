@@ -13,8 +13,8 @@ import { CHAT_MEMBER_ROUTE } from '@/src/shared/constants/route';
 import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { FlatList, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
@@ -24,11 +24,15 @@ const ChattingRoomScreen = () => {
   const insets = useSafeAreaInsets();
   const { roomId, roomName } = useLocalSearchParams<{ roomId: string; roomName: string }>();
   const [myUserId, setMyUserId] = useState<string>('');
+  const flatListRef = useRef<FlatList>(null);
 
   // ----------- hooks ----------- //
   const { loadMessages } = useChatMessages(roomId);
-  const messageActions = useMessageActions();
-  const messageSearch = useMessageSearch(roomId);
+  const messageSearch = useMessageSearch({ roomId, flatListRef });
+  const messageActions = useMessageActions({
+    flatListRef,
+    myUserId,
+  });
 
   // ----------- profile modal ----------- //
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -80,7 +84,7 @@ const ChattingRoomScreen = () => {
               onLoadMore={loadMessages}
               onDeleteMessage={messageActions.deleteMessageWithConfirm}
               onProfilePress={handleProfilePress}
-              flatListRef={messageSearch.flatListRef}
+              flatListRef={flatListRef}
             />
 
             {/* 하단 입력창 또는 검색 내비게이션 */}
