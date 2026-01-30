@@ -1,4 +1,5 @@
 import { AnonymousToggle } from '@/src/features/community/write/components/AnonymousToggle';
+import CreateVoteBox from '@/src/features/community/write/components/CreateVoteBox';
 import WriteCommonLayout, {
   BarLeft,
   BarRight,
@@ -31,16 +32,31 @@ const Index = () => {
   }, [isEdit, params.initialData]);
 
   // 폼 상태 및 로직 훅
-  const { body, setBody, anonymous, isFocused, setIsFocused, canSave, isCreating, handleSave, handleToggleAnonymous } =
-    useWriteVoteForm({
-      isEdit,
-      postId: postIdNum,
-      initialTitle: parsedEditData?.title || '',
-      initialDescription: parsedEditData?.description || '',
-      initialContent: parsedEditData?.content || '',
-      initialAnonymous: parsedEditData?.isAnonymous || false,
-      initialOptions: parsedEditData?.options || ['', ''],
-    });
+  const {
+    body,
+    setBody,
+    anonymous,
+    isFocused,
+    setIsFocused,
+    canSave,
+    isCreating,
+    handleSave,
+    handleToggleAnonymous,
+    title,
+    setTitle,
+    description,
+    setDescription,
+    options,
+    setOptions,
+  } = useWriteVoteForm({
+    isEdit,
+    postId: postIdNum,
+    initialTitle: parsedEditData?.title ?? '',
+    initialDescription: parsedEditData?.description ?? '',
+    initialContent: parsedEditData?.content ?? '',
+    initialAnonymous: parsedEditData?.isAnonymous ?? false,
+    initialOptions: parsedEditData?.options ?? ['', ''],
+  });
 
   const headerTitle = isEdit ? 'Edit Vote' : 'Vote';
   const disabled = !canSave || isCreating;
@@ -81,6 +97,16 @@ const Index = () => {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             placeholder="Feel free to talk about anything you’d like to share with the community."
+          />
+          <CreateVoteBox
+            title={title}
+            setTitle={setTitle}
+            description={description}
+            setDescription={setDescription}
+            options={options}
+            setOptions={setOptions}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
           />
         </BodyWrap>
         {isFocused === false ? <WritePolicy /> : null}
