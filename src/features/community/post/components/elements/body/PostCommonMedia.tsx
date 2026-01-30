@@ -20,7 +20,6 @@ interface PostCommonMediaProps {
 
 const PostCommonMedia = ({ type, images, imageCount, pollInfo, pollId, queryKey }: PostCommonMediaProps) => {
   if (pollId && pollInfo) {
-    console.log('[PostCommonMedia] Rendering poll component:', type);
     return (
       <PollContainer>
         {type === 'QUIZ' && <QuizBox pollId={pollId} data={pollInfo} queryKey={queryKey} />}

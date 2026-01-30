@@ -1,6 +1,6 @@
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import { postPoll } from '../apis/poll';
-import { PostPollParams, QuizAndVoteResponse } from '../types';
+import { OptionType, PollBaseType, PostPollParams, QuizAndVoteResponse } from '../types';
 
 export const usePostPoll = (targetQueryKey?: QueryKey) => {
   const queryClient = useQueryClient();
@@ -11,88 +11,72 @@ export const usePostPoll = (targetQueryKey?: QueryKey) => {
       const queryKey = targetQueryKey || ['todayPoll', variables.pollType];
       const { results, correctOptionId, isCorrect } = serverResponse.data;
 
-      // 서버 응답 데이터를 직접 캐시에 반영
-      if (results) {
-        queryClient.setQueryData(queryKey, (old: any) => {
-          if (!old) return old;
+      if (!results) return;
 
-          // 무한스크롤 구조인지 확인 (게시글 리스트)
-          if (old.pages && Array.isArray(old.pages)) {
-            return {
-              ...old,
-              pages: old.pages.map((page: any) => ({
-                ...page,
-                data: {
-                  ...page.data,
-                  items: page.data.items.map((item: any) => {
-                    // 해당 pollId를 가진 아이템 찾아서 업데이트
-                    if (item.id === variables.pollId && item.pollInfo) {
-                      const updatedOptions = item.pollInfo.options.map((option: any) => {
-                        const optionId = option.id ?? option.optionId;
-                        const serverResult = results.find((r) => r.optionId === optionId);
+      queryClient.setQueryData(queryKey, (old: any) => {
+        if (!old) return old;
 
-                        return serverResult ? { ...option, voteCount: serverResult.voteCount } : option;
-                      });
-
-                      // totalVoteCount 재계산
-                      const newTotalVoteCount = updatedOptions.reduce(
-                        (sum: number, option: any) => sum + option.voteCount,
-                        0,
-                      );
-
-                      return {
-                        ...item,
-                        pollInfo: {
-                          ...item.pollInfo,
-                          correctOptionId: correctOptionId ?? item.pollInfo.correctOptionId,
-                          selectedOptionId: variables.optionId,
-                          totalVoteCount: newTotalVoteCount,
-                          options: updatedOptions,
-                          isCorrect: isCorrect ?? false,
-                        },
-                      };
-                    }
-                    return item;
-                  }),
-                },
-              })),
-            };
-          }
-
-          // 단순 구조 (상세 페이지, k-culture 탭)
-          const isPostType = !!old.pollInfo;
-          const targetData = isPostType ? old.pollInfo : old;
-
-          // 서버에서 온 정확한 결과로 업데이트
-          const updatedOptions = targetData.options.map((option: any) => {
+        const updatePollData = (originalData: PollBaseType) => {
+          const updatedOptions = originalData.options.map((option: OptionType) => {
             const optionId = option.id ?? option.optionId;
             const serverResult = results.find((r) => r.optionId === optionId);
-
             return serverResult ? { ...option, voteCount: serverResult.voteCount } : option;
           });
 
           // totalVoteCount 재계산
-          const newTotalVoteCount = updatedOptions.reduce((sum: number, option: any) => sum + option.voteCount, 0);
+          const newTotalVoteCount = updatedOptions.reduce(
+            (sum: number, option: OptionType) => sum + option.voteCount,
+            0,
+          );
 
-          const updatedTarget = {
-            ...targetData,
-            correctOptionId: correctOptionId ?? targetData.correctOptionId,
+          return {
+            ...originalData,
+            correctOptionId: correctOptionId ?? originalData.correctOptionId,
             selectedOptionId: variables.optionId,
             totalVoteCount: newTotalVoteCount,
             options: updatedOptions,
             isCorrect: isCorrect ?? false,
           };
+        };
 
-          if (isPostType) {
-            return {
-              ...old,
-              pollInfo: updatedTarget,
-            };
-          }
+        // 무한스크롤 구조인지 확인 (게시글 리스트)
+        if (old.pages && Array.isArray(old.pages)) {
+          return {
+            ...old,
+            pages: old.pages.map((page: any) => ({
+              ...page,
+              data: {
+                ...page.data,
+                items: page.data.items.map((item: any) => {
+                  // 해당 pollId를 가진 아이템 찾아서 업데이트
+                  if (item.id === variables.pollId && item.pollInfo) {
+                    return {
+                      ...item,
+                      pollInfo: updatePollData(item.pollInfo),
+                    };
+                  }
+                  return item;
+                }),
+              },
+            })),
+          };
+        }
 
-          return updatedTarget;
-        });
-      }
+        // 단순 구조 (상세 페이지, k-culture 탭)
+        const isPostType = !!old.pollInfo;
+        const targetData = isPostType ? old.pollInfo : old;
+
+        const updatedTarget = updatePollData(targetData);
+
+        if (isPostType) {
+          return {
+            ...old,
+            pollInfo: updatedTarget,
+          };
+        }
+
+        return updatedTarget;
+      });
     },
   });
 };
