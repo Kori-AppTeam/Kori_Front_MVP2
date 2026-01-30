@@ -75,6 +75,7 @@ const SaveText = styled.Text<{ $enabled: boolean }>`
 
 export const BodyWrap = styled.Pressable`
   margin: 24px 20px;
+  gap: 24px;
   flex: 1;
 `;
 
