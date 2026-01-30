@@ -5,7 +5,7 @@ export type NewsSortType = 'TRENDING' | 'NEW';
 
 // 뉴스 상세 아이템 타입
 export interface KCultureNewsItem {
-  id: number;
+  contentId: number;
   title: string;
   htmlContent: string;
   originalUrl: string;
@@ -62,4 +62,20 @@ export interface NewsPageParams {
   sort: NewsSortType;
   size: number;
   cursor?: string;
+}
+
+// 검색 뉴스 리스트 서버 응답 타입
+export interface KNewsSearchListResp {
+  message: string;
+  data: KNewsSearchListCursorPage;
+  timestamp: string;
+}
+
+export interface KNewsSearchListCursorPage {
+  items: {
+    item: KNewsListData;
+    score: number;
+  }[];
+  hasNext: boolean;
+  nextCursor?: string | null;
 }

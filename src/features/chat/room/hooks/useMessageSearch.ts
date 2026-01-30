@@ -1,5 +1,5 @@
 // src/features/chat/room/hooks/useMessageSearch.ts
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { loadMessagesAroundAPI, searchMessagesAPI } from '../api/messages';
 import { useChatStore } from '../stores/useChatStore';
@@ -16,17 +16,20 @@ interface MessageSearchHook {
     totalCount: number;
     error: Error | null;
   };
-  flatListRef: React.RefObject<FlatList | null>;
   toggleSearch: () => void;
   setSearchText: (text: string) => void;
   performSearch: () => Promise<void>;
   navigateToUp: () => void;
   navigateToDown: () => void;
-  clearSearch: () => void;
   isCurrentMessage: (messageId: number) => boolean;
 }
 
-export const useMessageSearch = (roomId: string): MessageSearchHook => {
+interface MessageSearchParams {
+  roomId: string;
+  flatListRef: React.RefObject<FlatList | null>;
+}
+
+export const useMessageSearch = ({ roomId, flatListRef }: MessageSearchParams): MessageSearchHook => {
   // Store에서 상태와 액션 가져오기
 
   const mergeMessages = useChatStore((state) => state.mergeMessages);
@@ -45,10 +48,15 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
     incrementIndex,
     decrementIndex,
     setError,
-    clearSearch,
+    deactivateSearch,
   } = useSearchStore();
 
-  const flatListRef = useRef<FlatList>(null);
+  // 컴포넌트 언마운트 시 검색 상태 초기화
+  useEffect(() => {
+    return () => {
+      deactivateSearch();
+    };
+  }, [deactivateSearch]);
 
   /**
    * 메시지로 스크롤하는 내부 함수
@@ -157,13 +165,11 @@ export const useMessageSearch = (roomId: string): MessageSearchHook => {
       totalCount,
       error,
     },
-    flatListRef,
     toggleSearch,
     setSearchText,
     performSearch,
     navigateToUp,
     navigateToDown,
-    clearSearch,
     isCurrentMessage,
   };
 };

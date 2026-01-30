@@ -48,6 +48,7 @@ import Photo from '@/assets/icons/photo.svg';
 import Plus from '@/assets/icons/Plus.svg';
 import Previous from '@/assets/icons/previous.svg';
 import Purpose from '@/assets/icons/purpose.svg';
+import Refresh from '@/assets/icons/refresh.svg';
 import Search from '@/assets/icons/search.svg';
 import Send from '@/assets/icons/send.svg';
 import Setting from '@/assets/icons/setting.svg';
@@ -109,7 +110,7 @@ const iconMap = {
   purpose: Purpose,
   search: Search,
   send: Send,
-
+  refresh: Refresh,
   setting: Setting,
   share: Share,
   statusOn: StatusOn,

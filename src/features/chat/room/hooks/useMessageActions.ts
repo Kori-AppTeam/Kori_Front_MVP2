@@ -1,8 +1,7 @@
-// src/features/chat/room/hooks/useMessageActions.ts
 import { useStompStore } from '@/src/store/useStompStore';
 import * as SecureStore from 'expo-secure-store';
-import { useCallback } from 'react';
-import { Alert } from 'react-native';
+import { useCallback, useEffect, useRef } from 'react';
+import { Alert, FlatList } from 'react-native';
 import { useChatStore } from '../stores/useChatStore';
 
 interface MessageActionsHook {
@@ -10,11 +9,31 @@ interface MessageActionsHook {
   deleteMessageWithConfirm: (messageId: number) => void;
 }
 
-export const useMessageActions = (): MessageActionsHook => {
+interface MessageActionsParams {
+  flatListRef?: React.RefObject<FlatList | null>;
+  myUserId: string;
+}
+
+export const useMessageActions = ({ flatListRef, myUserId }: MessageActionsParams): MessageActionsHook => {
   // Store에서 필요한 액션 가져오기
   const stompConnection = useStompStore((state) => state);
   const clearCurrentMessage = useChatStore((state) => state.clearCurrentMessage);
   const getCurrentMessage = () => useChatStore.getState().currentMessage;
+  const messages = useChatStore((state) => state.messages);
+  const shouldScrollRef = useRef(false);
+
+  // 내가 보낸 메시지가 추가되었을 때 스크롤
+  useEffect(() => {
+    if (shouldScrollRef.current && messages.length > 0) {
+      const latestMessage = messages[0];
+      if (latestMessage.senderId.toString() === myUserId) {
+        requestAnimationFrame(() => {
+          flatListRef?.current?.scrollToOffset({ offset: 0, animated: true });
+        });
+      }
+      shouldScrollRef.current = false;
+    }
+  }, [messages, myUserId, flatListRef]);
 
   /** 메시지 전송 */
   const sendMessage = useCallback(
@@ -37,6 +56,9 @@ export const useMessageActions = (): MessageActionsHook => {
           senderId: myUserId,
           content: currentMessage.trim(),
         };
+
+        // 메시지 전송 전에 스크롤 플래그 설정
+        shouldScrollRef.current = true;
 
         await stompConnection.publish('/app/chat.sendMessage', body);
 
