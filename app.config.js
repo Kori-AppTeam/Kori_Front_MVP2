@@ -5,7 +5,7 @@ export default {
     name: 'Kori',
     slug: 'Kori_Front',
     owner: 'koriapp',
-    version: '1.2.6', // NOTE 빌드 전 반드시 버전 업데이트, package-lock.json 최신화 !!!
+    version: '1.2.9', // NOTE 빌드 전 반드시 버전 업데이트, package-lock.json 최신화 !!!
     orientation: 'portrait',
     icon: './assets/images/Kori_Icon.png',
     scheme: 'korifront',

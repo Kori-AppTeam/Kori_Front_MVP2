@@ -45,7 +45,8 @@ const DropdownInputContainer = styled.Pressable<{ isOpen: boolean }>`
   align-items: center;
   padding: 0px 12px 0 16px;
   background-color: ${({ theme }) => theme.colors.gray.darkGray_1};
-  border: 1px solid ${({ theme, isOpen }) => (isOpen ? theme.colors.primary.mint : theme.colors.gray.darkGray_2)};
+  border-width: 1;
+  border-color: ${({ theme, isOpen }) => (isOpen ? theme.colors.primary.mint : theme.colors.gray.darkGray_2)};
   border-radius: 4px;
 `;
 

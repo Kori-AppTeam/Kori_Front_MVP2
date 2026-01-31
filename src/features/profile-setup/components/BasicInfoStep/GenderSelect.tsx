@@ -38,7 +38,7 @@ const Select = styled.Pressable<{ selected: boolean }>`
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  border-width: ${({ selected }) => (selected ? '1px' : 'none')};
+  border-width: ${({ selected }) => (selected ? 1 : 0)};
   border-color: ${({ theme }) => theme.colors.primary.mint};
   background-color: ${({ theme }) => theme.colors.gray.darkGray_1};
 `;
