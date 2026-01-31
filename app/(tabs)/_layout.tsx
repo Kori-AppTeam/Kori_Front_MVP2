@@ -12,6 +12,10 @@ import { styled } from 'styled-components/native';
 
 const TAB_BAR_HEIGHT = SCREEN_WIDTH * (86 / 375);
 
+export const unstable_settings = {
+  initialRouteName: 'k-culture',
+};
+
 export default function TabLayout() {
   const { permissionSetupRequired, setPermissionSetupRequired, requestOSPermission } = useNotificationPermission();
   const pathname = usePathname();
@@ -20,6 +24,7 @@ export default function TabLayout() {
   return (
     <>
       <Tabs
+        initialRouteName="k-culture"
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
