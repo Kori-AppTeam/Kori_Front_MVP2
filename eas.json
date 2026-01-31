@@ -1,40 +1,42 @@
 {
-    "cli": {
-        "version": ">= 16.17.4",
-        "appVersionSource": "remote"
+  "cli": {
+    "version": ">= 16.17.4",
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development",
+      "ios": {
+        "image": "latest"
+      },
+      "android": {
+        "image": "latest"
+      }
     },
-    "build": {
-        "development": {
-            "developmentClient": true,
-            "distribution": "internal",
-            "environment": "development",
-            "ios": {
-                "image": "latest"
-            },
-            "android": {
-                "image": "latest"
-            }
-        },
-        "preview": {
-            "distribution": "internal",
-            "environment": "preview"
-        },
-        "production": {
-            "environment": "production",
-            "channel": "production",
-            "android": {
-                "buildType": "app-bundle"
-            },
-            "autoIncrement": true
-        },
-        "adhoc": {
-            "distribution": "internal",
-            "ios": {
-                "simulator": false
-            }
-        }
+    "preview": {
+      "distribution": "internal",
+      "environment": "preview",
+      "channel": "preview"
     },
-    "submit": {
-        "production": {}
+    "production": {
+      "environment": "production",
+      "channel": "production",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "autoIncrement": true
+    },
+    "adhoc": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      }
     }
+  },
+  "submit": {
+    "production": {}
+  }
 }
