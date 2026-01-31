@@ -1,7 +1,9 @@
+import Icon from '@/components/common/Icon';
 import { BoxContainer, Title, TitleRow } from '@/src/features/quizAndVote/components/PollBox';
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import { styled } from 'styled-components/native';
+import { IconBtn } from '../../shared/styles/styles';
 
 interface CreateVoteBoxProps {
   title: string;
@@ -30,6 +32,10 @@ const CreateVoteBox = ({
     setOptions(newOptions);
   };
 
+  const handleClearOption = (index: number) => {
+    handleOptionChange('', index);
+  };
+
   return (
     <BoxContainer>
       <TitleRow>
@@ -37,7 +43,6 @@ const CreateVoteBox = ({
           <Title>Q.</Title>
           <TitleInput
             placeholder="Vote Title"
-            placeholderTextColor={theme.colors.gray.gray_2}
             value={title}
             onChangeText={setTitle}
             onFocus={onFocus}
@@ -47,7 +52,6 @@ const CreateVoteBox = ({
 
         <DescriptionInput
           placeholder="Add a description (optional)"
-          placeholderTextColor={theme.colors.gray.gray_2}
           value={description}
           onChangeText={setDescription}
           onFocus={onFocus}
@@ -56,22 +60,35 @@ const CreateVoteBox = ({
       </TitleRow>
 
       <OptionRow>
-        <OptionInput
-          placeholder="Write down select1"
-          placeholderTextColor={theme.colors.gray.gray_2}
-          value={options[0]}
-          onChangeText={(text) => handleOptionChange(text, 0)}
-          onFocus={onFocus}
-          onBlur={onBlur}
-        />
-        <OptionInput
-          placeholder="Write down select2"
-          placeholderTextColor={theme.colors.gray.gray_2}
-          value={options[1]}
-          onChangeText={(text) => handleOptionChange(text, 1)}
-          onFocus={onFocus}
-          onBlur={onBlur}
-        />
+        <OptionWrapper hasContent={options[0].trim().length > 0}>
+          <OptionInput
+            placeholder="Write down select1"
+            value={options[0]}
+            onChangeText={(text) => handleOptionChange(text, 0)}
+            onFocus={onFocus}
+            onBlur={onBlur}
+          />
+          {options[0].trim().length > 0 && (
+            <IconBtn onPress={() => handleClearOption(0)}>
+              <Icon type="cancelDark" size={20} />
+            </IconBtn>
+          )}
+        </OptionWrapper>
+
+        <OptionWrapper hasContent={options[1].trim().length > 0}>
+          <OptionInput
+            placeholder="Write down select2"
+            value={options[1]}
+            onChangeText={(text) => handleOptionChange(text, 1)}
+            onFocus={onFocus}
+            onBlur={onBlur}
+          />
+          {options[1].trim().length > 0 && (
+            <IconBtn onPress={() => handleClearOption(1)}>
+              <Icon type="cancelDark" size={20} />
+            </IconBtn>
+          )}
+        </OptionWrapper>
       </OptionRow>
     </BoxContainer>
   );
@@ -83,6 +100,7 @@ const BaseInput = styled.TextInput.attrs({
   multiline: true,
   scrollEnabled: false,
   textAlignVertical: 'top',
+  placeholderTextColor: theme.colors.gray.gray_2,
 })``;
 
 const TitleInputContainer = styled.View`
@@ -115,10 +133,27 @@ const OptionRow = styled.View`
   gap: 10px;
 `;
 
-const OptionInput = styled(BaseInput)`
-  background-color: ${({ theme }) => theme.colors.gray.darkGray_1_5};
-  padding: 12px 20px;
+const OptionWrapper = styled.View<{ hasContent?: boolean }>`
+  width: 100%;
+  flex-direction: row;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
   border-radius: 8px;
+  border-width: 1px;
+  background-color: ${({ hasContent, theme }) => (hasContent ? 'transparent' : theme.colors.gray.darkGray_1_5)};
+  border-color: ${({ hasContent, theme }) => (hasContent ? theme.colors.primary.mint : 'transparent')};
+  border-radius: 8px;
+  padding: 0 20px;
+  gap: 8px;
+`;
+
+const OptionInput = styled(BaseInput).attrs({
+  selectionColor: theme.colors.primary.mint,
+})`
+  flex: 1;
+  text-align-vertical: center;
   color: ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.body.B3_M)};
+  padding: 6px 0;
 `;
