@@ -60,6 +60,7 @@ import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
 import TranslateOn from '@/assets/icons/translate-on.svg';
 import TranslateOff from '@/assets/icons/translate.svg';
 import TrashCan from '@/assets/icons/trash_can.svg';
+import Vote from '@/assets/icons/vote.svg';
 import Write from '@/assets/icons/write.svg';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
@@ -127,7 +128,7 @@ const iconMap = {
   checkGrayBox: CheckGrayBox,
   closeBox: CloseBox,
   write: Write,
-
+  vote: Vote,
   kCulture: TabKCulture,
 };
 
