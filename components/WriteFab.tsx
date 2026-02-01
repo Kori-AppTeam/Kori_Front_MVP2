@@ -32,7 +32,7 @@ export default function WriteFab({ onHandleWritePress, onHandleVotePress, disabl
                   setIsOpen(false);
                 }}
               >
-                <Icon type="write" size={20} color={theme.colors.primary.white} />
+                <Icon type="vote" size={24} color={theme.colors.primary.black} />
               </SubFab>
             </SubButton>
 
@@ -44,7 +44,7 @@ export default function WriteFab({ onHandleWritePress, onHandleVotePress, disabl
                   setIsOpen(false);
                 }}
               >
-                <Icon type="write" size={20} color={theme.colors.primary.white} />
+                <Icon type="write" size={20} />
               </SubFab>
             </SubButton>
           </OptionContainer>
