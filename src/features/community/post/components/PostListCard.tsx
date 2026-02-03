@@ -8,7 +8,8 @@ import useVisitor from '../hooks/useVisitor';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { BoardId, PostsListItemType, SortParam } from '../types';
 import { parsePostMediaInfo } from '../utils/postUtils';
-import PostCommonMedia from './elements/body/PostCommonMedia';
+import PostImages from './elements/body/PostImages';
+import PostPoll from './elements/body/PostPoll';
 import PostTextContent from './elements/body/PostTextContent';
 import PostCommonFooter from './elements/footer/PostCommonFooter';
 import PostCommonHeader from './elements/header/PostCommonHeader';
@@ -21,8 +22,6 @@ interface PostListCardProps {
 
 const PostListCard = ({ data, boardId, sort }: PostListCardProps) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
-
-  console.log('[PostListCard Debug]', data);
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
   const { handleBlockVisitor } = useVisitor();
@@ -51,17 +50,25 @@ const PostListCard = ({ data, boardId, sort }: PostListCardProps) => {
         />
 
         <ContentBox>
-          {/* 이미지, 퀴즈/투표 컨텐츠 */}
-          <PostCommonMedia
-            type={parsedMediaInfo.MediaType}
-            images={parsedMediaInfo.postInfo?.contentImageUrl}
-            imageCount={parsedMediaInfo.postInfo?.imageCount}
-            pollInfo={parsedMediaInfo.pollInfo}
-            pollId={data.id}
-            queryKey={['post', 'list', boardId, sort]}
-          />
+          {/* 이미지 컨텐츠 - 일반 게시글의 경우 텍스트 위에 */}
+          {parsedMediaInfo.MediaType === 'GENERAL' && (
+            <PostImages
+              images={parsedMediaInfo.postInfo?.contentImageUrl}
+              imageCount={parsedMediaInfo.postInfo?.imageCount}
+            />
+          )}
 
           <PostTextContent isTruncate={true} postId={data.id} content={data.contentPreview} />
+
+          {/* 퀴즈/투표 컨텐츠 - 텍스트 아래에 */}
+          {(parsedMediaInfo.MediaType === 'QUIZ' || parsedMediaInfo.MediaType === 'VOTE') && (
+            <PostPoll
+              type={parsedMediaInfo.MediaType}
+              pollInfo={parsedMediaInfo.pollInfo}
+              pollId={data.id}
+              queryKey={['post', 'list', boardId, sort]}
+            />
+          )}
         </ContentBox>
 
         <PostCommonFooter
