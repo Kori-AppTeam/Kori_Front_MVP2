@@ -21,7 +21,7 @@ export interface UseWriteFormProps {
 export interface InitialEditData {
   boardCategory: AllowedCategory;
   content: string;
-  contentImageUrls?: string[];
+  contentImageUrls?: string[] | string | null;
   isAnonymous: boolean;
 }
 
@@ -87,9 +87,19 @@ export interface CreateVotePostBody extends CreatePostBody {
 
 // 투표 게시글 수정 초기 데이터타입
 export interface InitialVoteEditData {
+  id: number;
   title: string;
   description?: string;
   content?: string;
   isAnonymous: boolean;
-  options: string[];
+  options?: string[];
+}
+
+// 투표 게시글 수정 파라미터
+export interface UpdateVotePostBody {
+  id: number;
+  title: string;
+  description?: string;
+  content?: string;
+  isAnonymous: boolean;
 }
