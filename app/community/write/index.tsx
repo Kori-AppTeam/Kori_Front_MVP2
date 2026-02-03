@@ -46,6 +46,12 @@ export default function WriteScreen() {
   // 이미지 피커 훅
   const { images, pickImage, removeImage, setImages } = useImagePicker();
 
+  const safeImages = (() => {
+    const data = parsedEditData?.contentImageUrls;
+    if (!data) return [];
+    return Array.isArray(data) ? data : [data];
+  })();
+
   // 폼 상태 및 로직 훅
   const {
     category,
@@ -67,14 +73,14 @@ export default function WriteScreen() {
     postId: postIdNum,
     initialCategory: parsedEditData ? categoryToClient(parsedEditData.boardCategory) : 'Activity',
     initialContent: parsedEditData?.content ?? '',
-    initialImages: parsedEditData?.contentImageUrls ?? [],
+    initialImages: safeImages,
     initialAnonymous: parsedEditData?.isAnonymous ?? false,
   });
 
   // 수정 모드일 때 초기 이미지 설정
   useEffect(() => {
-    if (parsedEditData?.contentImageUrls) {
-      setImages(parsedEditData.contentImageUrls.map((uri: string) => ({ uri })));
+    if (safeImages.length > 0) {
+      setImages(safeImages.map((uri: string) => ({ uri })));
     }
   }, [parsedEditData]);
 
