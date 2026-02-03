@@ -89,7 +89,7 @@ export function useWriteForm({
       return;
     }
     if (!canToggleAnon) {
-      Alert.alert('Anonymous not available', 'Only Free talk and Q&A support anonymous posts.');
+      Alert.alert('Anonymous not available', 'Anonymous posts are only allowed in Free Talk, Q&A, and Vote.');
       return;
     }
     setAnonymous(!anonymous);

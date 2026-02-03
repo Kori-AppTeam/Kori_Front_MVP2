@@ -13,9 +13,7 @@ interface AnonymousToggleProps {
 export function AnonymousToggle({ active, canToggle, loading = false, onPress }: AnonymousToggleProps) {
   return (
     <Anon $active={active} $disabled={!canToggle} onPress={onPress}>
-      <AnonText $active={active}>
-        {loading ? 'Anonymous (checking...)' : canToggle ? 'Anonymous' : 'Anonymous (only Free talk & Q&A)'}
-      </AnonText>
+      <AnonText $active={active}>{loading ? 'Anonymous (checking...)' : 'Anonymous'}</AnonText>
 
       {active ? <Icon type="checkMintBox" size={16} /> : <Icon type="checkGrayBox" size={16} />}
     </Anon>
