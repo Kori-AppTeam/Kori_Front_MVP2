@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../shared/constants/error';
+import { useUpdateVotePost } from './useUpdateVotePost';
 import { useWriteVote } from './useWriteVote';
 
 interface UseWriteVoteFormProps {
@@ -33,6 +34,7 @@ export const useWriteVoteForm = ({
   const [isFocused, setIsFocused] = useState(false);
 
   const createMutation = useWriteVote();
+  const updateMutation = useUpdateVotePost();
 
   const savingRef = useRef({ current: false });
   const canSave = useMemo(() => {
@@ -47,14 +49,24 @@ export const useWriteVoteForm = ({
   // const canToggleAnonInEdit = isEdit ? false : true;
 
   const handleSave = async () => {
-    if (!canSave || savingRef.current.current || createMutation.isPending) return;
+    if (!canSave || savingRef.current.current || createMutation.isPending || updateMutation.isPending) return;
 
     savingRef.current.current = true;
     const content = body.trim();
 
     try {
       if (isEdit && postId) {
-        // 수정 로직은 추후 구현
+        await updateMutation.mutateAsync({
+          body: {
+            id: postId,
+            title,
+            description,
+            content,
+            isAnonymous: anonymous,
+          },
+        });
+        router.back();
+        Toast.show({ type: 'success', text1: 'Post updated successfully!' });
         return;
       }
 
@@ -66,7 +78,7 @@ export const useWriteVoteForm = ({
         options,
       });
       router.back();
-      Toast.show({ type: 'success', text1: 'Vote post created successfully!' });
+      Toast.show({ type: 'success', text1: 'Post created successfully!' });
     } catch (e: any) {
       const errorCode = getAxiosErrorCode(e);
       const errorMessage =
@@ -99,6 +111,7 @@ export const useWriteVoteForm = ({
     setOptions,
     anonymous,
     setAnonymous,
+    isUpdating: updateMutation.isPending,
     isCreating: createMutation.isPending,
     canSave,
     isFocused,
