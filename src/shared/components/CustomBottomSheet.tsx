@@ -1,6 +1,12 @@
 import { theme } from '@/src/styles/theme';
-import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import React, { ReactElement, useCallback } from 'react';
+import {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetModalProps,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -11,6 +17,10 @@ interface CustomBottomSheetProps {
   onAnimate?: (fromIndex: number, toIndex: number) => void;
   backgroundColor?: string;
   handleComponent?: () => null;
+  keyboardBehavior?: BottomSheetModalProps['keyboardBehavior'];
+  keyboardBlurBehavior?: BottomSheetModalProps['keyboardBlurBehavior'];
+  android_keyboardInputMode?: BottomSheetModalProps['android_keyboardInputMode'];
+  topInset?: number;
 }
 
 const CustomBottomSheet = ({
@@ -20,9 +30,20 @@ const CustomBottomSheet = ({
   onAnimate,
   backgroundColor = theme.colors.gray.darkGray_1,
   handleComponent = () => null,
+  keyboardBehavior,
+  keyboardBlurBehavior,
+  android_keyboardInputMode,
+  topInset,
 }: CustomBottomSheetProps) => {
-  const { bottom } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const isAndroidButtonNav = Platform.OS === 'android' && bottom > 25;
+
+  const resolvedTopInset = useMemo(() => {
+    if (typeof topInset === 'number') return topInset;
+    if (Platform.OS !== 'ios') return undefined;
+    if (keyboardBehavior !== 'interactive') return undefined;
+    return top;
+  }, [keyboardBehavior, top, topInset]);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -55,6 +76,10 @@ const CustomBottomSheet = ({
       handleIndicatorStyle={bottomSheetHandleStyle}
       backdropComponent={renderBackdrop}
       handleComponent={handleComponent}
+      keyboardBehavior={keyboardBehavior}
+      keyboardBlurBehavior={keyboardBlurBehavior}
+      android_keyboardInputMode={android_keyboardInputMode}
+      topInset={resolvedTopInset}
     >
       <BottomSheetView style={bottomSheetViewStyle}>{children}</BottomSheetView>
     </BottomSheetModal>

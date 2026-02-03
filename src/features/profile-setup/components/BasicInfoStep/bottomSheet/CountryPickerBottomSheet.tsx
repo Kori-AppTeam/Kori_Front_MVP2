@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import { useBottomSheetKeyboardControl } from '@/src/shared/hooks/useBottomSheetKeyboardControl';
 
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
@@ -33,6 +34,12 @@ const CountryPickerBottomSheet = ({
   const [search, setSearch] = useState<string>('');
   const { height: deviceHeight } = Dimensions.get('window');
 
+  const {
+    onChange,
+    onAnimate: onAnimateKeyboard,
+    dismissAfterKeyboard,
+  } = useBottomSheetKeyboardControl(bottomSheetRef);
+
   // 국가 목록 필터링
   const countries = useMemo(() => {
     const list = COUNTRIES.slice().sort();
@@ -46,11 +53,12 @@ const CountryPickerBottomSheet = ({
   // 바텀시트 닫힘 애니메이션 콜백
   const onAnimate = useCallback(
     (_fromIndex: number, toIndex: number) => {
+      onAnimateKeyboard(_fromIndex, toIndex);
       if (toIndex === -1) {
         onBottomSheetClose();
       }
     },
-    [onBottomSheetClose],
+    [onAnimateKeyboard, onBottomSheetClose],
   );
 
   // 국가 리스트 항목 렌더링
@@ -63,6 +71,8 @@ const CountryPickerBottomSheet = ({
       } else {
         onSelectCountry(country);
       }
+
+      dismissAfterKeyboard();
     };
 
     return (
@@ -74,7 +84,14 @@ const CountryPickerBottomSheet = ({
   };
 
   return (
-    <CustomBottomSheet ref={bottomSheetRef} onAnimate={onAnimate}>
+    <CustomBottomSheet
+      ref={bottomSheetRef}
+      onChange={onChange}
+      onAnimate={onAnimate}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      android_keyboardInputMode="adjustResize"
+    >
       <PickerBottomSheetContent onStartShouldSetResponder={() => true}>
         <PickerBottomSheetHeader>
           <PickerBottomSheetHandle />

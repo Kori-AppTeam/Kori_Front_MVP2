@@ -1,7 +1,8 @@
 import Icon from '@/components/common/Icon';
 import { textStyle, theme } from '@/src/styles/theme';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Keyboard, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 interface SearchInputProps {
@@ -20,6 +21,9 @@ const SearchInput = ({ placeholder, search, setSearch, handleClearSearch }: Sear
         value={search}
         placeholderTextColor={theme.colors.gray.gray_2}
         onChangeText={setSearch}
+        returnKeyType="done"
+        blurOnSubmit
+        onSubmitEditing={() => Keyboard.dismiss()}
       />
 
       <SearchButtonsWrapper>
@@ -46,7 +50,7 @@ const SearchContainer = styled.View`
   border-color: ${({ theme }) => theme.colors.gray.gray_2};
 `;
 
-const Input = styled.TextInput`
+const Input = styled(BottomSheetTextInput)`
   flex: 1;
   margin: 0 0 2px 10px;
   color: ${({ theme }) => theme.colors.gray.lightGray_2};

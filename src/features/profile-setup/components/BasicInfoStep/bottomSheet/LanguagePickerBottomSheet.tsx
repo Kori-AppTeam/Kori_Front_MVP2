@@ -16,6 +16,7 @@ import {
 } from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/styles';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import SearchInput from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/SearchInput';
+import { useBottomSheetKeyboardControl } from '@/src/shared/hooks/useBottomSheetKeyboardControl';
 
 interface LanguagePickerBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -33,6 +34,12 @@ const LanguagePickerBottomSheet = ({
   const [search, setSearch] = useState<string>('');
   const { height: deviceHeight } = Dimensions.get('window');
 
+  const {
+    onChange,
+    onAnimate: onAnimateKeyboard,
+    dismissAfterKeyboard,
+  } = useBottomSheetKeyboardControl(bottomSheetRef, { restoreIndex: 0 });
+
   // 언어 목록 필터링
   const languages = useMemo(() => {
     const list = LANGUAGES.slice().sort();
@@ -46,11 +53,12 @@ const LanguagePickerBottomSheet = ({
   // 바텀시트 닫힘 애니메이션 콜백
   const onAnimate = useCallback(
     (_fromIndex: number, toIndex: number) => {
+      onAnimateKeyboard(_fromIndex, toIndex);
       if (toIndex === -1) {
         onBottomSheetClose();
       }
     },
-    [onBottomSheetClose],
+    [onAnimateKeyboard, onBottomSheetClose],
   );
 
   // 언어 리스트 항목 렌더링
@@ -64,7 +72,13 @@ const LanguagePickerBottomSheet = ({
         onSelectLanguage(selectedLanguages.filter((v) => v !== lang));
       } else {
         if (selectedLanguages.length >= 5) return;
-        onSelectLanguage([...selectedLanguages, lang]);
+        const nextSelected = [...selectedLanguages, lang];
+        onSelectLanguage(nextSelected);
+
+        // 5개가 되는 순간에만 키보드를 닫고 바텀시트를 닫음
+        if (nextSelected.length === 5) {
+          dismissAfterKeyboard();
+        }
       }
     };
 
@@ -77,7 +91,14 @@ const LanguagePickerBottomSheet = ({
   };
 
   return (
-    <CustomBottomSheet ref={bottomSheetRef} onAnimate={onAnimate}>
+    <CustomBottomSheet
+      ref={bottomSheetRef}
+      onChange={onChange}
+      onAnimate={onAnimate}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      android_keyboardInputMode="adjustResize"
+    >
       <PickerBottomSheetContent onStartShouldSetResponder={() => true}>
         <PickerBottomSheetHeader>
           <PickerBottomSheetHandle />
