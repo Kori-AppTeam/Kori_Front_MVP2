@@ -77,6 +77,24 @@ export const usePostPoll = (targetQueryKey?: QueryKey) => {
 
         return updatedTarget;
       });
+
+      // 1. 상세 페이지 데이터 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['post', 'detail', variables.pollId],
+        refetchType: 'none', // 상세페이지 들어갈 때 무효화(성능최적화)
+      });
+
+      // 2. 리스트 데이터 무효화 (전체 게시글 목록)
+      queryClient.invalidateQueries({
+        queryKey: ['post', 'list'],
+        refetchType: 'none',
+      });
+
+      // 3. k-culture 탭 투표 데이터 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['todayPoll', 'VOTE'],
+        refetchType: 'none',
+      });
     },
   });
 };
