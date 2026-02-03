@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import CustomButton from '@/src/shared/components/CustomButton';
-import { Text, Modal } from 'react-native';
+import { Modal, useWindowDimensions } from 'react-native';
 import Icon from './Icon';
 import { router } from 'expo-router';
+import { textStyle } from '@/src/styles/theme';
 
 interface ProfileSetupModal {
   visible: boolean;
@@ -11,6 +12,11 @@ interface ProfileSetupModal {
 }
 
 const ProfileSetupModal = ({ visible, onClose }: ProfileSetupModal) => {
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+
+  const modalWidth = Math.min(screenWidth * 0.9, 360);
+  const modalMaxHeight = Math.min(screenHeight * 0.8, 520);
+
   const handleGoToProfile = () => {
     onClose();
     router.replace('/(tabs)/mypage'); // mypage를 화면 stack에 쌓은 후 edit으로 이동
@@ -19,25 +25,21 @@ const ProfileSetupModal = ({ visible, onClose }: ProfileSetupModal) => {
   return (
     <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
       <ModalBackground>
-        <ModalArea>
-          <IconContainer>
-            <Icon type="notice1" size={24} />
-          </IconContainer>
-          <ModalTitle>
-            <Text>Finish setting up your profile</Text>
-          </ModalTitle>
-          <ModalContent>
-            <Text>{`Complete your profile on My Page\n to enjoy every feature Kori offers.`}</Text>
-          </ModalContent>
-          <CustomButton label="Go to Edit Page" tone="mint" filled={true} onPress={handleGoToProfile} />
+        <ModalArea style={{ width: modalWidth, maxHeight: modalMaxHeight }}>
+          <ModalScroll showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={{ flexGrow: 1 }}>
+            <IconContainer>
+              <Icon type="notice1" size={24} />
+            </IconContainer>
+            <ModalTitle>Finish setting up your profile</ModalTitle>
+            <ModalContent>{`Complete your profile on My Page\n to enjoy every feature Kori offers.`}</ModalContent>
+          </ModalScroll>
+
+          <ButtonArea>
+            <CustomButton label="Go to Edit Page" tone="mint" filled={true} onPress={handleGoToProfile} />
+          </ButtonArea>
         </ModalArea>
-        <TextButton
-          onPress={() => {
-            onClose();
-          }}
-        >
-          <Text>Maybe later</Text>
-        </TextButton>
+
+        <TextButton onPress={onClose}>Maybe later</TextButton>
       </ModalBackground>
     </Modal>
   );
@@ -49,45 +51,48 @@ const ModalBackground = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: ${({ theme }) => theme.colors.gray.overlay};
+  padding: 24px 16px;
 `;
 
 const ModalArea = styled.View`
-  display: flex;
   flex-direction: column;
-  width: 344px;
-  height: 220px;
   border-radius: 8px;
-  display: flex;
   padding: 20px;
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.primary.white};
+`;
+
+const ModalScroll = styled.ScrollView`
+  width: 100%;
+  flex-shrink: 1;
+`;
+
+const ButtonArea = styled.View`
+  width: 100%;
+  padding-top: 16px;
 `;
 
 const ModalTitle = styled.Text`
-  font-family: PlusJakartaSans_700Bold;
-  font-weight: 700;
-  font-size: 22px;
+  ${({ theme }) => textStyle(theme.fonts.headline.H4_SB)};
   text-align: center;
-  color: #171818;
+  color: ${({ theme }) => theme.colors.gray.darkBlack_1};
   padding-top: 12px;
-  padding-bottom: 20px;
+  padding-bottom: 12px;
 `;
 
 const ModalContent = styled.Text`
-  font-family: PlusJakartaSans_400Regular;
-  font-size: 14px;
+  ${({ theme }) => textStyle(theme.fonts.body.B4_R)};
   text-align: center;
-  color: #616262;
-  padding-bottom: 24px;
+  color: ${({ theme }) => theme.colors.gray.darkGray_2};
+  padding-bottom: 0px;
 `;
 
 const TextButton = styled.Text`
-  font-family: PlusJakartaSans_500Medium;
-  font-size: 15px;
-  color: #cccfd0;
-  padding-top: 12px;
+  ${({ theme }) => textStyle(theme.fonts.body.B3_M)};
+  color: ${({ theme }) => theme.colors.gray.lightGray_1};
+  margin-top: 14px;
   border-bottom-width: 1px;
-  border-bottom-color: #cccfd0;
+  border-bottom-color: ${({ theme }) => theme.colors.gray.lightGray_1};
   padding-bottom: 1px;
 `;
 
