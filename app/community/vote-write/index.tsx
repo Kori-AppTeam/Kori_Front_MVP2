@@ -40,6 +40,7 @@ const Index = () => {
     setIsFocused,
     canSave,
     isCreating,
+    isUpdating,
     handleSave,
     handleToggleAnonymous,
     title,
@@ -59,9 +60,8 @@ const Index = () => {
   });
 
   const headerTitle = isEdit ? 'Edit Vote' : 'Vote';
-  const disabled = !canSave || isCreating;
-  // const saveText = isEdit ? (isUpdating ? 'Saving...' : 'Save') : isCreating ? 'Saving...' : 'Save';
-  const saveText = isEdit ? (isCreating ? 'Saving...' : 'Save') : isCreating ? 'Saving...' : 'Save';
+  const disabled = !canSave || isCreating || isUpdating;
+  const saveText = isEdit ? (isUpdating ? 'Saving...' : 'Save') : isCreating ? 'Saving...' : 'Save';
 
   const bottomBar = (
     <BottomBar pointerEvents="box-none">
@@ -99,6 +99,7 @@ const Index = () => {
             placeholder="Feel free to talk about anything you’d like to share with the community."
           />
           <CreateVoteBox
+            isEditMode={isEdit}
             title={title}
             setTitle={setTitle}
             description={description}

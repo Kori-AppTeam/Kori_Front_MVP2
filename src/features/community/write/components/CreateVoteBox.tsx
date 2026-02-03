@@ -6,6 +6,7 @@ import { styled } from 'styled-components/native';
 import { IconBtn } from '../../shared/styles/styles';
 
 interface CreateVoteBoxProps {
+  isEditMode?: boolean;
   title: string;
   setTitle: (title: string) => void;
   description: string;
@@ -25,6 +26,7 @@ const CreateVoteBox = ({
   onBlur,
   options,
   setOptions,
+  isEditMode = false,
 }: CreateVoteBoxProps) => {
   const handleOptionChange = (text: string, index: number) => {
     const newOptions = [...options];
@@ -67,8 +69,9 @@ const CreateVoteBox = ({
             onChangeText={(text) => handleOptionChange(text, 0)}
             onFocus={onFocus}
             onBlur={onBlur}
+            editable={!isEditMode}
           />
-          {options[0].trim().length > 0 && (
+          {!isEditMode && options[0].trim().length > 0 && (
             <IconBtn onPress={() => handleClearOption(0)}>
               <Icon type="cancelDark" size={20} />
             </IconBtn>
@@ -82,13 +85,18 @@ const CreateVoteBox = ({
             onChangeText={(text) => handleOptionChange(text, 1)}
             onFocus={onFocus}
             onBlur={onBlur}
+            editable={!isEditMode}
           />
-          {options[1].trim().length > 0 && (
+          {!isEditMode && options[1].trim().length > 0 && (
             <IconBtn onPress={() => handleClearOption(1)}>
               <Icon type="cancelDark" size={20} />
             </IconBtn>
           )}
         </OptionWrapper>
+        <NoticeBox>
+          <Icon type="info" size={16} color={theme.colors.primary.mint} />
+          <NoticeText>Once created, voting options cannot be edited.</NoticeText>
+        </NoticeBox>
       </OptionRow>
     </BoxContainer>
   );
@@ -156,4 +164,18 @@ const OptionInput = styled(BaseInput).attrs({
   color: ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => textStyle(theme.fonts.body.B3_M)};
   padding: 6px 0;
+`;
+
+const NoticeBox = styled.View`
+  flex-direction: row;
+  align-items: flex-start;
+  margin-top: 8px;
+  gap: 6px;
+`;
+
+const NoticeText = styled.Text`
+  flex: 1;
+  color: ${({ theme }) => theme.colors.primary.mint};
+  ${({ theme }) => textStyle(theme.fonts.body.B5_L)};
+  margin: 0;
 `;
