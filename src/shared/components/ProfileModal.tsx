@@ -1,10 +1,11 @@
 import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
 import {
+  useAcceptFollowUserMutation,
   useCancelFollowUserMutation,
   useFollowUserMutation,
   useUnfollowUserMutation,
-} from '@/src/shared/hooks/useUserProfileQuery';
+} from '@/src/shared/hooks/useFollowQuery';
 import React from 'react';
 import { ActivityIndicator, Modal, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
@@ -32,6 +33,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   const followUserMutation = useFollowUserMutation();
   const unfollowUserMutation = useUnfollowUserMutation();
   const cancelFollowUserMutation = useCancelFollowUserMutation();
+  const acceptFollowUserMutation = useAcceptFollowUserMutation();
   const createChatRoom = useCreateOneToOneRoom();
 
   const handleFollow = () => {
@@ -47,6 +49,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   const handleCancelFollow = () => {
     if (!userData) return;
     cancelFollowUserMutation.mutate(userData.userId);
+  };
+
+  const handleAcceptFollow = () => {
+    if (!userData) return;
+    acceptFollowUserMutation.mutate(userData.userId);
   };
 
   const handleChat = () => {
@@ -69,13 +76,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               <UserProfileCard
                 user={userData}
                 defaultExpanded={true}
-                // BE 작업 동기화를 위해 이전 상태(ACCEPTED, PENDING) 유지
                 actions={{
-                  ...(userData.followStatus === 'ACCEPTED' || userData.followStatus === 'FRIEND'
+                  ...(userData.followStatus === 'FRIEND'
                     ? { decline: { label: 'Unfollow', onPress: handleUnfollow } }
-                    : userData.followStatus === 'PENDING' || userData.followStatus === 'FOLLOWING'
+                    : userData.followStatus === 'FOLLOWING'
                       ? { secondary: { label: 'Pending', onPress: handleCancelFollow } }
-                      : { primary: { label: 'Follow', onPress: handleFollow } }),
+                      : userData.followStatus === 'FOLLOWED'
+                        ? { primary: { label: 'Accept', onPress: handleAcceptFollow } }
+                        : { primary: { label: 'Follow', onPress: handleFollow } }),
                   chat: { label: 'Chat', onPress: handleChat },
                 }}
               />

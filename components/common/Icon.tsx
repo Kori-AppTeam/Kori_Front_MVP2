@@ -115,7 +115,7 @@ const iconMap = {
   refresh: Refresh,
   search: Search,
   send: Send,
-
+  refresh: Refresh,
   setting: Setting,
   share: Share,
   statusOn: StatusOn,

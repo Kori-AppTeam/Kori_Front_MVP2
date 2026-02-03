@@ -1,18 +1,19 @@
-import React from 'react';
 import { useNavigation, useRouter } from 'expo-router';
+import React from 'react';
 import { Platform } from 'react-native';
-import styled from 'styled-components/native';
 import Toast from 'react-native-toast-message';
+import styled from 'styled-components/native';
 
-import { useAppleSignIn } from '@/src/features/auth/hooks/useAppleSignIn';
-import { useGoogleSignIn } from '@/src/features/auth/hooks/useGoogleSignIn';
-import { LOGIN_ROUTE, SIGNUP_PRIVACY_POLICY_ROUTE } from '@/src/shared/constants/route';
-import { textStyle } from '@/src/styles/theme';
-import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
-import { alertAppleRejoinUser } from '@/src/features/auth/lib/alertRejoinAppleUser';
 import SignInButton from '@/src/features/auth/components/SignInButton';
 import { APPLE_AUTH_ERROR, GOOGLE_AUTH_ERROR } from '@/src/features/auth/constants/error';
+import { useAppleSignIn } from '@/src/features/auth/hooks/useAppleSignIn';
+import { useGoogleSignIn } from '@/src/features/auth/hooks/useGoogleSignIn';
+import { alertAppleRejoinUser } from '@/src/features/auth/lib/alertRejoinAppleUser';
+import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
 import { getAuthErrorCode } from '@/src/features/auth/utils/error';
+import { LOGIN_ROUTE, SIGNUP_PRIVACY_POLICY_ROUTE } from '@/src/shared/constants/route';
+import { initializeStomp } from '@/src/store/useStompStore';
+import { textStyle } from '@/src/styles/theme';
 import { statusCodes } from '@react-native-google-signin/google-signin';
 
 interface SignInButtonWrapperProps {
@@ -31,6 +32,7 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
       const appleUserLoginCase = await appleSignIn();
       switch (appleUserLoginCase) {
         case 'normal': // 일반 로그인 유저인 경우 바로 메인 화면으로 이동
+          initializeStomp();
           resetToTabsScreen(navigation);
           return;
 
@@ -67,6 +69,7 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
         onSuccessSocialSignIn('google');
       } else {
         // 기존 유저인 경우 메인 화면으로 이동
+        initializeStomp();
         resetToTabsScreen(navigation);
       }
     } catch (error) {

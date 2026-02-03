@@ -5,6 +5,7 @@ import useDeclineFollow from '@/hooks/mutations/useDeclineFollow';
 import { useFollowList } from '@/hooks/queries/useFollowList';
 import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
+import { useCancelFollowUserMutation } from '@/src/shared/hooks/useFollowQuery';
 import { User } from '@/src/shared/types/user';
 import { theme } from '@/src/styles/theme';
 import { router } from 'expo-router';
@@ -51,6 +52,8 @@ export default function FollowListScreen() {
     isError: errorSent,
     refetch: refetchSent,
   } = useFollowList('PENDING', 'sent');
+
+  const cancelFollowUserMutation = useCancelFollowUserMutation();
 
   const createChatRoom = useCreateOneToOneRoom();
 
@@ -261,7 +264,9 @@ export default function FollowListScreen() {
                     actions={{
                       secondary: {
                         label: 'Pending',
-                        onPress: () => {},
+                        onPress: () => {
+                          cancelFollowUserMutation.mutate(item.userId);
+                        },
                         loading: inFlight.has(item.userId),
                       },
                       chat: {
