@@ -1,11 +1,14 @@
 import Icon from '@/components/common/Icon';
+import ProfileSetupModal from '@/components/common/ProfileSetupModal';
 import { initNotificationsSettingStatus, putOSPushAgreement } from '@/src/features/notification/api/notifications';
 import NotificationPermissionModal from '@/src/features/notification/components/NotificationPermissionModal';
 import useNotificationPermission from '@/src/features/notification/hooks/useNotificationPermission';
+import { useCheckProfileSetupCompleted } from '@/src/features/profile-setup/hooks/useCheckProfileSetupCompleted';
+import { forceLogoutWithProfileSetupAlert } from '@/src/features/profile-setup/lib/forceLogoutWithProfileSetupAlert';
 import { useTabFocusTracker } from '@/src/shared/hooks/useTabFocusTracker';
 import { textStyle, theme } from '@/src/styles/theme';
 import { SCREEN_WIDTH } from '@gorhom/bottom-sheet';
-import { Tabs, usePathname } from 'expo-router';
+import { Tabs, router, usePathname } from 'expo-router';
 import React from 'react';
 import { DeviceEventEmitter, Image } from 'react-native';
 import { styled } from 'styled-components/native';
@@ -14,6 +17,7 @@ const TAB_BAR_HEIGHT = SCREEN_WIDTH * (86 / 375);
 
 export default function TabLayout() {
   const { permissionSetupRequired, setPermissionSetupRequired, requestOSPermission } = useNotificationPermission();
+  const { profileSetupModalVisible, goToProfileSetup } = useCheckProfileSetupCompleted();
   const pathname = usePathname();
   useTabFocusTracker();
 
@@ -131,6 +135,15 @@ export default function TabLayout() {
           await putOSPushAgreement(false);
           await initNotificationsSettingStatus(false);
         }}
+      />
+
+      {/* 프로필 셋업 안내 모달 */}
+      <ProfileSetupModal
+        visible={profileSetupModalVisible}
+        onClose={forceLogoutWithProfileSetupAlert}
+        onCancel={forceLogoutWithProfileSetupAlert}
+        onConfirm={goToProfileSetup}
+        confirmLabel="Go to Setup"
       />
     </>
   );

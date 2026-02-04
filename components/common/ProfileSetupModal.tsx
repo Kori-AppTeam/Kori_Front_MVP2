@@ -5,22 +5,38 @@ import { Modal, useWindowDimensions } from 'react-native';
 import Icon from './Icon';
 import { router } from 'expo-router';
 import { textStyle } from '@/src/styles/theme';
+import { PROFILE_SETUP_ROUTE } from '@/src/shared/constants/route';
 
 interface ProfileSetupModal {
   visible: boolean;
   onClose: () => void;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
-const ProfileSetupModal = ({ visible, onClose }: ProfileSetupModal) => {
+const ProfileSetupModal = ({
+  visible,
+  onClose,
+  onConfirm,
+  onCancel,
+  confirmLabel = 'Go to Setup',
+  cancelLabel = 'Maybe later',
+}: ProfileSetupModal) => {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const modalWidth = Math.min(screenWidth * 0.9, 360);
   const modalMaxHeight = Math.min(screenHeight * 0.8, 520);
 
-  const handleGoToProfile = () => {
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm();
+      return;
+    }
+
     onClose();
-    router.replace('/(tabs)/mypage'); // mypage를 화면 stack에 쌓은 후 edit으로 이동
-    setTimeout(() => router.push('/(tabs)/mypage/edit' as any), 500);
+    router.replace(PROFILE_SETUP_ROUTE.BASIC_INFO);
   };
   return (
     <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
@@ -31,15 +47,15 @@ const ProfileSetupModal = ({ visible, onClose }: ProfileSetupModal) => {
               <Icon type="notice1" size={24} />
             </IconContainer>
             <ModalTitle>Finish setting up your profile</ModalTitle>
-            <ModalContent>{`Complete your profile on My Page\n to enjoy every feature Kori offers.`}</ModalContent>
+            <ModalContent>{`Complete your profile on Setup Page\n to enjoy Kori.`}</ModalContent>
           </ModalScroll>
 
           <ButtonArea>
-            <CustomButton label="Go to Edit Page" tone="mint" filled={true} onPress={handleGoToProfile} />
+            <CustomButton label={confirmLabel} tone="mint" filled={true} onPress={handleConfirm} />
           </ButtonArea>
         </ModalArea>
 
-        <TextButton onPress={onClose}>Maybe later</TextButton>
+        <TextButton onPress={onCancel ?? onClose}>{cancelLabel}</TextButton>
       </ModalBackground>
     </Modal>
   );
