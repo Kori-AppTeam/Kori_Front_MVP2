@@ -5,11 +5,12 @@ import { PROFILE_SETUP_TITLES } from '@/src/features/profile-setup/constants/con
 import { Contents, SafeArea, StepContainer, SubTitle, Title } from '@/src/features/profile-setup/styles/styles';
 import CustomButton from '@/src/shared/components/CustomButton';
 import { router } from 'expo-router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useWatch } from 'react-hook-form';
 import type { ProfileSetupFormValues } from '@/src/features/profile-setup/types';
 import { profileSetupStepSchemas } from '@/src/features/profile-setup/utils/schema';
 import { PROFILE_SETUP_ROUTE } from '@/src/shared/constants/route';
+import { forceLogoutWithProfileSetupAlert } from '@/src/features/profile-setup/lib/forceLogoutWithProfileSetupAlert';
 
 const index = () => {
   const step = 'basicInfo';
@@ -18,7 +19,7 @@ const index = () => {
 
   return (
     <SafeArea>
-      <DetailHeader title="" />
+      <DetailHeader title="" onBackPress={forceLogoutWithProfileSetupAlert} />
       <Contents>
         <StepIndicator step={step} />
         <Title>{PROFILE_SETUP_TITLES[step].title}</Title>

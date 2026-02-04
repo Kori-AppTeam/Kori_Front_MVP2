@@ -11,6 +11,7 @@ interface DetailHeaderProps {
   buttonIconType?: IconType;
   onButtonPress?: () => void;
   isBackButtonVisible?: boolean;
+  onBackPress?: () => void;
 }
 
 export default function DetailHeader({
@@ -20,6 +21,7 @@ export default function DetailHeader({
   buttonIconType,
   onButtonPress,
   isBackButtonVisible = true,
+  onBackPress,
 }: DetailHeaderProps) {
   const TextButton = <TextBtn onPress={onButtonPress}>{buttonText}</TextBtn>;
   const IconButton = buttonIconType && (
@@ -31,7 +33,7 @@ export default function DetailHeader({
   return (
     <Header>
       {isBackButtonVisible && (
-        <BackBtn onPress={() => router.back()}>
+        <BackBtn onPress={onBackPress ?? (() => router.back())}>
           <Icon type="previous" size={24} color={theme.colors.gray.lightGray_1} />
         </BackBtn>
       )}
