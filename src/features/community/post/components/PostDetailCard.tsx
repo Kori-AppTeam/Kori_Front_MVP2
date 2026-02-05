@@ -8,7 +8,8 @@ import styled from 'styled-components/native';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { parsePostMediaInfo } from '../utils/postUtils';
-import PostCommonMedia from './elements/body/PostCommonMedia';
+import PostImages from './elements/body/PostImages';
+import PostPoll from './elements/body/PostPoll';
 
 interface PostDetailCardProps {
   data: PostDetailType;
@@ -39,17 +40,26 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
       />
 
       <ContentBox>
-        {/* 이미지, poll 컨텐츠 */}
-        <PostCommonMedia
-          type={parsedMediaInfo.MediaType}
-          images={parsedMediaInfo.postInfo?.contentImageUrl}
-          imageCount={parsedMediaInfo.postInfo?.imageCount}
-          pollInfo={parsedMediaInfo.pollInfo}
-          pollId={data.id}
-        />
+        {/* 이미지 컨텐츠 - 일반 게시글의 경우 텍스트 위에 */}
+        {parsedMediaInfo.MediaType === 'GENERAL' && (
+          <PostImages
+            images={parsedMediaInfo.postInfo?.contentImageUrl}
+            imageCount={parsedMediaInfo.postInfo?.imageCount}
+          />
+        )}
 
         {/* 텍스트 컨텐츠 */}
         <PostTextContent isTruncate={false} content={data.content} />
+
+        {/* 퀴즈/투표 컨텐츠 - 텍스트 아래에 */}
+        {(parsedMediaInfo.MediaType === 'QUIZ' || parsedMediaInfo.MediaType === 'VOTE') && (
+          <PostPoll
+            type={parsedMediaInfo.MediaType}
+            pollInfo={parsedMediaInfo.pollInfo}
+            pollId={data.id}
+            queryKey={['post', 'detail', data.id]}
+          />
+        )}
       </ContentBox>
 
       <PostCommonFooter

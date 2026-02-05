@@ -1,61 +1,97 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import { postPoll } from '../apis/poll';
-import { PostPollParams, QuizAndVoteResponse, TodayPollType } from '../types';
+import { OptionType, PollBaseType, PostPollParams, QuizAndVoteResponse } from '../types';
 
-interface MutationContext {
-  previousData?: TodayPollType;
-  pollType: 'QUIZ' | 'VOTE';
-}
-
-export const usePostPoll = () => {
+export const usePostPoll = (targetQueryKey?: QueryKey) => {
   const queryClient = useQueryClient();
 
-  return useMutation<QuizAndVoteResponse, unknown, PostPollParams, MutationContext>({
+  return useMutation<QuizAndVoteResponse, unknown, PostPollParams>({
     mutationFn: ({ pollId, optionId }) => postPoll(pollId, optionId),
-    onMutate: async ({ pollId, optionId, pollType }) => {
-      // 진행 중인 쿼리 취소
-      await queryClient.cancelQueries({ queryKey: ['todayPoll', pollType] });
+    onSuccess: (serverResponse, variables) => {
+      const queryKey = targetQueryKey || ['todayPoll', variables.pollType];
+      const { results, correctOptionId, isCorrect } = serverResponse.data;
 
-      // 이전 데이터 백업
-      const previousData = queryClient.getQueryData<TodayPollType>(['todayPoll', pollType]);
+      if (!results) return;
 
-      // 낙관적 업데이트: 캐시를 즉시 업데이트
-      if (previousData) {
-        queryClient.setQueryData<TodayPollType>(['todayPoll', pollType], (old) => {
-          if (!old) return previousData;
+      queryClient.setQueryData(queryKey, (old: any) => {
+        if (!old) return old;
 
-          const commonUpdates = {
-            ...old,
-            selectedOptionId: optionId,
+        const updatePollData = (originalData: PollBaseType) => {
+          const updatedOptions = originalData.options.map((option: OptionType) => {
+            const optionId = option.id ?? option.optionId;
+            const serverResult = results.find((r) => r.optionId === optionId);
+            return serverResult ? { ...option, voteCount: serverResult.voteCount } : option;
+          });
+
+          // totalVoteCount 재계산
+          const newTotalVoteCount = updatedOptions.reduce(
+            (sum: number, option: OptionType) => sum + option.voteCount,
+            0,
+          );
+
+          return {
+            ...originalData,
+            correctOptionId: correctOptionId ?? originalData.correctOptionId,
+            selectedOptionId: variables.optionId,
+            totalVoteCount: newTotalVoteCount,
+            options: updatedOptions,
+            isCorrect: isCorrect ?? false,
           };
+        };
 
-          if (pollType === 'VOTE') {
-            return {
-              ...commonUpdates,
-              totalVoteCount: old.totalVoteCount + 1,
-              options: old.options.map((option) =>
-                (option.id ?? option.optionId) === optionId ? { ...option, voteCount: option.voteCount + 1 } : option,
-              ),
-            };
-          }
+        // 무한스크롤 구조인지 확인 (게시글 리스트)
+        if (old.pages && Array.isArray(old.pages)) {
+          return {
+            ...old,
+            pages: old.pages.map((page: any) => ({
+              ...page,
+              data: {
+                ...page.data,
+                items: page.data.items.map((item: any) => {
+                  // 해당 pollId를 가진 아이템 찾아서 업데이트
+                  if (item.id === variables.pollId && item.pollInfo) {
+                    return {
+                      ...item,
+                      pollInfo: updatePollData(item.pollInfo),
+                    };
+                  }
+                  return item;
+                }),
+              },
+            })),
+          };
+        }
 
-          // 퀴즈(QUIZ)는 투표 수 반영하지 않음
-          return commonUpdates;
-        });
-      }
+        // 단순 구조 (상세 페이지, k-culture 탭)
+        const isPostType = !!old.pollInfo;
+        const targetData = isPostType ? old.pollInfo : old;
 
-      // 롤백용 데이터 반환
-      return { previousData, pollType };
-    },
-    onError: (err, variables, context) => {
-      // 실패 시 롤백
-      if (context?.previousData) {
-        queryClient.setQueryData(['todayPoll', context.pollType], context.previousData);
-      }
-    },
-    onSettled: (data, error, variables) => {
-      // 성공/실패와 관계없이 쿼리 무효화하여 서버 상태와 동기화
-      queryClient.invalidateQueries({ queryKey: ['todayPoll', variables.pollType] });
+        const updatedTarget = updatePollData(targetData);
+
+        if (isPostType) {
+          return {
+            ...old,
+            pollInfo: updatedTarget,
+          };
+        }
+
+        return updatedTarget;
+      });
+
+      // 1. 상세 페이지 데이터 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['post', 'detail', variables.pollId],
+      });
+
+      // 2. 리스트 데이터 무효화 (전체 게시글 목록)
+      queryClient.invalidateQueries({
+        queryKey: ['post', 'list'],
+      });
+
+      // 3. k-culture 탭 투표 데이터 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['todayPoll', 'VOTE'],
+      });
     },
   });
 };

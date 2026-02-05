@@ -28,8 +28,8 @@ const QuizOption = ({ optionId, content, isSelected, isResult, onPress, correctO
           textColor: theme.colors.primary.mint,
         };
       }
-      // 오답인 경우
-      if (isMyChoice && !isAnswer) {
+      // 오답인 경우(정답 확정 후 오답 처리)
+      if (isMyChoice && !isAnswer && correctOptionId !== null) {
         return {
           backgroundColor: 'transparent',
           borderColor: theme.colors.secondary.red,

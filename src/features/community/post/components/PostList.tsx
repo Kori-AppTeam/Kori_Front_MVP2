@@ -17,7 +17,10 @@ const PostList = ({ category, sort, scrollRef }: Props) => {
   const { posts, isLoading, isFetchingNextPage, isError, hasNextPage, refetch, isRefetching, fetchNextPage } =
     useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
 
-  const renderPost: ListRenderItem<PostsListItemType> = useCallback(({ item }) => <PostListCard data={item} />, []);
+  const renderPost: ListRenderItem<PostsListItemType> = useCallback(
+    ({ item }) => <PostListCard data={item} boardId={CATEGORY_TO_BOARD_ID[category]} sort={sort} />,
+    [category, sort],
+  );
 
   const listEmpty = useMemo(
     () => (

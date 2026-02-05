@@ -1,4 +1,4 @@
-import { PostDetailType, PostsListItemType } from '../types';
+import { PostDetailType, PostPollDetail, PostsListItemType } from '../types';
 
 // 게시글 미디어 타입(일반, 퀴즈/투표) 결정 함수
 export const getMediaType = (boardCategory: string): 'GENERAL' | 'QUIZ' | 'VOTE' => {
@@ -25,4 +25,9 @@ export const hasValidImages = (images: string[] | string | null | undefined): bo
     return images.length > 0 && images.some((img) => img.trim() !== '');
   }
   return images.trim() !== '';
+};
+
+// 타입 가드: PostDetailType이 PostPollDetail인지 확인
+export const isPostType = (data: PostDetailType): data is PostPollDetail => {
+  return 'pollInfo' in data && data.pollInfo !== null;
 };

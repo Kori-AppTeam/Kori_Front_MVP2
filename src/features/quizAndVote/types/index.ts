@@ -31,15 +31,19 @@ export interface PostPollParams {
 
 // 퀴즈/투표 참여 후 응답 타입
 export interface QuizAndVoteResponse {
-  pollId: number;
-  type: 'QUIZ' | 'VOTE';
-  isCorrect?: boolean;
-  correctOptionId?: number;
-  results: {
-    optionId: number | null;
-    voteCount: number;
-    percentage: number;
-  }[];
+  message: string;
+  data: {
+    pollId: number;
+    type: 'QUIZ' | 'VOTE';
+    isCorrect?: boolean;
+    correctOptionId?: number;
+    results: {
+      optionId: number | null;
+      voteCount: number;
+      percentage: number;
+    }[];
+  };
+  timestamp: string;
 }
 
 // 투표 생성 API 파라미터

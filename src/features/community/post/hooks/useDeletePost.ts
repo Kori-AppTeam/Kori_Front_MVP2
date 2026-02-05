@@ -22,7 +22,7 @@ export function useDeletePost() {
               ...page,
               data: {
                 ...page.data,
-                items: page.data.items.filter((item: any) => item.postId !== postId), // filter 처리
+                items: page.data.items.filter((item: any) => item.id !== postId), // filter 처리
               },
             })),
           };

@@ -1,31 +1,15 @@
 import { SCREEN_WIDTH } from '@/src/features/community/shared/constants/constants';
-import QuizBox from '@/src/features/quizAndVote/components/QuizBox';
-import VoteBox from '@/src/features/quizAndVote/components/VoteBox';
-import { PollBaseType } from '@/src/features/quizAndVote/types';
 import React from 'react';
-import styled from 'styled-components/native';
 import { hasValidImages } from '../../../utils/postUtils';
 import PostCarousel from './PostCarousel';
 import PostSingleImage from './PostSingleImage';
 
-interface PostCommonMediaProps {
-  type: 'GENERAL' | 'QUIZ' | 'VOTE';
+interface PostImagesProps {
   images?: string[] | string | null;
   imageCount?: number;
-  pollInfo?: PollBaseType;
-  pollId?: number;
 }
 
-const PostCommonMedia = ({ type, images, imageCount, pollInfo, pollId }: PostCommonMediaProps) => {
-  if (pollId && pollInfo) {
-    return (
-      <PollContainer>
-        {type === 'QUIZ' && <QuizBox pollId={pollId} data={pollInfo} />}
-        {type === 'VOTE' && <VoteBox pollId={pollId} data={pollInfo} />}
-      </PollContainer>
-    );
-  }
-
+const PostImages = ({ images, imageCount }: PostImagesProps) => {
   // 이미지 유효성 검사: 없거나 빈 값일 경우 null 반환
   if (!hasValidImages(images)) {
     return null;
@@ -54,9 +38,4 @@ const PostCommonMedia = ({ type, images, imageCount, pollInfo, pollId }: PostCom
   );
 };
 
-export default PostCommonMedia;
-
-const PollContainer = styled.View`
-  width: 100%;
-  padding: 0 20px;
-`;
+export default PostImages;

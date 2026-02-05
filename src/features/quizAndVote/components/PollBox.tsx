@@ -25,18 +25,18 @@ export const BoxContainer = styled.View`
   border-radius: 10px;
 `;
 
-const TitleRow = styled.View`
+export const TitleRow = styled.View`
   align-items: flex-start;
   gap: 16px;
   margin-bottom: 24px;
 `;
 
-const Title = styled.Text`
+export const Title = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.body.B2_SB)};
   color: ${({ theme }) => theme.colors.primary.white};
 `;
 
-const SubTitle = styled.Text`
+export const SubTitle = styled.Text`
   ${({ theme }) => textStyle(theme.fonts.body.B4_L)};
   color: ${({ theme }) => theme.colors.primary.white};
 `;
