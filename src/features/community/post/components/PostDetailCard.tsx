@@ -1,18 +1,17 @@
-import PostCarousel from '@/src/features/community/post/components/elements/body/PostCarousel';
-import PostSingleImage from '@/src/features/community/post/components/elements/body/PostSingleImage';
 import PostTextContent from '@/src/features/community/post/components/elements/body/PostTextContent';
 import PostCommonFooter from '@/src/features/community/post/components/elements/footer/PostCommonFooter';
 import PostCommonHeader from '@/src/features/community/post/components/elements/header/PostCommonHeader';
-import { PostDetail } from '@/src/features/community/post/types';
+import { PostDetailType } from '@/src/features/community/post/types';
 import { ContentBox } from '@/src/features/community/shared/styles/styles';
 import React from 'react';
 import styled from 'styled-components/native';
-import { SCREEN_WIDTH } from '../../shared/constants/constants';
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
+import { parsePostMediaInfo } from '../utils/postUtils';
+import PostCommonMedia from './elements/body/PostCommonMedia';
 
 interface PostDetailCardProps {
-  data: PostDetail;
+  data: PostDetailType;
   onShowProfileModal: () => void;
 }
 
@@ -20,13 +19,15 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
   const { showPostMoreSheet } = useMoreSheetStore();
 
+  const parsedMediaInfo = parsePostMediaInfo(data);
+
   return (
     <Container>
       <PostCommonHeader
         showProfileModal={true}
         onShowProfileModal={onShowProfileModal}
         authorId={data.authorId}
-        postId={data.postId}
+        postId={data.id}
         authorName={data.authorName}
         isAnonymous={data.isAnonymous}
         userImageUrl={data.userImageUrl}
@@ -34,28 +35,18 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
         boardCategory={data.boardCategory}
         viewCount={data.viewCount}
         isBookmarked={data.isBookmarked}
-        onToggleBookmark={() => handleToggleBookmark(data.postId, data.isBookmarked)}
+        onToggleBookmark={() => handleToggleBookmark(data.id, data.isBookmarked)}
       />
 
       <ContentBox>
-        {/* 이미지 컨텐츠 */}
-        {data.contentImageUrls !== undefined &&
-          data.contentImageUrls.length > 0 &&
-          (data.contentImageUrls.length > 1 ? (
-            <PostCarousel
-              images={data.contentImageUrls}
-              gap={5}
-              offset={20}
-              pageWidth={SCREEN_WIDTH}
-              imageCount={data.imageCount}
-            />
-          ) : (
-            <PostSingleImage
-              imageUrl={data.contentImageUrls[0]}
-              imageCount={data.imageCount}
-              pageWidth={SCREEN_WIDTH - 20 * 2}
-            />
-          ))}
+        {/* 이미지, poll 컨텐츠 */}
+        <PostCommonMedia
+          type={parsedMediaInfo.MediaType}
+          images={parsedMediaInfo.postInfo?.contentImageUrl}
+          imageCount={parsedMediaInfo.postInfo?.imageCount}
+          pollInfo={parsedMediaInfo.pollInfo}
+          pollId={data.id}
+        />
 
         {/* 텍스트 컨텐츠 */}
         <PostTextContent isTruncate={false} content={data.content} />
@@ -65,8 +56,8 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
         isLiked={data.isLiked}
         likeCount={data.likeCount}
         commentCount={data.commentCount}
-        onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
-        onOpenModal={() => showPostMoreSheet(data.postId, data.authorId)}
+        onToggleLike={() => handleToggleLike(data.id, data.isLiked)}
+        onOpenModal={() => showPostMoreSheet(data.id, data.authorId)}
       />
     </Container>
   );

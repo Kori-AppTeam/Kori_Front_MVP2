@@ -1,5 +1,5 @@
 import Icon from '@/components/common/Icon';
-import { theme } from '@/src/styles/theme';
+import { textStyle, theme } from '@/src/styles/theme';
 import { SCREEN_WIDTH } from '@gorhom/bottom-sheet';
 import styled from 'styled-components/native';
 
@@ -31,4 +31,5 @@ const Button = styled.Pressable<{ width?: number }>`
 `;
 const ButtonText = styled.Text`
   color: ${theme.colors.primary.white};
+  ${({ theme }) => textStyle(theme.fonts.body.B4_M)};
 `;

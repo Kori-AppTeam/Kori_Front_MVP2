@@ -9,6 +9,8 @@ export const CLIENT_TO_SERVER_CATEGORY: Record<AllowedClientCategory, AllowedCat
   Event: 'EVENT',
   'Free talk': 'FREE_TALK',
   Activity: 'ACTIVITY',
+  Quiz: 'QUIZ',
+  Vote: 'VOTE',
 };
 
 // Server 카테고리 코드 -> Client 카테고리 이름 매핑
@@ -20,17 +22,21 @@ export const SERVER_TO_CLIENT_CATEGORY: Record<AllowedCategory, AllowedClientCat
   EVENT: 'Event',
   FREE_TALK: 'Free talk',
   ACTIVITY: 'Activity',
+  QUIZ: 'Quiz',
+  VOTE: 'Vote',
 };
 
 // Client 카테고리 이름 -> BoardId 매핑
 export const CLIENT_CATEGORY_TO_BOARD_ID: Record<AllowedClientCategory, BoardId> = {
   All: 1,
-  News: 2,
-  Tip: 3,
-  'Q&A': 4,
-  Event: 5,
-  'Free talk': 6,
-  Activity: 7,
+  Quiz: 2,
+  Vote: 3,
+  News: 4,
+  Tip: 5,
+  'Q&A': 6,
+  Event: 7,
+  'Free talk': 8,
+  Activity: 9,
 };
 
 // 헬퍼 함수: Server 카테고리 -> Client 카테고리 변환

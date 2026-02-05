@@ -18,29 +18,29 @@ const BookmarkedPost = ({ data }: { data: BookmarkedPostItem }) => {
 
   return (
     <Container>
-      <Wrap width={SCREEN_WIDTH} onPress={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}>
+      <Wrap width={SCREEN_WIDTH} onPress={() => router.push(COMMUNITY_ROUTER.DETAIL(data.id))}>
         <PostCommonHeader
-          postId={data.postId}
+          postId={data.id}
           isAnonymous={data.isAnonymous}
           userImageUrl={data.userImage}
           authorName={data.authorName}
           createdAt={data.createdAt}
           viewCount={data.checkCount}
           isBookmarked={data.isBookmarked}
-          onToggleBookmark={() => handleToggleBookmark(data.postId, data.isBookmarked)}
+          onToggleBookmark={() => handleToggleBookmark(data.id, data.isBookmarked)}
         />
 
         <ContentBox>
-          <PostTextContent isTruncate={true} postId={data.postId} content={data.content} />
+          <PostTextContent isTruncate={true} postId={data.id} content={data.content} />
         </ContentBox>
 
         <PostCommonFooter
           isLiked={data.isLiked}
           likeCount={data.likeCount}
-          onToggleLike={() => handleToggleLike(data.postId, data.isLiked)}
-          onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.postId))}
+          onToggleLike={() => handleToggleLike(data.id, data.isLiked)}
+          onToggleComment={() => router.push(COMMUNITY_ROUTER.DETAIL(data.id))}
           commentCount={data.commentCount}
-          onOpenModal={() => showPostMoreSheet(data.postId, data.authorId)}
+          onOpenModal={() => showPostMoreSheet(data.id, data.authorId)}
         />
       </Wrap>
       <BorderLine width={SCREEN_WIDTH} />
