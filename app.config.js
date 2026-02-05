@@ -5,7 +5,7 @@ export default {
     name: 'Kori',
     slug: 'Kori_Front',
     owner: 'koriapp',
-    version: '1.2.9', // NOTE 빌드 전 반드시 버전 업데이트, package-lock.json 최신화 !!!
+    version: '1.3.0', // NOTE 빌드 전 반드시 버전 업데이트, package-lock.json 최신화 !!!
     orientation: 'portrait',
     icon: './assets/images/Kori_Icon.png',
     scheme: 'korifront',
@@ -15,9 +15,7 @@ export default {
     updates: {
       url: 'https://u.expo.dev/ebde49c4-4dbe-4c95-9f09-52f33096566c',
     },
-    runtimeVersion: {
-      policy: 'appVersion',
-    },
+    runtimeVersion: '1.3.0', // NOTE 빌드 전 반드시 버전 업데이트
 
     splash: {
       image: './assets/images/character2.png',

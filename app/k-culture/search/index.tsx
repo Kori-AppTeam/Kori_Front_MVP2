@@ -1,10 +1,133 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useDebounce } from '@/src/features/chat/search/hooks/useDebounce';
+import KNewsAutoComplete from '@/src/features/k-culture/components/KNewsAutoComplete';
+import SearchedNewsResult from '@/src/features/k-culture/components/SearchedNewsResult';
+import SuggestionHotKeyword from '@/src/features/k-culture/components/SuggestionHotKeyword';
+import { useGetNewsHotKeyword } from '@/src/features/k-culture/hooks/useNewsHotKeyword';
+import {
+  useClearRecentNewsSearches,
+  useDeleteRecentNewsSearch,
+  useGetRecentNewsSearch,
+} from '@/src/features/k-culture/hooks/useRecentNewsSearch';
+import RecentSearches from '@/src/shared/components/RecentSearches';
+import SearchInput from '@/src/shared/components/SearchInput';
+import { theme } from '@/src/styles/theme';
+import React, { useState } from 'react';
+import { Keyboard, Pressable, ScrollView } from 'react-native';
+import styled from 'styled-components/native';
 
 const Index = () => {
-  return <View>추가될 예정입니다.</View>;
+  const [value, setValue] = useState<string>('');
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
+  const { data: recentNewsSearches } = useGetRecentNewsSearch();
+  const { data: newsHotKeywords, refetch: refetchNewsHotKeywords } = useGetNewsHotKeyword();
+  const { mutate: deleteRecentNewsSearch } = useDeleteRecentNewsSearch();
+  const { mutate: clearRecentNewsSearches } = useClearRecentNewsSearches();
+  const debouncedValue = useDebounce(value);
+  const effectiveQ = debouncedValue.trim().toLowerCase();
+
+  // 검색어 변경 처리
+  const handleChangeText = (text: string) => {
+    setValue(text);
+    setIsSubmitted(false);
+  };
+
+  // 검색어 제출 처리
+  const handleSubmit = () => {
+    if (value.trim().length === 0) return;
+    setIsSubmitted(true);
+    Keyboard.dismiss();
+  };
+
+  // 최근 검색어, 자동완성에서 검색어 제출 처리
+  const handleSubmitAutoComplete = (text: string) => {
+    if (text.length === 0) return;
+    setValue(text);
+    setIsSubmitted(true);
+    Keyboard.dismiss();
+  };
+
+  // Hot Keyword 클릭 처리
+  const handleHotKeywordClick = (keyword: string) => {
+    setValue(keyword);
+    setIsSubmitted(true);
+    Keyboard.dismiss();
+  };
+
+  return (
+    <Safe>
+      <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
+        <Container>
+          <SearchInput
+            value={value}
+            onChangeText={handleChangeText}
+            placeholder="Search Anything"
+            onSubmitEditing={handleSubmit}
+          />
+
+          {/* 검색 결과가 없을 때: ScrollView로 최근검색어, Hot Keyword, 자동완성 표시 */}
+          {!(value.trim().length > 0 && isSubmitted) && (
+            <ScrollView
+              style={{ flex: 1 }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+            >
+              {/* 최근검색어 */}
+              {!value && recentNewsSearches && recentNewsSearches.length > 0 && !isSubmitted && (
+                <RecentSearches
+                  data={recentNewsSearches}
+                  onPressKeyword={handleSubmitAutoComplete}
+                  onDeleteKeyword={deleteRecentNewsSearch}
+                  onClearAll={clearRecentNewsSearches}
+                />
+              )}
+
+              {/* Divider - 최근검색어와 Hot Keyword가 둘 다 있을 때만 표시 */}
+              {!value &&
+                recentNewsSearches &&
+                recentNewsSearches.length > 0 &&
+                newsHotKeywords &&
+                newsHotKeywords.length > 0 &&
+                !isSubmitted && <Divider />}
+
+              {/* Hot Keyword */}
+              {!value && !isSubmitted && (
+                <SuggestionHotKeyword
+                  data={newsHotKeywords || []}
+                  onPress={handleHotKeywordClick}
+                  onRefresh={refetchNewsHotKeywords}
+                />
+              )}
+
+              {/* 자동완성 */}
+              {value.trim().length > 0 && !isSubmitted && (
+                <KNewsAutoComplete value={effectiveQ} onSubmitEditing={handleSubmitAutoComplete} />
+              )}
+            </ScrollView>
+          )}
+
+          {/* 검색 결과 */}
+          {value.trim().length > 0 && isSubmitted && <SearchedNewsResult value={value.trim().toLowerCase()} />}
+        </Container>
+      </Pressable>
+    </Safe>
+  );
 };
 
-const styles = StyleSheet.create({});
-
 export default Index;
+
+const Container = styled.View`
+  flex: 1;
+`;
+
+const Safe = styled.SafeAreaView`
+  flex: 1;
+  background: ${theme.colors.primary.black};
+`;
+
+const Divider = styled.View`
+  height: 10px;
+  background-color: ${theme.colors.gray.darkBlack_1};
+  margin-bottom: 14px;
+`;

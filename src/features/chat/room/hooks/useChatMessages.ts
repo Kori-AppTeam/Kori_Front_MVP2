@@ -121,7 +121,7 @@ export const useChatMessages = (roomId: string): ChatMessagesHook => {
 
         // 메시지 삭제 구독
         unsubscribeDeletes = stompConnection.subscribe(`/topic/rooms/${roomId}`, (data: any) => {
-          if (data.type === 'delete') {
+          if (data.type === 'MESSAGE_DELETE') {
             removeMessage(Number(data.id));
           }
         });
