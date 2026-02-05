@@ -16,7 +16,7 @@ interface VoteBoxProps {
 
 const VoteBox = ({ pollId, data, queryKey }: VoteBoxProps) => {
   const { mutate: postPoll } = usePostPoll(queryKey);
-  const showResult = data.selectedOptionId != null;
+  const showResult = data.selectedOptionId !== null;
 
   const handleSelectOption = (optionId: number) => {
     if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(투표 참여 한 번만 가능)
@@ -43,7 +43,7 @@ const VoteBox = ({ pollId, data, queryKey }: VoteBoxProps) => {
               content={option.content}
               isSelected={data.selectedOptionId === optionId}
               isResult={showResult}
-              onPress={() => data.selectedOptionId == null && handleSelectOption(optionId)}
+              onPress={() => handleSelectOption(optionId)}
               votePercentage={showResult ? calculateVoteRatio(data.totalVoteCount, option.voteCount) : 0}
             />
           );

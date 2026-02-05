@@ -15,9 +15,9 @@ interface QuizBoxProps {
 
 const QuizBox = ({ pollId, data, queryKey }: QuizBoxProps) => {
   const { mutate: postPoll } = usePostPoll(queryKey);
-  const isExpired = new Date() > new Date(data.closeAt);
-  const isSelectedOption = data.selectedOptionId;
-  const showResult = data.selectedOptionId != null || isExpired;
+  const isExpired = new Date() > new Date(Number(data.closeAt) * 1000);
+  const hasSelected = data.selectedOptionId !== null;
+  const showResult = hasSelected || isExpired;
 
   const handleSelectOption = (optionId: number) => {
     if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(퀴즈 참여 한 번만 가능)
@@ -46,7 +46,7 @@ const QuizBox = ({ pollId, data, queryKey }: QuizBoxProps) => {
               key={optionId}
               optionId={optionId}
               content={option.content}
-              isSelected={isSelectedOption === optionId}
+              isSelected={data.selectedOptionId === optionId}
               isResult={showResult}
               onPress={() => handleSelectOption(optionId)}
               correctOptionId={showResult ? data.correctOptionId : null}
