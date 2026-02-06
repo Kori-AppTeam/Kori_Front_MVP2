@@ -61,7 +61,7 @@ const QuizOption = ({ optionId, content, isSelected, isResult, onPress, correctO
         return <Icon type="check" size={24} color={theme.colors.primary.mint} />;
       }
       // 오답인 경우
-      if (isMyChoice && !isAnswer) {
+      if (isMyChoice && !isAnswer && correctOptionId !== null) {
         return <Icon type="close" size={24} color={theme.colors.secondary.red} />;
       }
       // 내가 선택하지 않은 나머지 옵션들
