@@ -31,3 +31,9 @@ export const getKNews = async (type: NewsType, params: NewsPageParams) => {
   });
   return res.data;
 };
+
+// 뉴스 카테고리 조회
+export const getNewsCategories = async () => {
+  const res = await api.get(`/api/v2/main-contents/categories`);
+  return res.data.data;
+};
