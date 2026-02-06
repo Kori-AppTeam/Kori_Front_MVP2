@@ -7,7 +7,7 @@ import {
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import React, { ReactElement, useCallback, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface CustomBottomSheetProps {
@@ -46,9 +46,9 @@ const CustomBottomSheet = ({
 
   const resolvedTopInset = useMemo(() => {
     if (typeof topInset === 'number') return topInset;
-    if (Platform.OS !== 'ios') return undefined;
     if (keyboardBehavior !== 'interactive') return undefined;
-    return top;
+    const statusBarHeight = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0;
+    return Math.max(top, statusBarHeight);
   }, [keyboardBehavior, top, topInset]);
 
   const renderBackdrop = useCallback(

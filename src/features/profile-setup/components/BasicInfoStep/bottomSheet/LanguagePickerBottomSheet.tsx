@@ -1,10 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { theme } from '@/src/styles/theme';
 import Icon from '@/components/common/Icon';
-import { Dimensions } from 'react-native';
-import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
-import { LANGUAGES } from '@/src/utils/languages';
+import SearchInput from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/SearchInput';
 import {
   NoResultText,
   PickerBottomSheetContent,
@@ -15,8 +12,11 @@ import {
   PickerListWrapper,
 } from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/styles';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
-import SearchInput from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/SearchInput';
 import { useBottomSheetKeyboardControl } from '@/src/shared/hooks/useBottomSheetKeyboardControl';
+import { theme } from '@/src/styles/theme';
+import { LANGUAGES } from '@/src/utils/languages';
+import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { Dimensions } from 'react-native';
 
 interface LanguagePickerBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -100,7 +100,6 @@ const LanguagePickerBottomSheet = ({
       enableContentPanningGesture={false}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
-      android_keyboardInputMode="adjustResize"
     >
       <PickerBottomSheetContent>
         <PickerBottomSheetHeader>

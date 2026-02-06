@@ -1,22 +1,22 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import { TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { router } from 'expo-router';
+import React from 'react';
+import { TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
 
-import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import { patchLocation } from '@/api/member/location';
 import Icon from '@/components/common/Icon';
 import { useConfirmTerms } from '@/src/features/auth/hooks/useConfirmTerms';
-import { textStyle, theme } from '@/src/styles/theme';
+import { requestLocationPermission } from '@/src/features/auth/lib/requestLocationPermission';
+import Checkbox, { CheckboxProps } from '@/src/shared/components/Checkbox';
+import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
+import CustomButton from '@/src/shared/components/CustomButton';
 import {
   PROFILE_SETUP_ROUTE,
   SIGNUP_PRIVACY_POLICY_ROUTE,
   SIGNUP_TERMS_AND_CONDITIONS_ROUTE,
 } from '@/src/shared/constants/route';
-import CustomButton from '@/src/shared/components/CustomButton';
-import Checkbox, { CheckboxProps } from '@/src/shared/components/Checkbox';
-import { requestLocationPermission } from '@/src/features/auth/lib/requestLocationPermission';
-import { patchLocation } from '@/api/member/location';
+import { textStyle, theme } from '@/src/styles/theme';
 
 interface ConfirmTermsBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -36,23 +36,42 @@ const ConfirmTermsBottomSheet = ({
   const { confirms, isConfirmedAll, toggleConfirmed, toggleConfirmedAll } = useConfirmTerms();
 
   const handleAuthProvider = async () => {
-    try {
-      const { latitude, longitude } = await requestLocationPermission();
-      await patchLocation(latitude, longitude);
+    console.log('[ConfirmTerms] handleAuthProvider start', { loginProvider });
 
-      bottomSheetClose();
-      router.push(PROFILE_SETUP_ROUTE.BASIC_INFO);
-    } catch (error) {
-      console.error('Error obtaining location or patching location:', error);
-    }
+    // 위치 획득/저장은 에뮬레이터에서 GPS fix 때문에 오래 걸릴 수 있어 네비게이션을 막지 않습니다.
+    // (실패해도 서비스 이용이 가능하도록 설계되어 있음)
+    void (async () => {
+      try {
+        const { latitude, longitude } = await requestLocationPermission();
+        console.log('[ConfirmTerms] location result', { latitude, longitude });
+        await patchLocation(latitude, longitude);
+        console.log('[ConfirmTerms] patchLocation done');
+      } catch (error) {
+        console.error('Error obtaining location or patching location:', error);
+      }
+    })();
+
+    const nextRoute = PROFILE_SETUP_ROUTE.BASIC_INFO;
+    console.log('[ConfirmTerms] closing sheet then navigating', nextRoute);
+    bottomSheetClose();
+    // BottomSheet dismiss 애니메이션 중 즉시 push가 무시되는 케이스가 있어 약간 지연합니다.
+    setTimeout(() => {
+      console.log('[ConfirmTerms] navigate now', nextRoute);
+      router.push(nextRoute);
+    }, 350);
   };
 
   const handleButtonPress = () => {
+    console.log('[ConfirmTerms] Confirm pressed', {
+      loginProvider,
+      isConfirmedAll,
+      isLoading,
+    });
     if (loginProvider === 'email' && handleEmailProvider) {
       handleEmailProvider();
-    } else {
-      handleAuthProvider();
+      return;
     }
+    handleAuthProvider();
   };
 
   const showTermsAndConditions = () => {

@@ -1,12 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import CustomBottomSheet from '@/src/shared/components/CustomBottomSheet';
 import { useBottomSheetKeyboardControl } from '@/src/shared/hooks/useBottomSheetKeyboardControl';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@/components/common/Icon';
-import { theme } from '@/src/styles/theme';
-import { COUNTRIES } from '@/src/utils/countries';
-import { Dimensions } from 'react-native';
-import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import SearchInput from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/SearchInput';
 import {
   NoResultText,
@@ -17,6 +13,10 @@ import {
   PickerListText,
   PickerListWrapper,
 } from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/styles';
+import { theme } from '@/src/styles/theme';
+import { COUNTRIES } from '@/src/utils/countries';
+import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { Dimensions } from 'react-native';
 
 interface CountryPickerBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -93,7 +93,6 @@ const CountryPickerBottomSheet = ({
       enableContentPanningGesture={false}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
-      android_keyboardInputMode="adjustResize"
     >
       <PickerBottomSheetContent>
         <PickerBottomSheetHeader>
