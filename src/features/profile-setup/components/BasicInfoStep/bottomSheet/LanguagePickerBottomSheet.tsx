@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { theme } from '@/src/styles/theme';
 import Icon from '@/components/common/Icon';
-import { Dimensions, FlatList } from 'react-native';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { Dimensions } from 'react-native';
+import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { LANGUAGES } from '@/src/utils/languages';
 import {
   NoResultText,
@@ -95,11 +95,14 @@ const LanguagePickerBottomSheet = ({
       ref={bottomSheetRef}
       onChange={onChange}
       onAnimate={onAnimate}
+      snapPoints={['60%']}
+      enableDynamicSizing={false}
+      enableContentPanningGesture={false}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
     >
-      <PickerBottomSheetContent onStartShouldSetResponder={() => true}>
+      <PickerBottomSheetContent>
         <PickerBottomSheetHeader>
           <PickerBottomSheetHandle />
           <SearchInput
@@ -112,7 +115,7 @@ const LanguagePickerBottomSheet = ({
 
         <PickerListWrapper height={deviceHeight}>
           {languages.length > 0 ? (
-            <FlatList
+            <BottomSheetFlatList
               data={languages}
               renderItem={renderFlatListItem}
               keyExtractor={(item, index) => `${item}-${index}`}

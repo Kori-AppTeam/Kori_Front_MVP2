@@ -5,8 +5,8 @@ import { useBottomSheetKeyboardControl } from '@/src/shared/hooks/useBottomSheet
 import Icon from '@/components/common/Icon';
 import { theme } from '@/src/styles/theme';
 import { COUNTRIES } from '@/src/utils/countries';
-import { Dimensions, FlatList } from 'react-native';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { Dimensions } from 'react-native';
+import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import SearchInput from '@/src/features/profile-setup/components/BasicInfoStep/bottomSheet/SearchInput';
 import {
   NoResultText,
@@ -88,11 +88,14 @@ const CountryPickerBottomSheet = ({
       ref={bottomSheetRef}
       onChange={onChange}
       onAnimate={onAnimate}
+      snapPoints={['60%']}
+      enableDynamicSizing={false}
+      enableContentPanningGesture={false}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
     >
-      <PickerBottomSheetContent onStartShouldSetResponder={() => true}>
+      <PickerBottomSheetContent>
         <PickerBottomSheetHeader>
           <PickerBottomSheetHandle />
           <SearchInput
@@ -105,7 +108,7 @@ const CountryPickerBottomSheet = ({
 
         <PickerListWrapper height={deviceHeight}>
           {countries.length > 0 ? (
-            <FlatList
+            <BottomSheetFlatList
               data={countries}
               renderItem={renderCountryItem}
               keyExtractor={(item, index) => `${item}-${index}`}

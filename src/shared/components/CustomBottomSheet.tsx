@@ -17,6 +17,9 @@ interface CustomBottomSheetProps {
   onAnimate?: (fromIndex: number, toIndex: number) => void;
   backgroundColor?: string;
   handleComponent?: () => null;
+  snapPoints?: BottomSheetModalProps['snapPoints'];
+  enableDynamicSizing?: BottomSheetModalProps['enableDynamicSizing'];
+  enableContentPanningGesture?: BottomSheetModalProps['enableContentPanningGesture'];
   keyboardBehavior?: BottomSheetModalProps['keyboardBehavior'];
   keyboardBlurBehavior?: BottomSheetModalProps['keyboardBlurBehavior'];
   android_keyboardInputMode?: BottomSheetModalProps['android_keyboardInputMode'];
@@ -30,6 +33,9 @@ const CustomBottomSheet = ({
   onAnimate,
   backgroundColor = theme.colors.gray.darkGray_1,
   handleComponent = () => null,
+  snapPoints,
+  enableDynamicSizing,
+  enableContentPanningGesture,
   keyboardBehavior,
   keyboardBlurBehavior,
   android_keyboardInputMode,
@@ -76,6 +82,9 @@ const CustomBottomSheet = ({
       handleIndicatorStyle={bottomSheetHandleStyle}
       backdropComponent={renderBackdrop}
       handleComponent={handleComponent}
+      snapPoints={snapPoints}
+      enableDynamicSizing={enableDynamicSizing}
+      enableContentPanningGesture={enableContentPanningGesture}
       keyboardBehavior={keyboardBehavior}
       keyboardBlurBehavior={keyboardBlurBehavior}
       android_keyboardInputMode={android_keyboardInputMode}
