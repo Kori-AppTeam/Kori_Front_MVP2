@@ -1,7 +1,7 @@
 import Icon from '@/components/common/Icon';
 import { textStyle, theme } from '@/src/styles/theme';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Keyboard, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -13,10 +13,19 @@ interface SearchInputProps {
 }
 
 const SearchInput = ({ placeholder, search, setSearch, handleClearSearch }: SearchInputProps) => {
+  const inputRef = useRef<React.ElementRef<typeof BottomSheetTextInput>>(null);
+
+  const focusInput = useCallback(() => {
+    // Android에서 바텀시트 제스처/터치 중재로 인해
+    // TextInput이 즉시 focus되지 않는 케이스가 있어 press-in 시 강제 focus
+    inputRef.current?.focus();
+  }, []);
+
   return (
-    <SearchContainer>
+    <SearchContainer onPressIn={focusInput}>
       <Icon size={24} type="search" />
       <Input
+        ref={inputRef}
         placeholder={placeholder}
         value={search}
         placeholderTextColor={theme.colors.gray.gray_2}
@@ -37,7 +46,7 @@ const SearchInput = ({ placeholder, search, setSearch, handleClearSearch }: Sear
 
 export default SearchInput;
 
-const SearchContainer = styled.View`
+const SearchContainer = styled.Pressable`
   width: 100%;
   height: 48px;
   display: flex;

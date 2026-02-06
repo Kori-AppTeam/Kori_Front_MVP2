@@ -92,7 +92,7 @@ const CountryPickerBottomSheet = ({
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
     >
-      <PickerBottomSheetContent onStartShouldSetResponder={() => true}>
+      <PickerBottomSheetContent>
         <PickerBottomSheetHeader>
           <PickerBottomSheetHandle />
           <SearchInput
