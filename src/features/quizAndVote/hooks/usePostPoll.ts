@@ -90,7 +90,7 @@ export const usePostPoll = (targetQueryKey?: QueryKey) => {
 
       // 3. k-culture 탭 투표 데이터 무효화
       queryClient.invalidateQueries({
-        queryKey: ['todayPoll', 'VOTE'],
+        queryKey: ['todayPoll', variables.pollType],
       });
     },
   });
