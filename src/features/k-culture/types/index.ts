@@ -1,6 +1,3 @@
-import { NEWS_CATEGORY_MAPPER } from '../constants/categoryMapper';
-
-export type NewsType = keyof typeof NEWS_CATEGORY_MAPPER;
 export type NewsSortType = 'TRENDING' | 'NEW';
 
 // 뉴스 상세 아이템 타입
@@ -15,7 +12,7 @@ export interface KCultureNewsItem {
 export interface NewsPreviewItem {
   contentId: number;
   title: string;
-  type: NewsType;
+  type: string;
   ago: number;
   thumbImageUrl: string;
 }
@@ -78,4 +75,10 @@ export interface KNewsSearchListCursorPage {
   }[];
   hasNext: boolean;
   nextCursor?: string | null;
+}
+
+// 뉴스 카테고리 타입
+export interface NewsCategory {
+  code: string;
+  name: string;
 }
