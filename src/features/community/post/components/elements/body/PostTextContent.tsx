@@ -17,6 +17,11 @@ type PostTextContentProps = {
 const PostTextContent = ({ isTruncate, content, postId }: PostTextContentProps) => {
   const { handleBlockVisitor } = useVisitor();
 
+  // 내용이 비어있는 경우 렌더링하지 않음(퀴즈/투표에서 텍스트 없는 경우 대비)
+  if (content.trim() === '') {
+    return null;
+  }
+
   const handleMorePress = useCallback(() => {
     if (!postId) return;
     handleBlockVisitor(() => router.push(COMMUNITY_ROUTER.DETAIL(postId)));
