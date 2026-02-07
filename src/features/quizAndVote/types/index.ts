@@ -15,6 +15,13 @@ export interface TodayPollType extends PollBaseType {
   type: 'QUIZ' | 'VOTE';
 }
 
+// 오늘의 퀴즈/투표 서버 응답 타입
+export interface TodayPollServerResp {
+  message: string;
+  data: TodayPollType;
+  timestamp: string;
+}
+
 export interface OptionType {
   id: number;
   optionId?: number;
