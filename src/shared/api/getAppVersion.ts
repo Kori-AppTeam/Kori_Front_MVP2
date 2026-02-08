@@ -1,7 +1,8 @@
-import api from '@/api/axiosInstance';
+import { Config } from '@/src/shared/constants/config';
+import axios from 'axios';
 
 export async function getAppVersion(platform: string, currentVersion: string) {
-  const response = await api.get(`/api/v1/app/version`, {
+  const response = await axios.get(`${Config.SERVER_URL}/api/v1/app/version`, {
     params: { platform, currentVersion },
   });
   return response.data;
