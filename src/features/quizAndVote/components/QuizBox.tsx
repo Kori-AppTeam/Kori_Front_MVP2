@@ -1,5 +1,4 @@
 import { formatDate } from '@/src/shared/utils/dateUtils';
-import { QueryKey } from '@tanstack/react-query';
 import React from 'react';
 import { usePostPoll } from '../hooks/usePostPoll';
 import { PollBaseType, TodayPollType } from '../types';
@@ -10,11 +9,10 @@ import QuizOption from './QuizOption';
 interface QuizBoxProps {
   pollId: number;
   data: TodayPollType | PollBaseType;
-  queryKey?: QueryKey;
 }
 
-const QuizBox = ({ pollId, data, queryKey }: QuizBoxProps) => {
-  const { mutate: postPoll } = usePostPoll(queryKey);
+const QuizBox = ({ pollId, data }: QuizBoxProps) => {
+  const { mutate: postPoll } = usePostPoll();
   const isExpired = new Date() > new Date(Number(data.closeAt) * 1000);
   const hasSelected = data.selectedOptionId !== null;
   // 하이브리드 로직: 참여 직후(isCorrect 사용) + 조회 시(correctOptionId나 선택 상태 사용)
