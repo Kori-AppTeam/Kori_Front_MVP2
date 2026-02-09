@@ -17,7 +17,11 @@ const QuizBox = ({ pollId, data, queryKey }: QuizBoxProps) => {
   const { mutate: postPoll } = usePostPoll(queryKey);
   const isExpired = new Date() > new Date(Number(data.closeAt) * 1000);
   const hasSelected = data.selectedOptionId !== null;
-  const showResult = hasSelected || isExpired;
+  // 하이브리드 로직: 참여 직후(isCorrect 사용) + 조회 시(correctOptionId나 선택 상태 사용)
+  const showResult =
+    (hasSelected && data.isCorrect !== null && data.isCorrect !== undefined) || // 참여 직후
+    (hasSelected && data.correctOptionId !== null) || // 조회 시 정답 정보 있음
+    isExpired; // 만료된 경우
 
   const handleSelectOption = (optionId: number) => {
     if (showResult) return; // 결과가 보여지는 상태에서는 선택 불가(퀴즈 참여 한 번만 가능)
@@ -39,13 +43,14 @@ const QuizBox = ({ pollId, data, queryKey }: QuizBoxProps) => {
 
       <OptionRow>
         {data.options.map((option) => {
-          const optionId = option.id ?? option.optionId;
+          const optionId = option.optionId ?? option.id;
 
           return (
             <QuizOption
               key={optionId}
               optionId={optionId}
               content={option.content}
+              isCorrect={data.isCorrect}
               isSelected={data.selectedOptionId === optionId}
               isResult={showResult}
               onPress={() => handleSelectOption(optionId)}
