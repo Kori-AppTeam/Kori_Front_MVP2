@@ -7,6 +7,7 @@ export interface PollBaseType {
   options: OptionType[];
   selectedOptionId: number | null; // 사용자가 선택한 옵션 ID, 선택하지 않았으면 null
   correctOptionId?: number | null; // 퀴즈인 경우 정답 옵션 ID
+  isCorrect?: boolean; // 퀴즈인 경우 사용자가 맞췄는지 여부(참여 직후에만 존재)
 }
 
 // 퀴즈, 투표
