@@ -1,10 +1,31 @@
 import { ACCESS_KEY, isRefreshBlocked, REFRESH_KEY } from '@/src/lib/auth/session';
+import { getSecureStoreItem } from '@/src/shared/utils/secureStore';
 import { Config } from '@/src/shared/constants/config';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import { Alert } from 'react-native';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
 
 const BASE_URL = Config.SERVER_URL;
+
+let hasShownReauthAlert = false;
+let hasNavigatedToAuth = false;
+
+function alertReauth() {
+  if (!hasShownReauthAlert) {
+    hasShownReauthAlert = true;
+    Alert.alert('Session expired', 'Please sign in again.');
+  }
+}
+
+function navigateToAuth() {
+  if (hasNavigatedToAuth) return;
+  hasNavigatedToAuth = true;
+  try {
+    router.replace(AUTH_ROUTE);
+  } catch {}
+}
 
 function shortUrl(base: string, url?: string) {
   if (!url) return '';
@@ -17,13 +38,17 @@ function shortUrl(base: string, url?: string) {
 }
 
 export const doRefresh = async (): Promise<string | null> => {
-  const rt = await SecureStore.getItemAsync(REFRESH_KEY);
+  const rt = await getSecureStoreItem(REFRESH_KEY);
   if (!rt) {
     return null;
   }
 
   try {
     const res = await api.post('/api/v1/member/refresh', { refreshToken: rt });
+
+    if (!res) {
+      return null;
+    }
     const data = (res as any).data?.data || {};
     const newAt: string | undefined = data.accessToken;
     const newRt: string | undefined = data.refreshToken;
@@ -31,6 +56,9 @@ export const doRefresh = async (): Promise<string | null> => {
     if (newAt) {
       await SecureStore.setItemAsync(ACCESS_KEY, newAt);
       (api.defaults.headers as any).Authorization = `Bearer ${newAt}`;
+      // 토큰이 정상 갱신되면 다음 만료 상황에서 다시 Alert를 허용
+      hasShownReauthAlert = false;
+      hasNavigatedToAuth = false;
     }
     if (newRt) {
       await SecureStore.setItemAsync(REFRESH_KEY, newRt);
@@ -56,7 +84,7 @@ api.interceptors.request.use(
       (config.headers as any)['Content-Type'] = 'application/json';
     }
 
-    const token = await SecureStore.getItemAsync(ACCESS_KEY);
+    const token = await getSecureStoreItem(ACCESS_KEY);
     if (token) {
       (config.headers as any).Authorization = `Bearer ${token}`;
     }
@@ -128,7 +156,8 @@ api.interceptors.response.use(
         await SecureStore.deleteItemAsync(ACCESS_KEY);
         await SecureStore.deleteItemAsync(REFRESH_KEY);
 
-        router.replace('/(auth)');
+        alertReauth();
+        navigateToAuth();
 
         return Promise.reject(error);
       }
