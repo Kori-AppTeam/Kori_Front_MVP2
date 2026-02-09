@@ -34,7 +34,7 @@ const VoteBox = ({ pollId, data, queryKey }: VoteBoxProps) => {
 
       <OptionRow>
         {data.options.map((option) => {
-          const optionId = option.id ?? option.optionId;
+          const optionId = option.optionId ?? option.id;
 
           return (
             <VoteOption
