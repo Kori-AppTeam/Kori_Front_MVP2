@@ -10,6 +10,8 @@ import { useBackgroundNotification } from '@/src/features/notification/hooks/use
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
 import { AUTH_ROUTE } from '@/src/shared/constants/route';
 import { toastConfig } from '@/src/shared/constants/toast';
+import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
+import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
@@ -23,6 +25,7 @@ import {
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { PortalHost, PortalProvider } from '@gorhom/portal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
@@ -35,9 +38,6 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
-import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
-import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
@@ -105,7 +105,7 @@ export default function RootLayout() {
       // 로그인 상태에 따라 라우팅
       if (isLoggedIn) {
         initializeStomp();
-        router.replace('/(tabs)');
+        router.replace('/(tabs)/k-culture');
       } else {
         const ONBOARDING_VISITED = await AsyncStorage.getItem('ONBOARDING_VISITED');
         const isOnboardingVisited = ONBOARDING_VISITED === 'true';
