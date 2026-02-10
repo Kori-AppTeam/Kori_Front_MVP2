@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { KNewsItemType, KNewsResp, NewsType } from '../types';
+import { KNewsItemType, KNewsResp } from '../types';
 import { getRecentThreeNews } from './../apis/news';
 
-export const useGetRecentKnews = (category: NewsType) => {
+export const useGetRecentKnews = (category: string) => {
   const query = useQuery<KNewsResp>({
     queryKey: ['news', 'recentKnews', category],
     queryFn: () => getRecentThreeNews(category),
