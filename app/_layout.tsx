@@ -38,6 +38,9 @@ import { ProfileProvider } from './contexts/ProfileContext';
 import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initSentry, wrapWithSentry } from '@/src/shared/utils/sentry';
+
+initSentry();
 
 SplashScreen.preventAutoHideAsync().catch(() => {}); // 스플래시 스크린 자동 숨김 방지
 
@@ -66,7 +69,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function RootLayout() {
+export default wrapWithSentry(function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     PlusJakartaSans_300Light,
@@ -162,4 +165,4 @@ export default function RootLayout() {
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
-}
+});
