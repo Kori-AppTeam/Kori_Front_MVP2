@@ -55,7 +55,7 @@ export const usePostPoll = () => {
 
       // 2. 단일 객체 (상세)
       queryClient.setQueryData(['post', 'detail', variables.pollId], (old: any) => {
-        if (!old?.pollInfo) return old;
+        if (!old?.pollInfo || old.id !== variables.pollId) return old;
 
         return {
           ...old,
@@ -65,7 +65,7 @@ export const usePostPoll = () => {
 
       // 3. TodayPoll
       queryClient.setQueryData(['todayPoll', variables.pollType], (old: any) => {
-        if (!old) return old;
+        if (!old || old.id !== variables.pollId) return old;
         return updateFn(old);
       });
 
@@ -123,7 +123,7 @@ export const usePostPoll = () => {
 
       // 2. 단일 객체 (상세)
       queryClient.setQueryData(['post', 'detail', variables.pollId], (old: any) => {
-        if (!old?.pollInfo) return old;
+        if (!old?.pollInfo || old.id !== variables.pollId) return old;
 
         return {
           ...old,
@@ -133,7 +133,7 @@ export const usePostPoll = () => {
 
       // 3. TodayPoll
       queryClient.setQueryData(['todayPoll', variables.pollType], (old: any) => {
-        if (!old) return old;
+        if (!old || old.id !== variables.pollId) return old;
         return updateFn(old);
       });
     },
