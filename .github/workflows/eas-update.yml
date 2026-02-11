@@ -27,5 +27,12 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 🚀 Create update
-        run: eas update --branch main --message "Update from GitHub Actions"
+      - name: 🚀 Create update + upload sourcemaps
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: kori-front
+          SENTRY_PROJECT: kori-front
+          SENTRY_URL: https://sentry.io/
+        run: |
+          eas update --branch main --message "Update from GitHub Actions" --non-interactive
+          npx sentry-expo-upload-sourcemaps dist
