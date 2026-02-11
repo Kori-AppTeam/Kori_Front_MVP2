@@ -9,6 +9,7 @@ export const useWriteVote = () => {
     mutationFn: (body: CreateVotePostBody) => createVotePost(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['post'] });
+      queryClient.invalidateQueries({ queryKey: ['todayPoll', 'VOTE'] });
     },
   });
 };

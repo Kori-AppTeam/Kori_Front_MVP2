@@ -18,7 +18,7 @@ const PostList = ({ category, sort, scrollRef }: Props) => {
     useGetPosts(CATEGORY_TO_BOARD_ID[category], sort);
 
   const renderPost: ListRenderItem<PostsListItemType> = useCallback(
-    ({ item }) => <PostListCard data={item} boardId={CATEGORY_TO_BOARD_ID[category]} sort={sort} />,
+    ({ item }) => <PostListCard data={item} />,
     [category, sort],
   );
 

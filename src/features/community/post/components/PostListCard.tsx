@@ -6,7 +6,7 @@ import { BorderLine, Container, ContentBox, Wrap } from '../../shared/styles/sty
 import { useHandleLikeBookmark } from '../hooks/useHandleLikeBookmark';
 import useVisitor from '../hooks/useVisitor';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
-import { BoardId, PostsListItemType, SortParam } from '../types';
+import { PostsListItemType } from '../types';
 import { parsePostMediaInfo } from '../utils/postUtils';
 import PostImages from './elements/body/PostImages';
 import PostPoll from './elements/body/PostPoll';
@@ -16,11 +16,9 @@ import PostCommonHeader from './elements/header/PostCommonHeader';
 
 interface PostListCardProps {
   data: PostsListItemType;
-  boardId: BoardId;
-  sort: SortParam;
 }
 
-const PostListCard = ({ data, boardId, sort }: PostListCardProps) => {
+const PostListCard = ({ data }: PostListCardProps) => {
   const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
 
   const { handleToggleLike, handleToggleBookmark } = useHandleLikeBookmark();
@@ -62,12 +60,7 @@ const PostListCard = ({ data, boardId, sort }: PostListCardProps) => {
 
           {/* 퀴즈/투표 컨텐츠 - 텍스트 아래에 */}
           {(parsedMediaInfo.MediaType === 'QUIZ' || parsedMediaInfo.MediaType === 'VOTE') && (
-            <PostPoll
-              type={parsedMediaInfo.MediaType}
-              pollInfo={parsedMediaInfo.pollInfo}
-              pollId={data.id}
-              queryKey={['post', 'list', boardId, sort]}
-            />
+            <PostPoll type={parsedMediaInfo.MediaType} pollInfo={parsedMediaInfo.pollInfo} pollId={data.id} />
           )}
         </ContentBox>
 

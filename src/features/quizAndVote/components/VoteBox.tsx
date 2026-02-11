@@ -1,5 +1,4 @@
 import { textStyle, theme } from '@/src/styles/theme';
-import { QueryKey } from '@tanstack/react-query';
 import React from 'react';
 import styled from 'styled-components/native';
 import { usePostPoll } from '../hooks/usePostPoll';
@@ -11,11 +10,10 @@ import VoteOption from './VoteOption';
 interface VoteBoxProps {
   pollId: number;
   data: TodayPollType | PollBaseType;
-  queryKey?: QueryKey;
 }
 
-const VoteBox = ({ pollId, data, queryKey }: VoteBoxProps) => {
-  const { mutate: postPoll } = usePostPoll(queryKey);
+const VoteBox = ({ pollId, data }: VoteBoxProps) => {
+  const { mutate: postPoll } = usePostPoll();
   const showResult = data.selectedOptionId !== null;
 
   const handleSelectOption = (optionId: number) => {
@@ -34,7 +32,7 @@ const VoteBox = ({ pollId, data, queryKey }: VoteBoxProps) => {
 
       <OptionRow>
         {data.options.map((option) => {
-          const optionId = option.id ?? option.optionId;
+          const optionId = option.optionId ?? option.id;
 
           return (
             <VoteOption
