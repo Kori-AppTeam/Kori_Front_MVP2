@@ -23,6 +23,7 @@ import {
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { PortalHost, PortalProvider } from '@gorhom/portal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router';
@@ -37,7 +38,6 @@ import { ThemeProvider } from 'styled-components/native';
 import { ProfileProvider } from './contexts/ProfileContext';
 import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initSentry, wrapWithSentry } from '@/src/shared/utils/sentry';
 
 initSentry();
@@ -108,7 +108,7 @@ export default wrapWithSentry(function RootLayout() {
       // 로그인 상태에 따라 라우팅
       if (isLoggedIn) {
         initializeStomp();
-        router.replace('/(tabs)');
+        router.replace('/(tabs)/k-culture');
       } else {
         const ONBOARDING_VISITED = await AsyncStorage.getItem('ONBOARDING_VISITED');
         const isOnboardingVisited = ONBOARDING_VISITED === 'true';

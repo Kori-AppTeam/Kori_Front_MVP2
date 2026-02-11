@@ -7,7 +7,7 @@ import { textStyle, theme } from '@/src/styles/theme';
 import { SCREEN_WIDTH } from '@gorhom/bottom-sheet';
 import { Tabs, usePathname } from 'expo-router';
 import React from 'react';
-import { DeviceEventEmitter, Image } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 import { styled } from 'styled-components/native';
 
 const TAB_BAR_HEIGHT = SCREEN_WIDTH * (86 / 375);
@@ -42,15 +42,12 @@ export default function TabLayout() {
           options={{
             title: 'Home',
             tabBarLabel: ({ focused }) => <TabText focused={focused}>Find</TabText>,
-            tabBarIcon: ({ focused }) => (
-              <Image
-                source={
-                  focused ? require('@/assets/images/tab_find_click.png') : require('@/assets/images/tab_find.png')
-                }
-                style={{ width: 32, height: 32 }} // 원하는 크기
-                resizeMode="contain"
-              />
-            ),
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <Icon type="tabFindClick" size={28} />
+              ) : (
+                <Icon type="tabFind" color={theme.colors.gray.darkGray_2} size={28} />
+              ),
           }}
           listeners={{
             tabPress: () => {
@@ -65,27 +62,24 @@ export default function TabLayout() {
           options={{
             title: 'Chat',
             tabBarLabel: ({ focused }) => <TabText focused={focused}>Chat</TabText>,
-            tabBarIcon: ({ focused }) => (
-              <Image
-                source={
-                  focused ? require('@/assets/images/tab_chat_click.png') : require('@/assets/images/tab_chat.png')
-                }
-                style={{ width: 32, height: 32 }} // 원하는 크기
-                resizeMode="contain"
-              />
-            ),
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <Icon type="tabChatClick" size={28} />
+              ) : (
+                <Icon type="tabChat" color={theme.colors.gray.darkGray_2} size={28} />
+              ),
           }}
         />
         <Tabs.Screen
           name="k-culture"
           options={{
             title: 'K-Culture',
-            tabBarLabel: ({ focused }) => <TabText focused={focused}>K-culture</TabText>,
+            tabBarLabel: ({ focused }) => <TabText focused={focused}>K-Culture</TabText>,
             tabBarIcon: ({ focused }) => (
               <Icon
                 type="kCulture"
                 color={focused ? theme.colors.primary.mint : theme.colors.gray.darkGray_2}
-                size={24}
+                size={28}
               />
             ),
           }}
@@ -95,17 +89,12 @@ export default function TabLayout() {
           options={{
             title: 'Community',
             tabBarLabel: ({ focused }) => <TabText focused={focused}>Community</TabText>,
-            tabBarIcon: ({ focused }) => (
-              <Image
-                source={
-                  focused
-                    ? require('@/assets/images/tab_community_click.png')
-                    : require('@/assets/images/tab_community.png')
-                }
-                style={{ width: 32, height: 32 }} // 원하는 크기
-                resizeMode="contain"
-              />
-            ),
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <Icon type="tabCommunityClick" size={28} />
+              ) : (
+                <Icon type="tabCommunity" color={theme.colors.gray.darkGray_2} size={28} />
+              ),
           }}
         />
         <Tabs.Screen
@@ -114,12 +103,10 @@ export default function TabLayout() {
             title: 'MyPage',
             tabBarLabel: ({ focused }) => <TabText focused={focused}>My page</TabText>,
             tabBarIcon: ({ focused }) => (
-              <Image
-                source={
-                  focused ? require('@/assets/images/tab_mypage_click.png') : require('@/assets/images/tab_mypage.png')
-                }
-                style={{ width: 32, height: 32 }} // 원하는 크기
-                resizeMode="contain"
+              <Icon
+                type="mypage"
+                color={focused ? theme.colors.primary.mint : theme.colors.gray.darkGray_2}
+                size={28}
               />
             ),
           }}

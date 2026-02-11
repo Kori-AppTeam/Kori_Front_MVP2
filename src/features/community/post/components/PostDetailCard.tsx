@@ -53,12 +53,7 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
 
         {/* 퀴즈/투표 컨텐츠 - 텍스트 아래에 */}
         {(parsedMediaInfo.MediaType === 'QUIZ' || parsedMediaInfo.MediaType === 'VOTE') && (
-          <PostPoll
-            type={parsedMediaInfo.MediaType}
-            pollInfo={parsedMediaInfo.pollInfo}
-            pollId={data.id}
-            queryKey={['post', 'detail', data.id]}
-          />
+          <PostPoll type={parsedMediaInfo.MediaType} pollInfo={parsedMediaInfo.pollInfo} pollId={data.id} />
         )}
       </ContentBox>
 

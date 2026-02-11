@@ -7,7 +7,7 @@ export const getTodayPoll = async (type: 'QUIZ' | 'VOTE') => {
       type: type,
     },
   });
-  return res.data.data;
+  return res.data;
 };
 
 // 퀴즈/투표 참여 결과 전송
