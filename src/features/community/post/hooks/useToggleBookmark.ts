@@ -28,7 +28,7 @@ export function useToggleBookmark() {
             data: {
               ...page.data,
               items: page.data.items.map((item: any) =>
-                item.postId === postId ? { ...item, isBookmarked: !isBookmarked } : item,
+                item.id === postId ? { ...item, isBookmarked: !isBookmarked } : item,
               ),
             },
           })),

@@ -15,22 +15,29 @@ export const CLIENT_CATEGORY_NAME: Record<AllowedCategory, AllowedClientCategory
   EVENT: 'Event',
   FREE_TALK: 'Free talk',
   ACTIVITY: 'Activity',
+  QUIZ: 'Quiz',
+  VOTE: 'Vote',
 };
 
 export const CATEGORY_TO_BOARD_ID: Record<AllowedCategory, BoardId> = {
   ALL: 1,
-  NEWS: 2,
-  TIP: 3,
-  QNA: 4,
-  EVENT: 5,
-  FREE_TALK: 6,
-  ACTIVITY: 7,
+  QUIZ: 2,
+  VOTE: 3,
+  NEWS: 4,
+  TIP: 5,
+  QNA: 6,
+  EVENT: 7,
+  FREE_TALK: 8,
+  ACTIVITY: 9,
 };
 
 export const CLIENT_SORT_NAME: Record<SortParam, ClientSortParam> = {
   LATEST: 'New',
   POPULAR: 'Hot',
 };
+
+// 카테고리 목록 (All 포함)
+export const CATS: AllowedCategory[] = ['ALL', 'QUIZ', 'VOTE', 'NEWS', 'TIP', 'QNA', 'EVENT', 'FREE_TALK', 'ACTIVITY'];
 
 // Write 화면용 카테고리 목록 (All 제외)
 export const WRITE_CATEGORIES: AllowedClientCategory[] = ['News', 'Tip', 'Q&A', 'Event', 'Free talk', 'Activity'];

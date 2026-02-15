@@ -25,6 +25,7 @@ export const VERIFY_PASSWORD_ROUTE = toRoute('/(auth)/login/verify/password');
 export const COMMUNITY_ROUTER = {
   HOME: '/community',
   WRITE: '/community/write',
+  VOTE_WRITE: '/community/vote-write',
   MY_HISTORY: '/community/my-history',
   BOOKMARK: '/community/bookmark-list',
   DETAIL: (postId: number | string) => toRoute(`/community/detail/${postId}`),

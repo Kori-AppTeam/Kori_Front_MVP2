@@ -30,7 +30,7 @@ export function useToggleLike() {
             data: {
               ...page.data,
               items: page.data.items.map((item: any) => {
-                if (item.postId === postId) {
+                if (item.id === postId) {
                   const prev = Number(item.likeCount ?? 0);
                   return {
                     ...item,
@@ -47,7 +47,7 @@ export function useToggleLike() {
 
       // 상세 쿼리 업데이트
       qc.setQueriesData({ queryKey: ['post', 'detail', postId] }, (oldData: any) => {
-        if (!oldData || oldData.postId !== postId) return oldData;
+        if (!oldData || oldData.id !== postId) return oldData;
 
         const prev = Number(oldData.likeCount ?? 0);
         return {

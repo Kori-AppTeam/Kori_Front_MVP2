@@ -1,26 +1,27 @@
 import { textStyle, theme } from '@/src/styles/theme';
 import React from 'react';
 import styled from 'styled-components/native';
-import { NEWS_CATEGORIES, NEWS_CATEGORY_MAPPER } from '../constants/categoryMapper';
-import { NewsType } from '../types';
+import { useGetNewsCategories } from '../hooks/useGetNewsCategories';
 
 type NewsCategoryProps = {
-  value: NewsType;
-  onPress: (category: NewsType) => void;
+  value: string;
+  onPress: (category: string) => void;
 };
 
 const NewsCategory = ({ value, onPress }: NewsCategoryProps) => {
+  const { data: categories } = useGetNewsCategories();
+
   return (
     <Container
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ gap: 6, paddingHorizontal: 20 }}
     >
-      {NEWS_CATEGORIES.map((key) => {
-        const isActive = value === key;
+      {categories?.map(({ code, name }) => {
+        const isActive = value === code;
         return (
-          <CategoryButton key={key} active={isActive} onPress={() => onPress(key)}>
-            <CategoryButtonText active={isActive}>{NEWS_CATEGORY_MAPPER[key]}</CategoryButtonText>
+          <CategoryButton key={code} active={isActive} onPress={() => onPress(code)}>
+            <CategoryButtonText active={isActive}>{name}</CategoryButtonText>
           </CategoryButton>
         );
       })}

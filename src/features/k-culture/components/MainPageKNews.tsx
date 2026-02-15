@@ -7,16 +7,15 @@ import styled from 'styled-components/native';
 import { ErrorContainer, ErrorText, RetryButton, RetryButtonText } from '../../community/shared/styles/styles';
 import { useGetRecentKnews } from '../hooks/useGetRecentKnews';
 import { EmptyListContainer, EmptyListText } from '../styles/styles';
-import { NewsType } from '../types';
 import KNewsItem from './KNewsItem';
 import MoreButton from './MoreButton';
 import NewsCategory from './NewsCategory';
 
 const MainPageKNews = () => {
-  const [selectedCategory, setSelectedCategory] = useState<NewsType>('K-POP');
+  const [selectedCategory, setSelectedCategory] = useState<string>('K-POP');
   const { items, isError, refetch, isLoading } = useGetRecentKnews(selectedCategory);
 
-  const handleCategoryPress = (category: NewsType) => {
+  const handleCategoryPress = (category: string) => {
     setSelectedCategory(category);
   };
 

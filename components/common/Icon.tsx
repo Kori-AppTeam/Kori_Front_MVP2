@@ -54,12 +54,20 @@ import Send from '@/assets/icons/send.svg';
 import Setting from '@/assets/icons/setting.svg';
 import Share from '@/assets/icons/share.svg';
 import StatusOn from '@/assets/icons/status=on.svg';
+import TabChat from '@/assets/icons/tab_chat.svg';
+import TabChatClick from '@/assets/icons/tab_chat_click.svg';
+import TabCommunity from '@/assets/icons/tab_community.svg';
+import TabCommunityClick from '@/assets/icons/tab_community_click.svg';
+import TabFind from '@/assets/icons/tab_find.svg';
+import TabFindClick from '@/assets/icons/tab_find_click.svg';
 import TabKCulture from '@/assets/icons/tab_kCulture_click.svg';
+import TabMypage from '@/assets/icons/tab_mypage.svg';
 import ThumbsUpNonSelected from '@/assets/icons/thumbs-up-non-selected.svg';
 import ThumbsUpSelected from '@/assets/icons/thumbs-up-selected.svg';
 import TranslateOn from '@/assets/icons/translate-on.svg';
 import TranslateOff from '@/assets/icons/translate.svg';
 import TrashCan from '@/assets/icons/trash_can.svg';
+import Vote from '@/assets/icons/vote.svg';
 import Write from '@/assets/icons/write.svg';
 import { theme } from '@/src/styles/theme';
 import React from 'react';
@@ -127,8 +135,15 @@ const iconMap = {
   checkGrayBox: CheckGrayBox,
   closeBox: CloseBox,
   write: Write,
-
+  vote: Vote,
+  tabFind: TabFind,
+  tabFindClick: TabFindClick,
+  tabChat: TabChat,
+  tabChatClick: TabChatClick,
+  tabCommunity: TabCommunity,
+  tabCommunityClick: TabCommunityClick,
   kCulture: TabKCulture,
+  mypage: TabMypage,
 };
 
 /**
@@ -142,7 +157,7 @@ const iconMap = {
 export type IconType = keyof typeof iconMap;
 
 interface IconProps {
-  size: 16 | 20 | 24 | 32 | 40;
+  size: 16 | 20 | 24 | 28 | 32 | 40;
   type: IconType;
   color?: string;
 }

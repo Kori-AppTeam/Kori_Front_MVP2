@@ -22,6 +22,8 @@ export const COMMUNITY_ERROR_CODE = {
   TOO_MANY_POSTS: 'TOO_MANY_POSTS',
   DUPLICATE_REPORT: 'DUPLICATE_REPORT',
   INVALID_JSON: 'INVALID_JSON',
+  POLL_NOT_FOUND: 'POLL_NOT_FOUND',
+  VOTE_RECORD_EXISTED: 'VOTE_RECORD_EXISTED',
 
   // 댓글
   TOO_MANY_COMMENTS: 'TOO_MANY_COMMENTS',
@@ -36,7 +38,8 @@ export const COMMUNITY_ERROR_MESSAGE = {
   [COMMUNITY_ERROR_CODE.TOO_MANY_POSTS]: 'You have exceeded the post limit. Please try again later.',
   [COMMUNITY_ERROR_CODE.DUPLICATE_REPORT]: 'You have already reported this post.',
   [COMMUNITY_ERROR_CODE.INVALID_JSON]: 'The JSON format is invalid.',
-
+  [COMMUNITY_ERROR_CODE.POLL_NOT_FOUND]: 'The requested poll was not found.',
+  [COMMUNITY_ERROR_CODE.VOTE_RECORD_EXISTED]: 'Cannot delete a poll with votes.',
   // 댓글
   [COMMUNITY_ERROR_CODE.TOO_MANY_COMMENTS]: 'You have exceeded the comment limit. Please try again later.',
 

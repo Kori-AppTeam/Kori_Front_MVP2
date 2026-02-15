@@ -4,10 +4,11 @@ import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { COMMON_ERROR_MESSAGE, COMMUNITY_ERROR_MESSAGE } from '../../shared/constants/error';
-import { InitialEditData } from '../../write/types';
+import { InitialEditData, InitialVoteEditData } from '../../write/types';
 import { useMoreSheetStore } from '../store/useMoreSheetStore';
 import { useReportSheetStore } from '../store/useReportSheetStore';
-import { BlockReportPostParams } from '../types';
+import { BlockReportPostParams, GeneralPostDetail } from '../types';
+import { isPostType } from '../utils/postUtils';
 import { useBlockUser } from './useBlockUser';
 import { useDeletePost } from './useDeletePost';
 import { useGetPostDetail } from './useGetPostDetail';
@@ -78,14 +79,36 @@ export const usePostActions = () => {
     //바텀시트 닫기
     hideMoreSheet();
 
+    // 투표 글 수정 페이지로 이동
+    if (isPostType(postDetailData)) {
+      const editData: InitialVoteEditData = {
+        id: selectedPostId,
+        title: postDetailData.pollInfo.title,
+        description: postDetailData.pollInfo.description,
+        content: postDetailData.content,
+        isAnonymous: postDetailData.isAnonymous,
+        options: postDetailData.pollInfo.options.map((option) => option.content),
+      };
+
+      return router.push({
+        pathname: COMMUNITY_ROUTER.VOTE_WRITE,
+        params: {
+          mode: 'edit',
+          postId: selectedPostId,
+          initialData: JSON.stringify(editData),
+        },
+      });
+    }
+
+    // 일반 글 수정 페이지로 이동
     const editData: InitialEditData = {
       boardCategory: postDetailData.boardCategory,
       content: postDetailData.content,
-      contentImageUrls: postDetailData.contentImageUrls,
+      contentImageUrls: (postDetailData as GeneralPostDetail).postInfo.contentImageUrl ?? [],
       isAnonymous: postDetailData.isAnonymous,
     };
 
-    router.push({
+    return router.push({
       pathname: COMMUNITY_ROUTER.WRITE,
       params: {
         mode: 'edit',
