@@ -14,7 +14,8 @@ import axios from 'axios';
 
 export function getAxiosErrorCode(error: unknown): string {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.error_code;
+    const code = (error.response?.data as any)?.error_code;
+    return code ? String(code) : 'UNKNOWN_ERROR';
   }
   return 'UNKNOWN_ERROR';
 }
