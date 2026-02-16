@@ -46,13 +46,13 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
       }
     } catch (error) {
       const errorCode = getAuthErrorCode(error, 'apple');
-      const errorConfig = APPLE_AUTH_ERROR[errorCode];
+      const errorConfig = APPLE_AUTH_ERROR[errorCode] ?? APPLE_AUTH_ERROR.UNKNOWN_ERROR;
 
       // 사용자가 로그인을 취소한 경우를 제외하고 error toast 표시
-      if (errorConfig !== APPLE_AUTH_ERROR.ERR_REQUEST_CANCELED) {
+      if (errorCode !== 'ERR_REQUEST_CANCELED') {
         Toast.show({
           type: 'error',
-          text1: errorConfig.message,
+          text1: errorConfig?.message ?? APPLE_AUTH_ERROR.UNKNOWN_ERROR.message,
           text2: errorConfig.subMessage || 'Please try again later.',
         });
       }
@@ -74,16 +74,13 @@ function SignInButtonWrapper({ onSuccessSocialSignIn }: SignInButtonWrapperProps
       }
     } catch (error) {
       const errorCode = getAuthErrorCode(error, 'google');
-      const errorConfig = GOOGLE_AUTH_ERROR[errorCode];
+      const errorConfig = GOOGLE_AUTH_ERROR[errorCode] ?? GOOGLE_AUTH_ERROR.UNKNOWN_ERROR;
 
       // 사용자가 로그인을 취소하거나 이미 로그인 진행중인 경우를 제외하고 error toast 표시
-      if (
-        errorConfig !== GOOGLE_AUTH_ERROR[statusCodes.SIGN_IN_CANCELLED] &&
-        errorConfig !== GOOGLE_AUTH_ERROR[statusCodes.IN_PROGRESS]
-      ) {
+      if (errorCode !== statusCodes.SIGN_IN_CANCELLED && errorCode !== statusCodes.IN_PROGRESS) {
         Toast.show({
           type: 'error',
-          text1: errorConfig.message,
+          text1: errorConfig?.message ?? GOOGLE_AUTH_ERROR.UNKNOWN_ERROR.message,
           text2: 'Please try again later.',
         });
       }
