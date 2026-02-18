@@ -296,6 +296,7 @@ export default function MyPageScreen() {
 
           <EditButtonWrap>
             <CustomButton label="Edit Profile" tone="mint" filled onPress={() => router.push('/mypage/edit')} />
+            {/* <CustomButton label='View My Profile' tone='mint' filled onPress={() => router.push(PROFILE_ROUTE)} /> */}
           </EditButtonWrap>
         </ProfileView>
 
