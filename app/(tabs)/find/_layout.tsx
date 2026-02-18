@@ -5,14 +5,14 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
-export default function KcultureLayout() {
+export default function FindLayout() {
   return (
     <Stack>
       <Stack.Screen
         name="index"
         options={{
           headerShown: false,
-          title: '케이컬쳐',
+          title: 'find',
         }}
       />
     </Stack>

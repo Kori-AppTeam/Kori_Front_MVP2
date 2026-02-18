@@ -1,29 +1,19 @@
 import ProfileSetupModal from '@/components/common/ProfileSetupModal';
-import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import { useRequestFeedback } from '@/src/features/feedback/hooks/useRequestFeedback';
-import { FindHeader } from '@/src/features/find/components/FindHeader';
 import { LinkedSpaceRecommendModal } from '@/src/features/find/components/LinkedSpaceRecommendModal';
 import { useLinkedSpaceRecommendModal } from '@/src/features/find/hooks/useLinkedSpaceRecommendModal';
-import { useRecommendedFriends } from '@/src/features/find/hooks/useRecommendedFriends';
-import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import { useCancelFollowUserMutation, useFollowUserMutation } from '@/src/shared/hooks/useFollowQuery';
-import { Text } from '@react-navigation/elements';
-import { useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, DeviceEventEmitter, FlatList, RefreshControl } from 'react-native';
+import AIChatHeader from '@/src/features/k-culture/components/AIChatHeader';
+import CharacterLoopCarousel from '@/src/features/k-culture/components/CharacterLoopCarousel';
+import MainPageKNews from '@/src/features/k-culture/components/MainPageKNews';
+import TrendingNews from '@/src/features/k-culture/components/TrendingNews';
+import QuizAndVote from '@/src/features/quizAndVote/components/QuizAndVote';
+import { textStyle, theme } from '@/src/styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
-export default function index() {
+export default function Index() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
-  const flatListRef = useRef<FlatList>(null);
-  const queryClient = useQueryClient();
-
-  // Data fetching with filtering
-  const { data: friends, isLoading, isFetching, refetch } = useRecommendedFriends(20);
-
-  const createChatRoom = useCreateOneToOneRoom();
-  const followMutation = useFollowUserMutation();
-  const cancelFollowMutation = useCancelFollowUserMutation();
 
   const {
     visible: recommendVisible,
@@ -34,90 +24,49 @@ export default function index() {
     handleClose: handleRecommendClose,
   } = useLinkedSpaceRecommendModal();
 
-  const handleFollowPress = (userId: number) => {
-    followMutation.mutate(userId);
-
-    // Update React Query cache to reflect PENDING status
-    queryClient.setQueryData(['find', 'recommend', 20], (oldData: typeof friends) => {
-      if (!oldData) return oldData;
-      return oldData.map((friend) => (friend.userId === userId ? { ...friend, followStatus: 'PENDING' } : friend));
-    });
-  };
-
-  // Define card actions based on follow status
-  const getCardActions = (item: NonNullable<typeof friends>[0]) => {
-    return {
-      ...(item.followStatus === 'PENDING' || item.followStatus === 'FOLLOWING'
-        ? {
-            secondary: {
-              label: 'Following',
-              onPress: () => cancelFollowMutation.mutate(item.userId),
-            },
-          }
-        : {
-            primary: {
-              label: 'Follow',
-              onPress: () => handleFollowPress(item.userId),
-            },
-          }),
-      chat: {
-        label: 'Chat',
-        onPress: () =>
-          createChatRoom.mutate({
-            otherUserId: item.userId,
-            userName: `${item.firstname} ${item.lastname}`,
-            routeType: 'push',
-          }),
-      },
-    };
-  };
-
   useRequestFeedback();
 
-  // Scroll to top when FIND_TAB_PRESSED event is emitted
-  // FIND_TAB_PRESSED is emitted from app/(tabs)/_layout.tsx
-  useEffect(() => {
-    const listener = DeviceEventEmitter.addListener('FIND_TAB_PRESSED', () => {
-      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    });
-
-    return () => listener.remove();
-  }, []);
-
-  const onRefresh = () => {
-    refetch();
-  };
-
   return (
-    <Safe>
-      <FindHeader />
+    <>
+      <Container contentContainerStyle={{ gap: 10 }}>
+        <HeaderContainer
+          colors={[
+            `${theme.colors.primary.mint}33`,
+            `${theme.colors.secondary.blue}33`,
+            `${theme.colors.primary.purple}33`,
+          ]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <LinearGradient
+            colors={[theme.colors.primary.black, 'rgba(29, 30, 31, 0.5)', 'rgba(29, 30, 31, 0)']}
+            start={{ x: 0.5, y: 1.0 }}
+            end={{ x: 0.5, y: 0.0 }}
+            locations={[0, 0.5, 1]}
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              aspectRatio: 375 / 190,
+              zIndex: 5,
+            }}
+          ></LinearGradient>
+          <CharacterLoopCarousel />
+          <AIChatHeader />
+          <Header>
+            <Title>K-culture</Title>
+            <IconImage source={require('../../assets/images/IsolationMode.png')} />
+          </Header>
+        </HeaderContainer>
 
-      {isLoading ? (
-        <LoaderWrap>
-          <ActivityIndicator />
-        </LoaderWrap>
-      ) : (
-        <FlatList
-          ref={flatListRef}
-          data={friends}
-          keyExtractor={(item) => String(item.userId)}
-          refreshControl={<RefreshControl refreshing={Boolean(isFetching && !isLoading)} onRefresh={onRefresh} />}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
-          renderItem={({ item }) => (
-            <CardWrap>
-              <UserProfileCard user={item} collapsible={true} actions={getCardActions(item)} />
-            </CardWrap>
-          )}
-          ListEmptyComponent={
-            <EmptyWrap>
-              <EmptyText>
-                <Text>No recommendations yet.</Text>
-              </EmptyText>
-            </EmptyWrap>
-          }
-        />
-      )}
+        <TrendingNews title="Trending K-News" />
 
+        <QuizAndVote />
+
+        <MainPageKNews />
+      </Container>
+
+      {/* linked space recommend modal */}
       <LinkedSpaceRecommendModal
         visible={recommendVisible}
         onJoin={handleJoin}
@@ -125,6 +74,7 @@ export default function index() {
         onClose={handleRecommendClose}
       />
 
+      {/* profile setup modal */}
       <ProfileSetupModal
         visible={profileModalVisible || recommendProfileModal}
         onClose={() => {
@@ -132,30 +82,39 @@ export default function index() {
           setRecommendProfileModal(false);
         }}
       />
-    </Safe>
+    </>
   );
 }
 
-const Safe = styled.SafeAreaView`
+const Container = styled.ScrollView`
   flex: 1;
-  background-color: #1d1e1f;
+  background: ${theme.colors.gray.darkBlack_1};
 `;
-
-const LoaderWrap = styled.View`
-  flex: 1;
+const HeaderContainer = styled(LinearGradient)`
+  width: 100%;
+  /* 노치 문제 해결되면 사용 */
+  /* aspect-ratio: ${375 / 440}; */
+  min-height: 440px;
+  position: relative;
   align-items: center;
   justify-content: center;
 `;
-
-const CardWrap = styled.View`
-  margin-top: 16px;
-`;
-
-const EmptyWrap = styled.View`
-  padding: 40px 16px;
+const Header = styled.View`
+  position: absolute;
+  top: 12px;
+  left: 0;
+  right: 0;
+  padding: 0 20px;
+  flex-direction: row;
   align-items: center;
+  z-index: 10;
 `;
-
-const EmptyText = styled.Text`
-  color: #cfcfcf;
+const Title = styled.Text`
+  color: ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => textStyle(theme.fonts.Serif.H3_R)};
+`;
+const IconImage = styled.Image`
+  margin-left: 4px;
+  width: 20px;
+  height: 20px;
 `;

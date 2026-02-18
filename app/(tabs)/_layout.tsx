@@ -13,7 +13,7 @@ import { styled } from 'styled-components/native';
 const TAB_BAR_HEIGHT = SCREEN_WIDTH * (86 / 375);
 
 export const unstable_settings = {
-  initialRouteName: 'k-culture',
+  initialRouteName: 'index',
 };
 
 export default function TabLayout() {
@@ -24,7 +24,7 @@ export default function TabLayout() {
   return (
     <>
       <Tabs
-        initialRouteName="k-culture"
+        initialRouteName="index"
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
@@ -38,9 +38,9 @@ export default function TabLayout() {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="find"
           options={{
-            title: 'Home',
+            title: 'Find',
             tabBarLabel: ({ focused }) => <TabText focused={focused}>Find</TabText>,
             tabBarIcon: ({ focused }) =>
               focused ? (
@@ -51,7 +51,7 @@ export default function TabLayout() {
           }}
           listeners={{
             tabPress: () => {
-              if (pathname === '/') {
+              if (pathname === '/find') {
                 DeviceEventEmitter.emit('FIND_TAB_PRESSED');
               }
             },
@@ -71,7 +71,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="k-culture"
+          name="index"
           options={{
             title: 'K-Culture',
             tabBarLabel: ({ focused }) => <TabText focused={focused}>K-Culture</TabText>,
