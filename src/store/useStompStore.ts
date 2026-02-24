@@ -141,7 +141,7 @@ export const useStompStore = create<StompStore>((set, get) => ({
         body: JSON.stringify(body),
       });
     } catch (error: any) {
-      if (error.message?.includes('401')) {
+      if (error?.message?.includes('401')) {
         const newToken = await refreshTokenIfNeeded();
         if (newToken) {
           await connect();
@@ -154,6 +154,7 @@ export const useStompStore = create<StompStore>((set, get) => ({
           }
         }
       } else {
+        console.error('[STOMP] 메시지 발행 오류:', error);
         throw error;
       }
     }
