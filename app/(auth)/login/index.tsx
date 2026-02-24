@@ -34,7 +34,7 @@ const index = () => {
       }
     } catch (error: unknown) {
       const errorCode = getAxiosErrorCode(error);
-      const errorConfig = EMAIL_LOGIN_ERROR[errorCode];
+      const errorConfig = EMAIL_LOGIN_ERROR[errorCode] ?? EMAIL_LOGIN_ERROR.UNKNOWN_ERROR;
 
       Toast.show({
         type: 'error',

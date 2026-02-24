@@ -36,7 +36,7 @@ const EmailForm = ({ useCheckEmail, useVerifyEmail }: EmailFormProps) => {
       await sendCode(watch('email'));
     } catch (error) {
       const errorCode = getAxiosErrorCode(error);
-      const errorConfig = EMAIL_SIGNUP_ERROR[errorCode];
+      const errorConfig = EMAIL_SIGNUP_ERROR[errorCode] ?? EMAIL_SIGNUP_ERROR.UNKNOWN_ERROR;
 
       Toast.show({
         type: 'error',
@@ -53,7 +53,7 @@ const EmailForm = ({ useCheckEmail, useVerifyEmail }: EmailFormProps) => {
       await verifyCode(watch('email'), watch('verificationCode'));
     } catch (error) {
       const errorCode = getAxiosErrorCode(error);
-      const errorConfig = EMAIL_SIGNUP_ERROR[errorCode];
+      const errorConfig = EMAIL_SIGNUP_ERROR[errorCode] ?? EMAIL_SIGNUP_ERROR.UNKNOWN_ERROR;
 
       Toast.show({
         type: 'error',
