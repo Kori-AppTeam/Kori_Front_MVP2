@@ -10,7 +10,7 @@ import { resetToTabsScreen } from '@/src/features/auth/lib/resetToTabScreen';
 import CustomButton from '@/src/shared/components/CustomButton';
 import Input from '@/src/shared/components/Input';
 import TextButton from '@/src/shared/components/TextButton';
-import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
+import { PROFILE_SETUP_ROUTE, SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
@@ -26,7 +26,7 @@ const index = () => {
       const isNewUser = await emailLogin();
 
       if (isNewUser) {
-        router.push('/screens/makeprofile/NameStepScreen');
+        router.push(PROFILE_SETUP_ROUTE.BASIC_INFO);
       } else {
         // 기존 사용자 로그인 시 소켓 연결 초기화
         initializeStomp();
