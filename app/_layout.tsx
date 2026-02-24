@@ -102,24 +102,28 @@ export default wrapWithSentry(function RootLayout() {
     }
 
     const initializeApp = async () => {
-      // 앱 초기화 단계 완료 후 스플래시 스크린 hide
-      SplashScreen.hideAsync().catch(() => {});
+      try {
+        // 앱 초기화 단계 완료 후 스플래시 스크린 hide
+        SplashScreen.hideAsync().catch(() => {});
 
-      // 로그인 상태에 따라 라우팅
-      if (isLoggedIn) {
-        initializeStomp();
-        router.replace('/(tabs)/k-culture');
-      } else {
-        const ONBOARDING_VISITED = await AsyncStorage.getItem('ONBOARDING_VISITED');
-        const isOnboardingVisited = ONBOARDING_VISITED === 'true';
-        console.log(`[Onboarding] Visited status: ${isOnboardingVisited}`);
-
-        // await AsyncStorage.removeItem('ONBOARDING_VISITED'); // --- TESTING PURPOSES ONLY ---
-        if (isOnboardingVisited) {
-          router.replace(AUTH_ROUTE);
+        // 로그인 상태에 따라 라우팅
+        if (isLoggedIn) {
+          initializeStomp();
+          router.replace('/(tabs)/k-culture');
         } else {
-          router.replace('/onboarding');
+          const ONBOARDING_VISITED = await AsyncStorage.getItem('ONBOARDING_VISITED');
+          const isOnboardingVisited = ONBOARDING_VISITED === 'true';
+          console.log(`[Onboarding] Visited status: ${isOnboardingVisited}`);
+
+          // await AsyncStorage.removeItem('ONBOARDING_VISITED'); // --- TESTING PURPOSES ONLY ---
+          if (isOnboardingVisited) {
+            router.replace(AUTH_ROUTE);
+          } else {
+            router.replace('/onboarding');
+          }
         }
+      } catch (error) {
+        console.log('[ERROR] 앱 초기화 실패', error);
       }
     };
 
