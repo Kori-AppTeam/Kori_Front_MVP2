@@ -8,7 +8,8 @@ interface BirthPickerProps {
   date?: string;
 }
 
-export default function BirthPicker({ isShow, onClose, date = '01/01/2000', setDate }: BirthPickerProps) {
+export default function BirthPicker({ isShow, onClose, date, setDate }: BirthPickerProps) {
+  const defaultDateString = '01/01/2000';
   const minDate = useMemo(() => new Date(1900, 0, 1), []);
   const maxDate = useMemo(() => {
     return new Date(new Date().setHours(0, 0, 0, 0));
@@ -33,14 +34,15 @@ export default function BirthPicker({ isShow, onClose, date = '01/01/2000', setD
 
   // date를 유효 범위 내로 조정
   const validDate = useMemo(() => {
-    if (!date) return maxDate;
+    const normalized = typeof date === 'string' && date.trim().length > 0 ? date : defaultDateString;
 
-    const parsedDate = parseBirthFormatToDate(date);
+    const parsedDate = parseBirthFormatToDate(normalized);
+    if (isNaN(parsedDate.getTime())) return parseBirthFormatToDate(defaultDateString);
 
     if (parsedDate > maxDate) return maxDate;
     if (parsedDate < minDate) return minDate;
     return parsedDate;
-  }, [date, maxDate, minDate]);
+  }, [date, defaultDateString, maxDate, minDate, parseBirthFormatToDate]);
 
   if (!isShow) return null;
 

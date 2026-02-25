@@ -8,7 +8,7 @@ import { useMoreSheetStore } from '@/src/features/community/post/store/useMoreSh
 import { useReportSheetStore } from '@/src/features/community/post/store/useReportSheetStore';
 import { useBackgroundNotification } from '@/src/features/notification/hooks/useBackgroundNotiification';
 import { useForegroundNotification } from '@/src/features/notification/hooks/useForegroundNotification';
-import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { AUTH_ROUTE, ONBOARDING_ROUTE } from '@/src/shared/constants/route';
 import { toastConfig } from '@/src/shared/constants/toast';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
 import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
@@ -118,7 +118,7 @@ export default wrapWithSentry(function RootLayout() {
         if (isOnboardingVisited) {
           router.replace(AUTH_ROUTE);
         } else {
-          router.replace('/onboarding');
+          router.replace(ONBOARDING_ROUTE);
         }
       }
     };
@@ -147,8 +147,9 @@ export default wrapWithSentry(function RootLayout() {
                   <ProfileProvider>
                     {/* 모든 화면을 항상 선언하고, 실제 이동은 위의 useEffect가 담당합니다. */}
                     <Stack screenOptions={{ headerShown: false }}>
-                      <Stack.Screen name="(tabs)" />
-                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="/profile-setup" />
+                      <Stack.Screen name="/(tabs)" />
+                      <Stack.Screen name="/(auth)" />
                       <Stack.Screen name="+not-found" />
                     </Stack>
                     <Toast config={toastConfig} topOffset={80} />

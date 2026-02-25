@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -17,8 +17,13 @@ const index = () => {
   // 소셜 회원가입 성공 시 콜백 함수
   const onSuccessSocialSignIn = useCallback((provider: 'apple' | 'google') => {
     setLoginProvider(provider);
-    handleBottomSheetOpen();
   }, []);
+
+  useEffect(() => {
+    if (loginProvider) {
+      handleBottomSheetOpen();
+    }
+  }, [loginProvider, handleBottomSheetOpen]);
 
   // 에셋을 불러오기 전까지 로딩 화면 표시
   if (!isAssetsReady) {

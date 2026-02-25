@@ -3,7 +3,10 @@ import { AppLoginResponse } from '@/src/features/auth/types';
 import { Config } from '@/src/shared/constants/config';
 import { AppleAuthenticationCredential } from 'expo-apple-authentication';
 
-export async function postAppleAppLogin(credential: AppleAuthenticationCredential, rawNonce: string) {
+export async function postAppleAppLogin(
+  credential: AppleAuthenticationCredential,
+  rawNonce: string,
+): Promise<AppLoginResponse['data']> {
   const response = await axios.post<AppLoginResponse>(`${Config.SERVER_URL}/api/v1/member/apple/app-login`, {
     identityToken: credential.identityToken,
     authorizationCode: credential.authorizationCode,

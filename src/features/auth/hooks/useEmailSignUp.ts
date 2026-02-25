@@ -4,6 +4,7 @@ import { requestLocationPermission } from '@/src/features/auth/lib/requestLocati
 import { postEmailSignUp } from '@/src/features/auth/api/postEmailSignUp';
 import { saveAuthToken } from '@/src/features/auth/lib/saveAuthToken';
 import { patchLocation } from '@/api/member/location';
+import { savePrefill } from '@/src/features/profile-setup/lib/prefill';
 
 export function useEmailSignUp() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -19,6 +20,15 @@ export function useEmailSignUp() {
       // 회원가입 및 토큰 저장
       const { accessToken, refreshToken, userId } = await postEmailSignUp(email, password);
       await saveAuthToken(accessToken, refreshToken, userId);
+
+      if (email) {
+        await savePrefill({
+          userId,
+          prefill: {
+            email: email ?? undefined,
+          },
+        });
+      }
 
       // 위치 정보 업데이트
       await patchLocation(latitude, longitude);

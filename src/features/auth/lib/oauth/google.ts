@@ -2,14 +2,35 @@ import { Config } from '@/src/shared/constants/config';
 import { GoogleSignin, isSuccessResponse } from '@react-native-google-signin/google-signin';
 
 /* --------- 구글 사용자 인증 --------- */
-export async function getGoogleAuthCode() {
+export async function getGoogleAuthCode(): Promise<
+  | {
+      code: string;
+      profile?: {
+        email?: string;
+        givenName?: string;
+        familyName?: string;
+      };
+    }
+  | undefined
+> {
   try {
     await GoogleSignin.hasPlayServices();
     const response = await GoogleSignin.signIn();
 
     if (isSuccessResponse(response)) {
       const code = response.data.serverAuthCode;
-      return code;
+      if (!code) return;
+
+      const user = (response.data as any)?.user;
+
+      return {
+        code,
+        profile: {
+          email: user?.email,
+          givenName: user?.givenName,
+          familyName: user?.familyName,
+        },
+      };
     }
   } catch (error) {
     throw error;
