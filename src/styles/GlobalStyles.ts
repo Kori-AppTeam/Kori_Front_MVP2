@@ -15,3 +15,13 @@ export const Safe = styled(SafeAreaView)`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.primary.black};
 `;
+
+/**
+ * 내비게이션 바가 없는 페이지에서 사용하는 SafeAreaView입니다.
+ * 내비게이션 바가 없는 페이지에서는 하단 패딩이 필요 없으므로, paddingBottom을 제거한 스타일입니다.
+ */
+export const SafeAreaWithNoNavBar = styled.SafeAreaView`
+  flex: 1;
+  height: 100%;
+  background-color: ${({ theme }) => theme.colors.primary.black};
+`;
