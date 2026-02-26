@@ -35,7 +35,7 @@ export const COMMUNITY_ROUTER = {
 export const MYPAGE_SUPPORT_ROUTE = toRoute('/mypage/support');
 
 // 프로필 route 경로
-export const PROFILE_ROUTE = (userId: number | string) => toRoute(`/profile/${userId}`);
+export const PROFILE_ROUTE = (userId: number) => toRoute(`/profile/${userId}`);
 
 // k-culture route 경로
 export const K_CULTURE_ROUTER = {
