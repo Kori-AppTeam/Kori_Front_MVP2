@@ -4,9 +4,7 @@ import { StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { textStyle } from '@/src/styles/theme';
-
-// TODO 이미지 상하단 노치까지 확대
-// TODO _layout.tsx View paddingBottom 제거
+import { SafeAreaWithNoNavBar } from '@/src/styles/GlobalStyles';
 
 const SignUpDoneScreen = () => {
   const router = useRouter();
@@ -16,7 +14,7 @@ const SignUpDoneScreen = () => {
   };
 
   return (
-    <SafeArea>
+    <SafeAreaWithNoNavBar>
       <StatusBar barStyle="light-content" />
       <Container source={require('@/assets/images/SignUpDone.png')} resizeMode="cover">
         <TitleText>Sign up Done!</TitleText>
@@ -25,15 +23,11 @@ const SignUpDoneScreen = () => {
           <ButtonText>Start</ButtonText>
         </Button>
       </Container>
-    </SafeArea>
+    </SafeAreaWithNoNavBar>
   );
 };
 
 export default SignUpDoneScreen;
-
-const SafeArea = styled.SafeAreaView`
-  flex: 1;
-`;
 
 const Container = styled.ImageBackground`
   flex: 1;
