@@ -1,3 +1,4 @@
+import useAuthStore from '@/src/store/useAuthStore';
 import * as SecureStore from 'expo-secure-store';
 
 export async function saveAuthToken(accessToken: string, refreshToken: string, userId: number) {
@@ -10,4 +11,6 @@ export async function saveAuthToken(accessToken: string, refreshToken: string, u
   await SecureStore.setItemAsync('MyuserId', userId.toString(), {
     keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
   });
+
+  useAuthStore.getState().setCurrentUserId(userId);
 }
