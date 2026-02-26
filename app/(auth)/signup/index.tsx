@@ -9,6 +9,7 @@ import { useEmailSignUpForm } from '@/src/features/auth/hooks/useEmailSignUpForm
 import { useVerifyEmail } from '@/src/features/auth/hooks/useVerifyEmail';
 import CustomButton from '@/src/shared/components/CustomButton';
 import { SIGNUP_DONE_ROUTE } from '@/src/shared/constants/route';
+import { SafeAreaWithNoNavBar } from '@/src/styles/GlobalStyles';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { FormProvider } from 'react-hook-form';
@@ -47,7 +48,7 @@ const index = () => {
   };
 
   return (
-    <SafeArea>
+    <SafeAreaWithNoNavBar>
       <StatusBar barStyle="light-content" />
       <DetailHeader title="Create your account" onButtonPress={() => router.back()} />
       <Container>
@@ -76,15 +77,11 @@ const index = () => {
         onPress={() => handleEmailSignUp()}
         isLoading={isEmailSignUpLoading}
       />
-    </SafeArea>
+    </SafeAreaWithNoNavBar>
   );
 };
 
 export default index;
-
-const SafeArea = styled.SafeAreaView`
-  flex: 1;
-`;
 
 const Container = styled.View`
   flex: 1;

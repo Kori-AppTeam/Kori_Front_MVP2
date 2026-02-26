@@ -14,6 +14,7 @@ import { SIGNUP_ROUTE, VERIFY_EMAIL_ROUTE } from '@/src/shared/constants/route';
 import { getAxiosErrorCode } from '@/src/shared/utils/getAxiosErrorCode';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaWithNoNavBar } from '@/src/styles/GlobalStyles';
 
 const index = () => {
   const router = useRouter();
@@ -55,7 +56,7 @@ const index = () => {
   };
 
   return (
-    <SafeArea>
+    <SafeAreaWithNoNavBar>
       <DetailHeader title={'Continue with email'} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Container>
@@ -81,15 +82,11 @@ const index = () => {
           </BottomButtonWrapper>
         </Container>
       </TouchableWithoutFeedback>
-    </SafeArea>
+    </SafeAreaWithNoNavBar>
   );
 };
 
 export default index;
-
-const SafeArea = styled.SafeAreaView`
-  flex: 1;
-`;
 
 const Container = styled.View`
   display: flex;
