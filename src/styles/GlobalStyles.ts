@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 /* --------------- Global Styles ---------------
  * 자주 사용하는 Styled Component를 한번에 관리하는 파일입니다.
@@ -18,10 +18,10 @@ export const Safe = styled(SafeAreaView)`
 
 /**
  * 내비게이션 바가 없는 페이지에서 사용하는 SafeAreaView입니다.
- * 내비게이션 바가 없는 페이지에서는 하단 패딩이 필요 없으므로, paddingBottom을 제거한 스타일입니다.
  */
-export const SafeAreaWithNoNavBar = styled.SafeAreaView`
+export const SafeAreaWithNoNavBar = styled(SafeAreaView).attrs({
+  edges: ['bottom'],
+})`
   flex: 1;
-  height: 100%;
   background-color: ${({ theme }) => theme.colors.primary.black};
 `;
