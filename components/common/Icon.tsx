@@ -36,6 +36,7 @@ import Link from '@/assets/icons/link.svg';
 import Mail from '@/assets/icons/mail.svg';
 import MaleColored from '@/assets/icons/male-color.svg';
 import Male from '@/assets/icons/male.svg';
+import Mic from '@/assets/icons/mic.svg';
 import Next from '@/assets/icons/next.svg';
 import Nogender from '@/assets/icons/nogender.svg';
 import Notice from '@/assets/icons/notice.svg';
@@ -108,6 +109,7 @@ const iconMap = {
   maleColored: MaleColored,
   male: Male,
   next: Next,
+  mic: Mic,
   nogender: Nogender,
   notice: Notice,
   notice1: Notice1,
