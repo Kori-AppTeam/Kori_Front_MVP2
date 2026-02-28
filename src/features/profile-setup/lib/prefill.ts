@@ -1,9 +1,8 @@
 import * as SecureStore from 'expo-secure-store';
 import type { UseFormReturn } from 'react-hook-form';
 import type { ProfileSetupFormValues, ProfileSetupPrefill } from '@/src/features/profile-setup/types';
-import { useCallback } from 'react';
 
-export const savePrefill = useCallback(async (params: { userId: string | number; prefill: ProfileSetupPrefill }) => {
+export const savePrefill = async (params: { userId: string | number; prefill: ProfileSetupPrefill }) => {
   const hasAny = !!(
     params.prefill.firstname ||
     params.prefill.lastname ||
@@ -15,7 +14,7 @@ export const savePrefill = useCallback(async (params: { userId: string | number;
   await SecureStore.setItemAsync(`PROFILE_SETUP_PREFILL_${params.userId}`, JSON.stringify(params.prefill), {
     keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
   });
-}, []);
+};
 
 async function readPrefill(userId: string | number): Promise<ProfileSetupPrefill | null> {
   const raw = await SecureStore.getItemAsync(`PROFILE_SETUP_PREFILL_${userId}`);
