@@ -13,10 +13,9 @@ import PostPoll from './elements/body/PostPoll';
 
 interface PostDetailCardProps {
   data: PostDetailType;
-  onShowProfileModal: () => void;
 }
 
-const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
+const PostDetailCard = ({ data }: PostDetailCardProps) => {
   const { handleToggleBookmark, handleToggleLike } = useHandleLikeBookmark();
   const { showPostMoreSheet } = useMoreSheetStore();
 
@@ -26,7 +25,6 @@ const PostDetailCard = ({ data, onShowProfileModal }: PostDetailCardProps) => {
     <Container>
       <PostCommonHeader
         showProfileModal={true}
-        onShowProfileModal={onShowProfileModal}
         authorId={data.authorId}
         postId={data.id}
         authorName={data.authorName}

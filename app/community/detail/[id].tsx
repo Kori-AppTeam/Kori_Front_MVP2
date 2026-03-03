@@ -98,7 +98,6 @@ export default function PostDetailScreen() {
             <>
               <PostComment
                 data={item}
-                onShowProfileModal={() => handleSetSelectedUser(item.authorId)}
                 onToggleLike={() => manage.toggleCommentLike(item)}
                 onOpenModal={() =>
                   showCommentMoreSheet(
@@ -117,7 +116,6 @@ export default function PostDetailScreen() {
                   <PostComment
                     key={reply.commentId}
                     data={reply}
-                    onShowProfileModal={() => handleSetSelectedUser(reply.authorId)}
                     onToggleLike={() => manage.toggleCommentLike(reply)}
                     onOpenModal={() =>
                       showCommentMoreSheet(postId, reply.authorId, reply.commentId, reply.content, false)
@@ -133,10 +131,7 @@ export default function PostDetailScreen() {
           ListHeaderComponent={
             <>
               {/* 게시글카드 */}
-              <PostDetailCard
-                data={postDetailData}
-                onShowProfileModal={() => handleSetSelectedUser(postDetailData.authorId)}
-              />
+              <PostDetailCard data={postDetailData} />
 
               {/* 정렬 탭 - 댓글 있을 때만 렌더링 */}
               {manage.organizedComments.length > 0 && (
