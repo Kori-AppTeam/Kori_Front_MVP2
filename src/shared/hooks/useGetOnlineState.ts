@@ -6,6 +6,6 @@ export const useGetOnlineState = (userId: number) => {
     queryKey: ['onlineState', userId],
     queryFn: () => getOnlineState(userId),
     enabled: !!userId,
-    staleTime: 5 * 60_000, // 5분
+    staleTime: 2 * 60_000, // 2분
   });
 };
