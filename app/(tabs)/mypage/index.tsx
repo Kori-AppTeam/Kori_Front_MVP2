@@ -54,7 +54,6 @@ export default function MyPageScreen() {
 
   // 로그인 정보 가져오기
   const { currentUserId } = useAuthStore();
-  console.log('MyPageScreen - Current userId:', currentUserId);
 
   const extractCounts = (raw: any) => {
     const obj = raw?.data?.data ?? raw?.data ?? raw;
