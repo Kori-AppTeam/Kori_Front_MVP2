@@ -39,6 +39,7 @@ import Male from '@/assets/icons/male.svg';
 import Mic from '@/assets/icons/mic.svg';
 import Next from '@/assets/icons/next.svg';
 import Nogender from '@/assets/icons/nogender.svg';
+import NoGenderLight from '@/assets/icons/nogender_light.svg';
 import Notice from '@/assets/icons/notice.svg';
 import Notice1 from '@/assets/icons/notice_modal.svg';
 import Pagination1 from '@/assets/icons/pagination_status=1.svg';
@@ -111,6 +112,7 @@ const iconMap = {
   next: Next,
   mic: Mic,
   nogender: Nogender,
+  noGenderLight: NoGenderLight,
   notice: Notice,
   notice1: Notice1,
   plus: Plus,
