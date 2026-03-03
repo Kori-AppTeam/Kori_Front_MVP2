@@ -34,7 +34,7 @@ const UserInfoHeader = ({ userId, data }: UserInfoHeaderProps) => {
           <Description>
             <InfoLabel>Birth</InfoLabel>
             <InfoData>{data?.birthday}</InfoData>
-            <Icon type={data?.gender === 'M' ? 'maleColored' : 'femaleColored'} size={16} />
+            <Icon type={data?.gender === 'Male' ? 'maleColored' : 'femaleColored'} size={16} />
           </Description>
           <Description>
             <InfoLabel>From</InfoLabel>
