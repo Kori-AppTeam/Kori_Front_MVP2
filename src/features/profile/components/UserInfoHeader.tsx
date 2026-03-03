@@ -10,10 +10,12 @@ import styled from 'styled-components/native';
 interface UserInfoHeaderProps {
   userId: number;
   data: User;
+  isMyProfile?: boolean;
 }
 
-const UserInfoHeader = ({ userId, data }: UserInfoHeaderProps) => {
+const UserInfoHeader = ({ userId, data, isMyProfile }: UserInfoHeaderProps) => {
   const { data: onlineState } = useGetOnlineState(userId);
+  const showOnlineState = isMyProfile ? true : onlineState?.online; // 내 프로필에서는 항상 온라인 상태 표시, 다른 사람 프로필에서는 실제 온라인 상태 표시
 
   return (
     <Container>
@@ -22,8 +24,8 @@ const UserInfoHeader = ({ userId, data }: UserInfoHeaderProps) => {
       </AvatarWrapper>
 
       <OnlineStateWrapper>
-        <OnlineState isOnline={onlineState?.online ?? false} size={16} />
-        <OnlineStateText>{onlineState?.online ? 'Online' : 'Offline'}</OnlineStateText>
+        <OnlineState isOnline={showOnlineState ?? false} size={16} />
+        <OnlineStateText>{showOnlineState ? 'Online' : 'Offline'}</OnlineStateText>
       </OnlineStateWrapper>
 
       <InfoWrapper>
@@ -34,7 +36,16 @@ const UserInfoHeader = ({ userId, data }: UserInfoHeaderProps) => {
           <Description>
             <InfoLabel>Birth</InfoLabel>
             <InfoData>{data?.birthday}</InfoData>
-            <Icon type={data?.gender === 'Male' ? 'maleColored' : 'femaleColored'} size={16} />
+            <Icon
+              type={
+                data?.gender === 'Prefer not to say'
+                  ? 'noGenderLight'
+                  : data?.gender === 'Male'
+                    ? 'maleColored'
+                    : 'femaleColored'
+              }
+              size={16}
+            />
           </Description>
           <Description>
             <InfoLabel>From</InfoLabel>
