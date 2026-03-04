@@ -10,10 +10,10 @@ import { UserProfileCardActions } from '@/src/shared/components/UserProfileCard/
 import { useFriendAction } from '@/src/shared/hooks/useFriendAction';
 import { useUserProfileQuery } from '@/src/shared/hooks/useUserProfileQuery';
 import useAuthStore from '@/src/store/useAuthStore';
-import { Safe } from '@/src/styles/GlobalStyles';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
 const Index = () => {
@@ -25,25 +25,26 @@ const Index = () => {
   const { currentUserId } = useAuthStore();
   const { data: userInfo, isLoading, isError, refetch } = useUserProfileQuery(Number(userId));
   const { getFollowAction, handleChat } = useFriendAction(userInfo);
+  const insets = useSafeAreaInsets();
 
   const myProfile = Number(userId) === currentUserId;
 
   if (isLoading) {
     return (
-      <Safe>
+      <Container>
         <HeaderContainer>
           <HeaderNav title="Profile" iconType="close" onClick={() => router.back()} />
         </HeaderContainer>
         <LoadingContainer>
           <ActivityIndicator size="large" />
         </LoadingContainer>
-      </Safe>
+      </Container>
     );
   }
 
   if (isError || !userInfo) {
     return (
-      <Safe>
+      <Container>
         <HeaderContainer>
           <HeaderNav title="Profile" iconType="close" onClick={() => router.back()} />
         </HeaderContainer>
@@ -53,12 +54,12 @@ const Index = () => {
             <RetryButtonText>Try Again</RetryButtonText>
           </RetryButton>
         </ErrorContainer>
-      </Safe>
+      </Container>
     );
   }
 
   return (
-    <Safe>
+    <Container>
       <HeaderContainer>
         <HeaderBackground source={require('@/assets/images/profile_header_bg.png')} />
         <HeaderNav title="Profile" iconType="close" onClick={() => router.back()} />
@@ -72,7 +73,7 @@ const Index = () => {
       </TabsWrap>
       <TabsBottomLine />
 
-      <BodyWrap>
+      <BodyWrap $bottom={insets.bottom}>
         {tab === 'Profile' && (
           <ProfileTab about={userInfo?.introduction} lang={userInfo?.language} interest={userInfo?.hobby} />
         )}
@@ -80,9 +81,11 @@ const Index = () => {
         {tab === 'Post' && <PostTab userId={Number(userId)} />}
       </BodyWrap>
 
-      <BottomButtonWrap>
+      <BottomButtonWrap $bottom={insets.bottom}>
         {myProfile ? (
-          <CustomButton label="Edit Profile" tone="darkGray" filled onPress={() => router.push('/mypage/edit')} />
+          <EditButtonWrap>
+            <CustomButton label="Edit Profile" tone="darkGray" filled onPress={() => router.push('/mypage/edit')} />
+          </EditButtonWrap>
         ) : (
           <UserProfileCardActions
             actions={{
@@ -92,11 +95,17 @@ const Index = () => {
           />
         )}
       </BottomButtonWrap>
-    </Safe>
+    </Container>
   );
 };
 
 export default Index;
+
+const Container = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.primary.black};
+  position: relative;
+`;
 
 const HeaderContainer = styled.View`
   align-items: center;
@@ -119,16 +128,22 @@ const LoadingContainer = styled.View`
   align-items: center;
 `;
 
-const BodyWrap = styled.View`
+const BodyWrap = styled.View<{ $bottom: number }>`
   flex: 1;
+  padding-bottom: ${(props) => props.$bottom + 60}px;
 `;
 
-const BottomButtonWrap = styled.View`
+const BottomButtonWrap = styled.View<{ $bottom: number }>`
+  position: absolute;
+  bottom: ${(props) => props.$bottom}px;
+  left: 20px;
+  right: 20px;
+  min-height: 50px;
+`;
+
+const EditButtonWrap = styled.View`
   width: 100%;
-  padding-left: 20px;
-  padding-right: 20px;
-  aspect-ratio: 375 / 50;
-  margin-bottom: 20px;
+  height: 50px;
 `;
 
 const TabsWrap = styled(TabsRow)`
