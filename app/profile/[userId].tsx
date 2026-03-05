@@ -24,7 +24,7 @@ const Index = () => {
 
   const { currentUserId } = useAuthStore();
   const { data: userInfo, isLoading, isError, refetch } = useUserProfileQuery(Number(userId));
-  const { getFollowAction, handleChat } = useFriendAction(userInfo);
+  const { getFollowAction, handleChat } = useFriendAction();
   const insets = useSafeAreaInsets();
 
   const myProfile = Number(userId) === currentUserId;
@@ -89,9 +89,12 @@ const Index = () => {
         ) : (
           <UserProfileCardActions
             actions={{
-              ...getFollowAction(),
-              chat: { label: 'Chat', onPress: () => handleChat('push', 0) },
+              ...getFollowAction(userInfo),
+              ...(userInfo.followStatus !== 'FOLLOWED'
+                ? { chat: { label: 'Chat', onPress: () => handleChat(userInfo, 'push') } }
+                : {}),
             }}
+            pages="profile"
           />
         )}
       </BottomButtonWrap>
@@ -130,7 +133,7 @@ const LoadingContainer = styled.View`
 
 const BodyWrap = styled.View<{ $bottom: number }>`
   flex: 1;
-  padding-bottom: ${(props) => props.$bottom + 60}px;
+  padding-bottom: ${(props) => props.$bottom + 50}px;
 `;
 
 const BottomButtonWrap = styled.View<{ $bottom: number }>`
