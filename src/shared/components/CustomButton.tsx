@@ -10,6 +10,7 @@ type ButtonProps = {
   filled?: boolean;
   isLoading?: boolean;
   disabled?: boolean;
+  customLeftIcon?: React.ReactNode;
   onPress?: () => void;
   leftIcon?: keyof typeof MaterialIcons.glyphMap;
   rightIcon?: keyof typeof MaterialIcons.glyphMap;
@@ -37,6 +38,7 @@ export default function CustomButton({
   disabled,
   onPress,
   leftIcon,
+  customLeftIcon,
   rightIcon,
   iconSize = 18,
   borderColor,
@@ -64,6 +66,7 @@ export default function CustomButton({
       ) : (
         <Content>
           {leftIcon && <MaterialIcons name={leftIcon} size={iconSize} color={contentColor} />}
+          {customLeftIcon && customLeftIcon}
           <BtnText tone={tone} filled={filled} style={{ color: contentColor }}>
             {label}
           </BtnText>
@@ -91,6 +94,7 @@ const Btn = styled.Pressable<{ tone: Tone; filled: boolean; disabled?: boolean; 
 const Content = styled.View`
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 `;
 
