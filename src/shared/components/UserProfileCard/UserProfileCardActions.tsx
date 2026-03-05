@@ -1,16 +1,17 @@
 // components/UserProfileCard/UserProfileCardActions.tsx
 
+import Icon from '@/components/common/Icon';
 import CustomButton from '@/src/shared/components/CustomButton';
 import React from 'react';
 import styled from 'styled-components/native';
-import { BUTTON_GAP } from './constants';
 import type { UserProfileActions } from './types';
 
 interface Props {
   actions?: UserProfileActions;
+  pages?: 'profile' | 'chat';
 }
 
-export function UserProfileCardActions({ actions }: Props) {
+export function UserProfileCardActions({ actions, pages }: Props) {
   if (!actions) return null;
 
   const { primary, secondary, decline, chat } = actions;
@@ -47,9 +48,9 @@ export function UserProfileCardActions({ actions }: Props) {
       {chat && (
         <CustomButton
           label="Chat"
-          tone="black"
+          tone={pages === 'profile' ? 'darkGray' : 'black'}
           filled
-          leftIcon="chat-bubble-outline"
+          customLeftIcon={<Icon type="chat" size={20} />}
           onPress={chat.onPress}
           disabled={chat.disabled || chat.loading}
           isLoading={chat.loading}
@@ -62,5 +63,5 @@ export function UserProfileCardActions({ actions }: Props) {
 const Container = styled.View`
   margin-top: 16px;
   flex-direction: row;
-  gap: ${BUTTON_GAP}px;
+  gap: 8px;
 `;
