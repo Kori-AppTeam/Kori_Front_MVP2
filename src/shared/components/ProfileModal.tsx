@@ -1,14 +1,8 @@
-import { useCreateOneToOneRoom } from '@/src/features/chat/room/hooks/useCreateOneToOneRoom';
 import UserProfileCard from '@/src/shared/components/UserProfileCard';
-import {
-  useAcceptFollowUserMutation,
-  useCancelFollowUserMutation,
-  useFollowUserMutation,
-  useUnfollowUserMutation,
-} from '@/src/shared/hooks/useFollowQuery';
 import React from 'react';
 import { ActivityIndicator, Modal, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
+import { useFriendAction } from '../hooks/useFriendAction';
 import { User } from '../types/user';
 
 type ProfileModalProps = {
@@ -30,42 +24,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   routeType = 'push',
   dissMissCount,
 }) => {
-  const followUserMutation = useFollowUserMutation();
-  const unfollowUserMutation = useUnfollowUserMutation();
-  const cancelFollowUserMutation = useCancelFollowUserMutation();
-  const acceptFollowUserMutation = useAcceptFollowUserMutation();
-  const createChatRoom = useCreateOneToOneRoom();
-
-  const handleFollow = () => {
-    if (!userData) return;
-    followUserMutation.mutate(userData.userId);
-  };
-
-  const handleUnfollow = () => {
-    if (!userData) return;
-    unfollowUserMutation.mutate(userData.userId);
-  };
-
-  const handleCancelFollow = () => {
-    if (!userData) return;
-    cancelFollowUserMutation.mutate(userData.userId);
-  };
-
-  const handleAcceptFollow = () => {
-    if (!userData) return;
-    acceptFollowUserMutation.mutate(userData.userId);
-  };
-
-  const handleChat = () => {
-    if (!userData) return;
-    createChatRoom.mutate({
-      otherUserId: userData.userId,
-      userName: `${userData.firstname} ${userData.lastname}`,
-      routeType: routeType,
-      dissMissCount: dissMissCount,
-      closeProfile: onClose,
-    });
-  };
+  const { getFollowAction, handleChat } = useFriendAction();
 
   return (
     <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
@@ -77,14 +36,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                 user={userData}
                 defaultExpanded={true}
                 actions={{
-                  ...(userData.followStatus === 'FRIEND'
-                    ? { decline: { label: 'Unfollow', onPress: handleUnfollow } }
-                    : userData.followStatus === 'FOLLOWING'
-                      ? { secondary: { label: 'Pending', onPress: handleCancelFollow } }
-                      : userData.followStatus === 'FOLLOWED'
-                        ? { primary: { label: 'Accept', onPress: handleAcceptFollow } }
-                        : { primary: { label: 'Follow', onPress: handleFollow } }),
-                  chat: { label: 'Chat', onPress: handleChat },
+                  ...getFollowAction(userData),
+                  ...(userData.followStatus !== 'FOLLOWED'
+                    ? {
+                        chat: { label: 'Chat', onPress: () => handleChat(userData, routeType, dissMissCount, onClose) },
+                      }
+                    : {}),
                 }}
               />
             </ScrollView>
