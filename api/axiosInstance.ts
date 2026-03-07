@@ -1,11 +1,12 @@
 import { ACCESS_KEY, isRefreshBlocked, REFRESH_KEY } from '@/src/lib/auth/session';
-import { getSecureStoreItem } from '@/src/shared/utils/secureStore';
 import { Config } from '@/src/shared/constants/config';
+import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { getSecureStoreItem } from '@/src/shared/utils/secureStore';
+import useAuthStore from '@/src/store/useAuthStore';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
-import { AUTH_ROUTE } from '@/src/shared/constants/route';
 
 const BASE_URL = Config.SERVER_URL;
 
@@ -56,6 +57,7 @@ export const doRefresh = async (): Promise<string | null> => {
     if (newAt) {
       await SecureStore.setItemAsync(ACCESS_KEY, newAt);
       (api.defaults.headers as any).Authorization = `Bearer ${newAt}`;
+      useAuthStore.getState().setCurrentUserId(data.userId);
       // 토큰이 정상 갱신되면 다음 만료 상황에서 다시 Alert를 허용
       hasShownReauthAlert = false;
       hasNavigatedToAuth = false;

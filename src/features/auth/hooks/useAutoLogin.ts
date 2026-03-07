@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
 import { doRefresh } from '@/api/axiosInstance';
 import { ACCESS_KEY } from '@/src/lib/auth/session';
 import { fetchUserProfile } from '@/src/shared/api/userProfile';
 import { getSecureStoreItem } from '@/src/shared/utils/secureStore';
+import useAuthStore from '@/src/store/useAuthStore';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useAutoLogin(isFontLoaded: boolean) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -28,6 +29,7 @@ export function useAutoLogin(isFontLoaded: boolean) {
       if (accessToken) {
         await fetchUserProfile(userId);
         setIsLoggedIn(true);
+        useAuthStore.getState().setCurrentUserId(userId); // userId 상태 저장
         return;
       }
 
@@ -37,6 +39,7 @@ export function useAutoLogin(isFontLoaded: boolean) {
         // 토큰 갱신 성공 시 유저 정보 조회로 유효성 검증
         (await fetchUserProfile(userId), 5000);
         setIsLoggedIn(true);
+        useAuthStore.getState().setCurrentUserId(userId); // userId 상태 저장
         return;
       }
 

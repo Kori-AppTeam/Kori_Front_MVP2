@@ -2,6 +2,7 @@ import Icon from '@/components/common/Icon';
 import { CLIENT_CATEGORY_NAME } from '@/src/features/community/shared/constants/constants';
 import { timeToAgo } from '@/src/features/community/shared/utils/indexUtils';
 import { textStyle, theme } from '@/src/styles/theme';
+import { router } from 'expo-router';
 import React, { memo } from 'react';
 import { Pressable } from 'react-native';
 import styled from 'styled-components/native';
@@ -10,7 +11,6 @@ import PostUserProfileImg from './PostUserProfileImg';
 
 const PostCommonHeader = ({
   showProfileModal = false,
-  onShowProfileModal,
   authorId,
   isAnonymous,
   userImageUrl,
@@ -25,7 +25,10 @@ const PostCommonHeader = ({
     <PostHeader>
       {/* 나의 게시글 조회 시에는 필요 없으므로 분기처리 */}
       {isAnonymous !== undefined && userImageUrl !== undefined && (
-        <AuthorImageContainer disabled={!showProfileModal || isAnonymous} onPress={onShowProfileModal}>
+        <AuthorImageContainer
+          disabled={!showProfileModal || isAnonymous}
+          onPress={() => router.push(`/profile/${authorId}`)}
+        >
           <PostUserProfileImg isAnonymous={isAnonymous} userImageUrl={userImageUrl} />
         </AuthorImageContainer>
       )}

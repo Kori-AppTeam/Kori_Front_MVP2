@@ -2,6 +2,7 @@ import Icon from '@/components/common/Icon';
 import { Count, IconBtn, LeftFooter } from '@/src/features/community/shared/styles/styles';
 import { limitCount, timeToAgo } from '@/src/features/community/shared/utils/indexUtils';
 import { textStyle } from '@/src/styles/theme';
+import { router } from 'expo-router';
 import React from 'react';
 import { Pressable } from 'react-native';
 import styled from 'styled-components/native';
@@ -10,18 +11,17 @@ import PostUserProfileImg from '../header/PostUserProfileImg';
 
 interface PostCommentProps {
   data: Comment;
-  onShowProfileModal: () => void;
   onToggleLike: () => void;
   onOpenModal: () => void;
   onClickReply?: () => void;
 }
 
-const PostComment = ({ data, onShowProfileModal, onToggleLike, onOpenModal, onClickReply }: PostCommentProps) => {
+const PostComment = ({ data, onToggleLike, onOpenModal, onClickReply }: PostCommentProps) => {
   return (
     <Container>
       {data.parentCommentId && <Icon size={20} type="commentArrow" />}
       {data.isAnonymous !== undefined && data.userImage !== undefined && (
-        <AuthorImageContainer disabled={data.isAnonymous} onPress={onShowProfileModal}>
+        <AuthorImageContainer disabled={data.isAnonymous} onPress={() => router.push(`/profile/${data.authorId}`)}>
           <PostUserProfileImg isAnonymous={data.isAnonymous} userImageUrl={data.userImage} />
         </AuthorImageContainer>
       )}

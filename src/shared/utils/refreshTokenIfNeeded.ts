@@ -1,4 +1,5 @@
 import api from '@/api/axiosInstance';
+import useAuthStore from '@/src/store/useAuthStore';
 import * as SecureStore from 'expo-secure-store';
 
 /** refreshToken 갱신 함수 */
@@ -12,6 +13,7 @@ export const refreshTokenIfNeeded = async (): Promise<string | null> => {
     if (newToken) {
       await SecureStore.setItemAsync('jwt', newToken);
       await SecureStore.setItemAsync('refresh', newRefreshToken);
+      useAuthStore.getState().setCurrentUserId(res.data.data.userId);
 
       return newToken;
     }

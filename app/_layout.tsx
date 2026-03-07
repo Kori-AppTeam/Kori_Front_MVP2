@@ -13,6 +13,7 @@ import { toastConfig } from '@/src/shared/constants/toast';
 import { useCheckAppVersion } from '@/src/shared/hooks/useCheckAppVersion';
 import { useScreenChangeTracker } from '@/src/shared/hooks/useScreenChangeTracker';
 import { initSentry, wrapWithSentry } from '@/src/shared/utils/sentry';
+import useAuthStore from '@/src/store/useAuthStore';
 import { initializeStomp } from '@/src/store/useStompStore';
 import { theme } from '@/src/styles/theme';
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
@@ -131,6 +132,9 @@ export default wrapWithSentry(function RootLayout() {
       // 로그아웃 시 커뮤니티 모달 상태 초기화
       useMoreSheetStore.getState().resetData();
       useReportSheetStore.getState().resetData();
+
+      // 로그아웃 시 사용자 정보 초기화
+      useAuthStore.getState().setCurrentUserId(null);
     }
   }, [isLoggedIn]);
 

@@ -8,7 +8,8 @@ import { uploadLocalImageAndGetKey } from '@/lib/mypage/uploadImage';
 import SupportButton from '@/src/features/mypage/components/SupportButton';
 import CustomButton from '@/src/shared/components/CustomButton';
 import { Config } from '@/src/shared/constants/config';
-import { AUTH_ROUTE } from '@/src/shared/constants/route';
+import { AUTH_ROUTE, PROFILE_ROUTE } from '@/src/shared/constants/route';
+import useAuthStore from '@/src/store/useAuthStore';
 import { theme } from '@/src/styles/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
@@ -50,6 +51,9 @@ export default function MyPageScreen() {
   const [pendingReceived, setPendingReceived] = useState<number>(0);
   const [pendingSent, setPendingSent] = useState<number>(0);
   const pendingFetchOnce = useRef(false);
+
+  // 로그인 정보 가져오기
+  const { currentUserId } = useAuthStore();
 
   const extractCounts = (raw: any) => {
     const obj = raw?.data?.data ?? raw?.data ?? raw;
@@ -263,6 +267,10 @@ export default function MyPageScreen() {
             await api.post(`${Config.SERVER_URL}/api/v1/member/logout`);
             await SecureStore.deleteItemAsync('jwt');
             await SecureStore.deleteItemAsync('refresh');
+
+            // 로그아웃 시 userId 저장 상태 초기화
+            useAuthStore.getState().setCurrentUserId(null);
+
             router.replace(AUTH_ROUTE);
           } catch (error) {
             console.error('로그아웃 실패', error);
@@ -295,7 +303,13 @@ export default function MyPageScreen() {
           </Name>
 
           <EditButtonWrap>
-            <CustomButton label="Edit Profile" tone="mint" filled onPress={() => router.push('/mypage/edit')} />
+            {/* <CustomButton label="Edit Profile" tone="mint" filled onPress={() => router.push('/mypage/edit')} /> */}
+            <CustomButton
+              label="View My Profile"
+              tone="mint"
+              filled
+              onPress={() => currentUserId && router.push(PROFILE_ROUTE(currentUserId))}
+            />
           </EditButtonWrap>
         </ProfileView>
 

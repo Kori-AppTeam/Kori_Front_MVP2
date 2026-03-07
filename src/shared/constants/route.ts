@@ -1,5 +1,4 @@
 //채팅방 route 경로
-import { NewsType } from '@/src/features/k-culture/types';
 import { RelativePathString } from 'expo-router';
 
 const toRoute = (path: string): RelativePathString => path as RelativePathString;
@@ -35,11 +34,14 @@ export const COMMUNITY_ROUTER = {
 // 마이페이지 route 경로
 export const MYPAGE_SUPPORT_ROUTE = toRoute('/mypage/support');
 
+// 프로필 route 경로
+export const PROFILE_ROUTE = (userId: number) => toRoute(`/profile/${userId}`);
+
 // k-culture route 경로
 export const K_CULTURE_ROUTER = {
   HOME: '/k-culture',
   K_NEWS: '/k-culture/k-news',
-  DETAIL: (newsId: number | string, type: NewsType, ago: number) =>
+  DETAIL: (newsId: number | string, type: string, ago: number) =>
     toRoute(`/k-culture/detail/${newsId}?type=${type}&ago=${ago}`),
   SEARCH: '/k-culture/search',
 } as const;

@@ -2,7 +2,6 @@ import Icon from '@/components/common/Icon';
 import { IconBtn } from '@/src/features/community/shared/styles/styles';
 import { useGetNewsDetail } from '@/src/features/k-culture/hooks/useGetNewsDetail';
 import { CategoryBadge, DateText, Dot } from '@/src/features/k-culture/styles/styles';
-import { NewsType } from '@/src/features/k-culture/types';
 import { makeCompleteHtml } from '@/src/features/k-culture/utils/makeCompleteHtml';
 import { timeStampToAgo } from '@/src/features/k-culture/utils/timeStampToAgo';
 import { confirmOpenURL } from '@/src/shared/utils/confirmOpenURL';
@@ -21,7 +20,7 @@ const NewsId = () => {
     ago = '0',
   } = useLocalSearchParams<{
     newsId: string;
-    type?: NewsType | 'K-news';
+    type?: string;
     ago?: string;
   }>();
   const { data, isLoading, isError } = useGetNewsDetail(Number(newsId));
