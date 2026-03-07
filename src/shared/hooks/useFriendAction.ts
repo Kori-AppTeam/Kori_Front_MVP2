@@ -3,6 +3,7 @@ import { User } from '../types/user';
 import {
   useAcceptFollowUserMutation,
   useCancelFollowUserMutation,
+  useDeclineFollowUserMutation,
   useFollowUserMutation,
   useUnfollowUserMutation,
 } from './useFollowQuery';
@@ -12,6 +13,7 @@ export const useFriendAction = () => {
   const unfollowUserMutation = useUnfollowUserMutation();
   const cancelFollowUserMutation = useCancelFollowUserMutation();
   const acceptFollowUserMutation = useAcceptFollowUserMutation();
+  const declineFollowUserMutation = useDeclineFollowUserMutation();
   const createChatRoom = useCreateOneToOneRoom();
 
   const handleFollow = (userData: User | undefined | null) => {
@@ -32,6 +34,11 @@ export const useFriendAction = () => {
   const handleAcceptFollow = (userData: User | undefined | null) => {
     if (!userData) return;
     acceptFollowUserMutation.mutate(userData.userId);
+  };
+
+  const handleDeclineFollow = (userData: User | undefined | null) => {
+    if (!userData) return;
+    declineFollowUserMutation.mutate(userData.userId);
   };
 
   const handleChat = (
@@ -59,7 +66,7 @@ export const useFriendAction = () => {
     if (userData?.followStatus === 'FOLLOWED')
       return {
         primary: { label: 'Accept', onPress: () => handleAcceptFollow(userData) },
-        decline: { label: 'Decline', onPress: () => handleUnfollow(userData) },
+        decline: { label: 'Decline', onPress: () => handleDeclineFollow(userData) },
       };
 
     // 기본값 (아무 관계 아닐 때)
